@@ -40,19 +40,18 @@ export API_BASE_URL="${BROWSER_POOL_URL}/api/v1"
 cd /app/tests
 
 # Combine default args with any user-provided args
-PYTEST_DEFAULT_ARGS="-v --tb=short"
+# -n auto uses all CPU cores, -q for quiet output (faster)
+PYTEST_DEFAULT_ARGS="--tb=short -q"
 PYTEST_EXTRA_ARGS="${PYTEST_ARGS:-}"
 
 # If no command args provided, run in two phases
 if [ $# -eq 0 ] && [ -z "$PYTEST_EXTRA_ARGS" ]; then
     echo "Phase 1: Running parallel tests (excluding close_all tests)..."
-    echo "Running: pytest $PYTEST_DEFAULT_ARGS -k 'not close_all'"
-    pytest $PYTEST_DEFAULT_ARGS -k "not close_all"
+    pytest $PYTEST_DEFAULT_ARGS -n 4 -k "not close_all"
     PHASE1_EXIT=$?
 
     echo ""
-    echo "Phase 2: Running close_all tests (sequential to avoid closing other tests' browsers)..."
-    echo "Running: pytest $PYTEST_DEFAULT_ARGS -n0 -k 'close_all'"
+    echo "Phase 2: Running close_all tests (sequential)..."
     pytest $PYTEST_DEFAULT_ARGS -n0 -k "close_all"
     PHASE2_EXIT=$?
 
@@ -62,9 +61,7 @@ if [ $# -eq 0 ] && [ -z "$PYTEST_EXTRA_ARGS" ]; then
     fi
     exit 0
 elif [ -z "$PYTEST_EXTRA_ARGS" ]; then
-    echo "Running: pytest $PYTEST_DEFAULT_ARGS"
-    exec pytest $PYTEST_DEFAULT_ARGS
+    exec pytest $PYTEST_DEFAULT_ARGS -n 4
 else
-    echo "Running: pytest $PYTEST_DEFAULT_ARGS $PYTEST_EXTRA_ARGS"
     exec pytest $PYTEST_DEFAULT_ARGS $PYTEST_EXTRA_ARGS
 fi

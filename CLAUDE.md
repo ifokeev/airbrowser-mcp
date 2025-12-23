@@ -81,7 +81,10 @@ The `generated-clients/` directory contains auto-generated client libraries from
 - OpenAPI spec is available at `http://localhost:8000/api/v1/swagger.json`
 
 ### Testing
-- Run tests: `./scripts/run_tests.sh --build` (always use `--build` to ensure fresh codebase)
+- Run tests: `./scripts/run_tests.sh` (skips slow/external tests by default)
+- Fast re-runs: `./scripts/run_tests.sh -r` (reuses running containers)
+- All tests: `./scripts/run_tests.sh -m ''` (includes slow/external site tests)
+- Rebuild: `./scripts/run_tests.sh --build` (force rebuild containers)
 - See `docs/TESTING.md` for detailed testing guide
 - The generated client automatically includes the `/api/v1` prefix
 
@@ -96,11 +99,20 @@ docker compose restart browser-pool
 # Install/reinstall the Python client
 uv pip install -e generated-clients/python --force-reinstall
 
-# Run tests in Docker (always use --build for fresh code)
-./scripts/run_tests.sh --build
+# Run fast tests (skips slow/external by default)
+./scripts/run_tests.sh
+
+# Fast re-runs (reuse containers)
+./scripts/run_tests.sh -r
 
 # Run specific tests
-./scripts/run_tests.sh --build -k "test_health"
+./scripts/run_tests.sh -k "test_health"
+
+# Run ALL tests including slow/external
+./scripts/run_tests.sh -m ''
+
+# Force rebuild containers
+./scripts/run_tests.sh --build
 
 # Lint and format code
 ./scripts/lint.sh --fix --format

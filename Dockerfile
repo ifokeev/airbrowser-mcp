@@ -70,15 +70,10 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 
 WORKDIR /app
 
-# Copy application
-COPY src/ ./src/
-COPY setup.py README.md ./
-ENV PYTHONPATH="/app/src"
-
-# Install ChromeDriver
+# Install ChromeDriver (stable - cache this)
 RUN seleniumbase install chromedriver
 
-# Install noVNC (minimal)
+# Install noVNC (stable - cache this)
 RUN mkdir -p /opt \
     && curl -sL https://github.com/novnc/noVNC/archive/v1.3.0.tar.gz | tar xz -C /opt/ \
     && mv /opt/noVNC-1.3.0 /opt/noVNC \
@@ -86,8 +81,8 @@ RUN mkdir -p /opt \
     && rm -rf /opt/noVNC/docs /opt/noVNC/tests /opt/noVNC/*.md \
     && pip install --no-cache-dir websockify
 
-# Create directories and user
-RUN mkdir -p /app/{browser-profiles,screenshots,downloads,certs} \
+# Create directories and user (stable - cache this)
+RUN mkdir -p /app/{browser-profiles,screenshots,downloads,certs,src} \
     /var/log/supervisor /var/run /opt/vnc \
     /home/browseruser/.fluxbox /home/browseruser/.cache/selenium \
     /tmp/browser-queue /tmp/browser-status /tmp/browser-responses \
@@ -98,12 +93,17 @@ RUN mkdir -p /app/{browser-profiles,screenshots,downloads,certs} \
     && chown -R browseruser:browseruser /usr/local/lib/python3.11/site-packages/seleniumbase/drivers/ \
     && touch /home/browseruser/.Xauthority && chown browseruser:browseruser /home/browseruser/.Xauthority
 
-# Copy configs
+# Copy configs (rarely change)
 RUN rm -f /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
 COPY docker/nginx.conf.template /etc/nginx/nginx.conf.template
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# Copy application code LAST (changes frequently)
+COPY src/ ./src/
+COPY setup.py README.md ./
+ENV PYTHONPATH="/app/src"
 
 EXPOSE 8000 3000 5900 6080
 

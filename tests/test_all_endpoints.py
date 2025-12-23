@@ -58,9 +58,9 @@ def pool_client(api_client):
     return pool_api.PoolApi(airbrowser_client.ApiClient(api_client))
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="class")
 def browser_id(browser_client):
-    """Create a browser for testing and clean up after."""
+    """Create a browser for testing and clean up after. Shared within test class."""
     config = BrowserConfig(window_size=[1920, 1080])
     result = browser_client.create_browser(payload=config)
     assert result is not None, "Failed to create browser"
@@ -69,9 +69,6 @@ def browser_id(browser_client):
     assert result.data.browser_id is not None, "Browser ID is None"
 
     bid = result.data.browser_id
-
-    # Wait for browser initialization
-    time.sleep(5)
 
     yield bid
 
@@ -138,7 +135,6 @@ class TestBrowserLifecycle:
         create_result = browser_client.create_browser(payload=config)
         bid = create_result.data.browser_id
 
-        time.sleep(2)
 
         result = browser_client.close_browser(bid)
         assert result is not None
@@ -158,7 +154,6 @@ class TestNavigationEndpoints:
         """Test GET /browser/{browser_id}/url endpoint."""
         # First navigate somewhere
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(2)
 
         result = browser_client.get_url(browser_id)
         assert result is not None
@@ -169,9 +164,7 @@ class TestNavigationEndpoints:
         """Test POST /browser/{browser_id}/history with back action."""
         # Navigate to two pages
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(2)
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.org"))
-        time.sleep(2)
 
         # Go back using history endpoint
         result = browser_client.history(browser_id, payload=HistoryRequest(action="back"))
@@ -182,11 +175,8 @@ class TestNavigationEndpoints:
         """Test POST /browser/{browser_id}/history with forward action."""
         # Navigate and go back first
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(2)
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.org"))
-        time.sleep(2)
         browser_client.history(browser_id, payload=HistoryRequest(action="back"))
-        time.sleep(1)
 
         # Go forward using history endpoint
         result = browser_client.history(browser_id, payload=HistoryRequest(action="forward"))
@@ -196,7 +186,6 @@ class TestNavigationEndpoints:
     def test_history_refresh(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/history with refresh action."""
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(2)
 
         result = browser_client.history(browser_id, payload=HistoryRequest(action="refresh"))
         assert result is not None
@@ -209,7 +198,6 @@ class TestElementInteraction:
     def test_click(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/click endpoint."""
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(3)
 
         # Wait for the h1 heading to be present first (more reliable than anchor)
         wait_request = WaitElementRequest(selector="h1", by="css", until="visible", timeout=10)
@@ -224,7 +212,6 @@ class TestElementInteraction:
     def test_type(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/type endpoint - using execute to create input."""
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(3)
 
         # Create an input element via JavaScript
         exec_request = ExecuteRequest(
@@ -238,7 +225,6 @@ class TestElementInteraction:
             timeout=30,
         )
         browser_client.execute_script(browser_id, payload=exec_request)
-        time.sleep(2)
 
         # Wait for the input to be present
         wait_request = WaitElementRequest(selector="#test-input", by="css", until="visible", timeout=10)
@@ -253,7 +239,6 @@ class TestElementInteraction:
     def test_wait_element(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/wait_element endpoint."""
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(2)
 
         request = WaitElementRequest(selector="h1", by="css", until="visible", timeout=10)
         result = browser_client.wait_element(browser_id, payload=request)
@@ -263,7 +248,6 @@ class TestElementInteraction:
     def test_check_element_exists(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/check_element with exists check."""
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(2)
 
         request = CheckElementRequest(selector="h1", by="css", check="exists")
         result = browser_client.check_element(browser_id, payload=request)
@@ -273,7 +257,6 @@ class TestElementInteraction:
     def test_check_element_visible(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/check_element with visible check."""
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(2)
 
         # Test visible element
         request = CheckElementRequest(selector="h1", by="css", check="visible")
@@ -294,7 +277,6 @@ class TestPageContent:
     def test_get_content(self, browser_client, browser_id):
         """Test GET /browser/{browser_id}/content endpoint."""
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(2)
 
         result = browser_client.get_content(browser_id)
         assert result is not None
@@ -308,7 +290,6 @@ class TestPageContent:
     def test_screenshot(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/screenshot endpoint."""
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(2)
 
         result = browser_client.take_screenshot(browser_id)
         assert result is not None
@@ -321,7 +302,6 @@ class TestPageContent:
     def test_execute_script(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/execute endpoint."""
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(2)
 
         request = ExecuteRequest(script="return document.title;")
         result = browser_client.execute_script(browser_id, payload=request)
@@ -340,7 +320,6 @@ class TestDebugEndpoints:
     def test_console_logs(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/console endpoint."""
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(2)
 
         result = browser_client.console_logs(browser_id, payload=ConsoleLogsRequest(action="get"))
         assert result is not None
@@ -349,7 +328,6 @@ class TestDebugEndpoints:
     def test_network_logs(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/network endpoint."""
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(2)
 
         result = browser_client.network_logs(browser_id, payload=NetworkLogsRequest(action="get"))
         assert result is not None
@@ -364,7 +342,6 @@ class TestCloseAll:
         # Create a test browser
         config = BrowserConfig()
         browser_client.create_browser(payload=config)
-        time.sleep(2)
 
         result = browser_client.close_all_browsers()
         assert result is not None

@@ -20,6 +20,7 @@ def get_api_base_url():
 
 
 @pytest.mark.slow
+@pytest.mark.external
 @pytest.mark.browser
 @pytest.mark.flaky(reruns=2, reruns_delay=5)
 def test_easyjet_page_loads():
@@ -42,14 +43,14 @@ def test_easyjet_page_loads():
         assert result.success
         browser_id = result.data.browser_id
 
-        time.sleep(3)
+        time.sleep(1)
 
         # Navigate to EasyJet
         nav_request = NavigateRequest(url="https://www.easyjet.com/en/")
         nav_result = browser_client.navigate_browser(browser_id, payload=nav_request)
         assert nav_result.success
 
-        time.sleep(5)
+        time.sleep(1)
 
         # Take screenshot
         screenshot_result = browser_client.take_screenshot(browser_id)
@@ -71,6 +72,8 @@ def test_easyjet_page_loads():
                 pass
 
 
+@pytest.mark.slow
+@pytest.mark.external
 @pytest.mark.browser
 @pytest.mark.flaky(reruns=2, reruns_delay=5)
 def test_easyjet_simple_navigation():
@@ -93,14 +96,14 @@ def test_easyjet_simple_navigation():
         assert result.success
         browser_id = result.data.browser_id
 
-        time.sleep(2)
+        time.sleep(0.5)
 
         # Navigate to EasyJet
         nav_request = NavigateRequest(url="https://www.easyjet.com/en/")
         nav_result = browser_client.navigate_browser(browser_id, payload=nav_request)
         assert nav_result.success
 
-        time.sleep(3)
+        time.sleep(1)
 
         # Take screenshot
         screenshot_result = browser_client.take_screenshot(browser_id)

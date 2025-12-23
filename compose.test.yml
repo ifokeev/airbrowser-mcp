@@ -26,11 +26,11 @@ services:
     cap_add:
       - SYS_ADMIN
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 30s
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+      start_period: 10s
     networks:
       - test-network
 
@@ -48,6 +48,8 @@ services:
       - ./examples:/app/examples:ro
       - ./generated-clients:/app/generated-clients:ro
       - ./src:/app/src:ro
+      - ./pytest.ini:/app/pytest.ini:ro
+      - ./docker/test-entrypoint.sh:/test-entrypoint.sh:ro
       - test-results:/app/test-results
     depends_on:
       browser-pool:

@@ -167,7 +167,6 @@ class TestBrowserWithProfile:
         browser_id = result.data.browser_id
 
         # Wait for browser to initialize
-        time.sleep(5)
 
         # Verify profile is marked as in use
         profile_info = profiles_client.get_profile(test_profile)
@@ -175,7 +174,6 @@ class TestBrowserWithProfile:
 
         # Cleanup
         browser_client.close_browser(browser_id)
-        time.sleep(1)
 
     def test_create_browser_fresh_session(self, browser_client):
         """Test creating a browser without a profile (fresh session)."""
@@ -190,7 +188,6 @@ class TestBrowserWithProfile:
         assert result.data.config.get("profile_name") is None
 
         # Cleanup
-        time.sleep(2)
         browser_client.close_browser(result.data.browser_id)
 
     def test_profile_lock_prevents_duplicate_browser(self, browser_client, profiles_client, test_profile):
@@ -202,7 +199,6 @@ class TestBrowserWithProfile:
         browser_id = result1.data.browser_id
 
         # Wait for browser to fully initialize and lock the profile
-        time.sleep(5)
 
         # Verify profile is actually marked as in use before testing duplicate
         profile_info = profiles_client.get_profile(test_profile)
@@ -220,7 +216,6 @@ class TestBrowserWithProfile:
             browser_client.close_browser(browser_id)
         except Exception:
             pass
-        time.sleep(1)
 
     def test_profile_released_on_browser_close(self, browser_client, profiles_client, test_profile):
         """Test that profile is released when browser is closed."""
@@ -230,7 +225,6 @@ class TestBrowserWithProfile:
         assert result.success
         browser_id = result.data.browser_id
 
-        time.sleep(3)
 
         # Verify profile is in use
         profile_info = profiles_client.get_profile(test_profile)
@@ -238,7 +232,6 @@ class TestBrowserWithProfile:
 
         # Close browser
         browser_client.close_browser(browser_id)
-        time.sleep(2)
 
         # Verify profile is released
         profile_info = profiles_client.get_profile(test_profile)
@@ -258,7 +251,6 @@ class TestBrowserWithProfile:
         result = browser_client.create_browser(payload=config)
         assert result.success
 
-        time.sleep(3)
 
         # Verify profile is in use
         profile_info = profiles_client.get_profile(test_profile)
@@ -266,7 +258,6 @@ class TestBrowserWithProfile:
 
         # Close all browsers
         browser_client.close_all_browsers()
-        time.sleep(2)
 
         # Verify profile is released
         profile_info = profiles_client.get_profile(test_profile)
@@ -285,7 +276,6 @@ class TestBrowserWithProfile:
         assert result.success
         browser_id = result.data.browser_id
 
-        time.sleep(2)
 
         # Cleanup
         browser_client.close_browser(browser_id)
@@ -304,7 +294,6 @@ class TestDeleteProfileInUse:
         browser_id = result.data.browser_id
 
         # Wait for browser to fully initialize and lock the profile
-        time.sleep(5)
 
         # Verify profile is actually marked as in use before testing delete
         profile_info = profiles_client.get_profile(test_profile)
@@ -322,4 +311,3 @@ class TestDeleteProfileInUse:
             browser_client.close_browser(browser_id)
         except Exception:
             pass
-        time.sleep(1)

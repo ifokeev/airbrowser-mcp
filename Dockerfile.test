@@ -19,7 +19,7 @@ ENV PATH="/root/.local/bin:$PATH"
 # Create app directory
 WORKDIR /app
 
-# Install test dependencies
+# Install test dependencies (stable - will be cached)
 RUN uv pip install --system --no-cache \
     pytest>=8.0.0 \
     pytest-timeout>=2.3.0 \
@@ -32,18 +32,11 @@ RUN uv pip install --system --no-cache \
     lazy-imports>=0.3.0 \
     python-dateutil>=2.8.0
 
-# Copy test configuration
-COPY pytest.ini .
-
 # Add paths for imports
 ENV PYTHONPATH="/app/generated-clients/python:/app/src:$PYTHONPATH"
 
 # Default test results directory
 RUN mkdir -p /app/test-results
 
-# Entrypoint script to wait for service and run tests
-COPY docker/test-entrypoint.sh /test-entrypoint.sh
-RUN chmod +x /test-entrypoint.sh
-
-# Entrypoint handles all test execution logic
+# pytest.ini and test-entrypoint.sh are mounted via docker-compose
 ENTRYPOINT ["/test-entrypoint.sh"]

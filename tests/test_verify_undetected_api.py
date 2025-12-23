@@ -19,6 +19,8 @@ def get_api_base_url():
     return os.environ.get("API_BASE_URL", "http://localhost:8000/api/v1")
 
 
+@pytest.mark.slow
+@pytest.mark.external
 @pytest.mark.flaky(reruns=2, reruns_delay=5)
 class TestUndetected:
     """Test class for verifying browser is undetected"""
@@ -112,11 +114,11 @@ class TestUndetected:
 
         # First attempt
         self.create_uc_browser()
-        time.sleep(2)
+        time.sleep(0.5)
 
         nav_request = NavigateRequest(url="https://nowsecure.nl/#relax")
         self.browser_client.navigate_browser(self.browser_id, payload=nav_request)
-        time.sleep(4)
+        time.sleep(1)
 
         # Try to verify success
         if self.verify_success():
@@ -134,10 +136,10 @@ class TestUndetected:
             pass
 
         self.create_uc_browser()
-        time.sleep(2)
+        time.sleep(0.5)
 
         self.browser_client.navigate_browser(self.browser_id, payload=nav_request)
-        time.sleep(4)
+        time.sleep(1)
 
         # Second attempt
         if self.verify_success():
@@ -164,11 +166,11 @@ class TestUndetected:
         print(f"\n[Attempt {attempt}] Starting undetection test...")
 
         self.create_uc_browser()
-        time.sleep(2)
+        time.sleep(0.5)
 
         nav_request = NavigateRequest(url="https://nowsecure.nl/#relax")
         self.browser_client.navigate_browser(self.browser_id, payload=nav_request)
-        time.sleep(4)
+        time.sleep(1)
 
         # Try to verify success
         if self.verify_success():
@@ -193,7 +195,7 @@ class TestUndetected:
         # Navigate to a site that shows user agent
         nav_request = NavigateRequest(url="https://example.com")
         self.browser_client.navigate_browser(self.browser_id, payload=nav_request)
-        time.sleep(2)
+        time.sleep(0.5)
 
         # Get the user agent via script
         try:

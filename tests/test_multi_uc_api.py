@@ -26,6 +26,8 @@ def create_browser_client():
     return browser_api.BrowserApi(airbrowser_client.ApiClient(configuration))
 
 
+@pytest.mark.slow
+@pytest.mark.external
 @pytest.mark.parametrize("test_num", [1, 2, 3])
 @pytest.mark.browser
 def test_multi_threaded_uc_detection(test_num):
@@ -49,7 +51,7 @@ def test_multi_threaded_uc_detection(test_num):
         print(f"\n[Test {test_num}] Created browser: {browser_id}")
 
         # Wait for browser initialization
-        time.sleep(2)
+        time.sleep(0.5)
 
         # Navigate to the detection test site
         nav_request = NavigateRequest(url="https://nowsecure.nl/#relax")
@@ -59,7 +61,7 @@ def test_multi_threaded_uc_detection(test_num):
         print(f"[Test {test_num}] Navigated to nowsecure.nl")
 
         # Wait for page to load and perform detection
-        time.sleep(4)
+        time.sleep(1)
 
         # Check if we passed the detection test
         try:
@@ -80,9 +82,9 @@ def test_multi_threaded_uc_detection(test_num):
                     print(f"[Test {test_num}] H1 text: {h1_text}")
                     # Retry once
                     print(f"[Test {test_num}] Retrying navigation...")
-                    time.sleep(2)
+                    time.sleep(0.5)
                     browser_client.navigate_browser(browser_id, payload=nav_request)
-                    time.sleep(4)
+                    time.sleep(1)
 
                     exec_result = browser_client.execute_script(browser_id, payload=exec_request)
                     if exec_result.success:
@@ -115,6 +117,8 @@ def test_multi_threaded_uc_detection(test_num):
                 pass
 
 
+@pytest.mark.slow
+@pytest.mark.external
 @pytest.mark.browser
 def test_single_uc_detection():
     """Single browser UC detection test for comparison"""
@@ -135,7 +139,7 @@ def test_single_uc_detection():
         nav_request = NavigateRequest(url="https://nowsecure.nl/#relax")
         browser_client.navigate_browser(browser_id, payload=nav_request)
 
-        time.sleep(4)
+        time.sleep(1)
 
         # Try to verify success
         try:
@@ -165,6 +169,8 @@ def test_single_uc_detection():
                 pass
 
 
+@pytest.mark.slow
+@pytest.mark.external
 @pytest.mark.browser
 def test_concurrent_browsers_different_sites():
     """Test multiple browsers accessing different sites concurrently"""
@@ -193,7 +199,7 @@ def test_concurrent_browsers_different_sites():
             print(f"Browser {i + 1} navigated to {site}")
 
         # Wait for all to load
-        time.sleep(3)
+        time.sleep(1)
 
         # Take screenshots of all
         for i, browser_id in enumerate(browser_ids):

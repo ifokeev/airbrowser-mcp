@@ -47,7 +47,6 @@ def test_check_element_exists():
         # Navigate to test page
         nav_request = NavigateRequest(url="https://www.example.com")
         client.navigate_browser(browser_id, payload=nav_request)
-        time.sleep(2)
 
         # Test check_element with CSS selector (exists check)
         check_request = CheckElementRequest(selector="h1", by="css", check="exists")
@@ -89,7 +88,6 @@ def test_check_element_visible():
         # Navigate to test page
         nav_request = NavigateRequest(url="https://www.example.com")
         client.navigate_browser(browser_id, payload=nav_request)
-        time.sleep(2)
 
         # Test check_element visible with visible element
         request = CheckElementRequest(selector="h1", by="css", check="visible")
@@ -131,7 +129,6 @@ def test_selector_types():
         # Navigate to example.com for testing
         nav_request = NavigateRequest(url="https://www.example.com")
         client.navigate_browser(browser_id, payload=nav_request)
-        time.sleep(2)
 
         # Test XPath selector
         check_request = CheckElementRequest(selector="//h1", by="xpath", check="exists")

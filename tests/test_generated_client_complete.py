@@ -49,7 +49,6 @@ def test_browser_pool_complete():
 
     try:
         # Wait for browser to initialize
-        time.sleep(3)
 
         # Test navigation
         nav_request = NavigateRequest(url="https://example.com")
@@ -57,7 +56,6 @@ def test_browser_pool_complete():
         assert nav_result is not None, "Navigate returned None"
         assert nav_result.success, f"Navigation failed: {nav_result.message}"
 
-        time.sleep(2)
 
         # Test get URL
         url_result = browser_client.get_url(browser_id)
@@ -109,14 +107,12 @@ def test_browser_with_uc_mode():
     browser_id = create_result.data.browser_id
 
     try:
-        time.sleep(3)
 
         # Navigate to a site
         nav_request = NavigateRequest(url="https://example.com")
         nav_result = browser_client.navigate_browser(browser_id, payload=nav_request)
         assert nav_result.success, f"Navigation failed: {nav_result.message}"
 
-        time.sleep(2)
 
         # Take screenshot
         screenshot_result = browser_client.take_screenshot(browser_id)
@@ -152,7 +148,6 @@ def test_browser_pool_scaling():
         assert result.success, f"Create browser {i} failed"
         browser_ids.append(result.data.browser_id)
 
-    time.sleep(3)
 
     try:
         # Check pool status again

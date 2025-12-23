@@ -28,6 +28,7 @@ FORCE_BUILD=""
 SHOW_LOGS_ON_FAILURE=false
 PYTEST_ARGS=""
 CLEANUP=true
+REUSE_CONTAINERS=false
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -44,6 +45,11 @@ while [[ $# -gt 0 ]]; do
             CLEANUP=false
             shift
             ;;
+        --reuse|-r)
+            REUSE_CONTAINERS=true
+            CLEANUP=false
+            shift
+            ;;
         -k|-m|--tb|--maxfail|-x|-v|-vv)
             PYTEST_ARGS="$PYTEST_ARGS $1 $2"
             shift 2
@@ -53,6 +59,7 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "Options:"
             echo "  --build, -b        Force rebuild of Docker images"
+            echo "  --reuse, -r        Reuse running containers (fastest for repeated runs)"
             echo "  --logs, -l         Show browser-pool logs on test failure"
             echo "  --no-cleanup       Don't stop containers after tests"
             echo "  -k EXPRESSION      Only run tests matching expression"
@@ -61,10 +68,12 @@ while [[ $# -gt 0 ]]; do
             echo "  --help, -h         Show this help message"
             echo ""
             echo "Examples:"
-            echo "  $0                           # Run all tests"
+            echo "  $0                           # Run fast tests (skips slow/external)"
+            echo "  $0 -r                        # Reuse containers (fastest re-runs)"
             echo "  $0 -k test_health            # Run only health tests"
             echo "  $0 --build -x                # Rebuild and stop on first failure"
-            echo "  $0 -k 'not chatgpt' -v       # Skip chatgpt tests, verbose"
+            echo "  $0 -m ''                     # Run ALL tests (including slow/external)"
+            echo "  $0 -m external               # Run only external site tests"
             exit 0
             ;;
         *)
@@ -96,29 +105,44 @@ trap cleanup EXIT
 # Export pytest args for docker-compose
 export PYTEST_ARGS
 
-# Build and start services
-echo -e "${BLUE}Building and starting services...${NC}"
-docker compose -f compose.test.yml up $FORCE_BUILD -d browser-pool
-
-# Wait for browser-pool to be healthy
-echo -e "${BLUE}Waiting for browser-pool to be healthy...${NC}"
-MAX_WAIT=120
-WAITED=0
-while [ $WAITED -lt $MAX_WAIT ]; do
-    if docker compose -f compose.test.yml ps browser-pool | grep -q "healthy"; then
-        echo -e "${GREEN}Browser-pool is healthy!${NC}"
-        break
+# Check if we can reuse existing containers
+if [ "$REUSE_CONTAINERS" = true ]; then
+    if docker compose -f compose.test.yml ps browser-pool 2>/dev/null | grep -q "healthy"; then
+        echo -e "${GREEN}Reusing existing healthy browser-pool container${NC}"
+    else
+        echo -e "${YELLOW}No healthy container found, starting fresh...${NC}"
+        REUSE_CONTAINERS=false
     fi
-    echo -n "."
-    sleep 2
-    WAITED=$((WAITED + 2))
-done
+fi
 
-if [ $WAITED -ge $MAX_WAIT ]; then
-    echo -e "\n${RED}ERROR: Browser-pool did not become healthy in ${MAX_WAIT}s${NC}"
-    echo -e "${YELLOW}Browser-pool logs:${NC}"
-    docker compose -f compose.test.yml logs browser-pool
-    exit 1
+# Build and start services (if not reusing)
+if [ "$REUSE_CONTAINERS" = false ]; then
+    echo -e "${BLUE}Starting services...${NC}"
+    # Use BuildKit for faster builds with caching
+    export DOCKER_BUILDKIT=1
+    export COMPOSE_DOCKER_CLI_BUILD=1
+    docker compose -f compose.test.yml up $FORCE_BUILD -d browser-pool
+
+    # Wait for browser-pool to be healthy
+    echo -e "${BLUE}Waiting for browser-pool to be healthy...${NC}"
+    MAX_WAIT=90
+    WAITED=0
+    while [ $WAITED -lt $MAX_WAIT ]; do
+        if docker compose -f compose.test.yml ps browser-pool | grep -q "healthy"; then
+            echo -e "${GREEN}Browser-pool is healthy!${NC}"
+            break
+        fi
+        echo -n "."
+        sleep 1
+        WAITED=$((WAITED + 1))
+    done
+
+    if [ $WAITED -ge $MAX_WAIT ]; then
+        echo -e "\n${RED}ERROR: Browser-pool did not become healthy in ${MAX_WAIT}s${NC}"
+        echo -e "${YELLOW}Browser-pool logs:${NC}"
+        docker compose -f compose.test.yml logs browser-pool
+        exit 1
+    fi
 fi
 
 echo ""

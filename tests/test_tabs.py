@@ -47,9 +47,6 @@ def browser_id(browser_client):
     assert result.success, f"Failed to create browser: {result.message}"
     bid = result.data.browser_id
 
-    # Wait for browser initialization
-    time.sleep(5)
-
     yield bid
 
     # Cleanup
@@ -72,7 +69,6 @@ class TestListTabs:
         """Test that list_tabs shows multiple tabs."""
         # Open a new tab
         browser_client.tabs(browser_id, payload=TabsRequest(action="new"))
-        time.sleep(1)
 
         result = browser_client.tabs(browser_id, payload=TabsRequest(action="list"))
         assert result.success
@@ -98,7 +94,6 @@ class TestNewTab:
         assert result is not None
         assert result.success
 
-        time.sleep(2)
 
         # Verify we're on the new tab
         current = browser_client.tabs(browser_id, payload=TabsRequest(action="current"))
@@ -110,7 +105,6 @@ class TestNewTab:
         browser_client.tabs(browser_id, payload=TabsRequest(action="new"))
         browser_client.tabs(browser_id, payload=TabsRequest(action="new"))
         browser_client.tabs(browser_id, payload=TabsRequest(action="new"))
-        time.sleep(1)
 
         result = browser_client.tabs(browser_id, payload=TabsRequest(action="list"))
         assert result.success
@@ -124,7 +118,6 @@ class TestSwitchTab:
         """Test POST /browser/{browser_id}/tabs with switch action by index."""
         # Open a new tab (will be index 1)
         browser_client.tabs(browser_id, payload=TabsRequest(action="new", url="https://example.org"))
-        time.sleep(2)
 
         # Switch to tab 0
         result = browser_client.tabs(browser_id, payload=TabsRequest(action="switch", index=0))
@@ -148,7 +141,6 @@ class TestCloseTab:
         """Test POST /browser/{browser_id}/tabs with close action - close current tab."""
         # Open a new tab
         browser_client.tabs(browser_id, payload=TabsRequest(action="new", url="https://example.org"))
-        time.sleep(1)
 
         # Close current tab (without specifying index/handle)
         result = browser_client.tabs(browser_id, payload=TabsRequest(action="close"))
@@ -158,7 +150,6 @@ class TestCloseTab:
         """Test closing tab by index."""
         # Open a new tab
         browser_client.tabs(browser_id, payload=TabsRequest(action="new"))
-        time.sleep(1)
 
         # Close first tab (index 0)
         result = browser_client.tabs(browser_id, payload=TabsRequest(action="close", index=0))
@@ -186,7 +177,6 @@ class TestGetCurrentTab:
         """Test POST /browser/{browser_id}/tabs with current action."""
         # Navigate to a page first
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(2)
 
         result = browser_client.tabs(browser_id, payload=TabsRequest(action="current"))
         assert result is not None
@@ -196,11 +186,9 @@ class TestGetCurrentTab:
         """Test current tab info updates after switch."""
         # Navigate first tab
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(2)
 
         # Open a new blank tab
         browser_client.tabs(browser_id, payload=TabsRequest(action="new"))
-        time.sleep(1)
 
         # Current should be the new tab
         result = browser_client.tabs(browser_id, payload=TabsRequest(action="current"))
@@ -208,7 +196,6 @@ class TestGetCurrentTab:
 
         # Switch to first tab
         browser_client.tabs(browser_id, payload=TabsRequest(action="switch", index=0))
-        time.sleep(1)
 
         # Current should be first tab
         result = browser_client.tabs(browser_id, payload=TabsRequest(action="current"))
@@ -223,16 +210,13 @@ class TestTabNavigation:
         """Test navigating in different tabs maintains separate state."""
         # Navigate first tab to example.com
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        time.sleep(3)
 
         # Open new tab
         new_tab_result = browser_client.tabs(browser_id, payload=TabsRequest(action="new"))
         assert new_tab_result.success, "Failed to create new tab"
-        time.sleep(2)
 
         # Navigate second tab to example.org
         browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.org", timeout=60))
-        time.sleep(5)
 
         # Verify second tab
         current = browser_client.tabs(browser_id, payload=TabsRequest(action="current"))
@@ -240,7 +224,6 @@ class TestTabNavigation:
 
         # Switch back to first tab
         browser_client.tabs(browser_id, payload=TabsRequest(action="switch", index=0))
-        time.sleep(2)
 
         # Verify first tab
         current = browser_client.tabs(browser_id, payload=TabsRequest(action="current"))
@@ -254,7 +237,6 @@ class TestTabNavigation:
 
         # 2. Open new tab with URL
         browser_client.tabs(browser_id, payload=TabsRequest(action="new", url="https://example.com"))
-        time.sleep(2)
 
         # 3. Open another blank tab
         result = browser_client.tabs(browser_id, payload=TabsRequest(action="new"))

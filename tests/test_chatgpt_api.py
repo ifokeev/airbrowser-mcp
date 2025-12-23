@@ -23,6 +23,7 @@ def get_api_base_url():
 
 
 @pytest.mark.slow
+@pytest.mark.external
 @pytest.mark.browser
 def test_chatgpt_interaction():
     """Test ChatGPT interaction using Browser Pool API with UC+CDP mode."""
@@ -42,13 +43,13 @@ def test_chatgpt_interaction():
         browser_id = result.data.browser_id
         assert browser_id is not None
 
-        time.sleep(5)
+        time.sleep(1)
 
         # Navigate to ChatGPT
         nav_request = NavigateRequest(url="https://chatgpt.com/")
         nav_result = browser_client.navigate_browser(browser_id, payload=nav_request)
         assert nav_result.success
-        time.sleep(5)
+        time.sleep(1)
 
         # Take a screenshot for verification
         screenshot_result = browser_client.take_screenshot(browser_id)
@@ -67,6 +68,7 @@ def test_chatgpt_interaction():
 
 
 @pytest.mark.slow
+@pytest.mark.external
 @pytest.mark.browser
 def test_chatgpt_page_loads():
     """Basic test that ChatGPT page can be loaded (without interaction)"""
@@ -85,14 +87,14 @@ def test_chatgpt_page_loads():
         assert result.success
         browser_id = result.data.browser_id
 
-        time.sleep(3)
+        time.sleep(1)
 
         # Navigate to ChatGPT
         nav_request = NavigateRequest(url="https://chatgpt.com/")
         nav_result = browser_client.navigate_browser(browser_id, payload=nav_request)
         assert nav_result.success
 
-        time.sleep(5)
+        time.sleep(1)
 
         # Verify we're on ChatGPT by checking URL
         url_result = browser_client.get_url(browser_id)
