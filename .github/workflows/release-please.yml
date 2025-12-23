@@ -16,8 +16,8 @@ jobs:
       - uses: googleapis/release-please-action@v4
         id: release
         with:
-          release-type: python
-          package-name: airbrowser
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
 
       # Optional: trigger other workflows on release
       - name: Output release info
