@@ -1,9 +1,8 @@
 name: Build and Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types: [created]
   workflow_dispatch:
     inputs:
       version:
@@ -36,8 +35,9 @@ jobs:
       - name: Set version
         id: version
         run: |
-          if [[ "${{ github.event_name }}" == "push" ]]; then
-            VERSION="${GITHUB_REF#refs/tags/v}"
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION="${VERSION#v}"
           else
             VERSION="${{ github.event.inputs.version }}"
           fi
@@ -91,16 +91,19 @@ jobs:
           path: portable/dist/*
           retention-days: 5
 
-      - name: Create GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Upload artifacts to GitHub Release
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v1
         with:
+          tag_name: ${{ github.event.release.tag_name }}
           files: |
             portable/dist/airbrowser-*.tar.gz
             portable/dist/airbrowser-*.zip
             portable/dist/checksums.sha256
+          append_body: true
           body: |
-            ## Airbrowser ${{ steps.version.outputs.VERSION }}
+
+            ---
 
             ### Quick Start
 
@@ -136,8 +139,6 @@ jobs:
             | REST API | `/api/v1/` |
             | MCP Server | `/mcp` |
             | VNC Viewer | `/vnc/` |
-          draft: false
-          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
