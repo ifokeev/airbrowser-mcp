@@ -1,0 +1,49 @@
+# Test Runner Docker Image
+# Runs pytest tests against the browser-pool service
+
+FROM python:3.11-slim-bullseye
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONIOENCODING=UTF-8
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv for faster package installation
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+ENV PATH="/root/.local/bin:$PATH"
+
+# Create app directory
+WORKDIR /app
+
+# Install test dependencies
+RUN uv pip install --system --no-cache \
+    pytest>=8.0.0 \
+    pytest-timeout>=2.3.0 \
+    pytest-xdist>=3.5.0 \
+    pytest-order>=1.2.0 \
+    pytest-rerunfailures>=12.0 \
+    requests>=2.31.0 \
+    pydantic>=2.0.0 \
+    urllib3>=2.0.0 \
+    lazy-imports>=0.3.0 \
+    python-dateutil>=2.8.0
+
+# Copy test configuration
+COPY pytest.ini .
+
+# Add paths for imports
+ENV PYTHONPATH="/app/generated-clients/python:/app/src:$PYTHONPATH"
+
+# Default test results directory
+RUN mkdir -p /app/test-results
+
+# Entrypoint script to wait for service and run tests
+COPY docker/test-entrypoint.sh /test-entrypoint.sh
+RUN chmod +x /test-entrypoint.sh
+
+# Entrypoint handles all test execution logic
+ENTRYPOINT ["/test-entrypoint.sh"]

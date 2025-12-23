@@ -1,0 +1,34 @@
+<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="frame" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#FC72FF"/>
+            <stop offset="50%" stop-color="#D946EF"/>
+            <stop offset="100%" stop-color="#9D4EDD"/>
+        </linearGradient>
+        <radialGradient id="iris" cx="35%" cy="35%" r="60%">
+            <stop offset="0%" stop-color="#FF8EE8"/>
+            <stop offset="40%" stop-color="#FC72FF"/>
+            <stop offset="100%" stop-color="#7B2FBE"/>
+        </radialGradient>
+        <radialGradient id="pupil" cx="40%" cy="40%" r="50%">
+            <stop offset="0%" stop-color="#2a1a2e"/>
+            <stop offset="100%" stop-color="#0a0a0b"/>
+        </radialGradient>
+    </defs>
+    <!-- Browser frame -->
+    <rect x="2" y="2" width="28" height="28" rx="5" stroke="url(#frame)" stroke-width="2" fill="none"/>
+    <!-- Title bar -->
+    <line x1="2" y1="9" x2="30" y2="9" stroke="url(#frame)" stroke-width="0.5" opacity="0.5"/>
+    <!-- Window control -->
+    <circle cx="6" cy="5.5" r="1.2" fill="#FC72FF"/>
+    <!-- Eye outer -->
+    <circle cx="16" cy="18" r="6.5" fill="#1a1a2e"/>
+    <!-- Iris -->
+    <circle cx="16" cy="18" r="4.5" fill="url(#iris)"/>
+    <!-- Pupil -->
+    <circle cx="16" cy="18" r="2" fill="url(#pupil)"/>
+    <!-- Core -->
+    <circle cx="16" cy="18" r="1" fill="#FC72FF"/>
+    <!-- Highlight -->
+    <circle cx="14.5" cy="16.5" r="0.7" fill="white" opacity="0.9"/>
+</svg>

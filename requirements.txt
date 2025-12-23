@@ -1,0 +1,33 @@
+# Core dependencies
+flask>=2.3.0
+flask-cors>=4.0.0
+flask-restx>=1.2.0
+seleniumbase>=4.41.2
+requests>=2.31.0
+pydantic>=2.0.0
+python-dateutil>=2.8.2
+typing-extensions>=4.7.1
+lazy-imports>=1,<2
+urllib3>=2.1.0,<3.0.0
+
+# Additional utilities
+python-dotenv>=1.0.0
+psutil>=5.9.0
+prometheus-client>=0.17.0
+
+# MCP (Model Context Protocol) support
+fastmcp>=0.3.0
+
+# OpenRouter integration for vision models
+openai>=1.0.0
+
+# UC Mode and GUI automation
+pyautogui>=0.9.54
+pillow>=10.0.0
+
+# Development dependencies (optional)
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pytest-rerunfailures>=12.0
+ruff>=0.8.0
+pre-commit>=3.5.0

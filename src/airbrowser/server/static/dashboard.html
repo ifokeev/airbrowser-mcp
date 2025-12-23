@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airbrowser</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-0: #09090b;
+            --bg-1: #0f0f12;
+            --bg-2: #18181b;
+            --bg-3: #1f1f23;
+            --bg-hover: #27272a;
+            --border: #27272a;
+            --border-subtle: #1f1f23;
+            --text-0: #fafafa;
+            --text-1: #a1a1aa;
+            --text-2: #71717a;
+            --text-3: #52525b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #22c55e;
+            --warning: #eab308;
+            --error: #ef4444;
+        }
+
+        [data-theme="light"] {
+            --bg-0: #ffffff;
+            --bg-1: #f9fafb;
+            --bg-2: #f3f4f6;
+            --bg-3: #e5e7eb;
+            --bg-hover: #e5e7eb;
+            --border: #d1d5db;
+            --border-subtle: #e5e7eb;
+            --text-0: #111827;
+            --text-1: #374151;
+            --text-2: #6b7280;
+            --text-3: #9ca3af;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --success: #16a34a;
+            --warning: #ca8a04;
+            --error: #dc2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, sans-serif;
+            background: var(--bg-0);
+            color: var(--text-0);
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            width: 36px;
+            height: 36px;
+            background: var(--text-0);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--bg-0);
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-0);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-1);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .status-dot.warning { background: var(--warning); }
+        .status-dot.error { background: var(--error); }
+
+        .sync-time {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-1);
+            color: var(--text-1);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-hover);
+            color: var(--text-0);
+        }
+
+        .icon-sun { display: none; }
+        .icon-moon { display: block; }
+        [data-theme="light"] .icon-sun { display: block; }
+        [data-theme="light"] .icon-moon { display: none; }
+
+        /* Metrics */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric {
+            background: var(--bg-1);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 16px 20px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-family: 'DM Mono', monospace;
+            font-size: 28px;
+            font-weight: 500;
+            color: var(--text-0);
+        }
+
+        /* Main Grid */
+        .main {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 24px;
+        }
+
+        /* Panels */
+        .panel {
+            background: var(--bg-1);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-0);
+        }
+
+        .panel-body {
+            padding: 16px 20px;
+        }
+
+        /* Buttons */
+        .btn {
+            font-family: 'DM Sans', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.15s, opacity 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-1);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover {
+            background: var(--bg-hover);
+            color: var(--text-0);
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+
+        .btn-danger:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-sm {
+            font-size: 12px;
+            padding: 6px 10px;
+        }
+
+        /* Browser List */
+        .browser-list {
+            max-height: 480px;
+            overflow-y: auto;
+        }
+
+        .browser-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .browser-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .browser-list::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .browser-item {
+            padding: 14px 16px;
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .browser-item:hover {
+            border-color: var(--border);
+            background: var(--bg-2);
+        }
+
+        .browser-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .browser-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .browser-id {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--text-2);
+        }
+
+        .browser-status {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .browser-status.ready {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+        }
+
+        .browser-status.creating {
+            background: rgba(234, 179, 8, 0.15);
+            color: var(--warning);
+        }
+
+        .browser-status.busy {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent);
+        }
+
+        .browser-status.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+        }
+
+        .browser-meta {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .browser-tag {
+            font-size: 11px;
+            color: var(--text-2);
+            background: var(--bg-3);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .browser-url {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--text-2);
+            background: var(--bg-0);
+            padding: 8px 10px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .browser-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 20px;
+            color: var(--text-2);
+        }
+
+        .empty-state-text {
+            font-size: 13px;
+        }
+
+        /* Control Panel */
+        .section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-2);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-1);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--bg-0);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: 'DM Mono', monospace;
+            font-size: 13px;
+            color: var(--text-0);
+            transition: border-color 0.15s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-3);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-item input {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            background: var(--bg-0);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.15s;
+        }
+
+        .checkbox-item input:checked {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .checkbox-item input:checked::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 6px;
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .checkbox-item span {
+            font-size: 13px;
+            color: var(--text-1);
+        }
+
+        /* Quick Links */
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: var(--bg-0);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            color: var(--text-1);
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.15s;
+        }
+
+        .link:hover {
+            border-color: var(--border);
+            color: var(--text-0);
+            background: var(--bg-2);
+        }
+
+        .link-arrow {
+            color: var(--text-3);
+            transition: transform 0.15s;
+        }
+
+        .link:hover .link-arrow {
+            transform: translateX(2px);
+        }
+
+        .port-info {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text-3);
+        }
+
+        .port-item {
+            display: flex;
+            gap: 4px;
+        }
+
+        .port-label {
+            color: var(--text-2);
+        }
+
+        /* Activity Log */
+        .log {
+            background: var(--bg-0);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            padding: 12px;
+            height: 160px;
+            overflow-y: auto;
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+        }
+
+        .log::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .log::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .log-entry {
+            padding: 3px 0;
+            color: var(--text-2);
+        }
+
+        .log-time {
+            color: var(--text-3);
+        }
+
+        .log-info { color: var(--text-1); }
+        .log-warning { color: var(--warning); }
+        .log-error { color: var(--error); }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 16px;
+            }
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">AB</div>
+                <h1 class="title">Airbrowser</h1>
+            </div>
+            <div class="header-right">
+                <div class="status-badge">
+                    <span class="status-dot" id="status-dot"></span>
+                    <span id="status-text">Online</span>
+                </div>
+                <span class="sync-time" id="sync-time">--:--:--</span>
+                <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                    <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="metrics">
+            <div class="metric">
+                <div class="metric-label">Active</div>
+                <div class="metric-value" id="active-browsers">0</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Total</div>
+                <div class="metric-value" id="total-browsers">0</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">CPU</div>
+                <div class="metric-value" id="cpu-usage">0%</div>
+            </div>
+            <div class="metric">
+                <div class="metric-label">Memory</div>
+                <div class="metric-value" id="memory-usage">0MB</div>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Browser Instances</span>
+                    <button class="btn btn-danger btn-sm" onclick="closeAllBrowsers()">Close All</button>
+                </div>
+                <div class="panel-body">
+                    <div class="browser-list" id="browser-list">
+                        <div class="empty-state">
+                            <p class="empty-state-text">No active browsers</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Controls</span>
+                </div>
+                <div class="panel-body">
+                    <div class="section">
+                        <div class="section-title">New Browser</div>
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <label class="checkbox-item">
+                                    <input type="checkbox" id="uc-mode" checked>
+                                    <span>Undetected Chrome</span>
+                                </label>
+                                <label class="checkbox-item">
+                                    <input type="checkbox" id="disable-images">
+                                    <span>Disable images</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Profile</label>
+                            <select class="form-input" id="profile-select" style="font-family: 'DM Sans', sans-serif;">
+                                <option value="">Fresh session (no persistence)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="display: flex; gap: 8px;">
+                            <input type="text" class="form-input" id="new-profile-name" placeholder="New profile name" style="flex: 1;">
+                            <button class="btn btn-ghost btn-sm" onclick="createProfile()" style="white-space: nowrap;">+ Profile</button>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Proxy</label>
+                            <input type="text" class="form-input" id="proxy-input" placeholder="user:pass@host:port">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Window size</label>
+                            <input type="text" class="form-input" id="window-size" value="1280x720">
+                        </div>
+                        <button class="btn btn-primary" style="width: 100%; margin-top: 4px;" onclick="createCustomBrowser()">
+                            Create Browser
+                        </button>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">Links</div>
+                        <div class="links">
+                            <a href="/docs/" target="_blank" class="link">
+                                <span>API Documentation</span>
+                                <span class="link-arrow">&rarr;</span>
+                            </a>
+                            <a href="/api/v1/swagger.json" target="_blank" class="link">
+                                <span>OpenAPI Spec</span>
+                                <span class="link-arrow">&rarr;</span>
+                            </a>
+                        </div>
+                        <div class="port-info">
+                            <div class="port-item"><span class="port-label">MCP</span> :3001</div>
+                            <div class="port-item"><span class="port-label">API</span> :8000</div>
+                            <div class="port-item"><span class="port-label">VNC</span> :5900</div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <div class="section-title">Activity</div>
+                        <div class="log" id="logs"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let poolStatus = null;
+        let browsers = {};
+        let updateInterval = null;
+
+        // Theme toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+
+        function addLog(message, level = 'info') {
+            const logs = document.getElementById('logs');
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `<span class="log-time">${time}</span> <span class="log-${level}">${message}</span>`;
+            logs.insertBefore(entry, logs.firstChild);
+            while (logs.children.length > 50) logs.removeChild(logs.lastChild);
+        }
+
+        async function updatePoolStatus() {
+            try {
+                const response = await fetch('/api/v1/browser/pool/status');
+                const data = await response.json();
+
+                if (data.success === true || data.status === 'success') {
+                    // Handle nested pool_metrics structure
+                    poolStatus = data.data.pool_metrics || data.data;
+                    document.getElementById('active-browsers').textContent = poolStatus.active_browsers || 0;
+                    document.getElementById('total-browsers').textContent = poolStatus.total_browsers || 0;
+                    document.getElementById('cpu-usage').textContent = Math.round(poolStatus.cpu_usage_percent || 0) + '%';
+                    document.getElementById('memory-usage').textContent = Math.round(poolStatus.memory_usage_mb || 0) + 'MB';
+                    document.getElementById('sync-time').textContent = new Date().toLocaleTimeString('en-US', { hour12: false });
+
+                    const dot = document.getElementById('status-dot');
+                    const text = document.getElementById('status-text');
+                    if (poolStatus.healthy) {
+                        dot.className = 'status-dot';
+                        text.textContent = 'Online';
+                    } else {
+                        dot.className = 'status-dot warning';
+                        text.textContent = 'Degraded';
+                    }
+                }
+            } catch (error) {
+                const dot = document.getElementById('status-dot');
+                const text = document.getElementById('status-text');
+                dot.className = 'status-dot error';
+                text.textContent = 'Offline';
+            }
+        }
+
+        async function updateBrowserList() {
+            try {
+                const response = await fetch('/api/v1/browser/list');
+                const data = await response.json();
+
+                if (data.success === true || data.status === 'success') {
+                    const browserList = document.getElementById('browser-list');
+                    const browserArray = data.data ? data.data.browsers : data.browsers || [];
+
+                    const currentIds = new Set(Object.keys(browsers));
+                    const newIds = new Set(browserArray.map(b => b.id));
+
+                    for (const id of currentIds) {
+                        if (!newIds.has(id)) {
+                            const el = document.getElementById(`browser-${id}`);
+                            if (el) el.remove();
+                            delete browsers[id];
+                            addLog(`Browser ${id.substring(0, 8)} closed`, 'info');
+                        }
+                    }
+
+                    // Clear empty state if browsers exist
+                    if (browserArray.length > 0) {
+                        const emptyState = browserList.querySelector('.empty-state');
+                        if (emptyState) emptyState.remove();
+                    }
+
+                    browserArray.forEach(browser => {
+                        const isNew = !browsers[browser.id];
+                        browsers[browser.id] = browser;
+
+                        let el = document.getElementById(`browser-${browser.id}`);
+                        if (!el) {
+                            el = document.createElement('div');
+                            el.id = `browser-${browser.id}`;
+                            el.className = 'browser-item';
+                            browserList.appendChild(el);
+                            addLog(`Browser ${browser.id.substring(0, 8)} created`, 'info');
+                        }
+
+                        el.innerHTML = `
+                            <div class="browser-top">
+                                <span class="browser-id">${browser.id}</span>
+                                <span class="browser-status ${browser.status}">${browser.status}</span>
+                            </div>
+                            <div class="browser-meta">
+                                ${browser.config.uc ? '<span class="browser-tag">UC Mode</span>' : ''}
+                                ${browser.config.profile_name ? `<span class="browser-tag" style="background: rgba(59, 130, 246, 0.15); color: var(--accent);">${browser.config.profile_name}</span>` : '<span class="browser-tag">Fresh</span>'}
+                            </div>
+                            ${browser.current_url ? `<div class="browser-url">${browser.current_url}</div>` : ''}
+                            <div class="browser-actions">
+                                <button class="btn btn-ghost btn-sm" onclick="navigateBrowser('${browser.id}')">Navigate</button>
+                                <a href="/vnc/" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration: none;">VNC</a>
+                                <button class="btn btn-danger btn-sm" onclick="closeBrowser('${browser.id}')">Close</button>
+                            </div>
+                        `;
+                    });
+
+                    if (browserArray.length === 0) {
+                        browserList.innerHTML = '<div class="empty-state"><p class="empty-state-text">No active browsers</p></div>';
+                    }
+                }
+            } catch (error) {
+                addLog('Failed to fetch browsers', 'error');
+            }
+        }
+
+        async function createCustomBrowser() {
+            try {
+                const config = {
+                    uc: document.getElementById('uc-mode').checked,
+                    disable_images: document.getElementById('disable-images').checked
+                };
+
+                const profileName = document.getElementById('profile-select').value;
+                if (profileName) config.profile_name = profileName;
+
+                const proxy = document.getElementById('proxy-input').value;
+                if (proxy) config.proxy = proxy;
+
+                const windowSize = document.getElementById('window-size').value;
+                if (windowSize) {
+                    const [width, height] = windowSize.split('x').map(Number);
+                    config.window_size = [width, height];
+                }
+
+                addLog(`Creating browser${profileName ? ` with profile '${profileName}'` : ''}...`, 'info');
+                const response = await fetch('/api/v1/browser/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+
+                const data = await response.json();
+                if (data.success === true) {
+                    addLog(`Browser ${data.data.browser_id.substring(0, 8)} starting`, 'info');
+                    updateBrowserList();
+                    loadProfiles(); // Refresh profiles to update in-use status
+                } else {
+                    addLog(`Failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                addLog('Create failed', 'error');
+            }
+        }
+
+        async function navigateBrowser(browserId) {
+            const url = prompt('Enter URL:');
+            if (!url) return;
+
+            try {
+                addLog(`Navigating ${browserId.substring(0, 8)}...`, 'info');
+                const response = await fetch(`/api/v1/browser/${browserId}/navigate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+
+                const data = await response.json();
+                if (data.success === true || data.status === 'success') {
+                    addLog('Navigation complete', 'info');
+                    updateBrowserList();
+                } else {
+                    addLog(`Navigation failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                addLog('Navigation failed', 'error');
+            }
+        }
+
+        async function closeBrowser(browserId) {
+            try {
+                addLog(`Closing ${browserId.substring(0, 8)}...`, 'warning');
+                const response = await fetch(`/api/v1/browser/${browserId}/close`, { method: 'POST' });
+                const data = await response.json();
+                if (data.success === true || data.status === 'success') {
+                    updateBrowserList();
+                    loadProfiles(); // Refresh profiles to update in-use status
+                } else {
+                    addLog(`Close failed`, 'error');
+                }
+            } catch (error) {
+                addLog('Close failed', 'error');
+            }
+        }
+
+        async function closeAllBrowsers() {
+            if (!confirm('Close all browsers?')) return;
+            try {
+                addLog('Closing all browsers...', 'warning');
+                const response = await fetch('/api/v1/browser/close_all', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                if (data.success === true || data.status === 'success') {
+                    addLog('All browsers closed', 'info');
+                    updateBrowserList();
+                    loadProfiles(); // Refresh profiles to update in-use status
+                } else {
+                    addLog(`Failed: ${data.message || 'Unknown'}`, 'error');
+                }
+            } catch (error) {
+                addLog('Close all failed', 'error');
+            }
+        }
+
+        async function loadProfiles() {
+            try {
+                const response = await fetch('/api/v1/profiles/');
+                const data = await response.json();
+
+                if (data.success === true) {
+                    const select = document.getElementById('profile-select');
+                    const currentValue = select.value;
+
+                    // Keep the "Fresh session" option, clear the rest
+                    select.innerHTML = '<option value="">Fresh session (no persistence)</option>';
+
+                    const profiles = data.data?.profiles || [];
+                    profiles.forEach(profile => {
+                        const option = document.createElement('option');
+                        option.value = profile.name;
+                        option.textContent = profile.in_use
+                            ? `${profile.name} (in use)`
+                            : `${profile.name} (${profile.size_mb.toFixed(1)} MB)`;
+                        option.disabled = profile.in_use;
+                        select.appendChild(option);
+                    });
+
+                    // Restore previous selection if still available
+                    if (currentValue && !select.querySelector(`option[value="${currentValue}"]`)?.disabled) {
+                        select.value = currentValue;
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load profiles:', error);
+            }
+        }
+
+        async function createProfile() {
+            const nameInput = document.getElementById('new-profile-name');
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                addLog('Profile name is required', 'error');
+                return;
+            }
+
+            try {
+                addLog(`Creating profile '${name}'...`, 'info');
+                const response = await fetch('/api/v1/profiles/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+
+                const data = await response.json();
+                if (data.success === true) {
+                    addLog(`Profile '${name}' created`, 'info');
+                    nameInput.value = '';
+                    loadProfiles();
+                    // Auto-select the new profile
+                    setTimeout(() => {
+                        document.getElementById('profile-select').value = name;
+                    }, 100);
+                } else {
+                    addLog(`Failed: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                addLog('Create profile failed', 'error');
+            }
+        }
+
+        function startUpdates() {
+            updatePoolStatus();
+            updateBrowserList();
+            loadProfiles();
+            updateInterval = setInterval(() => {
+                updatePoolStatus();
+                updateBrowserList();
+            }, 2000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            addLog('Dashboard ready', 'info');
+            startUpdates();
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (updateInterval) clearInterval(updateInterval);
+        });
+    </script>
+</body>
+</html>

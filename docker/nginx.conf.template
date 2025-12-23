@@ -1,0 +1,239 @@
+# HTTP-only nginx configuration with comprehensive routing
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+    
+    # Logging
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+    
+    # Basic nginx settings
+    sendfile on;
+    keepalive_timeout 65;
+    
+    # HTTP server (port configurable)
+    server {
+        listen ${NGINX_HTTP_PORT} default_server;
+        listen [::]:${NGINX_HTTP_PORT} default_server;
+        server_name localhost;
+        
+        # Security headers
+        add_header X-Frame-Options SAMEORIGIN;
+        add_header X-Content-Type-Options nosniff;
+        add_header X-XSS-Protection "1; mode=block";
+        
+        # Root location - serve dashboard
+        location = / {
+            proxy_pass http://127.0.0.1:8000/dashboard;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        
+        # Dashboard route
+        location /dashboard {
+            proxy_pass http://127.0.0.1:8000/dashboard;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        
+        # Swagger docs
+        location = /docs {
+            return 301 /docs/;
+        }
+        
+        location /docs/ {
+            proxy_pass http://127.0.0.1:8000/docs/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        
+        # Swagger UI static files
+        location /swaggerui/ {
+            proxy_pass http://127.0.0.1:8000/swaggerui/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        
+        # OpenAPI schema
+        location /openapi.json {
+            proxy_pass http://127.0.0.1:8000/api/v1/swagger.json;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        
+        # Alternative swagger.json path
+        location /api/v1/swagger.json {
+            proxy_pass http://127.0.0.1:8000/api/v1/swagger.json;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        
+        # API proxy
+        location /api/ {
+            proxy_pass http://127.0.0.1:8000/api/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_read_timeout 300s;
+            proxy_connect_timeout 75s;
+        }
+        
+        # Health endpoint
+        location /health {
+            proxy_pass http://127.0.0.1:8000/health;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        
+        # Metrics endpoint
+        location /metrics {
+            proxy_pass http://127.0.0.1:8000/api/v1/health/metrics;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+        
+        # Browser endpoints
+        location /browser/ {
+            proxy_pass http://127.0.0.1:8000/api/v1/browser/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_read_timeout 300s;
+        }
+        
+        # MCP status comes from Flask app (port 8000)
+        location = /mcp/status {
+            proxy_pass http://127.0.0.1:8000/mcp/status;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # MCP proxy (port 3001) - handle both /mcp and /mcp/
+        location /mcp {
+            proxy_pass http://127.0.0.1:3001;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            proxy_buffering off;
+            proxy_cache off;
+            proxy_request_buffering off;
+            proxy_read_timeout 3600s;
+            proxy_connect_timeout 75s;
+            
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+        }
+        
+        location /mcp/ {
+            proxy_pass http://127.0.0.1:3001;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            proxy_buffering off;
+            proxy_cache off;
+            proxy_request_buffering off;
+            proxy_read_timeout 3600s;
+            proxy_connect_timeout 75s;
+            
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+        }
+        
+        # VNC redirect
+        location = /vnc {
+            return 301 /vnc/;
+        }
+        
+        # VNC proxy (port configurable) - noVNC web interface
+        location /vnc/ {
+            proxy_pass http://127.0.0.1:${NOVNC_PORT}/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_read_timeout 300s;
+            proxy_connect_timeout 75s;
+            proxy_buffering off;
+            
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+        }
+        
+        # WebSocket endpoint for noVNC
+        location /websockify {
+            proxy_pass http://127.0.0.1:${NOVNC_PORT}/websockify;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_read_timeout 3600s;
+            proxy_buffering off;
+        }
+        
+        # Serve screenshots from writable tmpfs directory
+        location /static/screenshots/ {
+            alias /tmp/screenshots/;
+            add_header Cache-Control "no-store";
+            try_files $uri =404;
+        }
+
+        # Static files
+        location /static/ {
+            alias /app/src/airbrowser/server/static/;
+            try_files $uri $uri/ =404;
+        }
+        
+        # Catch-all - redirect to dashboard
+        location / {
+            try_files $uri $uri/ @dashboard;
+        }
+        
+        location @dashboard {
+            proxy_pass http://127.0.0.1:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            rewrite ^.*$ /dashboard break;
+        }
+    }
+}
+

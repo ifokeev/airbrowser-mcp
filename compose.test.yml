@@ -1,0 +1,63 @@
+# Test Environment - Run all tests in Docker
+# Usage: ./scripts/run_tests.sh
+#   or:  docker compose -f compose.test.yml up --build --abort-on-container-exit
+
+services:
+  # Browser pool service (system under test)
+  browser-pool:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MAX_BROWSERS=${MAX_BROWSERS:-10}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - COMMAND_TIMEOUT_DEFAULT=90
+      # Test resolution (overrides default 1920x1080)
+      - SCREEN_WIDTH=1366
+      - SCREEN_HEIGHT=768
+    tmpfs:
+      - /tmp:noexec,nosuid,size=500m
+      - /dev/shm:rw,nosuid,nodev,exec,size=4g
+    shm_size: 4gb
+    init: true
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_ADMIN
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - test-network
+
+  # Test runner container
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    environment:
+      - BROWSER_POOL_URL=http://browser-pool:8000
+      - PYTHONUNBUFFERED=1
+      - PYTEST_ARGS=${PYTEST_ARGS:-}
+    volumes:
+      - ./tests:/app/tests:ro
+      - ./examples:/app/examples:ro
+      - ./generated-clients:/app/generated-clients:ro
+      - ./src:/app/src:ro
+      - test-results:/app/test-results
+    depends_on:
+      browser-pool:
+        condition: service_healthy
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    driver: bridge
+
+volumes:
+  test-results:

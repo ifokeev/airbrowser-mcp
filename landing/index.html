@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airbrowser | Undetectable Chrome Automation for AI Agents</title>
+    <meta name="description" content="Run isolated, undetectable Chrome browsers in Docker. REST API + MCP for AI agents. VNC debugging. Proxy rotation. Scale to 100+ concurrent instances.">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Satoshi:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #131313;
+            --bg-card: #1b1b1b;
+            --bg-elevated: #232323;
+            --bg-hover: #2a2a2a;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-subtle: rgba(255, 255, 255, 0.04);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --pink: #FC72FF;
+            --pink-dim: #d147d4;
+            --pink-glow: rgba(252, 114, 255, 0.4);
+            --blue: #4C82FB;
+            --green: #40B66B;
+            --orange: #FF6B00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Organic gradient orbs */
+        .gradient-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .gradient-orb-1 {
+            width: 800px;
+            height: 800px;
+            top: -400px;
+            right: -200px;
+            background: radial-gradient(circle, rgba(252, 114, 255, 0.15) 0%, transparent 70%);
+        }
+
+        .gradient-orb-2 {
+            width: 600px;
+            height: 600px;
+            bottom: -200px;
+            left: -100px;
+            background: radial-gradient(circle, rgba(76, 130, 251, 0.12) 0%, transparent 70%);
+        }
+
+        .gradient-orb-3 {
+            width: 500px;
+            height: 500px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: radial-gradient(circle, rgba(252, 114, 255, 0.08) 0%, transparent 70%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 16px 0;
+            background: rgba(10, 11, 15, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 9999px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--pink) 0%, #FF54B0 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(252, 114, 255, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(252, 114, 255, 0.4);
+        }
+
+        .btn-ghost {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-ghost:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 160px 0 100px;
+            text-align: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .badge-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hero h1 {
+            font-size: clamp(40px, 6vw, 72px);
+            font-weight: 900;
+            letter-spacing: -2px;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.6s ease 0.1s forwards;
+            opacity: 0;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, var(--pink) 0%, #FF8ED4 50%, var(--blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-sub {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            animation: fadeInUp 0.6s ease 0.2s forwards;
+            opacity: 0;
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.6s ease 0.3s forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Browser Grid Animation */
+        .browser-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            animation: fadeInUp 0.6s ease 0.4s forwards;
+            opacity: 0;
+        }
+
+        .browser-cell {
+            aspect-ratio: 16/10;
+            background: var(--bg-deep);
+            border: 1px solid var(--border-subtle);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .browser-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .browser-cell::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            width: 4px;
+            height: 4px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            box-shadow: 8px 0 0 var(--text-muted), 16px 0 0 var(--text-muted);
+        }
+
+        .browser-cell.active {
+            border-color: var(--pink);
+            box-shadow: 0 0 20px var(--pink-glow);
+        }
+
+        .browser-cell.active .browser-content {
+            opacity: 1;
+        }
+
+        .browser-content {
+            position: absolute;
+            top: 14px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-card) 100%);
+            border-radius: 0 0 4px 4px;
+            opacity: 0.3;
+            transition: opacity 0.3s;
+        }
+
+        .browser-cell.active .status-dot {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            width: 6px;
+            height: 6px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        /* Code Preview */
+        .code-section {
+            padding: 100px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-label {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--pink);
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+        }
+
+        .section-desc {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 0;
+            padding: 8px 8px 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-bottom: none;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .code-tab {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 6px 6px 0 0;
+            transition: all 0.2s;
+        }
+
+        .code-tab.active {
+            background: var(--bg-deep);
+            color: var(--text-primary);
+        }
+
+        .code-tab:hover:not(.active) {
+            color: var(--text-secondary);
+        }
+
+        .code-block {
+            background: var(--bg-deep);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            padding: 24px;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .code-block code {
+            color: var(--text-secondary);
+        }
+
+        .code-block .comment { color: var(--text-muted); }
+        .code-block .keyword { color: var(--pink); }
+        .code-block .string { color: var(--green); }
+        .code-block .function { color: var(--blue); }
+        .code-block .number { color: var(--orange); }
+
+        /* Features Grid */
+        .features {
+            padding: 100px 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(252, 114, 255, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 40px rgba(252, 114, 255, 0.1);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-elevated);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Architecture - Flow Diagram */
+        .architecture {
+            padding: 100px 0;
+        }
+
+        .flow-container {
+            position: relative;
+            padding: 60px 0;
+        }
+
+        .flow-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .flow-node {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 28px 24px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .flow-node:hover {
+            border-color: rgba(252, 114, 255, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 40px var(--pink-glow);
+        }
+
+        .flow-node-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-deep) 100%);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 28px;
+        }
+
+        .flow-node:nth-child(1) .flow-node-icon { background: linear-gradient(135deg, rgba(252, 114, 255, 0.2) 0%, rgba(252, 114, 255, 0.05) 100%); border-color: rgba(252, 114, 255, 0.3); }
+        .flow-node:nth-child(3) .flow-node-icon { background: linear-gradient(135deg, rgba(76, 130, 251, 0.2) 0%, rgba(76, 130, 251, 0.05) 100%); border-color: rgba(76, 130, 251, 0.3); }
+        .flow-node:nth-child(5) .flow-node-icon { background: linear-gradient(135deg, rgba(64, 182, 107, 0.2) 0%, rgba(64, 182, 107, 0.05) 100%); border-color: rgba(64, 182, 107, 0.3); }
+
+        .flow-node h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
+        .flow-node-items {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .flow-node-item {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            background: var(--bg-deep);
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .flow-connector {
+            flex: 1;
+            height: 2px;
+            background: var(--border);
+            position: relative;
+            margin: 0 -20px;
+            z-index: 1;
+        }
+
+        .flow-connector::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--pink) 0%, var(--blue) 100%);
+            animation: flowPulse 3s ease-in-out infinite;
+            box-shadow: 0 0 10px var(--pink-glow);
+        }
+
+        .flow-connector:nth-of-type(2)::before {
+            animation-delay: 1.5s;
+        }
+
+        @keyframes flowPulse {
+            0%, 100% { width: 0%; opacity: 0; }
+            50% { width: 100%; opacity: 1; }
+        }
+
+        .flow-connector-arrow {
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid var(--border);
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+        }
+
+        .flow-packet {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--pink);
+            border-radius: 50%;
+            top: -3px;
+            box-shadow: 0 0 10px var(--pink), 0 0 20px var(--pink-glow);
+            animation: packetMove 3s ease-in-out infinite;
+        }
+
+        .flow-connector:nth-of-type(2) .flow-packet {
+            animation-delay: 1.5s;
+        }
+
+        @keyframes packetMove {
+            0%, 100% { left: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { left: 100%; opacity: 0; }
+        }
+
+        /* Quickstart - Terminal Style */
+        .quickstart {
+            padding: 100px 0;
+        }
+
+        .terminal-container {
+            margin-top: 48px;
+        }
+
+        .terminal {
+            background: #0c0c0c;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .terminal-header {
+            background: linear-gradient(180deg, #2d2d2d 0%, #252525 100%);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .terminal-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .terminal-btn.red { background: #ff5f57; }
+        .terminal-btn.yellow { background: #ffbd2e; }
+        .terminal-btn.green { background: #28ca42; }
+
+        .terminal-title {
+            flex: 1;
+            text-align: center;
+            font-size: 13px;
+            color: #808080;
+            font-weight: 500;
+        }
+
+        .terminal-body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .terminal-step {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .terminal-step-marker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-step-num {
+            width: 28px;
+            height: 28px;
+            background: var(--pink);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .terminal-step:nth-child(2) .terminal-step-num { background: var(--blue); }
+        .terminal-step:nth-child(3) .terminal-step-num { background: var(--green); }
+
+        .terminal-step-line {
+            width: 2px;
+            height: 100%;
+            min-height: 40px;
+            background: var(--border);
+            border-radius: 1px;
+        }
+
+        .terminal-step:last-child .terminal-step-line {
+            display: none;
+        }
+
+        .terminal-step-content {
+            flex: 1;
+            padding-bottom: 8px;
+        }
+
+        .terminal-step-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .terminal-step-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .terminal-code {
+            background: #151515;
+            border: 1px solid #262626;
+            border-radius: 8px;
+            padding: 16px;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .terminal-code pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #e0e0e0;
+            margin: 0;
+        }
+
+        .terminal-code .prompt {
+            color: var(--pink);
+            user-select: none;
+        }
+
+        .terminal-code .comment {
+            color: #666;
+        }
+
+        .terminal-code .flag {
+            color: var(--orange);
+        }
+
+        .terminal-code .string {
+            color: var(--green);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 500;
+            color: #888;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #333;
+            color: #fff;
+            border-color: #444;
+        }
+
+        .copy-btn.copied {
+            background: var(--pink);
+            border-color: var(--pink);
+            color: white;
+        }
+
+        .copy-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* CTA */
+        .cta {
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .cta-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 80px 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 400px;
+            background: var(--pink);
+            filter: blur(150px);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .cta h2 {
+            font-size: clamp(32px, 4vw, 48px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .cta p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            position: relative;
+        }
+
+        /* Footer */
+        footer {
+            padding: 48px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-copy {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .flow-diagram {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .flow-connector {
+                width: 2px;
+                height: 40px;
+                margin: -10px 0;
+            }
+            .flow-connector::before {
+                width: 100% !important;
+                height: 0%;
+                animation: flowPulseVertical 3s ease-in-out infinite;
+            }
+            .flow-packet {
+                left: -3px !important;
+                top: 0;
+                animation: packetMoveVertical 3s ease-in-out infinite;
+            }
+            .flow-connector-arrow {
+                right: auto;
+                bottom: -8px;
+                top: auto;
+                transform: none;
+                border-left: 6px solid transparent;
+                border-right: 6px solid transparent;
+                border-top: 8px solid var(--border);
+            }
+            @keyframes flowPulseVertical {
+                0%, 100% { height: 0%; opacity: 0; }
+                50% { height: 100%; opacity: 1; }
+            }
+            @keyframes packetMoveVertical {
+                0%, 100% { top: 0%; opacity: 0; }
+                10% { opacity: 1; }
+                90% { opacity: 1; }
+                100% { top: 100%; opacity: 0; }
+            }
+        }
+
+        @media (max-width: 600px) {
+            .nav-links {
+                display: none;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .browser-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            .footer-inner {
+                flex-direction: column;
+                gap: 24px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="gradient-orb gradient-orb-1"></div>
+    <div class="gradient-orb gradient-orb-2"></div>
+    <div class="gradient-orb gradient-orb-3"></div>
+
+    <nav>
+        <div class="container nav-inner">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <img src="logo.svg" alt="Airbrowser" width="40" height="40">
+                </div>
+                <span class="logo-text">Airbrowser</span>
+            </a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#quickstart">Quickstart</a>
+                <a href="https://github.com/ifokeev/airbrowser-mcp" target="_blank">GitHub</a>
+                <a href="/docs/" class="btn btn-ghost">API Docs</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="badge">
+                    <span class="badge-dot"></span>
+                    Open Source Browser Automation
+                </div>
+                <h1>
+                    <span>Undetectable Chrome</span><br>
+                    for AI Agents
+                </h1>
+                <p class="hero-sub">
+                    Run isolated, stealth browsers in Docker. REST API & MCP integration for AI agents. VNC debugging. Proxy rotation. Scale to 100+ instances.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#quickstart" class="btn btn-primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                        Get Started
+                    </a>
+                    <a href="https://github.com/ifokeev/airbrowser-mcp" target="_blank" class="btn btn-ghost">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        View on GitHub
+                    </a>
+                </div>
+
+                <div class="browser-grid" id="browserGrid">
+                    <!-- Browser cells generated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <section class="code-section">
+            <div class="container">
+                <div class="section-header">
+                    <div class="section-label">Simple Integration</div>
+                    <h2 class="section-title">Three ways to automate</h2>
+                    <p class="section-desc">REST API, MCP for AI agents, or direct Python. Pick your interface.</p>
+                </div>
+
+                <div class="code-tabs">
+                    <button class="code-tab active" data-tab="curl">cURL</button>
+                    <button class="code-tab" data-tab="python">Python MCP</button>
+                    <button class="code-tab" data-tab="typescript">TypeScript</button>
+                </div>
+                <div class="code-block">
+                    <pre id="codeContent"><code><span class="comment"># Create an undetectable browser</span>
+curl -X POST http://localhost:18080/api/v1/browser/create \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"proxy": "http://user:pass@proxy:8080"}'</span>
+
+<span class="comment"># Navigate to a URL</span>
+curl -X POST http://localhost:18080/api/v1/browser/<span class="number">{browser_id}</span>/navigate \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"url": "https://example.com"}'</span>
+
+<span class="comment"># Take a screenshot</span>
+curl -X POST http://localhost:18080/api/v1/browser/<span class="number">{browser_id}</span>/screenshot</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="container">
+                <div class="section-header">
+                    <div class="section-label">Capabilities</div>
+                    <h2 class="section-title">Built for serious automation</h2>
+                    <p class="section-desc">Everything you need to run undetectable browsers at scale.</p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎭</div>
+                        <h3>Undetected Chrome</h3>
+                        <p>Built on SeleniumBase UC to bypass Cloudflare, PerimeterX, and other anti-bot systems.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔄</div>
+                        <h3>100+ Concurrent Browsers</h3>
+                        <p>Manage massive browser pools with automatic cleanup, health checks, and resource limits.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌐</div>
+                        <h3>Proxy Rotation</h3>
+                        <p>Assign different proxies per browser instance. Support for HTTP, HTTPS, and SOCKS5.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <h3>MCP Integration</h3>
+                        <p>Native Model Context Protocol support for seamless AI agent integration.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔍</div>
+                        <h3>VNC Debugging</h3>
+                        <p>Watch browsers in real-time via noVNC. Debug visually, not blindly.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🐳</div>
+                        <h3>Docker Native</h3>
+                        <p>One command deployment. Isolated, reproducible, and production-ready.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="architecture">
+            <div class="container">
+                <div class="section-header">
+                    <div class="section-label">Architecture</div>
+                    <h2 class="section-title">How it works</h2>
+                </div>
+
+                <div class="flow-container">
+                    <div class="flow-diagram">
+                        <div class="flow-node">
+                            <div class="flow-node-icon">🚀</div>
+                            <h4>Your Application</h4>
+                            <div class="flow-node-items">
+                                <span class="flow-node-item">TypeScript</span>
+                                <span class="flow-node-item">Python</span>
+                                <span class="flow-node-item">AI Agents</span>
+                            </div>
+                        </div>
+
+                        <div class="flow-connector">
+                            <div class="flow-packet"></div>
+                            <div class="flow-connector-arrow"></div>
+                        </div>
+
+                        <div class="flow-node">
+                            <div class="flow-node-icon">⚡</div>
+                            <h4>Airbrowser</h4>
+                            <div class="flow-node-items">
+                                <span class="flow-node-item">REST /api/v1</span>
+                                <span class="flow-node-item">MCP /mcp</span>
+                                <span class="flow-node-item">VNC /vnc</span>
+                            </div>
+                        </div>
+
+                        <div class="flow-connector">
+                            <div class="flow-packet"></div>
+                            <div class="flow-connector-arrow"></div>
+                        </div>
+
+                        <div class="flow-node">
+                            <div class="flow-node-icon">🌐</div>
+                            <h4>Browser Pool</h4>
+                            <div class="flow-node-items">
+                                <span class="flow-node-item">Chrome 1</span>
+                                <span class="flow-node-item">Chrome 2</span>
+                                <span class="flow-node-item">Chrome N</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="quickstart" id="quickstart">
+            <div class="container">
+                <div class="section-header">
+                    <div class="section-label">Quickstart</div>
+                    <h2 class="section-title">Up and running in 60 seconds</h2>
+                </div>
+
+                <div class="terminal-container">
+                    <div class="terminal">
+                        <div class="terminal-header">
+                            <div class="terminal-btn red"></div>
+                            <div class="terminal-btn yellow"></div>
+                            <div class="terminal-btn green"></div>
+                            <div class="terminal-title">bash — airbrowser</div>
+                        </div>
+                        <div class="terminal-body">
+                            <div class="terminal-step">
+                                <div class="terminal-step-marker">
+                                    <div class="terminal-step-num">1</div>
+                                    <div class="terminal-step-line"></div>
+                                </div>
+                                <div class="terminal-step-content">
+                                    <div class="terminal-step-title">Clone & Start</div>
+                                    <div class="terminal-step-desc">Pull the repo and start with Docker Compose</div>
+                                    <div class="terminal-code" data-code="git clone https://github.com/ifokeev/airbrowser-mcp && cd airbrowser-mcp && docker compose up --build">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                            Copy
+                                        </button>
+                                        <pre><span class="prompt">$</span> git clone https://github.com/ifokeev/airbrowser-mcp
+<span class="prompt">$</span> cd airbrowser-mcp
+<span class="prompt">$</span> docker compose up <span class="flag">--build</span></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="terminal-step">
+                                <div class="terminal-step-marker">
+                                    <div class="terminal-step-num">2</div>
+                                    <div class="terminal-step-line"></div>
+                                </div>
+                                <div class="terminal-step-content">
+                                    <div class="terminal-step-title">Create Browser</div>
+                                    <div class="terminal-step-desc">Spawn an undetectable browser instance</div>
+                                    <div class="terminal-code" data-code="curl -X POST localhost:18080/api/v1/browser/create">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                            Copy
+                                        </button>
+                                        <pre><span class="prompt">$</span> curl <span class="flag">-X POST</span> localhost:18080/api/v1/browser/create
+
+<span class="comment"># Response: {"browser_id": "a64e1c83-8fcc-..."}</span></pre>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="terminal-step">
+                                <div class="terminal-step-marker">
+                                    <div class="terminal-step-num">3</div>
+                                    <div class="terminal-step-line"></div>
+                                </div>
+                                <div class="terminal-step-content">
+                                    <div class="terminal-step-title">Automate</div>
+                                    <div class="terminal-step-desc">Navigate, click, type—full browser control</div>
+                                    <div class="terminal-code" data-code="curl -X POST localhost:18080/api/v1/browser/{id}/navigate -d '{&quot;url&quot;: &quot;https://example.com&quot;}'">
+                                        <button class="copy-btn" onclick="copyCode(this)">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                            Copy
+                                        </button>
+                                        <pre><span class="prompt">$</span> curl <span class="flag">-X POST</span> localhost:18080/api/v1/browser/<span class="string">{id}</span>/navigate \
+     <span class="flag">-d</span> <span class="string">'{"url": "https://example.com"}'</span>
+
+<span class="comment"># Browser navigates to the URL</span></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="container">
+                <div class="cta-card">
+                    <h2>Ready to automate?</h2>
+                    <p>Star us on GitHub and start building with undetectable browsers.</p>
+                    <div class="cta-buttons">
+                        <a href="https://github.com/ifokeev/airbrowser-mcp" target="_blank" class="btn btn-primary">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            Star on GitHub
+                        </a>
+                        <a href="/docs/" class="btn btn-ghost">Read the Docs</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-inner">
+            <div class="footer-links">
+                <a href="https://github.com/ifokeev/airbrowser-mcp" target="_blank">GitHub</a>
+                <a href="/docs/">Documentation</a>
+                <a href="https://github.com/ifokeev/airbrowser-mcp/issues" target="_blank">Issues</a>
+            </div>
+            <div class="footer-copy">
+                Built with SeleniumBase & Docker
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Browser grid animation
+        const grid = document.getElementById('browserGrid');
+        const cellCount = 15;
+
+        for (let i = 0; i < cellCount; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'browser-cell';
+            cell.innerHTML = '<div class="browser-content"></div><div class="status-dot"></div>';
+            grid.appendChild(cell);
+        }
+
+        const cells = document.querySelectorAll('.browser-cell');
+
+        function animateCells() {
+            // Randomly activate 3-7 cells
+            const activeCount = Math.floor(Math.random() * 5) + 3;
+            const indices = [];
+
+            while (indices.length < activeCount) {
+                const idx = Math.floor(Math.random() * cellCount);
+                if (!indices.includes(idx)) indices.push(idx);
+            }
+
+            cells.forEach((cell, i) => {
+                if (indices.includes(i)) {
+                    cell.classList.add('active');
+                } else {
+                    cell.classList.remove('active');
+                }
+            });
+        }
+
+        // Copy to clipboard function
+        function copyCode(btn) {
+            const code = btn.parentElement.dataset.code;
+            navigator.clipboard.writeText(code).then(() => {
+                btn.classList.add('copied');
+                btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy';
+                }, 2000);
+            });
+        }
+
+        // Initial animation
+        setTimeout(animateCells, 500);
+        setInterval(animateCells, 3000);
+
+        // Code tabs
+        const codeSamples = {
+            curl: `<span class="comment"># Create an undetectable browser</span>
+curl -X POST http://localhost:18080/api/v1/browser/create \\
+  -H <span class="string">"Content-Type: application/json"</span> \\
+  -d <span class="string">'{"proxy": "http://user:pass@proxy:8080"}'</span>
+
+<span class="comment"># Navigate to a URL</span>
+curl -X POST http://localhost:18080/api/v1/browser/<span class="number">{browser_id}</span>/navigate \\
+  -H <span class="string">"Content-Type: application/json"</span> \\
+  -d <span class="string">'{"url": "https://example.com"}'</span>
+
+<span class="comment"># Take a screenshot</span>
+curl -X POST http://localhost:18080/api/v1/browser/<span class="number">{browser_id}</span>/screenshot`,
+
+            python: `<span class="keyword">from</span> fastmcp <span class="keyword">import</span> Client
+
+<span class="keyword">async with</span> <span class="function">Client</span>(<span class="string">"http://localhost:18080/mcp"</span>) <span class="keyword">as</span> client:
+    <span class="comment"># Create undetectable browser</span>
+    browser = <span class="keyword">await</span> client.<span class="function">call_tool</span>(<span class="string">"create_browser"</span>, {
+        <span class="string">"proxy"</span>: <span class="string">"http://proxy:8080"</span>
+    })
+
+    <span class="comment"># AI agent navigates</span>
+    <span class="keyword">await</span> client.<span class="function">call_tool</span>(<span class="string">"navigate_browser"</span>, {
+        <span class="string">"browser_id"</span>: browser[<span class="string">"browser_id"</span>],
+        <span class="string">"url"</span>: <span class="string">"https://example.com"</span>
+    })
+
+    <span class="comment"># Take screenshot</span>
+    screenshot = <span class="keyword">await</span> client.<span class="function">call_tool</span>(<span class="string">"take_screenshot"</span>, {
+        <span class="string">"browser_id"</span>: browser[<span class="string">"browser_id"</span>]
+    })`,
+
+            typescript: `<span class="keyword">import</span> { BrowserApi, Configuration } <span class="keyword">from</span> <span class="string">'airbrowser-client'</span>;
+
+<span class="keyword">const</span> config = <span class="keyword">new</span> <span class="function">Configuration</span>({
+  basePath: <span class="string">'http://localhost:18080/api/v1'</span>
+});
+
+<span class="keyword">const</span> api = <span class="keyword">new</span> <span class="function">BrowserApi</span>(config);
+
+<span class="comment">// Create browser</span>
+<span class="keyword">const</span> { data } = <span class="keyword">await</span> api.<span class="function">createBrowser</span>({
+  proxy: <span class="string">'http://user:pass@proxy:8080'</span>
+});
+
+<span class="comment">// Navigate</span>
+<span class="keyword">await</span> api.<span class="function">navigateBrowser</span>(data.data.browser_id, {
+  url: <span class="string">'https://example.com'</span>
+});
+
+<span class="comment">// Screenshot</span>
+<span class="keyword">await</span> api.<span class="function">takeScreenshot</span>(data.data.browser_id);`
+        };
+
+        document.querySelectorAll('.code-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('codeContent').innerHTML = `<code>${codeSamples[tab.dataset.tab]}</code>`;
+            });
+        });
+    </script>
+</body>
+</html>

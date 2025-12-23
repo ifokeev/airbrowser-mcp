@@ -1,0 +1,54 @@
+# Production / Remote Server deployment
+# Standalone browser pool with its own network
+# Use this when deploying on a remote server for headless browser automation
+
+services:
+  browser-pool:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "18080:18080" # Dashboard/nginx (all services proxied here)
+      - "8000:8000"   # REST API (direct)
+      - "3001:3001"   # MCP server (direct)
+      - "5900:5900"   # VNC server
+      - "6080:6080"   # noVNC web interface (direct)
+    environment:
+      - PYTHONUNBUFFERED=1
+      - MAX_BROWSERS=${MAX_BROWSERS:-10}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      # AI Vision (optional)
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+    volumes:
+      - browser-profiles:/app/browser-profiles
+      - screenshots:/app/screenshots
+      - downloads:/app/downloads
+    tmpfs:
+      - /tmp:noexec,nosuid,size=500m
+      - /dev/shm:rw,nosuid,nodev,exec,size=4g
+    shm_size: 4gb
+    init: true
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_ADMIN
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+          cpus: '4.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  browser-profiles:
+  screenshots:
+  downloads:

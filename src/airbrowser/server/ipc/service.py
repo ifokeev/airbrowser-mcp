@@ -1,0 +1,455 @@
+#!/usr/bin/env python3
+"""Standalone browser service (outside Flask), processing IPC commands."""
+
+import json
+import logging
+import os
+import sys
+import threading
+import time
+import uuid
+from pathlib import Path
+from typing import Any
+
+# Add src to path
+sys.path.insert(0, "/app/src")
+
+# Set display before importing SeleniumBase
+os.environ["DISPLAY"] = ":99"
+
+# Import SeleniumBase at module level
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
+
+# Directories for IPC
+QUEUE_DIR = Path("/tmp/browser-queue")
+STATUS_DIR = Path("/tmp/browser-status")
+RESPONSE_DIR = Path("/tmp/browser-responses")
+
+
+class BrowserInstance:
+    """Manages a single browser instance"""
+
+    def __init__(self, browser_id: str):
+        self.browser_id = browser_id
+        self.process = None
+        self.launcher_pid = None
+        self.session_id = None
+        self.status = "creating"
+        self.created_at = time.time()
+
+    def init_browser(self, config: dict[str, Any]) -> dict[str, Any]:
+        """Initialize browser using subprocess"""
+        logger.info(f"Initializing browser {self.browser_id} with config: {config}")
+
+        try:
+            import json
+            import subprocess
+            from pathlib import Path
+
+            # Create status file path
+            status_dir = Path("/tmp/browser-status")
+            status_dir.mkdir(exist_ok=True)
+            status_file = status_dir / f"{self.browser_id}.json"
+
+            # Launch browser in separate process with full command support
+            cmd = ["python3", "/app/src/airbrowser/server/browser/launcher.py", self.browser_id, json.dumps(config)]
+
+            # Start process without waiting
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
+                env={**os.environ, "DISPLAY": ":99", "HOME": "/home/browseruser", "PYTHONPATH": "/app/src"},
+            )
+
+            self.launcher_pid = process.pid
+            self.process = process
+            self.status = "creating"
+
+            # Wait for browser to be ready (with timeout)
+            start_time = time.time()
+            timeout = 30
+
+            while time.time() - start_time < timeout:
+                # Check if process died
+                if process.poll() is not None:
+                    stderr = process.stderr.read().decode() if process.stderr else ""
+                    self.status = "error"
+                    error_msg = f"Browser process exited with code {process.returncode}. Stderr: {stderr}"
+                    logger.error(f"Browser {self.browser_id} process died: {error_msg}")
+                    return {"status": "error", "message": error_msg}
+
+                if status_file.exists():
+                    try:
+                        with open(status_file) as f:
+                            status_data = json.load(f)
+
+                        if status_data.get("status") == "ready":
+                            self.session_id = status_data.get("session_id")
+                            self.status = "ready"
+                            logger.info(f"Browser {self.browser_id} ready with PID {process.pid}")
+                            return {"status": "success", "session_id": self.session_id, "pid": process.pid}
+                        elif status_data.get("status") == "error":
+                            self.status = "error"
+                            error_msg = status_data.get("error", "Unknown error")
+                            traceback = status_data.get("traceback", "")
+                            logger.error(f"Browser {self.browser_id} failed: {error_msg}")
+                            if traceback:
+                                logger.error(f"Traceback: {traceback}")
+                            return {"status": "error", "message": error_msg}
+                    except:
+                        pass
+
+                time.sleep(0.5)
+
+            # Timeout - kill the process and capture stderr
+            if process.poll() is None:
+                process.terminate()
+                time.sleep(1)
+                if process.poll() is None:
+                    process.kill()
+
+                # Try to read any stderr
+                stderr = ""
+                try:
+                    stderr = process.stderr.read().decode() if process.stderr else ""
+                except:
+                    pass
+
+                logger.error(f"Browser {self.browser_id} creation timed out. Stderr: {stderr}")
+
+            self.status = "error"
+            return {
+                "status": "error",
+                "message": f"Browser creation timed out. Last stderr: {stderr if stderr else 'No stderr captured'}",
+            }
+        except Exception as e:
+            self.status = "error"
+            error_msg = str(e)
+            logger.error(f"Failed to initialize browser {self.browser_id}: {error_msg}")
+            return {"status": "error", "message": error_msg}
+
+    def execute_command(self, command: dict[str, Any], timeout: int = 10) -> dict[str, Any]:
+        """Execute a browser command via file-based IPC"""
+        import os
+        import uuid
+        from pathlib import Path
+
+        cmd_type = command.get("type")
+
+        # Send command to browser process via file IPC
+        request_id = str(uuid.uuid4())
+        command["request_id"] = request_id
+
+        # Write command file
+        cmd_dir = Path(f"/tmp/browser-commands/{self.browser_id}")
+        cmd_dir.mkdir(parents=True, exist_ok=True)
+        cmd_file = cmd_dir / f"{request_id}.json"
+        tmp_file = cmd_dir / f"{request_id}.json.tmp"
+
+        # Atomic write: write to temp and rename
+        with open(tmp_file, "w") as f:
+            json.dump(command, f)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_file, cmd_file)
+
+        # Wait for response (with timeout)
+        resp_dir = Path(f"/tmp/browser-responses/{self.browser_id}")
+        resp_dir.mkdir(parents=True, exist_ok=True)
+        resp_file = resp_dir / f"{request_id}.json"
+
+        start_time = time.time()
+
+        while time.time() - start_time < timeout:
+            if resp_file.exists():
+                try:
+                    with open(resp_file) as f:
+                        result = json.load(f)
+                    resp_file.unlink()  # Clean up response file
+                    return result
+                except:
+                    pass
+            time.sleep(0.1)
+
+        # Timeout - try to clean up command file
+        try:
+            cmd_file.unlink()
+        except:
+            pass
+
+        return {"status": "error", "message": f"Command '{cmd_type}' timed out after {timeout} seconds"}
+
+    def close(self):
+        """Close the browser"""
+        from pathlib import Path
+
+        # First send close command to browser to trigger graceful shutdown
+        # Use a shorter timeout since browser will exit after processing
+        self.execute_command({"type": "close"}, timeout=2)
+
+        # Then remove status file to ensure cleanup
+        status_file = Path(f"/tmp/browser-status/{self.browser_id}.json")
+        if status_file.exists():
+            try:
+                status_file.unlink()
+            except:
+                pass
+
+        # Kill the process if we have it (as backup)
+        if hasattr(self, "process") and self.process:
+            try:
+                self.process.terminate()
+                self.process.wait(timeout=5)
+            except:
+                try:
+                    self.process.kill()
+                except:
+                    pass
+            self.process = None
+        elif self.launcher_pid:
+            try:
+                import os
+                import signal
+
+                os.kill(self.launcher_pid, signal.SIGTERM)
+                # Clean up zombie process
+                os.waitpid(self.launcher_pid, os.WNOHANG)
+            except:
+                pass
+
+        self.launcher_pid = None
+        self.status = "closed"
+        return {"status": "success"}
+
+
+class BrowserService:
+    """Service that manages browsers and processes commands via file-based IPC"""
+
+    def __init__(self, max_browsers: int = 10):
+        self.max_browsers = max_browsers
+        self.browsers: dict[str, BrowserInstance] = {}
+        self.running = True
+        # Default navigation timeout (can be overridden per-command)
+        try:
+            self.navigate_timeout_default = int(os.environ.get("NAVIGATE_TIMEOUT_DEFAULT", 60))
+        except Exception:
+            self.navigate_timeout_default = 60
+
+        # Ensure directories exist
+        QUEUE_DIR.mkdir(parents=True, exist_ok=True)
+        STATUS_DIR.mkdir(parents=True, exist_ok=True)
+        RESPONSE_DIR.mkdir(parents=True, exist_ok=True)
+
+        # Clean up old files
+        self._cleanup_old_files()
+
+        logger.info(f"Browser service started with max_browsers={max_browsers}")
+
+    def _cleanup_old_files(self):
+        """Clean up old IPC files"""
+        for dir_path in [QUEUE_DIR, STATUS_DIR, RESPONSE_DIR]:
+            for file_path in dir_path.glob("*.json"):
+                try:
+                    # Remove files older than 5 minutes
+                    if time.time() - file_path.stat().st_mtime > 300:
+                        file_path.unlink()
+                except:
+                    pass
+
+    def _write_response(self, request_id: str, response: dict[str, Any]):
+        """Write response to file"""
+        response_file = RESPONSE_DIR / f"{request_id}.json"
+        response["timestamp"] = time.time()
+
+        with open(response_file, "w") as f:
+            json.dump(response, f)
+
+        logger.debug(f"Wrote response for {request_id}: {response}")
+
+    def _process_create_browser(self, request: dict[str, Any]):
+        """Process browser creation request (synchronous)"""
+        request_id = request["request_id"]
+        browser_id = request.get("browser_id", str(uuid.uuid4()))
+        config = request.get("config", {})
+
+        logger.info(f"Processing create browser request {request_id} for browser {browser_id}")
+
+        # Check if we're at max capacity
+        if len(self.browsers) >= self.max_browsers:
+            # Try to clean up closed browsers
+            closed_browsers = [bid for bid, b in self.browsers.items() if b.status == "closed"]
+            for bid in closed_browsers:
+                del self.browsers[bid]
+
+            if len(self.browsers) >= self.max_browsers:
+                self._write_response(
+                    request_id,
+                    {"status": "error", "message": f"Maximum number of browsers ({self.max_browsers}) reached"},
+                )
+                return
+
+        # Create browser instance
+        browser = BrowserInstance(browser_id)
+        result = browser.init_browser(config)
+
+        if result["status"] == "success":
+            self.browsers[browser_id] = browser
+            result["browser_id"] = browser_id
+
+        self._write_response(request_id, result)
+
+    def _process_browser_status(self, request: dict[str, Any]):
+        """Process browser status request"""
+        request_id = request["request_id"]
+        browser_id = request.get("browser_id")
+
+        logger.info(f"Processing browser status request for {browser_id}")
+
+        browser = self.browsers.get(browser_id)
+        if not browser:
+            self._write_response(request_id, {"status": "error", "message": f"Browser {browser_id} not found"})
+            return
+
+        response = {
+            "status": "success",
+            "browser_id": browser_id,
+            "browser_status": browser.status,
+            "session_id": browser.session_id,
+            "created_at": browser.created_at,
+        }
+
+        self._write_response(request_id, response)
+
+    def _process_browser_command(self, request: dict[str, Any]):
+        """Process command for existing browser in a worker thread to allow concurrency."""
+        request_id = request["request_id"]
+        browser_id = request["browser_id"]
+        command = request.get("command", {})
+
+        logger.info(f"Processing command {command.get('type')} for browser {browser_id}")
+
+        browser = self.browsers.get(browser_id)
+        if not browser:
+            self._write_response(request_id, {"status": "error", "message": f"Browser {browser_id} not found"})
+            return
+
+        # Extract timeout defaults
+        try:
+            non_nav_default = int(os.environ.get("COMMAND_TIMEOUT_DEFAULT", 60))
+        except Exception:
+            non_nav_default = 60
+        default_timeout = self.navigate_timeout_default if command.get("type") == "navigate" else non_nav_default
+        timeout = command.pop("timeout", default_timeout)
+
+        # Worker to execute the command and write the response without blocking main loop
+        def worker(req_id: str, bid: str, cmd: dict[str, Any], tout: int):
+            try:
+                res = browser.execute_command(cmd, timeout=tout)
+                if cmd.get("type") == "close" and res.get("status") == "success":
+                    try:
+                        del self.browsers[bid]
+                    except Exception:
+                        pass
+                self._write_response(req_id, res)
+            except Exception as e:
+                self._write_response(req_id, {"status": "error", "message": str(e)})
+
+        t = threading.Thread(target=worker, args=(request_id, browser_id, command, timeout), daemon=True)
+        t.start()
+
+    def _process_status_request(self, request: dict[str, Any]):
+        """Process status request"""
+        request_id = request["request_id"]
+
+        status = {
+            "status": "success",
+            "total_browsers": len(self.browsers),
+            "active_browsers": sum(1 for b in self.browsers.values() if b.status == "ready"),
+            "max_browsers": self.max_browsers,
+            "browsers": {
+                bid: {
+                    "id": bid,
+                    "status": browser.status,
+                    "session_id": browser.session_id,
+                    "created_at": browser.created_at,
+                }
+                for bid, browser in self.browsers.items()
+            },
+        }
+
+        self._write_response(request_id, status)
+
+    def process_request_file(self, request_file: Path):
+        """Process a single request file"""
+        try:
+            with open(request_file) as f:
+                request = json.load(f)
+
+            request_type = request.get("type")
+
+            if request_type == "create_browser":
+                self._process_create_browser(request)
+            elif request_type == "browser_status":
+                self._process_browser_status(request)
+            elif request_type == "browser_command":
+                self._process_browser_command(request)
+            elif request_type == "status":
+                self._process_status_request(request)
+            else:
+                logger.warning(f"Unknown request type: {request_type}")
+
+            # Delete the request file after processing
+            request_file.unlink()
+
+        except Exception as e:
+            logger.error(f"Error processing request file {request_file}: {e}")
+            try:
+                request_file.unlink()
+            except:
+                pass
+
+    def run(self):
+        """Main service loop"""
+        logger.info("Browser service running, monitoring queue directory...")
+
+        while self.running:
+            try:
+                # Check for request files
+                request_files = sorted(QUEUE_DIR.glob("*.json"), key=lambda p: p.stat().st_mtime)
+
+                for request_file in request_files:
+                    self.process_request_file(request_file)
+
+                # Small delay to prevent CPU spinning
+                time.sleep(0.1)
+
+            except KeyboardInterrupt:
+                logger.info("Received interrupt, shutting down...")
+                self.running = False
+            except Exception as e:
+                logger.error(f"Error in main loop: {e}")
+                time.sleep(1)
+
+        # Cleanup
+        self.cleanup()
+
+    def cleanup(self):
+        """Clean up all browsers"""
+        logger.info("Cleaning up browsers...")
+        for browser in self.browsers.values():
+            browser.close()
+        self.browsers.clear()
+        logger.info("Browser service stopped")
+
+
+if __name__ == "__main__":
+    # Get max browsers from environment or use default
+    max_browsers = int(os.environ.get("MAX_BROWSERS", 10))
+
+    # Create and run service
+    service = BrowserService(max_browsers)
+    service.run()
