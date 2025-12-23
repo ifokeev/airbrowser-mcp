@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.0...v1.1.1) (2025-12-23)
+
+
+### Performance
+
+* **tests:** optimize test speed and Docker caching ([36c95a8](https://github.com/ifokeev/airbrowser-mcp/commit/36c95a87b54b759a7f8caf224c5807068f1ca021))
+
 ## [1.1.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.0.0...v1.1.0) (2025-12-23)
 
 
