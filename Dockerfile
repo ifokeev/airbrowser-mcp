@@ -9,14 +9,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv (with retry for transient network errors)
-RUN for i in 1 2 3 4 5; do curl -LsSf https://astral.sh/uv/install.sh | sh && break || sleep 5; done
-ENV PATH="/root/.local/bin:$PATH"
-
-# Install Python dependencies
+# Install Python dependencies (try uv first, fallback to pip)
 WORKDIR /app
 COPY requirements.txt .
-RUN uv pip install --system --no-cache -r requirements.txt
+RUN for i in 1 2 3; do \
+      curl -LsSf https://astral.sh/uv/install.sh -o /tmp/uv-install.sh && \
+      sh /tmp/uv-install.sh && \
+      /root/.local/bin/uv pip install --system --no-cache -r requirements.txt && \
+      exit 0 || { \
+        echo "uv attempt $i failed, retrying in 15s..."; \
+        sleep 15; \
+      }; \
+    done; \
+    echo "uv failed, falling back to pip..."; \
+    pip install --no-cache-dir -r requirements.txt
+ENV PATH="/root/.local/bin:$PATH"
 
 # Final stage
 FROM python:3.11-slim-bullseye

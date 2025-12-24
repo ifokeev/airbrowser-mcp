@@ -12,25 +12,42 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv for faster package installation (with retry)
-RUN for i in 1 2 3 4 5; do curl -LsSf https://astral.sh/uv/install.sh | sh && break || sleep 5; done
-ENV PATH="/root/.local/bin:$PATH"
-
 # Create app directory
 WORKDIR /app
 
-# Install test dependencies (stable - will be cached)
-RUN uv pip install --system --no-cache \
-    pytest>=8.0.0 \
-    pytest-timeout>=2.3.0 \
-    pytest-xdist>=3.5.0 \
-    pytest-order>=1.2.0 \
-    pytest-rerunfailures>=12.0 \
-    requests>=2.31.0 \
-    pydantic>=2.0.0 \
-    urllib3>=2.0.0 \
-    lazy-imports>=0.3.0 \
-    python-dateutil>=2.8.0
+# Install test dependencies (try uv first, fallback to pip)
+RUN for i in 1 2 3; do \
+      curl -LsSf https://astral.sh/uv/install.sh -o /tmp/uv-install.sh && \
+      sh /tmp/uv-install.sh && \
+      /root/.local/bin/uv pip install --system --no-cache \
+        pytest>=8.0.0 \
+        pytest-timeout>=2.3.0 \
+        pytest-xdist>=3.5.0 \
+        pytest-order>=1.2.0 \
+        pytest-rerunfailures>=12.0 \
+        requests>=2.31.0 \
+        pydantic>=2.0.0 \
+        urllib3>=2.0.0 \
+        lazy-imports>=0.3.0 \
+        python-dateutil>=2.8.0 && \
+      exit 0 || { \
+        echo "uv attempt $i failed, retrying in 15s..."; \
+        sleep 15; \
+      }; \
+    done; \
+    echo "uv failed, falling back to pip..."; \
+    pip install --no-cache-dir \
+      pytest>=8.0.0 \
+      pytest-timeout>=2.3.0 \
+      pytest-xdist>=3.5.0 \
+      pytest-order>=1.2.0 \
+      pytest-rerunfailures>=12.0 \
+      requests>=2.31.0 \
+      pydantic>=2.0.0 \
+      urllib3>=2.0.0 \
+      lazy-imports>=0.3.0 \
+      python-dateutil>=2.8.0
+ENV PATH="/root/.local/bin:$PATH"
 
 # Add paths for imports
 ENV PYTHONPATH="/app/generated-clients/python:/app/src:$PYTHONPATH"
