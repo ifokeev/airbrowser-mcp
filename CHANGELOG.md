@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.1](https://github.com/ifokeev/airbrowser-mcp/compare/v1.2.0...v1.2.1) (2025-12-24)
+
+
+### Bug Fixes
+
+* use relative paths for docs links in landing page ([1b23b5f](https://github.com/ifokeev/airbrowser-mcp/commit/1b23b5fd0d61fae635f94ef6168d3d8dc5d1a3df))
+
+
+### Documentation
+
+* regenerate documentation for v1.2.0 [skip ci] ([6691fec](https://github.com/ifokeev/airbrowser-mcp/commit/6691fec6417fc9b60bddc7706a77da8bafdf09af))
+
 ## [1.2.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.8...v1.2.0) (2025-12-24)
 
 
