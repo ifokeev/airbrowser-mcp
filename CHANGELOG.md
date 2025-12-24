@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.8...v1.2.0) (2025-12-24)
+
+
+### Features
+
+* **docs:** add terminal-style MCP tools documentation ([ec97323](https://github.com/ifokeev/airbrowser-mcp/commit/ec9732375ed3e0518abc69055fd6bd1c96bdfe06))
+
 ## [1.1.8](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.7...v1.1.8) (2025-12-24)
 
 
