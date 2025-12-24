@@ -269,6 +269,35 @@
             padding: 6px 10px;
         }
 
+        .btn-loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            top: 50%;
+            left: 50%;
+            margin-left: -7px;
+            margin-top: -7px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .btn-loading span {
+            visibility: hidden;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* Browser List */
         .browser-list {
             max-height: 480px;
@@ -701,8 +730,8 @@
                             <label class="form-label">Window size</label>
                             <input type="text" class="form-input" id="window-size" value="1280x720">
                         </div>
-                        <button class="btn btn-primary" style="width: 100%; margin-top: 4px;" onclick="createCustomBrowser()">
-                            Create Browser
+                        <button class="btn btn-primary" id="create-browser-btn" style="width: 100%; margin-top: 4px;" onclick="createCustomBrowser()">
+                            <span>Create Browser</span>
                         </button>
                     </div>
 
@@ -866,6 +895,9 @@
         }
 
         async function createCustomBrowser() {
+            const btn = document.getElementById('create-browser-btn');
+            btn.classList.add('btn-loading');
+
             try {
                 const config = {
                     uc: document.getElementById('uc-mode').checked,
@@ -901,6 +933,8 @@
                 }
             } catch (error) {
                 addLog('Create failed', 'error');
+            } finally {
+                btn.classList.remove('btn-loading');
             }
         }
 

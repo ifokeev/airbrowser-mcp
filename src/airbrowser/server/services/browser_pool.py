@@ -459,7 +459,33 @@ class BrowserPoolAdapter:
             return ActionResult(success=False, message=str(e))
 
     def list_browsers(self) -> list[BrowserInfo]:
-        """List all browsers"""
+        """List all browsers - syncs with IPC service"""
+        # Get actual browser list from IPC service
+        service_status = self.client.get_status()
+        service_browsers = service_status.get("browsers", {})
+
+        # Sync local cache with service
+        service_ids = set(service_browsers.keys())
+        local_ids = set(self.browser_instances.keys())
+
+        # Add missing browsers to local cache
+        for browser_id in service_ids - local_ids:
+            browser_data = service_browsers[browser_id]
+            # Create a minimal BrowserInstance for browsers created outside this session
+            config = self.browser_configs.get(browser_id, BrowserConfig())
+            instance = BrowserInstance(browser_id, config)
+            instance.status = browser_data.get("status", "unknown")
+            instance.session_id = browser_data.get("session_id")
+            instance.created_at = datetime.fromtimestamp(browser_data.get("created_at", time.time()))
+            self.browser_instances[browser_id] = instance
+
+        # Remove stale browsers from local cache
+        for browser_id in local_ids - service_ids:
+            del self.browser_instances[browser_id]
+            if browser_id in self.browser_configs:
+                del self.browser_configs[browser_id]
+
+        # Build return list
         browser_list = []
         for _browser_id, instance in self.browser_instances.items():
             browser_list.append(instance.to_info())
