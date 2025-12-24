@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.2](https://github.com/ifokeev/airbrowser-mcp/compare/v1.2.1...v1.2.2) (2025-12-24)
+
+
+### Bug Fixes
+
+* **ci:** skip CI for landing and markdown changes ([348d766](https://github.com/ifokeev/airbrowser-mcp/commit/348d766346352542df518f63365701ee1a33430f))
+
+
+### Documentation
+
+* regenerate documentation for v1.2.1 [skip ci] ([aad9b45](https://github.com/ifokeev/airbrowser-mcp/commit/aad9b456ecac2504a825fd76937066be2504ab95))
+
 ## [1.2.1](https://github.com/ifokeev/airbrowser-mcp/compare/v1.2.0...v1.2.1) (2025-12-24)
 
 
