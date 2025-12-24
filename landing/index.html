@@ -1168,16 +1168,18 @@ curl -X POST http://localhost:18080/api/v1/browser/<span class="number">{browser
                                     <div class="terminal-step-line"></div>
                                 </div>
                                 <div class="terminal-step-content">
-                                    <div class="terminal-step-title">Clone & Start</div>
-                                    <div class="terminal-step-desc">Pull the repo and start with Docker Compose</div>
-                                    <div class="terminal-code" data-code="git clone https://github.com/ifokeev/airbrowser-mcp && cd airbrowser-mcp && docker compose up --build">
+                                    <div class="terminal-step-title">Docker (one-liner)</div>
+                                    <div class="terminal-step-desc">Fastest way to get started</div>
+                                    <div class="terminal-code" data-code="docker run -d -p 18080:18080 --name airbrowser ghcr.io/ifokeev/airbrowser-mcp:latest">
                                         <button class="copy-btn" onclick="copyCode(this)">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                             Copy
                                         </button>
-                                        <pre><span class="prompt">$</span> git clone https://github.com/ifokeev/airbrowser-mcp
-<span class="prompt">$</span> cd airbrowser-mcp
-<span class="prompt">$</span> docker compose up <span class="flag">--build</span></pre>
+                                        <pre><span class="prompt">$</span> docker run <span class="flag">-d -p</span> 18080:18080 <span class="flag">--name</span> airbrowser \
+     ghcr.io/ifokeev/airbrowser-mcp:latest</pre>
+                                    </div>
+                                    <div class="terminal-step-desc" style="margin-top: 12px; font-size: 12px;">
+                                        Or <a href="https://github.com/ifokeev/airbrowser-mcp/releases/latest" target="_blank" style="color: var(--pink);">download portable</a> for Linux/macOS/Windows
                                     </div>
                                 </div>
                             </div>
