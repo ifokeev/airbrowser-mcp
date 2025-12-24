@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.1...v1.1.2) (2025-12-24)
+
+
+### Bug Fixes
+
+* **portable:** rename agent-browser.bat to airbrowser.bat ([924484e](https://github.com/ifokeev/airbrowser-mcp/commit/924484e1f50950f37ffd0bd034a087ce3ce4cd9a))
+
 ## [1.1.1](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.0...v1.1.1) (2025-12-23)
 
 
