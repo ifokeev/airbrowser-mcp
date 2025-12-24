@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.2...v1.1.3) (2025-12-24)
+
+
+### Bug Fixes
+
+* **docker:** add retry logic for uv installation ([1da2588](https://github.com/ifokeev/airbrowser-mcp/commit/1da25889c4cbb52318910da73f295b6c971d6cab))
+
 ## [1.1.2](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.1...v1.1.2) (2025-12-24)
 
 
