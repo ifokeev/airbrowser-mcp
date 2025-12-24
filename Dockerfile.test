@@ -12,8 +12,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv for faster package installation
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+# Install uv for faster package installation (with retry)
+RUN for i in 1 2 3 4 5; do curl -LsSf https://astral.sh/uv/install.sh | sh && break || sleep 5; done
 ENV PATH="/root/.local/bin:$PATH"
 
 # Create app directory

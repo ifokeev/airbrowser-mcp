@@ -9,8 +9,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+# Install uv (with retry for transient network errors)
+RUN for i in 1 2 3 4 5; do curl -LsSf https://astral.sh/uv/install.sh | sh && break || sleep 5; done
 ENV PATH="/root/.local/bin:$PATH"
 
 # Install Python dependencies
