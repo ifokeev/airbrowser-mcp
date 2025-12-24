@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.5](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.4...v1.1.5) (2025-12-24)
+
+
+### Bug Fixes
+
+* **ci:** use explicit version tags for Docker images ([644e736](https://github.com/ifokeev/airbrowser-mcp/commit/644e7369af358bdc726037ad28891935d047f4e8))
+
 ## [1.1.4](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.3...v1.1.4) (2025-12-24)
 
 
