@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.3](https://github.com/ifokeev/airbrowser-mcp/compare/v1.2.2...v1.2.3) (2025-12-24)
+
+
+### Bug Fixes
+
+* **ci:** use PAT for docs push to trigger pages workflow ([a0f5d99](https://github.com/ifokeev/airbrowser-mcp/commit/a0f5d99e878103369927a09b0f243c6c025d1bef))
+
+
+### Documentation
+
+* regenerate documentation for v1.2.2 ([09c8b04](https://github.com/ifokeev/airbrowser-mcp/commit/09c8b041bfd03551de4d38dc6a279408757faef2))
+
 ## [1.2.2](https://github.com/ifokeev/airbrowser-mcp/compare/v1.2.1...v1.2.2) (2025-12-24)
 
 
