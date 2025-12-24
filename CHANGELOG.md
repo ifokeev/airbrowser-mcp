@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.7](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.6...v1.1.7) (2025-12-24)
+
+
+### Bug Fixes
+
+* **ci:** configure npm auth token explicitly ([1642ba0](https://github.com/ifokeev/airbrowser-mcp/commit/1642ba0e35641a76089b38e549588063058615bc))
+
 ## [1.1.6](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.5...v1.1.6) (2025-12-24)
 
 
