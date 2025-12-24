@@ -290,10 +290,10 @@ jobs:
           ./scripts/generate_client.sh
 
       - name: Build and publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           cd generated-clients/typescript
+          # Configure npm auth
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
           npm install
           npm run build
           npm publish --access public
