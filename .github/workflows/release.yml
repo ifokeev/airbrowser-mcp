@@ -141,6 +141,16 @@ jobs:
             | REST API | `/api/v1/` |
             | MCP Server | `/mcp` |
             | VNC Viewer | `/vnc/` |
+
+            ### Client Libraries
+
+            ```bash
+            # Python
+            pip install airbrowser-client==${{ steps.version.outputs.VERSION }}
+
+            # TypeScript
+            npm install airbrowser-client@${{ steps.version.outputs.VERSION }}
+            ```
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -195,3 +205,99 @@ jobs:
           Expand-Archive -Path airbrowser-*-windows.zip -DestinationPath .
           cd airbrowser-windows
           .\launcher.ps1 --help
+
+  # Publish Python client to PyPI
+  publish-pypi:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install build twine
+
+      - name: Start server for OpenAPI spec
+        run: |
+          docker compose up -d browser-pool
+          # Wait for server to be ready
+          for i in {1..30}; do
+            if curl -sf http://localhost:8000/health; then
+              echo "Server is ready"
+              break
+            fi
+            echo "Waiting for server... ($i/30)"
+            sleep 2
+          done
+
+      - name: Generate Python client
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          chmod +x scripts/generate_client.sh
+          ./scripts/generate_client.sh
+
+      - name: Build and publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: |
+          cd generated-clients/python
+          python -m build
+          twine upload dist/*
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down
+
+  # Publish TypeScript client to npm
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Start server for OpenAPI spec
+        run: |
+          docker compose up -d browser-pool
+          # Wait for server to be ready
+          for i in {1..30}; do
+            if curl -sf http://localhost:8000/health; then
+              echo "Server is ready"
+              break
+            fi
+            echo "Waiting for server... ($i/30)"
+            sleep 2
+          done
+
+      - name: Generate TypeScript client
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          chmod +x scripts/generate_client.sh
+          ./scripts/generate_client.sh
+
+      - name: Build and publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          cd generated-clients/typescript
+          npm install
+          npm run build
+          npm publish --access public
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down
