@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.3...v1.1.4) (2025-12-24)
+
+
+### Bug Fixes
+
+* **docker:** add pip fallback when uv installation fails ([7d7bba5](https://github.com/ifokeev/airbrowser-mcp/commit/7d7bba59b21fb2c6c35a01b6c305f9aebd4fde02))
+
 ## [1.1.3](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.2...v1.1.3) (2025-12-24)
 
 
