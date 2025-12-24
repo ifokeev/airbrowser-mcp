@@ -104,12 +104,24 @@ jobs:
           docker stop airbrowser-docs || true
 
       - name: Commit documentation
+        id: commit-docs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add landing/docs/
-          git diff --staged --quiet || git commit -m "docs: regenerate documentation for v${{ steps.version.outputs.VERSION }} [skip ci]"
-          git push origin HEAD:master || echo "No changes to push"
+          if git diff --staged --quiet; then
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            git commit -m "docs: regenerate documentation for v${{ steps.version.outputs.VERSION }} [skip ci]"
+            git push origin HEAD:master
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Trigger Pages deployment
+        if: steps.commit-docs.outputs.changes == 'true'
+        run: gh workflow run pages.yml --ref master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
