@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.8](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.7...v1.1.8) (2025-12-24)
+
+
+### Bug Fixes
+
+* **ci:** inherit secrets in workflow_call ([365425e](https://github.com/ifokeev/airbrowser-mcp/commit/365425e6373c6d052ed58a537019605c20663fa7))
+
 ## [1.1.7](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.6...v1.1.7) (2025-12-24)
 
 
