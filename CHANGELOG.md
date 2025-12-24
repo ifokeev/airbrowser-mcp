@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.6](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.5...v1.1.6) (2025-12-24)
+
+
+### Documentation
+
+* **landing:** sync quickstart with README ([2272c02](https://github.com/ifokeev/airbrowser-mcp/commit/2272c02767401f28a79290a1eb23217ca0289d93))
+
 ## [1.1.5](https://github.com/ifokeev/airbrowser-mcp/compare/v1.1.4...v1.1.5) (2025-12-24)
 
 
