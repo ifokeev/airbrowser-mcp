@@ -185,3 +185,29 @@ await browserApi.navigateBrowser(browserId, navigateRequest);
 - ChatGPT and similar protected sites require CDP mode but limit JavaScript execution
 - Use typing, clicking, and screenshots instead of script execution after CDP activation
 - See `docs/CDP_MODE_NOTES.md` for detailed information
+
+### MCP Tools Architecture
+**MCP tools are auto-generated from `BrowserOperations` class methods.**
+
+- Source: `src/airbrowser/server/services/browser_operations.py`
+- Every public method in `BrowserOperations` becomes an MCP tool
+- Enhanced descriptions: `src/airbrowser/server/mcp/tool_descriptions.py` (optional overrides)
+- Registration: `src/airbrowser/server/mcp/integration.py` auto-registers all methods
+
+**To add a new MCP tool:**
+1. Add a public method to `BrowserOperations` class
+2. Add docstring (becomes default tool description)
+3. Optionally add enhanced description to `tool_descriptions.py`
+4. Regenerate docs: `./scripts/generate_docs.sh`
+
+### Static Documentation
+**Docs are auto-generated from source code to avoid staleness.**
+
+```bash
+# Regenerate docs (requires running server)
+./scripts/generate_docs.sh
+```
+
+- Output: `landing/docs/index.html`
+- Sources: OpenAPI spec + BrowserOperations + tool_descriptions.py
+- Regenerate after API or MCP tool changes

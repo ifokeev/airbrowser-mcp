@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airbrowser Documentation</title>
+    <meta name="description" content="API documentation for Airbrowser - REST endpoints, MCP tools, and client libraries.">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Satoshi:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #131313;
+            --bg-card: #1b1b1b;
+            --bg-elevated: #232323;
+            --border: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --pink: #FC72FF;
+            --blue: #4C82FB;
+            --green: #40B66B;
+            --orange: #FF6B00;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            padding: 16px 0;
+            background: rgba(19, 19, 19, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-inner { display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
+        .logo img { width: 32px; height: 32px; }
+        .logo-text { font-weight: 700; font-size: 18px; }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; }
+        .nav-links a:hover { color: var(--text-primary); }
+
+        .hero {
+            padding: 80px 0 60px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+        .hero h1 { font-size: 48px; font-weight: 900; letter-spacing: -1px; margin-bottom: 16px; }
+        .hero p { font-size: 18px; color: var(--text-secondary); }
+        .version { display: inline-block; padding: 4px 12px; background: var(--bg-card); border-radius: 100px; font-size: 13px; color: var(--pink); margin-top: 16px; }
+
+        .section { padding: 60px 0; border-bottom: 1px solid var(--border); }
+        .section:last-child { border-bottom: none; }
+        .section-title {
+            font-size: 28px; font-weight: 700; margin-bottom: 32px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .section-title span { font-size: 24px; }
+
+        /* API Endpoints */
+        .api-group { margin-bottom: 32px; }
+        .api-group h4 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--pink); }
+        .endpoint-table { width: 100%; border-collapse: collapse; }
+        .endpoint-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+        .endpoint-table tr:hover { background: var(--bg-card); }
+        .endpoint-table td:first-child { width: 80px; }
+        .endpoint-table td:nth-child(2) { width: 300px; }
+        .endpoint-table code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+        .method {
+            display: inline-block; padding: 4px 8px;
+            border-radius: 4px; font-size: 11px; font-weight: 700;
+            color: white; text-transform: uppercase;
+        }
+
+
+        /* Code Examples */
+        .code-tabs { display: flex; gap: 4px; margin-bottom: 0; }
+        .code-tab {
+            padding: 10px 20px; background: var(--bg-card);
+            border: 1px solid var(--border); border-bottom: none;
+            border-radius: 8px 8px 0 0; font-size: 13px; font-weight: 500;
+            color: var(--text-muted); cursor: pointer;
+        }
+        .code-tab.active { background: var(--bg-elevated); color: var(--text-primary); }
+        .code-block {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 0 8px 8px 8px;
+            padding: 20px; overflow-x: auto;
+        }
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px; line-height: 1.6; margin: 0;
+        }
+        .code-block .comment { color: var(--text-muted); }
+        .code-block .keyword { color: var(--pink); }
+        .code-block .string { color: var(--green); }
+        .code-block .function { color: var(--blue); }
+
+        footer { padding: 40px 0; text-align: center; color: var(--text-muted); font-size: 14px; }
+        footer a { color: var(--pink); text-decoration: none; }
+
+        @media (max-width: 768px) {
+            .tools-grid { grid-template-columns: 1fr; }
+            .endpoint-table td:nth-child(2) { width: auto; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container nav-inner">
+            <a href="../" class="logo">
+                <img src="../logo.svg" alt="Airbrowser">
+                <span class="logo-text">Airbrowser</span>
+            </a>
+            <div class="nav-links">
+                <a href="#api">REST API</a>
+                <a href="#mcp">MCP Tools</a>
+                <a href="#clients">Clients</a>
+                <a href="https://github.com/ifokeev/airbrowser-mcp" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Documentation</h1>
+                <p>REST API, MCP tools, and client libraries for Airbrowser</p>
+                <div class="version">v1.1.8</div>
+            </div>
+        </section>
+
+        <section class="section" id="api">
+            <div class="container">
+                <h2 class="section-title"><span>🔌</span> REST API</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                    All endpoints are prefixed with <code>/api/v1</code>. Base URL: <code>http://localhost:18080/api/v1</code>
+                </p>
+                
+            <div class="api-group">
+                <h4>browser</h4>
+                <table class="endpoint-table">
+                    <tbody>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/close_all</code></td>
+                    <td>Close all active browser instances</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/create</code></td>
+                    <td>Create a new browser instance</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/browser/list</code></td>
+                    <td>List all active browser instances</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/browser/pool/status</code></td>
+                    <td>Get browser pool status</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/browser/{browser_id}</code></td>
+                    <td>Get browser instance details</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #FF5757">DELETE</span></td>
+                    <td><code>/browser/{browser_id}</code></td>
+                    <td>Close and remove a browser instance</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/check_element</code></td>
+                    <td>Check if element exists or is visible</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/click</code></td>
+                    <td>Click element</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/close</code></td>
+                    <td>Close a browser instance</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/console</code></td>
+                    <td>Get or clear console logs</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/browser/{browser_id}/content</code></td>
+                    <td>Get page HTML content</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/detect_coordinates</code></td>
+                    <td>Detect element coordinates using AI vision</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/dialog</code></td>
+                    <td>Manage browser dialogs: get, accept, or dismiss</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/element_data</code></td>
+                    <td>Get element text, attribute, or property</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/emulate</code></td>
+                    <td>Manage device emulation: set, clear, or list_devices</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/execute</code></td>
+                    <td>Execute JavaScript</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/fill_form</code></td>
+                    <td>Fill multiple form fields</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/gui_click</code></td>
+                    <td>Click using selector or screen coordinates</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/history</code></td>
+                    <td>Execute history action: back, forward, or refresh</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/mouse</code></td>
+                    <td>Mouse action: hover or drag</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/navigate</code></td>
+                    <td>Navigate to a URL</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/network</code></td>
+                    <td>Get or clear network logs</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/performance</code></td>
+                    <td>Manage performance: start_trace, stop_trace, metrics, or analyze</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/press_keys</code></td>
+                    <td>Press keys on an element</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/resize</code></td>
+                    <td>Resize viewport</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/screenshot</code></td>
+                    <td>Take a screenshot</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/scroll</code></td>
+                    <td>Scroll to element/coordinates (absolute) or by delta (relative)</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/select</code></td>
+                    <td>Select dropdown: select option or get options</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/snapshot</code></td>
+                    <td>Take DOM/accessibility snapshot</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/browser/{browser_id}/status</code></td>
+                    <td>Get browser status</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/tabs</code></td>
+                    <td>Manage browser tabs: list, new, switch, close, or current</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/type</code></td>
+                    <td>Type text into an element</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/upload_file</code></td>
+                    <td>Upload a file</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/browser/{browser_id}/url</code></td>
+                    <td>Get current page URL</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/wait_element</code></td>
+                    <td>Wait for element to become visible or hidden</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/browser/{browser_id}/what_is_visible</code></td>
+                    <td>Analyze visible page content using AI</td>
+                </tr></tbody>
+                </table>
+            </div>
+            <div class="api-group">
+                <h4>health</h4>
+                <table class="endpoint-table">
+                    <tbody>
+                <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/health/</code></td>
+                    <td>Check the health status of the browser pool</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/health/metrics</code></td>
+                    <td>Get Prometheus-style metrics for monitoring</td>
+                </tr></tbody>
+                </table>
+            </div>
+            <div class="api-group">
+                <h4>pool</h4>
+                <table class="endpoint-table">
+                    <tbody>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/pool/scale</code></td>
+                    <td>Scale the browser pool to a new maximum size</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/pool/shutdown</code></td>
+                    <td>Gracefully shutdown the browser pool server</td>
+                </tr></tbody>
+                </table>
+            </div>
+            <div class="api-group">
+                <h4>profiles</h4>
+                <table class="endpoint-table">
+                    <tbody>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/profiles/</code></td>
+                    <td>Create a new browser profile</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/profiles/</code></td>
+                    <td>List all browser profiles</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/profiles/{profile_name}</code></td>
+                    <td>Get profile information</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #FF5757">DELETE</span></td>
+                    <td><code>/profiles/{profile_name}</code></td>
+                    <td>Delete a browser profile</td>
+                </tr></tbody>
+                </table>
+            </div>
+            </div>
+        </section>
+
+        <section class="section" id="mcp">
+            <div class="container">
+                <h2 class="section-title"><span>🤖</span> MCP Tools</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                    Model Context Protocol tools for AI agents. Connect via <code>http://localhost:18080/mcp</code>
+                </p>
+                <!-- MCP Tools Section - Terminal/Command Palette Inspired Design -->
+<!-- This is a partial HTML to be integrated into the docs page -->
+
+<style>
+/* MCP Tools Section Styles */
+.mcp-section {
+    --terminal-bg: #0a0a0a;
+    --terminal-border: #1e1e1e;
+    --line-number: #3a3a3a;
+    --cmd-prefix: #FC72FF;
+    --category-active: #FC72FF;
+    --tool-hover: rgba(252, 114, 255, 0.08);
+    --expand-bg: #141414;
+}
+
+.mcp-container {
+    background: var(--terminal-bg);
+    border: 1px solid var(--terminal-border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.03),
+        0 20px 50px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.02);
+}
+
+/* Terminal Header */
+.mcp-header {
+    background: linear-gradient(180deg, #1a1a1a 0%, #141414 100%);
+    border-bottom: 1px solid var(--terminal-border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mcp-header-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.mcp-header-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.mcp-header-dot.red { background: #ff5f57; }
+.mcp-header-dot.yellow { background: #ffbd2e; }
+.mcp-header-dot.green { background: #28ca42; }
+
+.mcp-header-title {
+    flex: 1;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #666;
+    letter-spacing: 0.5px;
+}
+
+.mcp-header-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    background: rgba(252, 114, 255, 0.15);
+    color: var(--cmd-prefix);
+    border-radius: 4px;
+    border: 1px solid rgba(252, 114, 255, 0.2);
+}
+
+/* Search Bar */
+.mcp-search {
+    padding: 16px;
+    border-bottom: 1px solid var(--terminal-border);
+    background: #0d0d0d;
+}
+
+.mcp-search-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #080808;
+    border: 1px solid #1a1a1a;
+    border-radius: 6px;
+    padding: 10px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.mcp-search-inner:focus-within {
+    border-color: var(--cmd-prefix);
+    box-shadow: 0 0 0 3px rgba(252, 114, 255, 0.1);
+}
+
+.mcp-search-prefix {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--cmd-prefix);
+    user-select: none;
+}
+
+.mcp-search-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #fff;
+    caret-color: var(--cmd-prefix);
+}
+
+.mcp-search-input::placeholder {
+    color: #444;
+}
+
+.mcp-search-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #333;
+    padding: 2px 6px;
+    background: #111;
+    border-radius: 3px;
+}
+
+/* Main Layout */
+.mcp-body {
+    display: flex;
+    min-height: 500px;
+    max-height: 700px;
+}
+
+/* Category Sidebar */
+.mcp-sidebar {
+    width: 180px;
+    background: #0d0d0d;
+    border-right: 1px solid var(--terminal-border);
+    padding: 12px 0;
+    flex-shrink: 0;
+    overflow-y: auto;
+}
+
+.mcp-category {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+}
+
+.mcp-category::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 0;
+    background: var(--category-active);
+    transition: height 0.2s;
+}
+
+.mcp-category:hover {
+    color: #999;
+    background: rgba(255,255,255,0.02);
+}
+
+.mcp-category.active {
+    color: #fff;
+    background: rgba(252, 114, 255, 0.05);
+}
+
+.mcp-category.active::before {
+    height: 20px;
+}
+
+.mcp-category-icon {
+    font-size: 14px;
+    width: 20px;
+    text-align: center;
+}
+
+.mcp-category-count {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 6px;
+    background: #1a1a1a;
+    border-radius: 10px;
+    color: #555;
+}
+
+.mcp-category.active .mcp-category-count {
+    background: rgba(252, 114, 255, 0.2);
+    color: var(--cmd-prefix);
+}
+
+/* Tools List */
+.mcp-tools {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.mcp-tools::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mcp-tools::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mcp-tools::-webkit-scrollbar-thumb {
+    background: #2a2a2a;
+    border-radius: 3px;
+}
+
+.mcp-tools::-webkit-scrollbar-thumb:hover {
+    background: #3a3a3a;
+}
+
+/* Tool Item */
+.mcp-tool {
+    border-radius: 6px;
+    margin-bottom: 2px;
+    transition: background 0.15s;
+}
+
+.mcp-tool:hover {
+    background: var(--tool-hover);
+}
+
+.mcp-tool-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    cursor: pointer;
+    gap: 12px;
+}
+
+.mcp-tool-line {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--line-number);
+    width: 28px;
+    text-align: right;
+    user-select: none;
+}
+
+.mcp-tool-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #4C82FB;
+    font-weight: 500;
+    min-width: 160px;
+}
+
+.mcp-tool-title {
+    flex: 1;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 13px;
+    color: #888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mcp-tool-expand {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    transition: transform 0.2s, color 0.2s;
+}
+
+.mcp-tool.expanded .mcp-tool-expand {
+    transform: rotate(90deg);
+    color: var(--cmd-prefix);
+}
+
+/* Tool Details */
+.mcp-tool-details {
+    display: none;
+    padding: 0 12px 12px 52px;
+}
+
+.mcp-tool.expanded .mcp-tool-details {
+    display: block;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.mcp-tool-desc {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #666;
+    background: var(--expand-bg);
+    padding: 12px 14px;
+    border-radius: 6px;
+    border-left: 2px solid #2a2a2a;
+}
+
+.mcp-tool-desc strong {
+    color: #999;
+    font-weight: 600;
+}
+
+.mcp-tool-desc code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: #1a1a1a;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--cmd-prefix);
+}
+
+/* Empty/No Results State */
+.mcp-empty {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.mcp-empty.show {
+    display: flex;
+}
+
+.mcp-empty-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
+
+.mcp-empty-text {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 14px;
+    color: #444;
+}
+
+.mcp-empty-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #333;
+    margin-top: 8px;
+}
+
+/* Footer Stats */
+.mcp-footer {
+    padding: 10px 16px;
+    border-top: 1px solid var(--terminal-border);
+    background: #0d0d0d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mcp-footer-stat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #444;
+}
+
+.mcp-footer-stat span {
+    color: #666;
+}
+
+/* Category color accents */
+.mcp-tool[data-category="lifecycle"] .mcp-tool-name { color: #40B66B; }
+.mcp-tool[data-category="navigation"] .mcp-tool-name { color: #4C82FB; }
+.mcp-tool[data-category="elements"] .mcp-tool-name { color: #FC72FF; }
+.mcp-tool[data-category="forms"] .mcp-tool-name { color: #FF6B00; }
+.mcp-tool[data-category="vision"] .mcp-tool-name { color: #a78bfa; }
+.mcp-tool[data-category="page"] .mcp-tool-name { color: #22d3ee; }
+.mcp-tool[data-category="debug"] .mcp-tool-name { color: #fbbf24; }
+.mcp-tool[data-category="tabs"] .mcp-tool-name { color: #f472b6; }
+.mcp-tool[data-category="emulation"] .mcp-tool-name { color: #34d399; }
+.mcp-tool[data-category="pool"] .mcp-tool-name { color: #94a3b8; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .mcp-body {
+        flex-direction: column;
+    }
+    .mcp-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--terminal-border);
+        display: flex;
+        overflow-x: auto;
+        padding: 8px;
+        gap: 4px;
+    }
+    .mcp-category {
+        padding: 8px 12px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .mcp-category::before {
+        display: none;
+    }
+    .mcp-category.active {
+        background: rgba(252, 114, 255, 0.15);
+    }
+    .mcp-tool-name {
+        min-width: auto;
+    }
+}
+</style>
+
+<div class="mcp-container">
+    <div class="mcp-header">
+        <div class="mcp-header-dots">
+            <div class="mcp-header-dot red"></div>
+            <div class="mcp-header-dot yellow"></div>
+            <div class="mcp-header-dot green"></div>
+        </div>
+        <div class="mcp-header-title">MCP Tools Reference</div>
+        <div class="mcp-header-badge" id="toolCount">33 tools</div>
+    </div>
+
+    <div class="mcp-search">
+        <div class="mcp-search-inner">
+            <span class="mcp-search-prefix">❯</span>
+            <input type="text" class="mcp-search-input" id="mcpSearch" placeholder="Search tools..." autocomplete="off">
+            <span class="mcp-search-hint">⌘K</span>
+        </div>
+    </div>
+
+    <div class="mcp-body">
+        <div class="mcp-sidebar" id="mcpSidebar">
+            <div class="mcp-category active" data-category="all">
+                <span class="mcp-category-icon">◈</span>
+                <span>All Tools</span>
+                <span class="mcp-category-count" id="countAll">33</span>
+            </div>
+            <div class="mcp-category" data-category="lifecycle">
+                <span class="mcp-category-icon">⚡</span>
+                <span>Lifecycle</span>
+                <span class="mcp-category-count">3</span>
+            </div>
+            <div class="mcp-category" data-category="navigation">
+                <span class="mcp-category-icon">→</span>
+                <span>Navigation</span>
+                <span class="mcp-category-count">3</span>
+            </div>
+            <div class="mcp-category" data-category="elements">
+                <span class="mcp-category-icon">◇</span>
+                <span>Elements</span>
+                <span class="mcp-category-count">8</span>
+            </div>
+            <div class="mcp-category" data-category="forms">
+                <span class="mcp-category-icon">▤</span>
+                <span>Forms</span>
+                <span class="mcp-category-count">3</span>
+            </div>
+            <div class="mcp-category" data-category="vision">
+                <span class="mcp-category-icon">◉</span>
+                <span>GUI/Vision</span>
+                <span class="mcp-category-count">3</span>
+            </div>
+            <div class="mcp-category" data-category="page">
+                <span class="mcp-category-icon">▢</span>
+                <span>Page</span>
+                <span class="mcp-category-count">5</span>
+            </div>
+            <div class="mcp-category" data-category="debug">
+                <span class="mcp-category-icon">⚙</span>
+                <span>Debug</span>
+                <span class="mcp-category-count">2</span>
+            </div>
+            <div class="mcp-category" data-category="tabs">
+                <span class="mcp-category-icon">◫</span>
+                <span>Tabs/Dialogs</span>
+                <span class="mcp-category-count">2</span>
+            </div>
+            <div class="mcp-category" data-category="emulation">
+                <span class="mcp-category-icon">◐</span>
+                <span>Emulation</span>
+                <span class="mcp-category-count">2</span>
+            </div>
+            <div class="mcp-category" data-category="pool">
+                <span class="mcp-category-icon">▣</span>
+                <span>Pool</span>
+                <span class="mcp-category-count">2</span>
+            </div>
+        </div>
+
+        <div class="mcp-tools" id="mcpTools">
+            <!-- Tools will be populated by JavaScript -->
+        </div>
+
+        <div class="mcp-empty" id="mcpEmpty">
+            <div class="mcp-empty-icon">⌀</div>
+            <div class="mcp-empty-text">No tools match your search</div>
+            <div class="mcp-empty-hint">Try a different keyword</div>
+        </div>
+    </div>
+
+    <div class="mcp-footer">
+        <div class="mcp-footer-stat">Showing <span id="visibleCount">33</span> of <span>33</span> tools</div>
+        <div class="mcp-footer-stat">MCP endpoint: <span>http://localhost:18080/mcp</span></div>
+    </div>
+</div>
+
+<script>
+// MCP Tools Data - will be populated by generate_docs.py
+const MCP_TOOLS = [{"name": "create_browser", "title": "Create browser instance.", "description": ""}, {"name": "close_browser", "title": "Close browser instance.", "description": ""}, {"name": "browsers", "title": "Admin: list all, get info, or close all browsers.", "description": ""}, {"name": "navigate_browser", "title": "Navigate to URL.", "description": ""}, {"name": "get_url", "title": "Get current URL.", "description": ""}, {"name": "history", "title": "History: back, forward, or refresh.", "description": ""}, {"name": "click", "title": "Click element. Use if_visible=True to only click if visible.", "description": ""}, {"name": "type_text", "title": "Type text into element.", "description": ""}, {"name": "press_keys", "title": "Press keyboard keys.", "description": ""}, {"name": "check_element", "title": "Check if element exists or is visible.", "description": ""}, {"name": "wait_element", "title": "Wait for element to be visible or hidden.", "description": ""}, {"name": "get_element_data", "title": "Get element text, attribute, or property.", "description": ""}, {"name": "mouse", "title": "Mouse: hover or drag.", "description": ""}, {"name": "scroll", "title": "SCROLL TO ELEMENT OR POSITION - Scroll the page to bring an element into view or to specific coordinates.", "description": "Can scroll to:\n- An element by CSS selector (scrolls element to center of viewport)\n- Absolute coordinates (x, y position on page)\n\nUse `scroll_by` for relative scrolling."}, {"name": "fill_form", "title": "BATCH FORM FILLING - Fill multiple form fields at once.", "description": "More efficient than calling `type_text` multiple times. Pass an array of field definitions:\n[{\"selector\": \"#email\", \"value\": \"user@example.com\"}, {\"selector\": \"#password\", \"value\": \"secret\"}]\n\nReturns which fields were filled successfully and any errors encountered."}, {"name": "select", "title": "Select dropdown: select option or get options.", "description": ""}, {"name": "upload_file", "title": "Upload file to input.", "description": ""}, {"name": "gui_click", "title": "GUI CLICK WITH SELECTOR - Click elements using CSS/XPath selectors with undetectable GUI automation.", "description": "**WORKFLOW**: Always call `get_page_content` first to understand the page structure and identify\nthe correct selector for the element you want to click.\n\n**CRITICAL FOR CAPTCHAs**: Use this for CAPTCHA interactions when you can identify them with\nCSS selectors. For complex pages where selectors are hard to find, use `detect_coordinates` +\n`gui_click_xy` instead.\n\n**Best for pages < 100KB**: When HTML is manageable and you can parse it to find selectors.\nFor larger/complex pages, use the vision-based approach with `detect_coordinates`.\n\nUses Chrome DevTools Protocol to calculate screen coordinates and PyAutoGUI to perform\nthe actual click, making it undetectable by anti-automation measures.\n\n**When to use this tool:**\n- CAPTCHAs where you can identify the selector (e.g., iframe[src*=\"hcaptcha\"])\n- Elements that don't respond to regular clicks but have clear selectors\n- Anti-automation sites when you know the element selector\n- Elements inside iframes or shadow DOM with identifiable selectors\n\n**Parameters:**\n- fx, fy: Optional fractional offsets (0.0-1.0) within element to click"}, {"name": "detect_coordinates", "title": "VISION-BASED ELEMENT DETECTION - Find elements using AI vision when HTML parsing is impractical.", "description": "**Best for large/complex pages (>100KB HTML)**: When `get_page_content` returns too much data\nto parse effectively, use this to locate elements by visual description instead.\n\n**Alternative to HTML parsing**: Instead of analyzing HTML source, this takes a screenshot\nand uses AI vision to find elements by natural language description.\n\n**Perfect for:**\n- CAPTCHAs in complex layouts (\"find the hCaptcha checkbox\")\n- Dynamic content without stable selectors\n- Elements easier to describe than locate in HTML (\"the blue Submit button\")\n- Pages with overwhelming HTML structure\n\n**Workflow**: Use this to get coordinates, then use `gui_click_xy` to click at those coordinates.\n\nReturns:\n- Bounding box coordinates (x, y, width, height)\n- Recommended click point (center of element)\n- Detection confidence score\n- Screenshot path for verification\n- Vision model used for detection"}, {"name": "what_is_visible", "title": "PRIMARY TOOL FOR UNDERSTANDING WEBPAGES - Comprehensive page state analysis.", "description": "This is the BEST tool to use when you need to understand what's currently happening on a webpage.\nIt automatically analyzes and reports on:\n\n- **Form fields**: Which are filled, empty, or required\n- **Interactive elements**: Checkbox/radio states, button availability\n- **CAPTCHA status**: Present, solved, or needs attention\n- **Messages**: Errors, success notifications, validation feedback\n- **Form progress**: Multi-step form status and current step\n- **Page purpose**: What the user should do next\n\n**Use this when you need to:**\n- Understand the current state of any webpage\n- Check if forms are filled correctly\n- Verify CAPTCHA completion\n- Identify what actions are available\n- Debug form submission issues"}, {"name": "take_screenshot", "title": "Take a screenshot of the browser (returns image URL only).", "description": "NOTE: If you want to UNDERSTAND what's on the page, use `what_is_visible` instead!\n`what_is_visible` combines screenshot + AI analysis for better understanding."}, {"name": "get_content", "title": "GET PAGE HTML CONTENT - Retrieve the full HTML source of the current page.", "description": "**Best for smaller pages (<100KB)**: When you need to understand page structure and find\nCSS selectors for elements. Returns the complete HTML source code.\n\n**Use this to:**\n- Analyze page structure before using `gui_click` with selectors\n- Find form fields, buttons, and interactive elements\n- Understand page layout and identify CAPTCHA containers\n- Parse structured data from the page\n\n**If HTML is too large/complex**: Use `what_is_visible` for visual understanding or\n`detect_coordinates` to find elements by description instead of parsing HTML.\n\nReturns: HTML content, current URL, and page title."}, {"name": "execute_script", "title": "Execute JavaScript.", "description": ""}, {"name": "resize", "title": "Resize viewport.", "description": ""}, {"name": "snapshot", "title": "DOM or accessibility snapshot.", "description": ""}, {"name": "console_logs", "title": "List recent browser console messages (best-effort; depends on Chrome/Selenium logging support).", "description": "Useful for debugging JavaScript errors, network issues, or application logs.\nUse action=\"get\" to retrieve logs, action=\"clear\" to clear them."}, {"name": "network_logs", "title": "List recent network events captured from Chrome performance logs.", "description": "This is best-effort and may require Chrome logging support in the underlying driver.\nUseful for debugging API calls, failed requests, or performance issues.\nUse action=\"get\" to retrieve logs, action=\"clear\" to clear them."}, {"name": "tabs", "title": "Tabs: list, new, switch, close, current.", "description": ""}, {"name": "dialog", "title": "DIALOG HANDLING - Accept, dismiss, or interact with browser dialogs.", "description": "Handles JavaScript alert(), confirm(), and prompt() dialogs.\n- action=\"get\": Get current dialog info\n- action=\"accept\": Click OK/Accept\n- action=\"dismiss\": Click Cancel/Dismiss\n- text: For prompt dialogs, provide input text before accepting"}, {"name": "emulate", "title": "DEVICE EMULATION - Emulate mobile devices, tablets, or custom viewports.", "description": "Use device presets like \"iPhone 14\", \"iPad\", \"Pixel 7\" or specify custom dimensions.\nAffects viewport size, user agent, touch events, and device scale factor.\n\nCall `list_devices` to see available device presets."}, {"name": "performance", "title": "Performance: start_trace, stop_trace, metrics, analyze.", "description": ""}, {"name": "get_pool_status", "title": "Get pool status.", "description": ""}, {"name": "health_check", "title": "Health check.", "description": ""}];
+
+// Category mapping
+const CATEGORY_MAP = {
+    'create_browser': 'lifecycle',
+    'close_browser': 'lifecycle',
+    'browsers': 'lifecycle',
+    'navigate_browser': 'navigation',
+    'get_url': 'navigation',
+    'history': 'navigation',
+    'click': 'elements',
+    'type_text': 'elements',
+    'press_keys': 'elements',
+    'check_element': 'elements',
+    'wait_element': 'elements',
+    'get_element_data': 'elements',
+    'mouse': 'elements',
+    'scroll': 'elements',
+    'fill_form': 'forms',
+    'select': 'forms',
+    'upload_file': 'forms',
+    'gui_click': 'vision',
+    'detect_coordinates': 'vision',
+    'what_is_visible': 'vision',
+    'take_screenshot': 'page',
+    'get_content': 'page',
+    'execute_script': 'page',
+    'resize': 'page',
+    'snapshot': 'page',
+    'console_logs': 'debug',
+    'network_logs': 'debug',
+    'tabs': 'tabs',
+    'dialog': 'tabs',
+    'emulate': 'emulation',
+    'performance': 'emulation',
+    'get_pool_status': 'pool',
+    'health_check': 'pool'
+};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    updateCategoryCounts();
+    renderTools(MCP_TOOLS);
+    setupSearch();
+    setupCategories();
+    setupKeyboardShortcut();
+});
+
+function updateCategoryCounts() {
+    // Count tools per category
+    const counts = { all: MCP_TOOLS.length };
+    MCP_TOOLS.forEach(tool => {
+        const cat = CATEGORY_MAP[tool.name] || 'other';
+        counts[cat] = (counts[cat] || 0) + 1;
+    });
+
+    // Update UI
+    document.querySelectorAll('.mcp-category').forEach(el => {
+        const cat = el.dataset.category;
+        const countEl = el.querySelector('.mcp-category-count');
+        if (countEl && counts[cat] !== undefined) {
+            countEl.textContent = counts[cat];
+        }
+    });
+
+    // Update header badge
+    document.getElementById('toolCount').textContent = `${MCP_TOOLS.length} tools`;
+}
+
+function renderTools(tools, filter = '', category = 'all') {
+    const container = document.getElementById('mcpTools');
+    const empty = document.getElementById('mcpEmpty');
+
+    let filteredTools = tools.filter(tool => {
+        const matchesSearch = filter === '' ||
+            tool.name.toLowerCase().includes(filter.toLowerCase()) ||
+            tool.title.toLowerCase().includes(filter.toLowerCase());
+        const matchesCategory = category === 'all' || CATEGORY_MAP[tool.name] === category;
+        return matchesSearch && matchesCategory;
+    });
+
+    if (filteredTools.length === 0) {
+        container.innerHTML = '';
+        empty.classList.add('show');
+        document.getElementById('visibleCount').textContent = '0';
+        return;
+    }
+
+    empty.classList.remove('show');
+    document.getElementById('visibleCount').textContent = filteredTools.length;
+
+    container.innerHTML = filteredTools.map((tool, idx) => {
+        const cat = CATEGORY_MAP[tool.name] || 'other';
+        const desc = tool.description || '';
+        return `
+            <div class="mcp-tool" data-category="${cat}" data-name="${tool.name}">
+                <div class="mcp-tool-header" onclick="toggleTool(this)">
+                    <span class="mcp-tool-line">${String(idx + 1).padStart(2, '0')}</span>
+                    <span class="mcp-tool-name">${tool.name}</span>
+                    <span class="mcp-tool-title">${escapeHtml(tool.title)}</span>
+                    <span class="mcp-tool-expand">›</span>
+                </div>
+                ${desc ? `
+                <div class="mcp-tool-details">
+                    <div class="mcp-tool-desc">${formatDescription(desc)}</div>
+                </div>
+                ` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+function toggleTool(header) {
+    const tool = header.parentElement;
+    tool.classList.toggle('expanded');
+}
+
+function setupSearch() {
+    const input = document.getElementById('mcpSearch');
+    let debounceTimer;
+
+    input.addEventListener('input', (e) => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            const activeCategory = document.querySelector('.mcp-category.active')?.dataset.category || 'all';
+            renderTools(MCP_TOOLS, e.target.value, activeCategory);
+        }, 150);
+    });
+}
+
+function setupCategories() {
+    document.querySelectorAll('.mcp-category').forEach(cat => {
+        cat.addEventListener('click', () => {
+            document.querySelectorAll('.mcp-category').forEach(c => c.classList.remove('active'));
+            cat.classList.add('active');
+            const filter = document.getElementById('mcpSearch').value;
+            renderTools(MCP_TOOLS, filter, cat.dataset.category);
+        });
+    });
+}
+
+function setupKeyboardShortcut() {
+    document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            e.preventDefault();
+            document.getElementById('mcpSearch').focus();
+        }
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function formatDescription(desc) {
+    // Convert **text** to <strong>text</strong>
+    // Convert `code` to <code>code</code>
+    // Convert newlines to <br>
+    return desc
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\n/g, '<br>');
+}
+</script>
+
+            </div>
+        </section>
+
+        <section class="section" id="clients">
+            <div class="container">
+                <h2 class="section-title"><span>📦</span> Client Libraries</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">
+                    Auto-generated from OpenAPI spec. Install and start automating in minutes.
+                </p>
+
+                <div class="code-tabs">
+                    <button class="code-tab active" onclick="showTab('python')">Python</button>
+                    <button class="code-tab" onclick="showTab('typescript')">TypeScript</button>
+                </div>
+                <div class="code-block" id="python-code">
+<pre><span class="comment"># Install</span>
+pip install airbrowser-client
+
+<span class="comment"># Usage</span>
+<span class="keyword">from</span> airbrowser_client <span class="keyword">import</span> ApiClient, Configuration, BrowserApi
+
+config = Configuration(host=<span class="string">"http://localhost:18080/api/v1"</span>)
+<span class="keyword">with</span> ApiClient(config) <span class="keyword">as</span> client:
+    api = BrowserApi(client)
+
+    <span class="comment"># Create browser</span>
+    response = api.<span class="function">create_browser</span>()
+    browser_id = response.data.browser_id
+
+    <span class="comment"># Navigate</span>
+    api.<span class="function">navigate_browser</span>(browser_id, {"url": <span class="string">"https://example.com"</span>})
+
+    <span class="comment"># Screenshot</span>
+    screenshot = api.<span class="function">take_screenshot</span>(browser_id)
+
+    <span class="comment"># Cleanup</span>
+    api.<span class="function">close_browser</span>(browser_id)</pre>
+                </div>
+                <div class="code-block" id="typescript-code" style="display: none;">
+<pre><span class="comment">// Install</span>
+npm install airbrowser-client
+
+<span class="comment">// Usage</span>
+<span class="keyword">import</span> { BrowserApi, Configuration } <span class="keyword">from</span> <span class="string">'airbrowser-client'</span>;
+
+<span class="keyword">const</span> config = <span class="keyword">new</span> <span class="function">Configuration</span>({{
+  basePath: <span class="string">'http://localhost:18080/api/v1'</span>
+}});
+
+<span class="keyword">const</span> api = <span class="keyword">new</span> <span class="function">BrowserApi</span>(config);
+
+<span class="comment">// Create browser</span>
+<span class="keyword">const</span> { data } = <span class="keyword">await</span> api.<span class="function">createBrowser</span>();
+<span class="keyword">const</span> browserId = data.data.browser_id;
+
+<span class="comment">// Navigate</span>
+<span class="keyword">await</span> api.<span class="function">navigateBrowser</span>(browserId, {{ url: <span class="string">'https://example.com'</span> }});
+
+<span class="comment">// Screenshot</span>
+<span class="keyword">const</span> screenshot = <span class="keyword">await</span> api.<span class="function">takeScreenshot</span>(browserId);
+
+<span class="comment">// Cleanup</span>
+<span class="keyword">await</span> api.<span class="function">closeBrowser</span>(browserId);</pre>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Generated from <a href="https://github.com/ifokeev/airbrowser-mcp">source code</a>. Run <code>./scripts/generate_docs.sh</code> to regenerate.</p>
+        </div>
+    </footer>
+
+    <script>
+        function showTab(tab) {
+            document.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.code-block[id$="-code"]').forEach(b => b.style.display = 'none');
+            event.target.classList.add('active');
+            document.getElementById(tab + '-code').style.display = 'block';
+        }
+    </script>
+</body>
+</html>

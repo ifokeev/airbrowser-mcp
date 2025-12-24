@@ -1,0 +1,687 @@
+<!-- MCP Tools Section - Terminal/Command Palette Inspired Design -->
+<!-- This is a partial HTML to be integrated into the docs page -->
+
+<style>
+/* MCP Tools Section Styles */
+.mcp-section {
+    --terminal-bg: #0a0a0a;
+    --terminal-border: #1e1e1e;
+    --line-number: #3a3a3a;
+    --cmd-prefix: #FC72FF;
+    --category-active: #FC72FF;
+    --tool-hover: rgba(252, 114, 255, 0.08);
+    --expand-bg: #141414;
+}
+
+.mcp-container {
+    background: var(--terminal-bg);
+    border: 1px solid var(--terminal-border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow:
+        0 0 0 1px rgba(255,255,255,0.03),
+        0 20px 50px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.02);
+}
+
+/* Terminal Header */
+.mcp-header {
+    background: linear-gradient(180deg, #1a1a1a 0%, #141414 100%);
+    border-bottom: 1px solid var(--terminal-border);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mcp-header-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.mcp-header-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.mcp-header-dot.red { background: #ff5f57; }
+.mcp-header-dot.yellow { background: #ffbd2e; }
+.mcp-header-dot.green { background: #28ca42; }
+
+.mcp-header-title {
+    flex: 1;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #666;
+    letter-spacing: 0.5px;
+}
+
+.mcp-header-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 3px 8px;
+    background: rgba(252, 114, 255, 0.15);
+    color: var(--cmd-prefix);
+    border-radius: 4px;
+    border: 1px solid rgba(252, 114, 255, 0.2);
+}
+
+/* Search Bar */
+.mcp-search {
+    padding: 16px;
+    border-bottom: 1px solid var(--terminal-border);
+    background: #0d0d0d;
+}
+
+.mcp-search-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #080808;
+    border: 1px solid #1a1a1a;
+    border-radius: 6px;
+    padding: 10px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.mcp-search-inner:focus-within {
+    border-color: var(--cmd-prefix);
+    box-shadow: 0 0 0 3px rgba(252, 114, 255, 0.1);
+}
+
+.mcp-search-prefix {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--cmd-prefix);
+    user-select: none;
+}
+
+.mcp-search-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: #fff;
+    caret-color: var(--cmd-prefix);
+}
+
+.mcp-search-input::placeholder {
+    color: #444;
+}
+
+.mcp-search-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #333;
+    padding: 2px 6px;
+    background: #111;
+    border-radius: 3px;
+}
+
+/* Main Layout */
+.mcp-body {
+    display: flex;
+    min-height: 500px;
+    max-height: 700px;
+}
+
+/* Category Sidebar */
+.mcp-sidebar {
+    width: 180px;
+    background: #0d0d0d;
+    border-right: 1px solid var(--terminal-border);
+    padding: 12px 0;
+    flex-shrink: 0;
+    overflow-y: auto;
+}
+
+.mcp-category {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666;
+}
+
+.mcp-category::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 0;
+    background: var(--category-active);
+    transition: height 0.2s;
+}
+
+.mcp-category:hover {
+    color: #999;
+    background: rgba(255,255,255,0.02);
+}
+
+.mcp-category.active {
+    color: #fff;
+    background: rgba(252, 114, 255, 0.05);
+}
+
+.mcp-category.active::before {
+    height: 20px;
+}
+
+.mcp-category-icon {
+    font-size: 14px;
+    width: 20px;
+    text-align: center;
+}
+
+.mcp-category-count {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 6px;
+    background: #1a1a1a;
+    border-radius: 10px;
+    color: #555;
+}
+
+.mcp-category.active .mcp-category-count {
+    background: rgba(252, 114, 255, 0.2);
+    color: var(--cmd-prefix);
+}
+
+/* Tools List */
+.mcp-tools {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.mcp-tools::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mcp-tools::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mcp-tools::-webkit-scrollbar-thumb {
+    background: #2a2a2a;
+    border-radius: 3px;
+}
+
+.mcp-tools::-webkit-scrollbar-thumb:hover {
+    background: #3a3a3a;
+}
+
+/* Tool Item */
+.mcp-tool {
+    border-radius: 6px;
+    margin-bottom: 2px;
+    transition: background 0.15s;
+}
+
+.mcp-tool:hover {
+    background: var(--tool-hover);
+}
+
+.mcp-tool-header {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    cursor: pointer;
+    gap: 12px;
+}
+
+.mcp-tool-line {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--line-number);
+    width: 28px;
+    text-align: right;
+    user-select: none;
+}
+
+.mcp-tool-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: #4C82FB;
+    font-weight: 500;
+    min-width: 160px;
+}
+
+.mcp-tool-title {
+    flex: 1;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 13px;
+    color: #888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mcp-tool-expand {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+    transition: transform 0.2s, color 0.2s;
+}
+
+.mcp-tool.expanded .mcp-tool-expand {
+    transform: rotate(90deg);
+    color: var(--cmd-prefix);
+}
+
+/* Tool Details */
+.mcp-tool-details {
+    display: none;
+    padding: 0 12px 12px 52px;
+}
+
+.mcp-tool.expanded .mcp-tool-details {
+    display: block;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.mcp-tool-desc {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #666;
+    background: var(--expand-bg);
+    padding: 12px 14px;
+    border-radius: 6px;
+    border-left: 2px solid #2a2a2a;
+}
+
+.mcp-tool-desc strong {
+    color: #999;
+    font-weight: 600;
+}
+
+.mcp-tool-desc code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: #1a1a1a;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--cmd-prefix);
+}
+
+/* Empty/No Results State */
+.mcp-empty {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.mcp-empty.show {
+    display: flex;
+}
+
+.mcp-empty-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+}
+
+.mcp-empty-text {
+    font-family: 'Satoshi', sans-serif;
+    font-size: 14px;
+    color: #444;
+}
+
+.mcp-empty-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #333;
+    margin-top: 8px;
+}
+
+/* Footer Stats */
+.mcp-footer {
+    padding: 10px 16px;
+    border-top: 1px solid var(--terminal-border);
+    background: #0d0d0d;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mcp-footer-stat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #444;
+}
+
+.mcp-footer-stat span {
+    color: #666;
+}
+
+/* Category color accents */
+.mcp-tool[data-category="lifecycle"] .mcp-tool-name { color: #40B66B; }
+.mcp-tool[data-category="navigation"] .mcp-tool-name { color: #4C82FB; }
+.mcp-tool[data-category="elements"] .mcp-tool-name { color: #FC72FF; }
+.mcp-tool[data-category="forms"] .mcp-tool-name { color: #FF6B00; }
+.mcp-tool[data-category="vision"] .mcp-tool-name { color: #a78bfa; }
+.mcp-tool[data-category="page"] .mcp-tool-name { color: #22d3ee; }
+.mcp-tool[data-category="debug"] .mcp-tool-name { color: #fbbf24; }
+.mcp-tool[data-category="tabs"] .mcp-tool-name { color: #f472b6; }
+.mcp-tool[data-category="emulation"] .mcp-tool-name { color: #34d399; }
+.mcp-tool[data-category="pool"] .mcp-tool-name { color: #94a3b8; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .mcp-body {
+        flex-direction: column;
+    }
+    .mcp-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--terminal-border);
+        display: flex;
+        overflow-x: auto;
+        padding: 8px;
+        gap: 4px;
+    }
+    .mcp-category {
+        padding: 8px 12px;
+        border-radius: 6px;
+        white-space: nowrap;
+    }
+    .mcp-category::before {
+        display: none;
+    }
+    .mcp-category.active {
+        background: rgba(252, 114, 255, 0.15);
+    }
+    .mcp-tool-name {
+        min-width: auto;
+    }
+}
+</style>
+
+<div class="mcp-container">
+    <div class="mcp-header">
+        <div class="mcp-header-dots">
+            <div class="mcp-header-dot red"></div>
+            <div class="mcp-header-dot yellow"></div>
+            <div class="mcp-header-dot green"></div>
+        </div>
+        <div class="mcp-header-title">MCP Tools Reference</div>
+        <div class="mcp-header-badge" id="toolCount">33 tools</div>
+    </div>
+
+    <div class="mcp-search">
+        <div class="mcp-search-inner">
+            <span class="mcp-search-prefix">❯</span>
+            <input type="text" class="mcp-search-input" id="mcpSearch" placeholder="Search tools..." autocomplete="off">
+            <span class="mcp-search-hint">⌘K</span>
+        </div>
+    </div>
+
+    <div class="mcp-body">
+        <div class="mcp-sidebar" id="mcpSidebar">
+            <div class="mcp-category active" data-category="all">
+                <span class="mcp-category-icon">◈</span>
+                <span>All Tools</span>
+                <span class="mcp-category-count" id="countAll">33</span>
+            </div>
+            <div class="mcp-category" data-category="lifecycle">
+                <span class="mcp-category-icon">⚡</span>
+                <span>Lifecycle</span>
+                <span class="mcp-category-count">3</span>
+            </div>
+            <div class="mcp-category" data-category="navigation">
+                <span class="mcp-category-icon">→</span>
+                <span>Navigation</span>
+                <span class="mcp-category-count">3</span>
+            </div>
+            <div class="mcp-category" data-category="elements">
+                <span class="mcp-category-icon">◇</span>
+                <span>Elements</span>
+                <span class="mcp-category-count">8</span>
+            </div>
+            <div class="mcp-category" data-category="forms">
+                <span class="mcp-category-icon">▤</span>
+                <span>Forms</span>
+                <span class="mcp-category-count">3</span>
+            </div>
+            <div class="mcp-category" data-category="vision">
+                <span class="mcp-category-icon">◉</span>
+                <span>GUI/Vision</span>
+                <span class="mcp-category-count">3</span>
+            </div>
+            <div class="mcp-category" data-category="page">
+                <span class="mcp-category-icon">▢</span>
+                <span>Page</span>
+                <span class="mcp-category-count">5</span>
+            </div>
+            <div class="mcp-category" data-category="debug">
+                <span class="mcp-category-icon">⚙</span>
+                <span>Debug</span>
+                <span class="mcp-category-count">2</span>
+            </div>
+            <div class="mcp-category" data-category="tabs">
+                <span class="mcp-category-icon">◫</span>
+                <span>Tabs/Dialogs</span>
+                <span class="mcp-category-count">2</span>
+            </div>
+            <div class="mcp-category" data-category="emulation">
+                <span class="mcp-category-icon">◐</span>
+                <span>Emulation</span>
+                <span class="mcp-category-count">2</span>
+            </div>
+            <div class="mcp-category" data-category="pool">
+                <span class="mcp-category-icon">▣</span>
+                <span>Pool</span>
+                <span class="mcp-category-count">2</span>
+            </div>
+        </div>
+
+        <div class="mcp-tools" id="mcpTools">
+            <!-- Tools will be populated by JavaScript -->
+        </div>
+
+        <div class="mcp-empty" id="mcpEmpty">
+            <div class="mcp-empty-icon">⌀</div>
+            <div class="mcp-empty-text">No tools match your search</div>
+            <div class="mcp-empty-hint">Try a different keyword</div>
+        </div>
+    </div>
+
+    <div class="mcp-footer">
+        <div class="mcp-footer-stat">Showing <span id="visibleCount">33</span> of <span>33</span> tools</div>
+        <div class="mcp-footer-stat">MCP endpoint: <span>http://localhost:18080/mcp</span></div>
+    </div>
+</div>
+
+<script>
+// MCP Tools Data - will be populated by generate_docs.py
+const MCP_TOOLS = {{MCP_TOOLS_JSON}};
+
+// Category mapping
+const CATEGORY_MAP = {
+    'create_browser': 'lifecycle',
+    'close_browser': 'lifecycle',
+    'browsers': 'lifecycle',
+    'navigate_browser': 'navigation',
+    'get_url': 'navigation',
+    'history': 'navigation',
+    'click': 'elements',
+    'type_text': 'elements',
+    'press_keys': 'elements',
+    'check_element': 'elements',
+    'wait_element': 'elements',
+    'get_element_data': 'elements',
+    'mouse': 'elements',
+    'scroll': 'elements',
+    'fill_form': 'forms',
+    'select': 'forms',
+    'upload_file': 'forms',
+    'gui_click': 'vision',
+    'detect_coordinates': 'vision',
+    'what_is_visible': 'vision',
+    'take_screenshot': 'page',
+    'get_content': 'page',
+    'execute_script': 'page',
+    'resize': 'page',
+    'snapshot': 'page',
+    'console_logs': 'debug',
+    'network_logs': 'debug',
+    'tabs': 'tabs',
+    'dialog': 'tabs',
+    'emulate': 'emulation',
+    'performance': 'emulation',
+    'get_pool_status': 'pool',
+    'health_check': 'pool'
+};
+
+// Initialize
+document.addEventListener('DOMContentLoaded', () => {
+    updateCategoryCounts();
+    renderTools(MCP_TOOLS);
+    setupSearch();
+    setupCategories();
+    setupKeyboardShortcut();
+});
+
+function updateCategoryCounts() {
+    // Count tools per category
+    const counts = { all: MCP_TOOLS.length };
+    MCP_TOOLS.forEach(tool => {
+        const cat = CATEGORY_MAP[tool.name] || 'other';
+        counts[cat] = (counts[cat] || 0) + 1;
+    });
+
+    // Update UI
+    document.querySelectorAll('.mcp-category').forEach(el => {
+        const cat = el.dataset.category;
+        const countEl = el.querySelector('.mcp-category-count');
+        if (countEl && counts[cat] !== undefined) {
+            countEl.textContent = counts[cat];
+        }
+    });
+
+    // Update header badge
+    document.getElementById('toolCount').textContent = `${MCP_TOOLS.length} tools`;
+}
+
+function renderTools(tools, filter = '', category = 'all') {
+    const container = document.getElementById('mcpTools');
+    const empty = document.getElementById('mcpEmpty');
+
+    let filteredTools = tools.filter(tool => {
+        const matchesSearch = filter === '' ||
+            tool.name.toLowerCase().includes(filter.toLowerCase()) ||
+            tool.title.toLowerCase().includes(filter.toLowerCase());
+        const matchesCategory = category === 'all' || CATEGORY_MAP[tool.name] === category;
+        return matchesSearch && matchesCategory;
+    });
+
+    if (filteredTools.length === 0) {
+        container.innerHTML = '';
+        empty.classList.add('show');
+        document.getElementById('visibleCount').textContent = '0';
+        return;
+    }
+
+    empty.classList.remove('show');
+    document.getElementById('visibleCount').textContent = filteredTools.length;
+
+    container.innerHTML = filteredTools.map((tool, idx) => {
+        const cat = CATEGORY_MAP[tool.name] || 'other';
+        const desc = tool.description || '';
+        return `
+            <div class="mcp-tool" data-category="${cat}" data-name="${tool.name}">
+                <div class="mcp-tool-header" onclick="toggleTool(this)">
+                    <span class="mcp-tool-line">${String(idx + 1).padStart(2, '0')}</span>
+                    <span class="mcp-tool-name">${tool.name}</span>
+                    <span class="mcp-tool-title">${escapeHtml(tool.title)}</span>
+                    <span class="mcp-tool-expand">›</span>
+                </div>
+                ${desc ? `
+                <div class="mcp-tool-details">
+                    <div class="mcp-tool-desc">${formatDescription(desc)}</div>
+                </div>
+                ` : ''}
+            </div>
+        `;
+    }).join('');
+}
+
+function toggleTool(header) {
+    const tool = header.parentElement;
+    tool.classList.toggle('expanded');
+}
+
+function setupSearch() {
+    const input = document.getElementById('mcpSearch');
+    let debounceTimer;
+
+    input.addEventListener('input', (e) => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            const activeCategory = document.querySelector('.mcp-category.active')?.dataset.category || 'all';
+            renderTools(MCP_TOOLS, e.target.value, activeCategory);
+        }, 150);
+    });
+}
+
+function setupCategories() {
+    document.querySelectorAll('.mcp-category').forEach(cat => {
+        cat.addEventListener('click', () => {
+            document.querySelectorAll('.mcp-category').forEach(c => c.classList.remove('active'));
+            cat.classList.add('active');
+            const filter = document.getElementById('mcpSearch').value;
+            renderTools(MCP_TOOLS, filter, cat.dataset.category);
+        });
+    });
+}
+
+function setupKeyboardShortcut() {
+    document.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            e.preventDefault();
+            document.getElementById('mcpSearch').focus();
+        }
+    });
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function formatDescription(desc) {
+    // Convert **text** to <strong>text</strong>
+    // Convert `code` to <code>code</code>
+    // Convert newlines to <br>
+    return desc
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\n/g, '<br>');
+}
+</script>
