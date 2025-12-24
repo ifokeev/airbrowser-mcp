@@ -15,7 +15,7 @@ def read_requirements():
 
 setup(
     name="airbrowser-mcp",
-    version="1.1.6",
+    version="1.1.7",
     author="Ivan Fokeev",
     author_email="vanya@vanya.cc",
     description="Airbrowser: AI Remote Browser - Undetectable Chrome runtime for AI agents",
