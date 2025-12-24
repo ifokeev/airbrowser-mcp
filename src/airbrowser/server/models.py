@@ -47,10 +47,11 @@ class BrowserStatus(Enum):
 class BrowserConfig:
     """Configuration for creating a browser instance.
 
-    Note: Browsers always run with UC (undetected chrome) + CDP mode enabled,
-    and are always headful (virtual display via noVNC).
+    Note: Browsers are always headful (virtual display via noVNC).
+    UC (undetected chrome) mode is enabled by default but can be disabled for faster startup.
     """
 
+    uc: bool = True  # Undetected Chrome mode (slower but bypasses bot detection)
     profile_name: str | None = None  # None = fresh session, named = persistent
     proxy: str | None = None
     user_agent: str | None = None
@@ -63,6 +64,7 @@ class BrowserConfig:
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            "uc": self.uc,
             "profile_name": self.profile_name,
             "proxy": self.proxy,
             "user_agent": self.user_agent,
