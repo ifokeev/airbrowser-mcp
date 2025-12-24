@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.4](https://github.com/ifokeev/airbrowser-mcp/compare/v1.2.3...v1.2.4) (2025-12-24)
+
+
+### Bug Fixes
+
+* **ci:** add pages permissions to release-please workflow ([94d21e8](https://github.com/ifokeev/airbrowser-mcp/commit/94d21e8470ad089c22cdd5572eb6bc7b5ea3b8ff))
+* **ci:** deploy pages directly in release workflow ([6b9571d](https://github.com/ifokeev/airbrowser-mcp/commit/6b9571d863f29688d7990bec3eaf5729a92cb74d))
+
+
+### Documentation
+
+* regenerate documentation for v1.2.3 ([6039381](https://github.com/ifokeev/airbrowser-mcp/commit/603938116c3c931de2d5224d408875f4a3e5c3d7))
+
 ## [1.2.3](https://github.com/ifokeev/airbrowser-mcp/compare/v1.2.2...v1.2.3) (2025-12-24)
 
 
