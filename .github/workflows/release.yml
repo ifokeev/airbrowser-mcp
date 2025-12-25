@@ -96,8 +96,8 @@ jobs:
         env:
           VERSION: ${{ steps.version.outputs.VERSION }}
         run: |
-          # Start server for OpenAPI spec
-          docker run -d --name airbrowser-docs -p 8000:8000 airbrowser:latest
+          # Start server for OpenAPI spec (enable all tools for documentation)
+          docker run -d --name airbrowser-docs -p 8000:8000 -e MCP_INCLUDE_ALL_TOOLS=true airbrowser:latest
           for i in {1..30}; do
             if curl -sf http://localhost:8000/health; then break; fi
             echo "Waiting for server... ($i/30)"

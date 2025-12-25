@@ -2,6 +2,7 @@
 
 import functools
 import inspect
+import os
 import sys
 import time
 import traceback
@@ -19,6 +20,9 @@ _INJECT_START_TIME = {"get_pool_status", "health_check"}
 # Methods to exclude from MCP (internal/private)
 _EXCLUDED_METHODS = {"__init__", "__class__", "__repr__", "__str__"}
 
+# Vision tools that require OPENROUTER_API_KEY
+_VISION_TOOLS = {"what_is_visible", "detect_coordinates"}
+
 
 class MCPIntegration:
     """Integrates MCP protocol with browser operations via auto-generation."""
@@ -32,10 +36,22 @@ class MCPIntegration:
     def _register_tools(self):
         """Auto-register all public BrowserOperations methods as MCP tools."""
         registered = []
+        skipped_vision = []
+
+        # Check if vision tools should be enabled
+        # MCP_INCLUDE_ALL_TOOLS=true enables all tools (for doc generation)
+        # OPENROUTER_API_KEY enables vision tools for actual use
+        include_all_tools = os.environ.get("MCP_INCLUDE_ALL_TOOLS", "").lower() == "true"
+        has_openrouter_key = bool(os.environ.get("OPENROUTER_API_KEY"))
 
         for name in dir(self.browser_ops):
             # Skip private/magic methods
             if name.startswith("_") or name in _EXCLUDED_METHODS:
+                continue
+
+            # Skip vision tools unless OPENROUTER_API_KEY is set or MCP_INCLUDE_ALL_TOOLS=true
+            if name in _VISION_TOOLS and not (has_openrouter_key or include_all_tools):
+                skipped_vision.append(name)
                 continue
 
             method = getattr(self.browser_ops, name)
@@ -51,6 +67,8 @@ class MCPIntegration:
                 registered.append(name)
 
         print(f"[MCP] Auto-registered {len(registered)} tools from BrowserOperations")
+        if skipped_vision:
+            print(f"[MCP] Vision tools disabled (set OPENROUTER_API_KEY to enable): {', '.join(skipped_vision)}")
 
     def _create_tool_wrapper(self, name: str, method: Callable) -> Callable | None:
         """Create an async MCP tool wrapper for a BrowserOperations method."""
