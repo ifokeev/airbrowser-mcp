@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,10 +26,11 @@ class ContentData(BaseModel):
     """
     ContentData
     """ # noqa: E501
-    html: Optional[StrictStr] = Field(default=None, description="Page HTML content")
+    text: Optional[StrictStr] = Field(default=None, description="Visible text content (no HTML tags)")
     title: Optional[StrictStr] = Field(default=None, description="Page title")
     url: Optional[StrictStr] = Field(default=None, description="Current URL")
-    __properties: ClassVar[List[str]] = ["html", "title", "url"]
+    truncated: Optional[StrictBool] = Field(default=None, description="Whether text was truncated")
+    __properties: ClassVar[List[str]] = ["text", "title", "url", "truncated"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -82,9 +83,10 @@ class ContentData(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "html": obj.get("html"),
+            "text": obj.get("text"),
             "title": obj.get("title"),
-            "url": obj.get("url")
+            "url": obj.get("url"),
+            "truncated": obj.get("truncated")
         })
         return _obj
 

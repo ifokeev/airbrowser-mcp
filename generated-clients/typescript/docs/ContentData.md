@@ -5,9 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**html** | **string** | Page HTML content | [optional] [default to undefined]
+**text** | **string** | Visible text content (no HTML tags) | [optional] [default to undefined]
 **title** | **string** | Page title | [optional] [default to undefined]
 **url** | **string** | Current URL | [optional] [default to undefined]
+**truncated** | **boolean** | Whether text was truncated | [optional] [default to undefined]
 
 ## Example
 
@@ -15,9 +16,10 @@ Name | Type | Description | Notes
 import { ContentData } from 'airbrowser-client';
 
 const instance: ContentData = {
-    html,
+    text,
     title,
     url,
+    truncated,
 };
 ```
 

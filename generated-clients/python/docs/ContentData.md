@@ -5,9 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**html** | **str** | Page HTML content | [optional] 
+**text** | **str** | Visible text content (no HTML tags) | [optional] 
 **title** | **str** | Page title | [optional] 
 **url** | **str** | Current URL | [optional] 
+**truncated** | **bool** | Whether text was truncated | [optional] 
 
 ## Example
 

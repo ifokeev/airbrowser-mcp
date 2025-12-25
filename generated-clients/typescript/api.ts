@@ -359,9 +359,9 @@ export type ConsoleLogsRequestActionEnum = typeof ConsoleLogsRequestActionEnum[k
 
 export interface ContentData {
     /**
-     * Page HTML content
+     * Visible text content (no HTML tags)
      */
-    'html'?: string;
+    'text'?: string;
     /**
      * Page title
      */
@@ -370,6 +370,10 @@ export interface ContentData {
      * Current URL
      */
     'url'?: string;
+    /**
+     * Whether text was truncated
+     */
+    'truncated'?: boolean;
 }
 export interface ContentResponse {
     /**

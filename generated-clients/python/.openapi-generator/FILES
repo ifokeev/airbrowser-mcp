@@ -141,12 +141,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_action_result.py
-test/test_content_data.py
-test/test_content_response.py
-test/test_execute_data.py
-test/test_execute_response.py
-test/test_logs_response.py
-test/test_screenshot_data.py
-test/test_screenshot_response.py
 tox.ini
