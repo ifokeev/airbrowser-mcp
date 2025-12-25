@@ -122,7 +122,7 @@ ENV_VARS=(
 # Build environment args for docker/podman
 build_env_args() {
     local args=""
-    args="-e API_BASE_URL=http://localhost:18080"
+    args="-e API_BASE_URL=http://localhost:18080 -e NGINX_HTTPS_PORT=18443"
 
     # Pass through all supported environment variables if set
     for var in "${ENV_VARS[@]}"; do
@@ -166,7 +166,7 @@ main() {
     # Note: macOS doesn't support --network=host, so we use port mapping
     log "Starting server..."
     echo ""
-    log "All services at http://localhost:18080"
+    log "All services at https://localhost:18443 (or http://localhost:18080)"
     log "  Dashboard: /"
     log "  API Docs:  /docs/"
     log "  VNC:       /vnc/"
@@ -179,6 +179,7 @@ main() {
     exec $RUNTIME run --rm -it \
         --name airbrowser \
         -p 18080:18080 \
+        -p 18443:18443 \
         -v "$DATA_DIR/profiles:/app/browser-profiles" \
         -v "$DATA_DIR/screenshots:/tmp/screenshots" \
         -v "$DATA_DIR/downloads:/app/downloads" \
@@ -198,7 +199,7 @@ case "${1:-}" in
         echo "  --version, -v  Show version"
         echo "  --stop         Stop running instance"
         echo ""
-        echo "All services available at http://localhost:18080:"
+        echo "All services available at https://localhost:18443 (or http://localhost:18080):"
         echo "  Dashboard: /"
         echo "  API Docs:  /docs/"
         echo "  VNC:       /vnc/"

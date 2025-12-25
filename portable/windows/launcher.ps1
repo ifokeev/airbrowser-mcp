@@ -73,7 +73,7 @@ $EnvVars = @(
 
 # Build environment arguments for container
 function Get-EnvArgs {
-    $envArgs = @("-e", "API_BASE_URL=http://localhost:18080")
+    $envArgs = @("-e", "API_BASE_URL=http://localhost:18080", "-e", "NGINX_HTTPS_PORT=18443")
 
     # Pass through all supported environment variables if set
     foreach ($var in $EnvVars) {
@@ -192,7 +192,7 @@ function Start-Container {
 
     Write-Log "Starting server..."
     Write-Host ""
-    Write-Log "All services at http://localhost:18080"
+    Write-Log "All services at https://localhost:18443 (or http://localhost:18080)"
     Write-Log "  Dashboard: /"
     Write-Log "  API Docs:  /docs/"
     Write-Log "  VNC:       /vnc/"
@@ -209,6 +209,7 @@ function Start-Container {
         wsl docker run --rm -it `
             --name airbrowser `
             -p 18080:18080 `
+            -p 18443:18443 `
             -v "${wslDataDir}/profiles:/app/browser-profiles" `
             -v "${wslDataDir}/screenshots:/tmp/screenshots" `
             -v "${wslDataDir}/downloads:/app/downloads" `
@@ -218,6 +219,7 @@ function Start-Container {
         & $Runtime run --rm -it `
             --name airbrowser `
             -p 18080:18080 `
+            -p 18443:18443 `
             -v "${DataDir}\profiles:/app/browser-profiles" `
             -v "${DataDir}\screenshots:/tmp/screenshots" `
             -v "${DataDir}\downloads:/app/downloads" `
@@ -264,7 +266,7 @@ switch ($args[0]) {
         Write-Host "  --version  Show version"
         Write-Host "  --stop     Stop running instance"
         Write-Host ""
-        Write-Host "All services available at http://localhost:18080:"
+        Write-Host "All services available at https://localhost:18443 (or http://localhost:18080):"
         Write-Host "  Dashboard: /"
         Write-Host "  API Docs:  /docs/"
         Write-Host "  VNC:       /vnc/"
