@@ -16,6 +16,7 @@ from airbrowser_client.models import (
     HistoryRequest,
     NavigateRequest,
     NetworkLogsRequest,
+    PressKeysRequest,
     TypeRequest,
     WaitElementRequest,
 )
@@ -232,6 +233,124 @@ class TestElementInteraction:
         result = browser_client.check_element(browser_id, payload=request)
         assert result is not None
         assert result.success
+
+    def test_press_keys_enter(self, browser_client, browser_id):
+        """Test POST /browser/{browser_id}/press_keys with ENTER key."""
+        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+
+        # Create an input element via JavaScript
+        exec_request = ExecuteRequest(
+            script="""
+            var input = document.createElement('input');
+            input.id = 'test-input-keys';
+            input.style.cssText = 'width:200px;height:30px;';
+            document.body.insertBefore(input, document.body.firstChild);
+            return 'created';
+        """,
+            timeout=30,
+        )
+        browser_client.execute_script(browser_id, payload=exec_request)
+
+        # Wait for the input to be present
+        wait_request = WaitElementRequest(selector="#test-input-keys", by="css", until="visible", timeout=10)
+        browser_client.wait_element(browser_id, payload=wait_request)
+
+        # Press ENTER key
+        request = PressKeysRequest(selector="#test-input-keys", keys="ENTER", by="css")
+        result = browser_client.press_keys(browser_id, payload=request)
+        assert result is not None
+        assert result.success
+        assert result.data is not None
+        # Check that the keys were actually pressed (not empty)
+        assert "ENTER" in str(result.data)
+
+    def test_press_keys_tab(self, browser_client, browser_id):
+        """Test POST /browser/{browser_id}/press_keys with TAB key."""
+        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+
+        # Create two input elements
+        exec_request = ExecuteRequest(
+            script="""
+            var input1 = document.createElement('input');
+            input1.id = 'input-tab-1';
+            var input2 = document.createElement('input');
+            input2.id = 'input-tab-2';
+            document.body.insertBefore(input2, document.body.firstChild);
+            document.body.insertBefore(input1, document.body.firstChild);
+            input1.focus();
+            return 'created';
+        """,
+            timeout=30,
+        )
+        browser_client.execute_script(browser_id, payload=exec_request)
+
+        # Wait for the input
+        wait_request = WaitElementRequest(selector="#input-tab-1", by="css", until="visible", timeout=10)
+        browser_client.wait_element(browser_id, payload=wait_request)
+
+        # Press TAB key
+        request = PressKeysRequest(selector="#input-tab-1", keys="TAB", by="css")
+        result = browser_client.press_keys(browser_id, payload=request)
+        assert result is not None
+        assert result.success
+        assert "TAB" in str(result.data)
+
+    def test_press_keys_combination(self, browser_client, browser_id):
+        """Test POST /browser/{browser_id}/press_keys with key combination (CTRL+a)."""
+        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+
+        # Create an input with text
+        exec_request = ExecuteRequest(
+            script="""
+            var input = document.createElement('input');
+            input.id = 'input-combo';
+            input.value = 'some text to select';
+            document.body.insertBefore(input, document.body.firstChild);
+            input.focus();
+            return 'created';
+        """,
+            timeout=30,
+        )
+        browser_client.execute_script(browser_id, payload=exec_request)
+
+        # Wait for the input
+        wait_request = WaitElementRequest(selector="#input-combo", by="css", until="visible", timeout=10)
+        browser_client.wait_element(browser_id, payload=wait_request)
+
+        # Press CTRL+a to select all
+        request = PressKeysRequest(selector="#input-combo", keys="CTRL+a", by="css")
+        result = browser_client.press_keys(browser_id, payload=request)
+        assert result is not None
+        assert result.success
+        assert "CTRL+a" in str(result.data)
+
+    def test_press_keys_escape(self, browser_client, browser_id):
+        """Test POST /browser/{browser_id}/press_keys with ESCAPE key."""
+        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+
+        # Create an input element for the ESCAPE test
+        exec_request = ExecuteRequest(
+            script="""
+            var input = document.createElement('input');
+            input.id = 'input-escape';
+            document.body.insertBefore(input, document.body.firstChild);
+            input.focus();
+            return 'created';
+        """,
+            timeout=30,
+        )
+        browser_client.execute_script(browser_id, payload=exec_request)
+
+        # Wait for the input
+        wait_request = WaitElementRequest(selector="#input-escape", by="css", until="visible", timeout=10)
+        browser_client.wait_element(browser_id, payload=wait_request)
+
+        # Press ESCAPE key
+        request = PressKeysRequest(selector="#input-escape", keys="ESCAPE", by="css")
+        result = browser_client.press_keys(browser_id, payload=request)
+        assert result is not None
+        assert result.success
+        assert "ESCAPE" in str(result.data)
 
 
 class TestPageContent:

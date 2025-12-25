@@ -202,8 +202,15 @@ def handle_press_keys(driver, command: dict) -> dict:
                 # Regular character - preserve original case
                 keys_to_send.append(part_stripped)
 
-        # Send key combination using chord
-        element.send_keys(Keys.chord(*keys_to_send))
+        # Send key combination using ActionChains for proper modifier key handling
+        actions = ActionChains(driver)
+        # Hold down modifier keys, press the final key, then release
+        for key in keys_to_send[:-1]:
+            actions.key_down(key, element)
+        actions.send_keys_to_element(element, keys_to_send[-1])
+        for key in reversed(keys_to_send[:-1]):
+            actions.key_up(key, element)
+        actions.perform()
     else:
         # Single key - check if it's a special key
         key_upper = keys_input.strip().upper()
