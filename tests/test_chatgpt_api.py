@@ -5,7 +5,6 @@ ChatGPT test using the generated Python client and Browser Pool API
 Run with: pytest tests/test_chatgpt_api.py -v
 """
 
-import os
 import time
 
 import airbrowser_client
@@ -16,10 +15,7 @@ from airbrowser_client.models import (
     NavigateRequest,
 )
 
-
-def get_api_base_url():
-    """Get API base URL from environment or default."""
-    return os.environ.get("API_BASE_URL", "http://localhost:8000/api/v1")
+from conftest import get_api_base_url
 
 
 @pytest.mark.slow

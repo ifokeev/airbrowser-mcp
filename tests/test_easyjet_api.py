@@ -5,7 +5,6 @@ Based on undetected-testing/raw_easyjet.py
 Run with: pytest tests/test_easyjet_api.py -v
 """
 
-import os
 import time
 
 import airbrowser_client
@@ -13,10 +12,7 @@ import pytest
 from airbrowser_client.api import browser_api
 from airbrowser_client.models import BrowserConfig, NavigateRequest
 
-
-def get_api_base_url():
-    """Get API base URL from environment or default."""
-    return os.environ.get("API_BASE_URL", "http://localhost:8000/api/v1")
+from conftest import get_api_base_url
 
 
 @pytest.mark.slow

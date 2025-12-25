@@ -7,39 +7,10 @@ Tests profile management API and browser creation with profiles.
 Run with: pytest tests/test_profiles.py -v
 """
 
-import os
-import time
 import uuid
 
-import airbrowser_client
 import pytest
-from airbrowser_client.api import browser_api, profiles_api
 from airbrowser_client.models import BrowserConfig, CreateProfileRequest
-
-
-def get_api_base_url():
-    """Get API base URL from environment or default."""
-    return os.environ.get("API_BASE_URL", "http://localhost:8000/api/v1")
-
-
-@pytest.fixture(scope="module")
-def api_client():
-    """Create API client configuration."""
-    configuration = airbrowser_client.Configuration()
-    configuration.host = get_api_base_url()
-    return configuration
-
-
-@pytest.fixture(scope="module")
-def browser_client(api_client):
-    """Create browser API client."""
-    return browser_api.BrowserApi(airbrowser_client.ApiClient(api_client))
-
-
-@pytest.fixture(scope="module")
-def profiles_client(api_client):
-    """Create profiles API client."""
-    return profiles_api.ProfilesApi(airbrowser_client.ApiClient(api_client))
 
 
 @pytest.fixture(scope="function")

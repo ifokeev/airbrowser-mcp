@@ -6,18 +6,12 @@ Tests all key features including browser creation, navigation, and interactions.
 Run with: pytest tests/test_generated_client_complete.py -v
 """
 
-import os
-import time
-
 import airbrowser_client
 import pytest
-from airbrowser_client.api import browser_api, health_api, pool_api
+from airbrowser_client.api import browser_api, health_api
 from airbrowser_client.models import BrowserConfig, ExecuteRequest, NavigateRequest
 
-
-def get_api_base_url():
-    """Get API base URL from environment or default."""
-    return os.environ.get("API_BASE_URL", "http://localhost:8000/api/v1")
+from conftest import get_api_base_url
 
 
 @pytest.mark.browser
@@ -133,7 +127,6 @@ def test_browser_pool_scaling():
     configuration.host = get_api_base_url()
 
     browser_client = browser_api.BrowserApi(airbrowser_client.ApiClient(configuration))
-    pool_api.PoolApi(airbrowser_client.ApiClient(configuration))
 
     # Get pool status
     pool_status = browser_client.get_pool_status()

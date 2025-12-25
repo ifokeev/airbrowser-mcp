@@ -7,36 +7,12 @@ Tests tab management API using combined tabs endpoint.
 Run with: pytest tests/test_tabs.py -v
 """
 
-import os
-import time
-
-import airbrowser_client
 import pytest
-from airbrowser_client.api import browser_api
 from airbrowser_client.models import (
     BrowserConfig,
     NavigateRequest,
     TabsRequest,
 )
-
-
-def get_api_base_url():
-    """Get API base URL from environment or default."""
-    return os.environ.get("API_BASE_URL", "http://localhost:8000/api/v1")
-
-
-@pytest.fixture(scope="module")
-def api_client():
-    """Create API client configuration."""
-    configuration = airbrowser_client.Configuration()
-    configuration.host = get_api_base_url()
-    return configuration
-
-
-@pytest.fixture(scope="module")
-def browser_client(api_client):
-    """Create browser API client."""
-    return browser_api.BrowserApi(airbrowser_client.ApiClient(api_client))
 
 
 @pytest.fixture(scope="function")
