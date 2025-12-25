@@ -132,11 +132,15 @@ class BrowserInstance:
             logger.error(f"Failed to initialize browser {self.browser_id}: {error_msg}")
             return {"status": "error", "message": error_msg}
 
-    def execute_command(self, command: dict[str, Any], timeout: int = 10) -> dict[str, Any]:
+    def execute_command(self, command: dict[str, Any], timeout: int | None = None) -> dict[str, Any]:
         """Execute a browser command via file-based IPC"""
         import os
         import uuid
         from pathlib import Path
+
+        # Use provided timeout or default from environment (default 20 seconds)
+        if timeout is None:
+            timeout = int(os.environ.get("COMMAND_TIMEOUT_DEFAULT", 20))
 
         cmd_type = command.get("type")
 
@@ -339,9 +343,9 @@ class BrowserService:
 
         # Extract timeout defaults
         try:
-            non_nav_default = int(os.environ.get("COMMAND_TIMEOUT_DEFAULT", 60))
+            non_nav_default = int(os.environ.get("COMMAND_TIMEOUT_DEFAULT", 20))
         except Exception:
-            non_nav_default = 60
+            non_nav_default = 20
         default_timeout = self.navigate_timeout_default if command.get("type") == "navigate" else non_nav_default
         timeout = command.pop("timeout", default_timeout)
 

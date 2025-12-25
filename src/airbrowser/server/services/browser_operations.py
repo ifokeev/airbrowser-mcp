@@ -98,13 +98,13 @@ class BrowserOperations:
     # ==================== Elements ====================
 
     def click(
-        self, browser_id: str, selector: str, timeout: int = 10, by: str = "css", if_visible: bool = False
+        self, browser_id: str, selector: str, timeout: int | None = None, by: str = "css", if_visible: bool = False
     ) -> dict[str, Any]:
         """Click element. Use if_visible=True to only click if visible."""
         return self._elements.click(browser_id, selector, timeout, by, if_visible)
 
     def type_text(
-        self, browser_id: str, selector: str, text: str, timeout: int = 10, by: str = "css"
+        self, browser_id: str, selector: str, text: str, timeout: int | None = None, by: str = "css"
     ) -> dict[str, Any]:
         """Type text into element."""
         return self._elements.type_text(browser_id, selector, text, timeout, by)
@@ -118,7 +118,7 @@ class BrowserOperations:
         return self._elements.check_element(browser_id, selector, check, by)
 
     def wait_element(
-        self, browser_id: str, selector: str, until: WaitUntil, timeout: int = 10, by: str = "css"
+        self, browser_id: str, selector: str, until: WaitUntil, timeout: int | None = None, by: str = "css"
     ) -> dict[str, Any]:
         """Wait for element to be visible or hidden."""
         return self._elements.wait_element(browser_id, selector, until, timeout, by)

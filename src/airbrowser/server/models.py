@@ -115,7 +115,7 @@ class BrowserAction:
     selector: str | None = None
     text: str | None = None
     url: str | None = None
-    timeout: int = 10
+    timeout: int | None = None  # Use COMMAND_TIMEOUT_DEFAULT from env if not specified
     by: str = "css"
     options: dict[str, Any] = field(default_factory=dict)
 

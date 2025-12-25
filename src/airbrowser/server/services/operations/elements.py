@@ -32,7 +32,7 @@ class ElementOperations:
             return {"success": False, "error": f"{error_prefix} failed: {str(e)}"}
 
     def type_text(
-        self, browser_id: str, selector: str, text: str, timeout: int = 10, by: str = "css"
+        self, browser_id: str, selector: str, text: str, timeout: int | None = None, by: str = "css"
     ) -> dict[str, Any]:
         """Type text into an element in the browser."""
         try:
@@ -55,7 +55,7 @@ class ElementOperations:
         except Exception as e:
             return {"success": False, "error": f"Type operation failed: {str(e)}"}
 
-    def click_element(self, browser_id: str, selector: str, timeout: int = 10, by: str = "css") -> dict[str, Any]:
+    def click_element(self, browser_id: str, selector: str, timeout: int | None = None, by: str = "css") -> dict[str, Any]:
         """Click on an element in the browser."""
         try:
             action = BrowserAction(
@@ -76,7 +76,7 @@ class ElementOperations:
         except Exception as e:
             return {"success": False, "error": f"Click operation failed: {str(e)}"}
 
-    def get_text(self, browser_id: str, selector: str, timeout: int = 10, by: str = "css") -> dict[str, Any]:
+    def get_text(self, browser_id: str, selector: str, timeout: int | None = None, by: str = "css") -> dict[str, Any]:
         """Get text content from an element."""
         try:
             action = BrowserAction(
@@ -104,7 +104,7 @@ class ElementOperations:
         except Exception as e:
             return {"success": False, "error": f"Get text failed: {str(e)}"}
 
-    def wait_for_element(self, browser_id: str, selector: str, timeout: int = 10, by: str = "css") -> dict[str, Any]:
+    def wait_for_element(self, browser_id: str, selector: str, timeout: int | None = None, by: str = "css") -> dict[str, Any]:
         """Wait for an element to appear on the page."""
         try:
             action = BrowserAction(
@@ -341,7 +341,7 @@ class ElementOperations:
             return {"success": False, "error": f"Invalid check type: {check}"}
 
     def wait_element(
-        self, browser_id: str, selector: str, until: WaitUntil, timeout: int = 10, by: str = "css"
+        self, browser_id: str, selector: str, until: WaitUntil, timeout: int | None = None, by: str = "css"
     ) -> dict[str, Any]:
         """Wait for element state.
 
@@ -385,7 +385,7 @@ class ElementOperations:
             return {"success": False, "error": f"Invalid data_type: {data_type}"}
 
     def click(
-        self, browser_id: str, selector: str, timeout: int = 10, by: str = "css", if_visible: bool = False
+        self, browser_id: str, selector: str, timeout: int | None = None, by: str = "css", if_visible: bool = False
     ) -> dict[str, Any]:
         """Click on element. Use if_visible=True to only click if element is visible."""
         if if_visible:

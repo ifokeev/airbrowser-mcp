@@ -106,14 +106,16 @@ class BrowserIPCClient:
         """Execute command on a browser"""
         request = {"type": "browser_command", "browser_id": browser_id, "command": {"type": command_type, **kwargs}}
 
-        # Use higher timeout for navigation commands
-        if timeout is None and command_type == "navigate":
-            timeout = int(os.environ.get("NAVIGATE_TIMEOUT_DEFAULT", 60))
+        # Use appropriate default timeout based on command type
+        if timeout is None:
+            if command_type == "navigate":
+                timeout = int(os.environ.get("NAVIGATE_TIMEOUT_DEFAULT", 60))
+            else:
+                timeout = int(os.environ.get("COMMAND_TIMEOUT_DEFAULT", 20))
 
         # Include the timeout in the command payload so the service uses it
         # (Service extracts and applies this per-command timeout.)
-        if timeout is not None:
-            request["command"]["timeout"] = timeout
+        request["command"]["timeout"] = timeout
 
         response = self._send_request(request, timeout=timeout)
         return response

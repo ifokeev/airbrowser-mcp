@@ -9,7 +9,8 @@ This document describes all environment variables used by Airbrowser.
 | `MAX_BROWSERS` | 10 | Maximum concurrent browser instances |
 | `LOG_LEVEL` | INFO | Logging verbosity (DEBUG, INFO, WARNING, ERROR) |
 | `OPENROUTER_API_KEY` | - | API key for AI vision features |
-| `COMMAND_TIMEOUT_DEFAULT` | 60 | Default timeout for browser commands (seconds) |
+| `COMMAND_TIMEOUT_DEFAULT` | 20 | Default timeout for browser commands (seconds) |
+| `NAVIGATE_TIMEOUT_DEFAULT` | 60 | Default timeout for page navigation (seconds) |
 | `API_BASE_URL` | http://localhost:18080 | Base URL for the API server |
 
 ## Core Settings
@@ -66,12 +67,24 @@ OPENROUTER_ANALYSIS_MODEL=anthropic/claude-3.5-sonnet docker compose up
 ## Timeouts
 
 ### `COMMAND_TIMEOUT_DEFAULT`
-- **Default:** 60
-- **Description:** Default timeout in seconds for non-navigation browser commands (click, type, etc.).
+- **Default:** 20
+- **Description:** Default timeout in seconds for browser commands (click, type, wait, etc.).
+- **Usage:** Increase for slow connections or complex pages.
+
+```bash
+# Increase default command timeout to 30 seconds
+COMMAND_TIMEOUT_DEFAULT=30 docker compose up
+```
 
 ### `NAVIGATE_TIMEOUT_DEFAULT`
 - **Default:** 60
 - **Description:** Default timeout in seconds for page navigation.
+- **Usage:** Increase for slow-loading pages or poor network conditions.
+
+```bash
+# Increase navigation timeout to 120 seconds
+NAVIGATE_TIMEOUT_DEFAULT=120 docker compose up
+```
 
 ### `IPC_TIMEOUT_SLACK`
 - **Default:** 5
