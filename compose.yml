@@ -8,7 +8,8 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "18080:18080" # Dashboard/nginx (all services proxied here)
+      - "18080:18080" # Dashboard/nginx HTTP (all services proxied here)
+      - "18443:18443" # Dashboard/nginx HTTPS
       - "8000:8000"   # REST API (direct)
       - "3001:3001"   # MCP server (direct)
       - "5900:5900"   # VNC server
@@ -18,6 +19,7 @@ services:
       - MAX_BROWSERS=${MAX_BROWSERS:-10}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - API_BASE_URL=http://localhost:18080
+      - NGINX_HTTPS_PORT=18443
       # AI Vision (optional)
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
     volumes:
