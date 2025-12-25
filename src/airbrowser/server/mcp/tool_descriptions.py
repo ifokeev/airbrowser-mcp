@@ -110,11 +110,16 @@ For visual understanding, use `what_is_visible` instead.
 Returns: Visible text content, current URL, page title, and truncation flag.
 """,
     "take_screenshot": """
-Take a screenshot of the browser (returns image URL only).
+Take a screenshot of the browser.
+
+**HOW TO VIEW THE SCREENSHOT**: After calling this tool, use WebFetch on the returned
+`screenshot_url` to view the image and understand what's on the page. Example:
+1. Call `take_screenshot` → get `screenshot_url` like "http://localhost:18080/screenshots/xyz.png"
+2. Call WebFetch with that URL to see the actual screenshot
 
 **IMPORTANT: Always verify your actions!** After performing actions (navigate, click, type, press_keys),
-use `get_content` to read the page text and confirm the action succeeded. Don't assume success
-just because the API returned success - verify the actual page state.
+take a screenshot and use WebFetch to view it, confirming the action succeeded. Don't assume success
+just because the API returned success - verify the actual page state visually.
 
 If `what_is_visible` is available, use it instead for visual verification with AI analysis.
 """,
