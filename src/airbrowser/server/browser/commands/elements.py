@@ -4,8 +4,46 @@ import logging
 import time
 
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
 
 logger = logging.getLogger(__name__)
+
+# Map key names to Selenium Keys constants
+KEY_MAP = {
+    "ENTER": Keys.ENTER,
+    "RETURN": Keys.RETURN,
+    "TAB": Keys.TAB,
+    "ESCAPE": Keys.ESCAPE,
+    "BACKSPACE": Keys.BACKSPACE,
+    "DELETE": Keys.DELETE,
+    "SPACE": Keys.SPACE,
+    "UP": Keys.UP,
+    "DOWN": Keys.DOWN,
+    "LEFT": Keys.LEFT,
+    "RIGHT": Keys.RIGHT,
+    "HOME": Keys.HOME,
+    "END": Keys.END,
+    "PAGE_UP": Keys.PAGE_UP,
+    "PAGE_DOWN": Keys.PAGE_DOWN,
+    "F1": Keys.F1,
+    "F2": Keys.F2,
+    "F3": Keys.F3,
+    "F4": Keys.F4,
+    "F5": Keys.F5,
+    "F6": Keys.F6,
+    "F7": Keys.F7,
+    "F8": Keys.F8,
+    "F9": Keys.F9,
+    "F10": Keys.F10,
+    "F11": Keys.F11,
+    "F12": Keys.F12,
+    "CONTROL": Keys.CONTROL,
+    "CTRL": Keys.CONTROL,
+    "ALT": Keys.ALT,
+    "SHIFT": Keys.SHIFT,
+    "META": Keys.META,
+    "COMMAND": Keys.COMMAND,
+}
 
 
 def _find_element_by(driver, selector: str, by: str = "css"):
@@ -134,19 +172,48 @@ def handle_wait_for_element_not_visible(driver, command: dict) -> dict:
 
 
 def handle_press_keys(driver, command: dict) -> dict:
-    """Press keys on an element."""
+    """Press keys on an element.
+
+    Supports special key names like ENTER, TAB, ESCAPE, etc.
+    Multiple keys can be combined with + (e.g., "CTRL+a" for select all).
+    """
     selector = command.get("selector")
     by = command.get("by", "css")
-    keys = command.get("keys", "")
+    keys_input = command.get("text", "")  # BrowserAction uses "text" field
     if not selector:
         return {"status": "error", "message": "Selector is required"}
 
     element = _find_element_by(driver, selector, by)
-    if element:
-        element.send_keys(keys)
-        return {"status": "success", "message": "Keys pressed"}
-    else:
+    if not element:
         return {"status": "error", "message": "Element not found"}
+
+    # Convert key names to Selenium Keys constants
+    # Support both single keys ("ENTER") and combinations ("CTRL+a")
+    if "+" in keys_input:
+        # Handle key combinations like "CTRL+a", "SHIFT+TAB"
+        parts = keys_input.split("+")
+        keys_to_send = []
+        for part in parts:
+            part_stripped = part.strip()
+            part_upper = part_stripped.upper()
+            if part_upper in KEY_MAP:
+                keys_to_send.append(KEY_MAP[part_upper])
+            else:
+                # Regular character - preserve original case
+                keys_to_send.append(part_stripped)
+
+        # Send key combination using chord
+        element.send_keys(Keys.chord(*keys_to_send))
+    else:
+        # Single key - check if it's a special key
+        key_upper = keys_input.strip().upper()
+        if key_upper in KEY_MAP:
+            element.send_keys(KEY_MAP[key_upper])
+        else:
+            # Regular text, send as-is
+            element.send_keys(keys_input)
+
+    return {"status": "success", "message": f"Keys pressed: {keys_input}"}
 
 
 def handle_get_text(driver, command: dict) -> dict:
