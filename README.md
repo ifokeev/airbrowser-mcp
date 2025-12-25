@@ -87,23 +87,6 @@ claude mcp add airbrowser --transport http http://localhost:18080/mcp
 </details>
 
 <details>
-<summary><b>Claude Desktop</b></summary>
-
-Add to `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "airbrowser": {
-      "url": "http://localhost:18080/mcp",
-      "transport": "http"
-    }
-  }
-}
-```
-</details>
-
-<details>
 <summary><b>Cursor</b></summary>
 
 Go to `Cursor Settings` → `MCP` → `Add new MCP Server`:
