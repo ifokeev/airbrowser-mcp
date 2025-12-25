@@ -35,7 +35,7 @@ class VisionOperations:
                     "message": result.message,
                     "prompt": prompt,
                     "coordinates": coord_data,
-                    "screenshot_path": coord_data.get("screenshot_path"),
+                    "screenshot_url": coord_data.get("screenshot_url") or coord_data.get("screenshot_path"),
                     "model_used": coord_data.get("model_used"),
                     "confidence": coord_data.get("confidence"),
                     "click_point": coord_data.get("click_point"),
@@ -55,7 +55,7 @@ class VisionOperations:
                     "error": result.message,
                     "prompt": prompt,
                     "models_tried": (result.data.get("models_tried") if isinstance(result.data, dict) else []),
-                    "screenshot_path": (result.data.get("screenshot_path") if isinstance(result.data, dict) else None),
+                    "screenshot_url": (result.data.get("screenshot_url") or result.data.get("screenshot_path") if isinstance(result.data, dict) else None),
                 }
 
         except Exception as e:

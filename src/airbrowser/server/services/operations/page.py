@@ -19,18 +19,15 @@ class PageOperations:
             result = self.browser_pool.execute_action(browser_id, action)
 
             screenshot_url = None
-            screenshot_path = None
             if result.success and isinstance(result.data, dict):
-                # Browser command returns 'url' and 'path', not 'screenshot_url'
-                screenshot_url = result.data.get("url") or result.data.get("path")
-                screenshot_path = result.data.get("path") or screenshot_url
+                # Return URL only (path is internal Docker path, not accessible externally)
+                screenshot_url = result.data.get("url") or result.data.get("screenshot_url")
 
             return {
                 "success": result.success,
                 "message": result.message,
                 "data": {
                     "screenshot_url": screenshot_url,
-                    "screenshot_path": screenshot_path,
                 },
                 "error": result.message if not result.success else None,
             }
