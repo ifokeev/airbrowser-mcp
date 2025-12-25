@@ -16,6 +16,7 @@ export LOG_LEVEL=${LOG_LEVEL:-INFO}
 export VNC_PORT=${VNC_PORT:-5900}
 export NOVNC_PORT=${NOVNC_PORT:-6080}
 export NGINX_HTTP_PORT=${NGINX_HTTP_PORT:-18080}
+export NGINX_HTTPS_PORT=${NGINX_HTTPS_PORT:-18443}
 export DISABLE_NGINX=${DISABLE_NGINX:-false}
 
 # Create necessary directories (ignore errors if they exist)
@@ -72,7 +73,8 @@ echo "Max Browsers: $MAX_BROWSERS"
 echo "Browser Timeout: $BROWSER_TIMEOUT"
 echo "Cleanup Interval: $CLEANUP_INTERVAL"
 echo "Log Level: $LOG_LEVEL"
-echo "HTTPS (nginx): Enabled on port $HTTPS_PORT"
+echo "HTTP (nginx): Port $NGINX_HTTP_PORT"
+echo "HTTPS (nginx): Port $NGINX_HTTPS_PORT"
 echo "========================================="
 
 # Verify Chrome installation
@@ -307,6 +309,7 @@ out_path = Path("/etc/nginx/nginx.conf")
 text = template_path.read_text(encoding="utf-8")
 replacements = {
     "${NGINX_HTTP_PORT}": os.environ.get("NGINX_HTTP_PORT", "18080"),
+    "${NGINX_HTTPS_PORT}": os.environ.get("NGINX_HTTPS_PORT", "18443"),
     "${NOVNC_PORT}": os.environ.get("NOVNC_PORT", "6080"),
 }
 for k, v in replacements.items():
@@ -317,7 +320,7 @@ PY
 
     nginx
     if pgrep -f "nginx" > /dev/null; then
-        echo "✅ nginx started successfully on port $NGINX_HTTP_PORT"
+        echo "✅ nginx started successfully (HTTP: $NGINX_HTTP_PORT, HTTPS: $NGINX_HTTPS_PORT)"
     else
         echo "⚠️  WARNING: nginx failed to start"
     fi
