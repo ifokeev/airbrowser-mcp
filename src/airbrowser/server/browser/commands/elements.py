@@ -46,17 +46,24 @@ KEY_MAP = {
 }
 
 
+# Map our 'by' values to Selenium's expected format
+BY_MAP = {
+    "css": "css selector",
+    "xpath": "xpath",
+    "id": "id",
+    "name": "name",
+}
+
+
+def _get_selenium_by(by: str) -> str:
+    """Convert our by value to Selenium's expected format."""
+    return BY_MAP.get(by, "css selector")
+
+
 def _find_element_by(driver, selector: str, by: str = "css"):
     """Find element using the specified selector strategy."""
-    if by == "css":
-        return driver.find_element("css selector", selector)
-    elif by == "id":
-        return driver.find_element("id", selector)
-    elif by == "name":
-        return driver.find_element("name", selector)
-    elif by == "xpath":
-        return driver.find_element("xpath", selector)
-    return None
+    selenium_by = _get_selenium_by(by)
+    return driver.find_element(selenium_by, selector)
 
 
 def handle_click(driver, command: dict) -> dict:
@@ -66,17 +73,14 @@ def handle_click(driver, command: dict) -> dict:
     if not selector:
         return {"status": "error", "message": "Selector is required"}
 
-    # Use UC mode click
-    if by == "css":
-        driver.uc_click(selector)
-    else:
-        element = _find_element_by(driver, selector, by)
-        if element:
-            driver.uc_click(element)
-        else:
-            return {"status": "error", "message": "Element not found"}
-
-    return {"status": "success"}
+    try:
+        # Find the element and click it
+        selenium_by = _get_selenium_by(by)
+        element = driver.find_element(selenium_by, selector)
+        element.click()
+        return {"status": "success"}
+    except Exception as e:
+        return {"status": "error", "message": f"Click failed: {str(e)}"}
 
 
 def handle_type(driver, command: dict) -> dict:
@@ -87,13 +91,11 @@ def handle_type(driver, command: dict) -> dict:
     if not selector:
         return {"status": "error", "message": "Selector is required"}
 
-    element = _find_element_by(driver, selector, by)
-    if element:
-        element.clear()
-        driver.type(selector if by == "css" else element, text)
+    try:
+        driver.type(selector, text, by=_get_selenium_by(by))
         return {"status": "success"}
-    else:
-        return {"status": "error", "message": "Element not found"}
+    except Exception as e:
+        return {"status": "error", "message": f"Type failed: {str(e)}"}
 
 
 def handle_wait(driver, command: dict) -> dict:
@@ -105,23 +107,7 @@ def handle_wait(driver, command: dict) -> dict:
         return {"status": "error", "message": "Selector is required"}
 
     try:
-        if by == "css":
-            driver.wait_for_element_visible(selector, timeout=timeout)
-        else:
-            from selenium.common.exceptions import NoSuchElementException
-
-            start_time = time.time()
-            while time.time() - start_time < timeout:
-                try:
-                    element = _find_element_by(driver, selector, by)
-                    if element:
-                        return {"status": "success"}
-                except NoSuchElementException:
-                    pass
-                time.sleep(0.5)
-
-            return {"status": "error", "message": "Element not found after timeout"}
-
+        driver.wait_for_element_visible(selector, by=_get_selenium_by(by), timeout=timeout)
         return {"status": "success"}
     except Exception as e:
         return {"status": "error", "message": f"Element not found: {str(e)}"}
@@ -137,7 +123,7 @@ def handle_click_if_visible(driver, command: dict) -> dict:
     try:
         element = _find_element_by(driver, selector, by)
         if element and element.is_displayed():
-            driver.uc_click(element)
+            driver.uc_click(selector, by=_get_selenium_by(by))
             return {"status": "success", "clicked": True, "message": "Element clicked"}
         else:
             return {"status": "success", "clicked": False, "message": "Element not visible"}
@@ -153,22 +139,11 @@ def handle_wait_for_element_not_visible(driver, command: dict) -> dict:
     if not selector:
         return {"status": "error", "message": "Selector is required"}
 
-    if by == "css":
-        driver.wait_for_element_not_visible(selector, timeout=timeout)
+    try:
+        driver.wait_for_element_not_visible(selector, by=_get_selenium_by(by), timeout=timeout)
         return {"status": "success", "message": "Element is not visible"}
-    else:
-        from selenium.common.exceptions import NoSuchElementException
-
-        start_time = time.time()
-        while time.time() - start_time < timeout:
-            try:
-                element = _find_element_by(driver, selector, by)
-                if not element or not element.is_displayed():
-                    return {"status": "success", "message": "Element is not visible"}
-            except NoSuchElementException:
-                return {"status": "success", "message": "Element not present"}
-            time.sleep(0.5)
-        return {"status": "error", "message": "Element still visible after timeout"}
+    except Exception as e:
+        return {"status": "error", "message": f"Element still visible: {str(e)}"}
 
 
 def handle_press_keys(driver, command: dict) -> dict:
@@ -183,9 +158,10 @@ def handle_press_keys(driver, command: dict) -> dict:
     if not selector:
         return {"status": "error", "message": "Selector is required"}
 
-    element = _find_element_by(driver, selector, by)
-    if not element:
-        return {"status": "error", "message": "Element not found"}
+    try:
+        element = _find_element_by(driver, selector, by)
+    except Exception as e:
+        return {"status": "error", "message": f"Element not found: {str(e)}"}
 
     # Convert key names to Selenium Keys constants
     # Support both single keys ("ENTER") and combinations ("CTRL+a")
@@ -289,15 +265,19 @@ def handle_is_element_visible(driver, command: dict) -> dict:
 def handle_get_elements(driver, command: dict) -> dict:
     """Get multiple elements matching a selector."""
     selector = command.get("selector")
+    by = command.get("by", "css")
     if not selector:
         return {"status": "error", "message": "Selector is required"}
 
-    elements = driver.find_elements("css selector", selector)
-    return {
-        "status": "success",
-        "count": len(elements),
-        "elements": [{"text": el.text, "tag": el.tag_name} for el in elements[:10]],
-    }
+    try:
+        elements = driver.find_elements(_get_selenium_by(by), selector)
+        return {
+            "status": "success",
+            "count": len(elements),
+            "elements": [{"text": el.text, "tag": el.tag_name} for el in elements[:10]],
+        }
+    except Exception as e:
+        return {"status": "error", "message": f"Failed to find elements: {str(e)}"}
 
 
 def handle_hover(driver, command: dict) -> dict:

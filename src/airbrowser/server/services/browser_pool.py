@@ -272,7 +272,8 @@ class BrowserPoolAdapter:
 
             elif action.action == "press_keys":
                 response = self.client.execute_command(
-                    browser_id, "press_keys", selector=action.selector, text=action.text
+                    browser_id, "press_keys", selector=action.selector, text=action.text,
+                    by=getattr(action, "by", "css")
                 )
 
             elif action.action == "gui_click":
