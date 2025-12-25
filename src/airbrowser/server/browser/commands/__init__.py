@@ -2,7 +2,6 @@
 
 import json
 import logging
-import traceback
 
 from . import cookies, debug, dialogs, elements, emulation, gui, navigation, page, performance, tabs, vision
 
@@ -133,4 +132,4 @@ def handle_command(driver, command, browser_id: str = "unknown") -> dict:
 
     except Exception as e:
         logger.error(f"Error handling command {cmd_type}: {e}", exc_info=True)
-        return {"status": "error", "message": str(e), "traceback": traceback.format_exc()}
+        return {"status": "error", "message": str(e)}
