@@ -58,6 +58,21 @@ Open **http://localhost:18080** - all services available:
 - Tab management
 - Proxy per browser
 - MCP for AI agents
+- AI vision tools (optional)
+
+## AI Vision (Recommended)
+
+Enable AI-powered vision tools (`what_is_visible`, `detect_coordinates`) by setting your OpenRouter API key. Without it, these tools won't be available to AI agents.
+
+```bash
+# Docker run
+docker run -d -p 18080:18080 -e OPENROUTER_API_KEY=sk-or-v1-xxx ghcr.io/ifokeev/airbrowser-mcp:latest
+
+# Docker compose
+OPENROUTER_API_KEY=sk-or-v1-xxx docker compose up
+```
+
+Get your API key at https://openrouter.ai/
 
 ## MCP Client Configuration
 

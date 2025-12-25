@@ -10,6 +10,7 @@ This document describes all environment variables used by Airbrowser.
 | `LOG_LEVEL` | INFO | Logging verbosity (DEBUG, INFO, WARNING, ERROR) |
 | `OPENROUTER_API_KEY` | - | API key for AI vision features |
 | `COMMAND_TIMEOUT_DEFAULT` | 60 | Default timeout for browser commands (seconds) |
+| `API_BASE_URL` | http://localhost:18080 | Base URL for the API server |
 
 ## Core Settings
 
@@ -95,6 +96,17 @@ SCREEN_WIDTH=1366 SCREEN_HEIGHT=768 docker compose up
 ### `SCREEN_DPI`
 - **Default:** 96
 - **Description:** Display DPI for the virtual screen.
+
+## API Settings
+
+### `API_BASE_URL`
+- **Default:** http://localhost:18080
+- **Description:** Base URL for the API server. Used internally and passed to containers.
+- **Usage:** Override when running behind a reverse proxy or with custom networking.
+
+```bash
+API_BASE_URL=https://api.example.com docker compose up
+```
 
 ## Network Ports
 
