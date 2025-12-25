@@ -17,6 +17,7 @@ services:
       - PYTHONUNBUFFERED=1
       - MAX_BROWSERS=${MAX_BROWSERS:-10}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - API_BASE_URL=http://localhost:18080
       # AI Vision (optional)
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
     volumes:

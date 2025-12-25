@@ -23,6 +23,7 @@ services:
       - MAX_BROWSERS=${MAX_BROWSERS:-5}
       - LOG_LEVEL=${LOG_LEVEL:-DEBUG}
       - COMMAND_TIMEOUT_DEFAULT=90
+      - API_BASE_URL=http://localhost:18080
       # Dev resolution (overrides default 1920x1080)
       - SCREEN_WIDTH=1366
       - SCREEN_HEIGHT=768

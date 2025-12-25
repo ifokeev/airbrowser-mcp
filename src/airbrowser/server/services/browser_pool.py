@@ -207,7 +207,7 @@ class BrowserPoolAdapter:
 
                 if response.get("status") == "success" and screenshot_path.exists():
                     # Map to nginx-served URL
-                    screenshot_url = f"/static/screenshots/{filename}"
+                    screenshot_url = f"/screenshots/{filename}"
                     response["screenshot_url"] = screenshot_url
                     response["screenshot_path"] = screenshot_url
 

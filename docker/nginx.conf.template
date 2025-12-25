@@ -209,7 +209,7 @@ http {
         }
         
         # Serve screenshots from writable tmpfs directory
-        location /static/screenshots/ {
+        location /screenshots/ {
             alias /tmp/screenshots/;
             add_header Cache-Control "no-store";
             try_files $uri =404;
