@@ -223,13 +223,14 @@ def register_response_schemas(api):
         },
     )
 
-    # Content response (page HTML, title, etc.)
+    # Content response (visible text, title, etc.)
     content_data = api.model(
         "ContentData",
         {
-            "html": fields.String(description="Page HTML content"),
+            "text": fields.String(description="Visible text content (no HTML tags)"),
             "title": fields.String(description="Page title"),
             "url": fields.String(description="Current URL"),
+            "truncated": fields.Boolean(description="Whether text was truncated"),
         },
     )
 

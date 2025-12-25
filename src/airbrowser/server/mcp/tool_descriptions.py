@@ -93,21 +93,21 @@ to parse effectively, use this coordinate-based approach instead of selector-bas
 This performs the actual GUI click using PyAutoGUI, making it undetectable by anti-automation systems.
 """,
     "get_content": """
-**GET PAGE HTML CONTENT** - Retrieve the full HTML source of the current page.
+**GET VISIBLE TEXT CONTENT** - Retrieve the visible text from the current page (no HTML).
 
-**Best for smaller pages (<100KB)**: When you need to understand page structure and find
-CSS selectors for elements. Returns the complete HTML source code.
+Returns only the text that a user would see on the page, extracted from the DOM.
+Much more compact than raw HTML and suitable for understanding page content.
 
 **Use this to:**
-- Analyze page structure before using `gui_click` with selectors
-- Find form fields, buttons, and interactive elements
-- Understand page layout and identify CAPTCHA containers
-- Parse structured data from the page
+- Read article or page content
+- Extract visible text for analysis
+- Understand what the user sees without HTML clutter
+- Get page title and current URL
 
-**If HTML is too large/complex**: Use `what_is_visible` for visual understanding or
-`detect_coordinates` to find elements by description instead of parsing HTML.
+**Note**: Text is truncated at 50,000 characters to stay within token limits.
+For visual understanding, use `what_is_visible` instead.
 
-Returns: HTML content, current URL, and page title.
+Returns: Visible text content, current URL, page title, and truncation flag.
 """,
     "take_screenshot": """
 Take a screenshot of the browser (returns image URL only).

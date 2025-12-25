@@ -247,8 +247,9 @@ class TestPageContent:
         # Verify data structure matches schema
         assert result.data is not None, "Response data should not be None"
         assert result.data.title is not None, "Page title should be returned"
-        assert result.data.html is not None, "Page HTML should be returned"
+        assert result.data.text is not None, "Page text should be returned"
         assert "Example Domain" in result.data.title
+        assert "Example Domain" in result.data.text
 
     def test_screenshot(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/screenshot endpoint."""

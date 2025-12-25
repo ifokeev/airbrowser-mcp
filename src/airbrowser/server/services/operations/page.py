@@ -35,27 +35,54 @@ class PageOperations:
         except Exception as e:
             return {"success": False, "error": f"Screenshot failed: {str(e)}"}
 
-    def get_content(self, browser_id: str) -> dict[str, Any]:
-        """Get the page content."""
+    def get_content(self, browser_id: str, max_length: int = 50000) -> dict[str, Any]:
+        """Get the visible text content of the page (no HTML tags).
+
+        Returns the text that a user would see on the page, extracted from
+        document.body.innerText. This is much more compact than raw HTML
+        and suitable for LLM consumption.
+
+        Args:
+            browser_id: The browser instance ID
+            max_length: Maximum text length to return (default 50000 chars)
+        """
         try:
-            action = BrowserAction(action="get_content")
+            # Get text content via JavaScript - much cleaner than HTML
+            script = """
+            return {
+                text: document.body.innerText || document.body.textContent || '',
+                title: document.title,
+                url: window.location.href
+            };
+            """
+            action = BrowserAction(action="execute_script", text=script)
             result = self.browser_pool.execute_action(browser_id, action)
 
-            html = None
+            text = None
             title = None
             url = None
+            truncated = False
+
             if result.success and isinstance(result.data, dict):
-                html = result.data.get("content") or result.data.get("page_source")
-                title = result.data.get("title")
-                url = result.data.get("url")
+                script_result = result.data.get("result", {})
+                if isinstance(script_result, dict):
+                    text = script_result.get("text", "")
+                    title = script_result.get("title", "")
+                    url = script_result.get("url", "")
+
+                    # Truncate if too long
+                    if text and len(text) > max_length:
+                        text = text[:max_length] + "\n\n... [truncated]"
+                        truncated = True
 
             return {
                 "success": result.success,
                 "message": result.message,
                 "data": {
-                    "html": html,
+                    "text": text,
                     "title": title,
                     "url": url,
+                    "truncated": truncated,
                 },
                 "error": None if result.success else result.message,
             }
