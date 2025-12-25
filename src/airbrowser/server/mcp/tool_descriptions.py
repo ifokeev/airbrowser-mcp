@@ -6,24 +6,23 @@ better context about when and how to use each tool.
 
 TOOL_DESCRIPTIONS: dict[str, str] = {
     "what_is_visible": """
-**PRIMARY TOOL FOR UNDERSTANDING WEBPAGES** - Comprehensive page state analysis.
+**PRIMARY TOOL FOR VISUAL VERIFICATION** - Use this instead of take_screenshot + curl + Read.
 
-This is the BEST tool to use when you need to understand what's currently happening on a webpage.
-It automatically analyzes and reports on:
+This is the BEST and FASTEST way to see what's on the page. It takes a screenshot internally
+and uses AI to analyze it, so you don't need to manually download and view screenshots.
 
+**Automatically analyzes:**
 - **Form fields**: Which are filled, empty, or required
 - **Interactive elements**: Checkbox/radio states, button availability
 - **CAPTCHA status**: Present, solved, or needs attention
 - **Messages**: Errors, success notifications, validation feedback
-- **Form progress**: Multi-step form status and current step
 - **Page purpose**: What the user should do next
 
-**Use this when you need to:**
-- Understand the current state of any webpage
-- Check if forms are filled correctly
-- Verify CAPTCHA completion
-- Identify what actions are available
-- Debug form submission issues
+**Use this to:**
+- Verify actions worked (after click, type, navigate)
+- Understand current page state
+- Find elements to interact with
+- Debug issues
 """,
     "detect_coordinates": """
 **VISION-BASED ELEMENT DETECTION** - Find elements using AI vision when HTML parsing is impractical.
@@ -117,16 +116,13 @@ Returns: Visible text content, current URL, page title, and truncation flag.
     "take_screenshot": """
 Take a screenshot of the browser.
 
-**HOW TO VIEW THE SCREENSHOT**: WebFetch doesn't support localhost URLs. Instead:
+**PREFER `what_is_visible`**: If AI vision is enabled (OPENROUTER_API_KEY set), use `what_is_visible`
+instead - it's faster and provides AI analysis without manual screenshot download.
+
+**MANUAL SCREENSHOT WORKFLOW** (only if `what_is_visible` is not available):
 1. Call `take_screenshot` → get `screenshot_url`
 2. Download with curl: `curl -s <screenshot_url> -o /tmp/screenshot.png`
 3. Use the Read tool on `/tmp/screenshot.png` to view the image
-
-**IMPORTANT: Always verify your actions!** After performing actions (navigate, click, type, press_keys),
-take a screenshot and view it to confirm the action succeeded. Don't assume success just because
-the API returned success - verify the actual page state visually.
-
-If `what_is_visible` is available, use it instead for visual verification with AI analysis.
 """,
     "console_logs": """
 List recent browser console messages (best-effort; depends on Chrome/Selenium logging support).
