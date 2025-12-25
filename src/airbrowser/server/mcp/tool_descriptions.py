@@ -112,8 +112,11 @@ Returns: Visible text content, current URL, page title, and truncation flag.
     "take_screenshot": """
 Take a screenshot of the browser (returns image URL only).
 
-NOTE: If you want to UNDERSTAND what's on the page, use `what_is_visible` instead!
-`what_is_visible` combines screenshot + AI analysis for better understanding.
+**IMPORTANT: Always verify your actions!** After performing actions (navigate, click, type, press_keys),
+use `get_content` to read the page text and confirm the action succeeded. Don't assume success
+just because the API returned success - verify the actual page state.
+
+If `what_is_visible` is available, use it instead for visual verification with AI analysis.
 """,
     "console_logs": """
 List recent browser console messages (best-effort; depends on Chrome/Selenium logging support).
@@ -161,5 +164,33 @@ Can scroll to:
 - Absolute coordinates (x, y position on page)
 
 Use `scroll_by` for relative scrolling.
+""",
+    "navigate": """
+Navigate the browser to a URL.
+
+**IMPORTANT**: After navigating, verify the page loaded correctly by calling `get_content`
+to check the page title and text content. Don't assume navigation succeeded just because
+the API returned success.
+""",
+    "click": """
+Click on an element using CSS selector.
+
+**IMPORTANT**: After clicking (especially form submits, buttons), verify the action worked
+by calling `get_content` to check if the page changed as expected. Don't assume the click
+had the intended effect without verification.
+""",
+    "type_text": """
+Type text into an input field.
+
+After typing, consider verifying the text was entered correctly, especially before
+submitting forms. Use `get_content` or check element values if needed.
+""",
+    "press_keys": """
+Press keyboard keys on an element. Supports special keys (ENTER, TAB, ESCAPE, etc.)
+and key combinations (CTRL+a, SHIFT+TAB).
+
+**IMPORTANT**: After pressing ENTER to submit a form or perform a search, ALWAYS verify
+the action worked by calling `get_content` to check the resulting page. Don't assume
+the key press had the intended effect without verification.
 """,
 }
