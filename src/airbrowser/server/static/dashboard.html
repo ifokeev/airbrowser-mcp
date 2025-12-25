@@ -917,17 +917,28 @@
                 }
 
                 addLog(`Creating browser${profileName ? ` with profile '${profileName}'` : ''}...`, 'info');
-                const response = await fetch('/api/v1/browser/create', {
+
+                // Start creation request (don't await yet)
+                const createPromise = fetch('/api/v1/browser/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(config)
                 });
 
+                // Poll frequently while creation is in progress to show "creating" status
+                const fastPoll = setInterval(() => updateBrowserList(), 500);
+
+                // Wait for creation to complete
+                const response = await createPromise;
                 const data = await response.json();
+
+                // Stop frequent polling
+                clearInterval(fastPoll);
+
                 if (data.success === true) {
-                    addLog(`Browser ${data.data.browser_id.substring(0, 8)} starting`, 'info');
+                    addLog(`Browser ${data.data.browser_id.substring(0, 8)} ready`, 'info');
                     updateBrowserList();
-                    loadProfiles(); // Refresh profiles to update in-use status
+                    loadProfiles();
                 } else {
                     addLog(`Failed: ${data.message}`, 'error');
                 }

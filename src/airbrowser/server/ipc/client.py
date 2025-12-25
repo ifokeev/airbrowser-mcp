@@ -75,9 +75,15 @@ class BrowserIPCClient:
 
         raise TimeoutError(f"Timeout waiting for response to request {request_id}")
 
-    def create_browser(self, config: dict[str, Any] | None = None) -> str:
-        """Create a new browser (synchronous - waits for completion)"""
-        browser_id = str(uuid.uuid4())
+    def create_browser(self, config: dict[str, Any] | None = None, browser_id: str | None = None) -> str:
+        """Create a new browser (synchronous - waits for completion)
+
+        Args:
+            config: Browser configuration
+            browser_id: Optional pre-generated browser ID (for tracking before creation completes)
+        """
+        if browser_id is None:
+            browser_id = str(uuid.uuid4())
 
         request = {"type": "create_browser", "browser_id": browser_id, "config": config or {}}
 

@@ -47,7 +47,6 @@ while [[ $# -gt 0 ]]; do
             ;;
         --reuse|-r)
             REUSE_CONTAINERS=true
-            CLEANUP=false
             shift
             ;;
         -k|-m|--tb|--maxfail|-x|-v|-vv)
@@ -59,9 +58,9 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "Options:"
             echo "  --build, -b        Force rebuild of Docker images"
-            echo "  --reuse, -r        Reuse running containers (fastest for repeated runs)"
+            echo "  --reuse, -r        Reuse running containers if available"
             echo "  --logs, -l         Show browser-pool logs on test failure"
-            echo "  --no-cleanup       Don't stop containers after tests"
+            echo "  --no-cleanup       Keep containers running after tests (for debugging)"
             echo "  -k EXPRESSION      Only run tests matching expression"
             echo "  -x                 Stop on first failure"
             echo "  -v, -vv            Increase verbosity"

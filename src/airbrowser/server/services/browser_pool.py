@@ -5,6 +5,7 @@ import logging
 import os
 import shutil
 import time
+import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -23,6 +24,8 @@ class BrowserInstance:
         self.config = config
         self.status = status
         self.created_at = time.time()
+        self.error_message: str | None = None
+        self.session_id: str | None = None
 
     def to_info(self) -> BrowserInfo:
         from datetime import datetime
@@ -41,6 +44,8 @@ class BrowserInstance:
             config=self.config,
             created_at=datetime.fromtimestamp(self.created_at),
             last_activity=datetime.fromtimestamp(self.created_at),
+            error_message=self.error_message,
+            session_id=self.session_id,
         )
 
     def to_dict(self) -> dict:
@@ -90,16 +95,32 @@ class BrowserPoolAdapter:
             "user_agent": config.user_agent,
         }
 
-        # Create browser through IPC
-        browser_id = self.client.create_browser(config_dict)
+        # Generate browser_id upfront so we can track it immediately
+        browser_id = str(uuid.uuid4())
 
-        # Store config and instance info
+        # Store config and instance BEFORE IPC call (so it appears in list immediately)
         self.browser_configs[browser_id] = config
-        self.browser_instances[browser_id] = BrowserInstance(browser_id, config)
+        instance = BrowserInstance(browser_id, config)
+        instance.status = "creating"
+        self.browser_instances[browser_id] = instance
 
         # Track active profile
         if profile_name:
             self.active_profiles[profile_name] = browser_id
+
+        try:
+            # Create browser through IPC (blocking - waits for browser to be ready)
+            self.client.create_browser(config_dict, browser_id=browser_id)
+            instance.status = "ready"
+        except Exception as e:
+            instance.status = "error"
+            instance.error_message = str(e)
+            # Clean up on failure
+            del self.browser_instances[browser_id]
+            del self.browser_configs[browser_id]
+            if profile_name and profile_name in self.active_profiles:
+                del self.active_profiles[profile_name]
+            raise
 
         return browser_id
 
@@ -476,11 +497,15 @@ class BrowserPoolAdapter:
             instance = BrowserInstance(browser_id, config)
             instance.status = browser_data.get("status", "unknown")
             instance.session_id = browser_data.get("session_id")
-            instance.created_at = datetime.fromtimestamp(browser_data.get("created_at", time.time()))
+            instance.created_at = browser_data.get("created_at", time.time())
             self.browser_instances[browser_id] = instance
 
-        # Remove stale browsers from local cache
+        # Remove stale browsers from local cache (but keep "creating" ones)
         for browser_id in local_ids - service_ids:
+            instance = self.browser_instances.get(browser_id)
+            # Keep browsers that are still being created
+            if instance and instance.status == "creating":
+                continue
             del self.browser_instances[browser_id]
             if browser_id in self.browser_configs:
                 del self.browser_configs[browser_id]
