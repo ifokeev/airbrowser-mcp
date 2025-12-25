@@ -6,6 +6,7 @@ $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $DataDir = "$env:LOCALAPPDATA\Airbrowser"
 $ImageFile = "$ScriptDir\image.tar.gz"
+$EnvFile = "$DataDir\.env"
 
 function Write-Log { param($Message) Write-Host "[airbrowser] $Message" -ForegroundColor Green }
 function Write-Warn { param($Message) Write-Host "[airbrowser] $Message" -ForegroundColor Yellow }
@@ -39,6 +40,56 @@ function Test-Podman {
     } catch {
         return $false
     }
+}
+
+# Load environment from .env file
+function Import-EnvFile {
+    if (Test-Path $EnvFile) {
+        Write-Log "Loading environment from $EnvFile"
+        Get-Content $EnvFile | ForEach-Object {
+            if ($_ -match '^\s*([^#][^=]*)\s*=\s*(.*)$') {
+                $name = $matches[1].Trim()
+                $value = $matches[2].Trim()
+                # Remove quotes if present
+                $value = $value -replace '^["'']|["'']$', ''
+                [Environment]::SetEnvironmentVariable($name, $value, "Process")
+            }
+        }
+    }
+}
+
+# Environment variables to pass through to container
+$EnvVars = @(
+    "OPENROUTER_API_KEY",
+    "OPENROUTER_COORD_MODEL",
+    "OPENROUTER_ANALYSIS_MODEL",
+    "MAX_BROWSERS",
+    "LOG_LEVEL",
+    "COMMAND_TIMEOUT_DEFAULT",
+    "NAVIGATE_TIMEOUT_DEFAULT",
+    "SCREEN_WIDTH",
+    "SCREEN_HEIGHT"
+)
+
+# Build environment arguments for container
+function Get-EnvArgs {
+    $envArgs = @("-e", "API_BASE_URL=http://localhost:18080")
+
+    # Pass through all supported environment variables if set
+    foreach ($var in $EnvVars) {
+        $value = [Environment]::GetEnvironmentVariable($var, "Process")
+        if ($value) {
+            $envArgs += @("-e", "$var=$value")
+        }
+    }
+
+    # Log if AI vision is enabled
+    $apiKey = [Environment]::GetEnvironmentVariable("OPENROUTER_API_KEY", "Process")
+    if ($apiKey) {
+        Write-Log "AI vision tools enabled"
+    }
+
+    return $envArgs
 }
 
 # Find available runtime
@@ -133,6 +184,12 @@ function Start-Container {
     New-Item -ItemType Directory -Force -Path "$DataDir\screenshots" | Out-Null
     New-Item -ItemType Directory -Force -Path "$DataDir\downloads" | Out-Null
 
+    # Load environment from .env file if exists
+    Import-EnvFile
+
+    # Build environment arguments
+    $envArgs = Get-EnvArgs
+
     Write-Log "Starting server..."
     Write-Host ""
     Write-Log "All services at http://localhost:18080"
@@ -147,13 +204,15 @@ function Start-Container {
 
     if ($Runtime -eq "wsl") {
         $wslDataDir = wsl wslpath -u "$DataDir"
+        # Build WSL env args string
+        $wslEnvStr = ($envArgs -join " ")
         wsl docker run --rm -it `
             --name airbrowser `
             -p 18080:18080 `
             -v "${wslDataDir}/profiles:/app/browser-profiles" `
             -v "${wslDataDir}/screenshots:/tmp/screenshots" `
             -v "${wslDataDir}/downloads:/app/downloads" `
-            -e API_BASE_URL="http://localhost:18080" `
+            $wslEnvStr `
             airbrowser:latest
     } else {
         & $Runtime run --rm -it `
@@ -162,7 +221,7 @@ function Start-Container {
             -v "${DataDir}\profiles:/app/browser-profiles" `
             -v "${DataDir}\screenshots:/tmp/screenshots" `
             -v "${DataDir}\downloads:/app/downloads" `
-            -e API_BASE_URL="http://localhost:18080" `
+            @envArgs `
             airbrowser:latest
     }
 }
@@ -211,6 +270,15 @@ switch ($args[0]) {
         Write-Host "  VNC:       /vnc/"
         Write-Host "  REST API:  /api/v1/"
         Write-Host "  MCP:       /mcp"
+        Write-Host ""
+        Write-Host "Environment Variables (set via .env file or environment):"
+        Write-Host "  OPENROUTER_API_KEY       Enable AI vision tools (recommended)"
+        Write-Host "  MAX_BROWSERS             Max concurrent browsers (default: 10)"
+        Write-Host "  LOG_LEVEL                DEBUG, INFO, WARNING, ERROR (default: INFO)"
+        Write-Host "  SCREEN_WIDTH/HEIGHT      Virtual display size (default: 1920x1080)"
+        Write-Host ""
+        Write-Host "  Create .env file in data directory:"
+        Write-Host "    echo 'OPENROUTER_API_KEY=sk-or-v1-xxx' > `$env:LOCALAPPDATA\Airbrowser\.env"
     }
     "-h" {
         & $MyInvocation.MyCommand.Path --help

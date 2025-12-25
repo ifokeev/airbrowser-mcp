@@ -95,6 +95,50 @@ load_image() {
     log "Image loaded successfully"
 }
 
+# Load environment from .env file
+load_env() {
+    local env_file="$DATA_DIR/.env"
+    if [[ -f "$env_file" ]]; then
+        log "Loading environment from $env_file"
+        set -a
+        source "$env_file"
+        set +a
+    fi
+}
+
+# Environment variables to pass through to container
+ENV_VARS=(
+    "OPENROUTER_API_KEY"
+    "OPENROUTER_COORD_MODEL"
+    "OPENROUTER_ANALYSIS_MODEL"
+    "MAX_BROWSERS"
+    "LOG_LEVEL"
+    "COMMAND_TIMEOUT_DEFAULT"
+    "NAVIGATE_TIMEOUT_DEFAULT"
+    "SCREEN_WIDTH"
+    "SCREEN_HEIGHT"
+)
+
+# Build environment args for docker/podman
+build_env_args() {
+    local args=""
+    args="-e API_BASE_URL=http://localhost:18080"
+
+    # Pass through all supported environment variables if set
+    for var in "${ENV_VARS[@]}"; do
+        if [[ -n "${!var:-}" ]]; then
+            args="$args -e $var=${!var}"
+        fi
+    done
+
+    # Log if AI vision is enabled
+    if [[ -n "${OPENROUTER_API_KEY:-}" ]]; then
+        log "AI vision tools enabled"
+    fi
+
+    echo "$args"
+}
+
 # Main
 main() {
     log "Starting Airbrowser..."
@@ -111,6 +155,12 @@ main() {
 
     # Create data directories
     mkdir -p "$DATA_DIR"/{profiles,screenshots,downloads}
+
+    # Load environment from .env file if exists
+    load_env
+
+    # Build environment arguments
+    ENV_ARGS=$(build_env_args)
 
     # Run container
     # Note: macOS doesn't support --network=host, so we use port mapping
@@ -132,7 +182,7 @@ main() {
         -v "$DATA_DIR/profiles:/app/browser-profiles" \
         -v "$DATA_DIR/screenshots:/tmp/screenshots" \
         -v "$DATA_DIR/downloads:/app/downloads" \
-        -e API_BASE_URL="http://localhost:18080" \
+        $ENV_ARGS \
         airbrowser:latest
 }
 
@@ -149,11 +199,20 @@ case "${1:-}" in
         echo "  --stop         Stop running instance"
         echo ""
         echo "All services available at http://localhost:18080:"
-        echo "  Dashboard: http://localhost:18080"
-        echo "  API Docs:  http://localhost:18080/docs/"
-        echo "  VNC:       http://localhost:18080/vnc/"
-        echo "  REST API:  http://localhost:18080/api/v1/"
-        echo "  MCP:       http://localhost:18080/mcp"
+        echo "  Dashboard: /"
+        echo "  API Docs:  /docs/"
+        echo "  VNC:       /vnc/"
+        echo "  REST API:  /api/v1/"
+        echo "  MCP:       /mcp"
+        echo ""
+        echo "Environment Variables (set via .env file or environment):"
+        echo "  OPENROUTER_API_KEY       Enable AI vision tools (recommended)"
+        echo "  MAX_BROWSERS             Max concurrent browsers (default: 10)"
+        echo "  LOG_LEVEL                DEBUG, INFO, WARNING, ERROR (default: INFO)"
+        echo "  SCREEN_WIDTH/HEIGHT      Virtual display size (default: 1920x1080)"
+        echo ""
+        echo "  Create .env file in data directory:"
+        echo "    echo 'OPENROUTER_API_KEY=sk-or-v1-xxx' > ~/Library/Application Support/Airbrowser/.env"
         ;;
     --version|-v)
         echo "Airbrowser v0.1.1"
