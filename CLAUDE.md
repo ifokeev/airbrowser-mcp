@@ -30,6 +30,10 @@ Examples:
 - `docs: update installation instructions`
 - `chore(deps): upgrade seleniumbase to 4.32.0`
 
+**Create separate logical commits with scope.** Do not bundle unrelated changes into one commit:
+- Good: 3 commits for `feat(mcp)`, `docs`, `refactor(tests)`
+- Bad: 1 commit with "feat(mcp): add feature and update docs and refactor tests"
+
 **Do NOT add AI attribution to commits.** Never include:
 - "🤖 Generated with Claude Code"
 - "Co-Authored-By: Claude..."
