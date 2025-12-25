@@ -52,6 +52,11 @@ Returns:
     "gui_click": """
 **GUI CLICK WITH SELECTOR** - Click elements using CSS/XPath selectors with undetectable GUI automation.
 
+**SELECTOR SYNTAX**: Use standard CSS selectors or XPath only. Playwright-style selectors
+like `:has-text()` are NOT supported. Examples:
+- CSS: `iframe[src*="hcaptcha"]`, `button.submit`, `#checkbox`
+- XPath (use by="xpath"): `//button[contains(text(), "Submit")]`
+
 **WORKFLOW**: Always call `get_page_content` first to understand the page structure and identify
 the correct selector for the element you want to click.
 
@@ -112,14 +117,14 @@ Returns: Visible text content, current URL, page title, and truncation flag.
     "take_screenshot": """
 Take a screenshot of the browser.
 
-**HOW TO VIEW THE SCREENSHOT**: After calling this tool, use WebFetch on the returned
-`screenshot_url` to view the image and understand what's on the page. Example:
-1. Call `take_screenshot` → get `screenshot_url` like "http://localhost:18080/screenshots/xyz.png"
-2. Call WebFetch with that URL to see the actual screenshot
+**HOW TO VIEW THE SCREENSHOT**: WebFetch doesn't support localhost URLs. Instead:
+1. Call `take_screenshot` → get `screenshot_url`
+2. Download with curl: `curl -s <screenshot_url> -o /tmp/screenshot.png`
+3. Use the Read tool on `/tmp/screenshot.png` to view the image
 
 **IMPORTANT: Always verify your actions!** After performing actions (navigate, click, type, press_keys),
-take a screenshot and use WebFetch to view it, confirming the action succeeded. Don't assume success
-just because the API returned success - verify the actual page state visually.
+take a screenshot and view it to confirm the action succeeded. Don't assume success just because
+the API returned success - verify the actual page state visually.
 
 If `what_is_visible` is available, use it instead for visual verification with AI analysis.
 """,
@@ -178,14 +183,22 @@ to check the page title and text content. Don't assume navigation succeeded just
 the API returned success.
 """,
     "click": """
-Click on an element using CSS selector.
+Click on an element using CSS selector or XPath.
+
+**SELECTOR SYNTAX**: Use standard CSS selectors or XPath only. Playwright-style selectors
+like `:has-text()` are NOT supported. Examples:
+- CSS: `a[href*="example"]`, `button.submit`, `#login-btn`
+- XPath (use by="xpath"): `//a[contains(text(), "Click me")]`, `//button[@type="submit"]`
 
 **IMPORTANT**: After clicking (especially form submits, buttons), verify the action worked
 by calling `get_content` to check if the page changed as expected. Don't assume the click
 had the intended effect without verification.
 """,
     "type_text": """
-Type text into an input field.
+Type text into an input field using CSS selector or XPath.
+
+**SELECTOR SYNTAX**: Use standard CSS selectors or XPath only. Playwright-style selectors
+like `:has-text()` are NOT supported.
 
 After typing, consider verifying the text was entered correctly, especially before
 submitting forms. Use `get_content` or check element values if needed.
