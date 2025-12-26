@@ -327,11 +327,14 @@ class BrowserPoolAdapter:
             elif action.action == "detect_coordinates":
                 # Detect element coordinates using vision models
                 prompt = action.options.get("prompt") if action.options else None
-                fx = action.options.get("fx", 0.5) if action.options else 0.5
-                fy = action.options.get("fy", 0.5) if action.options else 0.5
-                response = self.client.execute_command(
-                    browser_id, "detect_coordinates", prompt=prompt, fx=fx, fy=fy
-                )
+                # Only pass fx/fy if explicitly set - otherwise let vision handler auto-bias
+                kwargs = {"prompt": prompt}
+                if action.options:
+                    if "fx" in action.options:
+                        kwargs["fx"] = action.options["fx"]
+                    if "fy" in action.options:
+                        kwargs["fy"] = action.options["fy"]
+                response = self.client.execute_command(browser_id, "detect_coordinates", **kwargs)
 
             elif action.action == "what_is_visible":
                 # Comprehensive page state analysis - what's visible on the current page
