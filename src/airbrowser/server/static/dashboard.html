@@ -109,6 +109,22 @@
             gap: 20px;
         }
 
+        .header-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .header-links a {
+            font-size: 13px;
+            color: var(--text-2);
+            text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        .header-links a:hover {
+            color: var(--text-1);
+        }
+
         .status-badge {
             display: flex;
             align-items: center;
@@ -524,57 +540,146 @@
             color: var(--text-1);
         }
 
-        /* Quick Links */
-        .links {
+        /* Endpoints Bar - Terminal-inspired */
+        .endpoints-bar {
             display: flex;
-            flex-direction: column;
-            gap: 6px;
+            gap: 12px;
+            padding: 12px 16px;
+            background: linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 100%);
+            border-bottom: 1px solid var(--border-subtle);
         }
 
-        .link {
+        .endpoint-item {
+            flex: 1;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 10px 12px;
+            gap: 10px;
+            padding: 8px 12px;
             background: var(--bg-0);
             border: 1px solid var(--border-subtle);
             border-radius: 6px;
-            color: var(--text-1);
-            text-decoration: none;
-            font-size: 13px;
-            transition: all 0.15s;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .link:hover {
+        .endpoint-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .endpoint-item:hover {
             border-color: var(--border);
+            background: var(--bg-1);
+        }
+
+        .endpoint-item:hover::before {
+            opacity: 0.03;
+        }
+
+        .endpoint-item:active {
+            transform: scale(0.995);
+        }
+
+        .endpoint-label {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'DM Mono', monospace;
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-2);
+            padding: 3px 8px;
+            background: var(--bg-2);
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .endpoint-label::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+
+        .endpoint-url-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            mask-image: linear-gradient(90deg, #000 85%, transparent 100%);
+            -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent 100%);
+        }
+
+        .endpoint-url {
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            color: var(--text-1);
+            white-space: nowrap;
+            transition: color 0.15s ease;
+        }
+
+        .endpoint-item:hover .endpoint-url {
             color: var(--text-0);
+        }
+
+        .endpoint-copy {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            color: var(--text-3);
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .endpoint-copy svg {
+            width: 14px;
+            height: 14px;
+            transition: transform 0.15s ease;
+        }
+
+        .endpoint-item:hover .endpoint-copy {
+            color: var(--text-1);
             background: var(--bg-2);
         }
 
-        .link-arrow {
-            color: var(--text-3);
-            transition: transform 0.15s;
+        .endpoint-item:hover .endpoint-copy svg {
+            transform: scale(1.1);
         }
 
-        .link:hover .link-arrow {
-            transform: translateX(2px);
+        /* Copy success state */
+        .endpoint-item.copied {
+            border-color: var(--success);
         }
 
-        .port-info {
-            display: flex;
-            gap: 16px;
-            margin-top: 12px;
-            font-size: 12px;
-            color: var(--text-3);
+        .endpoint-item.copied .endpoint-label::before {
+            background: var(--success);
         }
 
-        .port-item {
-            display: flex;
-            gap: 4px;
+        .endpoint-item.copied .endpoint-copy {
+            color: var(--success);
+            background: rgba(34, 197, 94, 0.1);
         }
 
-        .port-label {
-            color: var(--text-2);
+        /* Responsive: stack on small screens */
+        @media (max-width: 900px) {
+            .endpoints-bar {
+                flex-direction: column;
+                gap: 8px;
+            }
         }
 
         /* Activity Log */
@@ -647,6 +752,11 @@
                 <h1 class="title">Airbrowser</h1>
             </div>
             <div class="header-right">
+                <nav class="header-links">
+                    <a id="link-docs" href="/docs/" target="_blank">Docs</a>
+                    <a id="link-swagger" href="/api/v1/swagger.json" target="_blank">API</a>
+                    <a id="link-vnc" href="/vnc/" target="_blank">VNC</a>
+                </nav>
                 <div class="status-badge">
                     <span class="status-dot" id="status-dot"></span>
                     <span id="status-text">Online</span>
@@ -683,6 +793,26 @@
                 <div class="panel-header">
                     <span class="panel-title">Browser Instances</span>
                     <button class="btn btn-danger btn-sm" onclick="closeAllBrowsers()">Close All</button>
+                </div>
+                <div class="endpoints-bar">
+                    <div class="endpoint-item" id="endpoint-api" onclick="copyEndpoint(this)" title="Click to copy REST API URL">
+                        <span class="endpoint-label">API</span>
+                        <div class="endpoint-url-wrapper">
+                            <code class="endpoint-url"></code>
+                        </div>
+                        <div class="endpoint-copy">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </div>
+                    </div>
+                    <div class="endpoint-item" id="endpoint-mcp" onclick="copyEndpoint(this)" title="Click to copy MCP URL">
+                        <span class="endpoint-label">MCP</span>
+                        <div class="endpoint-url-wrapper">
+                            <code class="endpoint-url"></code>
+                        </div>
+                        <div class="endpoint-copy">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </div>
+                    </div>
                 </div>
                 <div class="panel-body">
                     <div class="browser-list" id="browser-list">
@@ -733,29 +863,6 @@
                         <button class="btn btn-primary" id="create-browser-btn" style="width: 100%; margin-top: 4px;" onclick="createCustomBrowser()">
                             <span>Create Browser</span>
                         </button>
-                    </div>
-
-                    <div class="section">
-                        <div class="section-title">Links</div>
-                        <div class="links">
-                            <a id="link-docs" href="/docs/" target="_blank" class="link">
-                                <span>API Documentation</span>
-                                <span class="link-arrow">&rarr;</span>
-                            </a>
-                            <a id="link-swagger" href="/api/v1/swagger.json" target="_blank" class="link">
-                                <span>OpenAPI Spec</span>
-                                <span class="link-arrow">&rarr;</span>
-                            </a>
-                            <a id="link-vnc" href="/vnc/" target="_blank" class="link">
-                                <span>VNC Viewer</span>
-                                <span class="link-arrow">&rarr;</span>
-                            </a>
-                        </div>
-                        <div class="port-info">
-                            <div class="port-item"><span class="port-label">MCP</span> :3001</div>
-                            <div class="port-item"><span class="port-label">API</span> :8000</div>
-                            <div class="port-item"><span class="port-label">VNC</span> :5900</div>
-                        </div>
                     </div>
 
                     <div class="section">
@@ -1125,6 +1232,27 @@
             document.getElementById('link-swagger').href = url('/api/v1/swagger.json');
             // VNC link uses getVncUrl() for consistent path handling
             document.getElementById('link-vnc').href = getVncUrl();
+
+            // Update endpoint URLs (full URLs for copying)
+            const origin = window.location.origin;
+            document.querySelector('#endpoint-api .endpoint-url').textContent = origin + url('/api/v1');
+            document.querySelector('#endpoint-mcp .endpoint-url').textContent = origin + url('/mcp');
+        }
+
+        // Copy endpoint URL to clipboard
+        function copyEndpoint(el) {
+            const url = el.querySelector('.endpoint-url').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                el.classList.add('copied');
+                const copyBtn = el.querySelector('.endpoint-copy');
+                const originalSvg = copyBtn.innerHTML;
+                // Show checkmark
+                copyBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
+                setTimeout(() => {
+                    el.classList.remove('copied');
+                    copyBtn.innerHTML = originalSvg;
+                }, 1500);
+            });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
