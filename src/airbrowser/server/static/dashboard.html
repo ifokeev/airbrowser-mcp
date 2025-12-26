@@ -788,9 +788,10 @@
                 reconnect: 'true',
                 reconnect_delay: '2'
             });
-            if (BASE_PATH) {
-                params.set('path', BASE_PATH + '/websockify');
-            }
+            // Set websocket path - remove leading slash for relative path resolution
+            // BASE_PATH like "/deployments/xxx" becomes "deployments/xxx/websockify"
+            const wsPath = BASE_PATH ? BASE_PATH.slice(1) + '/websockify' : 'websockify';
+            params.set('path', wsPath);
             return url('/vnc/vnc.html') + '?' + params.toString();
         }
 
@@ -1122,18 +1123,8 @@
         function updateStaticLinks() {
             document.getElementById('link-docs').href = url('/docs/');
             document.getElementById('link-swagger').href = url('/api/v1/swagger.json');
-            // VNC needs the websocket path as a query parameter
-            const vncParams = new URLSearchParams({
-                autoconnect: 'true',
-                resize: 'scale',
-                reconnect: 'true',
-                reconnect_delay: '2'
-            });
-            // Only add path param if we have a BASE_PATH (for subpath routing)
-            if (BASE_PATH) {
-                vncParams.set('path', BASE_PATH + '/websockify');
-            }
-            document.getElementById('link-vnc').href = url('/vnc/vnc.html') + '?' + vncParams.toString();
+            // VNC link uses getVncUrl() for consistent path handling
+            document.getElementById('link-vnc').href = getVncUrl();
         }
 
         document.addEventListener('DOMContentLoaded', () => {
