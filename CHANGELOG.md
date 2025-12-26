@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/ifokeev/airbrowser-mcp/compare/v1.5.0...v1.5.1) (2025-12-26)
+
+
+### Bug Fixes
+
+* **dashboard:** fix Swagger docs and VNC with BASE_PATH ([fc84afe](https://github.com/ifokeev/airbrowser-mcp/commit/fc84afe37529a730cfe6cab8759349ce4910dbc1))
+
 ## [1.5.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.4.0...v1.5.0) (2025-12-26)
 
 
