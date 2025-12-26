@@ -25,13 +25,19 @@ def _transform_to_screen_coords(driver, coords: dict[str, Any], fx: float = 0.5,
 
     Args:
         driver: Selenium driver instance
-        coords: Coordinate dict with x, y, width, height, image_size
+        coords: Coordinate dict with x, y, width, height, image_size (required)
         fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right)
         fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
+
+    Raises:
+        ValueError: If image_size is missing from coords
     """
-    img_size = coords.get("image_size", {})
-    img_w = img_size.get("width", 1920)
-    img_h = img_size.get("height", 1080)
+    img_size = coords.get("image_size")
+    if not img_size:
+        raise ValueError("image_size is required in coords - should be set by detect_element_coordinates")
+
+    img_w = img_size["width"]
+    img_h = img_size["height"]
 
     # Store original coordinates for debugging
     original_x, original_y = coords["x"], coords["y"]
