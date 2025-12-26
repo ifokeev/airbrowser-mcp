@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.5.2...v1.6.0) (2025-12-26)
+
+
+### Features
+
+* **dashboard:** redesign endpoints bar with terminal-inspired UI ([3af2bb7](https://github.com/ifokeev/airbrowser-mcp/commit/3af2bb7721e6d507c284bef7e19795b86b2c3911))
+
+
+### Bug Fixes
+
+* **dashboard:** use relative websocket path for VNC ([a736547](https://github.com/ifokeev/airbrowser-mcp/commit/a736547c4dafbe1a8925205e9caaaf94b1d25b2a))
+
 ## [1.5.2](https://github.com/ifokeev/airbrowser-mcp/compare/v1.5.1...v1.5.2) (2025-12-26)
 
 
