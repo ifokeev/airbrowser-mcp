@@ -96,9 +96,26 @@ The `generated-clients/` directory contains auto-generated client libraries from
 - See `docs/TESTING.md` for detailed testing guide
 - The generated client automatically includes the `/api/v1` prefix
 
+### Local Development with Hot Reload
+**⚠️ FOR DEVELOPMENT: Always use `compose.local.yml` for hot-reload support**
+
+```bash
+# Start with hot-reload (code changes auto-restart services)
+docker compose -f compose.local.yml up
+
+# Or in background
+docker compose -f compose.local.yml up -d
+```
+
+This mounts `./src:/app/src` so code changes take effect immediately without rebuilding.
+After making changes to src/, the services auto-restart via supervisord.
+
 ### Common Commands
 ```bash
-# Restart the API server after changes
+# Development: Start with hot-reload
+docker compose -f compose.local.yml up -d
+
+# Production: Restart the API server after changes
 docker compose restart browser-pool
 
 # Regenerate Python and TypeScript clients from OpenAPI spec
