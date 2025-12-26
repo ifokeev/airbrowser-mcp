@@ -142,7 +142,7 @@
             <div class="container">
                 <h1>Documentation</h1>
                 <p>REST API, MCP tools, and client libraries for Airbrowser</p>
-                <div class="version">v1.2.4</div>
+                <div class="version">v1.3.0</div>
             </div>
         </section>
 
@@ -159,36 +159,16 @@
                     <tbody>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
-                    <td><code>/browser/close_all</code></td>
-                    <td>Close all active browser instances</td>
+                    <td><code>/browser/browsers</code></td>
+                    <td>Admin: list all, get info, or close all browsers</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
-                    <td><code>/browser/create</code></td>
-                    <td>Create a new browser instance</td>
+                    <td><code>/browser/create_browser</code></td>
+                    <td>Create browser instance with optional persistent profile</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #40B66B">GET</span></td>
-                    <td><code>/browser/list</code></td>
-                    <td>List all active browser instances</td>
-                </tr>
-                <tr>
-                    <td><span class="method" style="background: #40B66B">GET</span></td>
-                    <td><code>/browser/pool/status</code></td>
-                    <td>Get browser pool status</td>
-                </tr>
-                <tr>
-                    <td><span class="method" style="background: #FF5757">DELETE</span></td>
-                    <td><code>/browser/{browser_id}</code></td>
-                    <td>Close and remove a browser instance</td>
-                </tr>
-                <tr>
-                    <td><span class="method" style="background: #40B66B">GET</span></td>
-                    <td><code>/browser/{browser_id}</code></td>
-                    <td>Get browser instance details</td>
-                </tr>
-                <tr>
-                    <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/check_element</code></td>
                     <td>Check if element exists or is visible</td>
                 </tr>
@@ -198,43 +178,33 @@
                     <td>Click element</td>
                 </tr>
                 <tr>
-                    <td><span class="method" style="background: #4C82FB">POST</span></td>
-                    <td><code>/browser/{browser_id}/close</code></td>
-                    <td>Close a browser instance</td>
+                    <td><span class="method" style="background: #FF5757">DELETE</span></td>
+                    <td><code>/browser/{browser_id}/close_browser</code></td>
+                    <td>Close browser instance</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
-                    <td><code>/browser/{browser_id}/console</code></td>
-                    <td>Get or clear console logs</td>
-                </tr>
-                <tr>
-                    <td><span class="method" style="background: #40B66B">GET</span></td>
-                    <td><code>/browser/{browser_id}/content</code></td>
-                    <td>Get page HTML content</td>
+                    <td><code>/browser/{browser_id}/console_logs</code></td>
+                    <td>Console logs: get or clear</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/detect_coordinates</code></td>
-                    <td>Detect element coordinates using AI vision</td>
+                    <td>Detect element coordinates using vision</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/dialog</code></td>
-                    <td>Manage browser dialogs: get, accept, or dismiss</td>
-                </tr>
-                <tr>
-                    <td><span class="method" style="background: #4C82FB">POST</span></td>
-                    <td><code>/browser/{browser_id}/element_data</code></td>
-                    <td>Get element text, attribute, or property</td>
+                    <td>Dialogs: get, accept, dismiss</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/emulate</code></td>
-                    <td>Manage device emulation: set, clear, or list_devices</td>
+                    <td>Emulation: set, clear, list_devices</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
-                    <td><code>/browser/{browser_id}/execute</code></td>
+                    <td><code>/browser/{browser_id}/execute_script</code></td>
                     <td>Execute JavaScript</td>
                 </tr>
                 <tr>
@@ -243,39 +213,69 @@
                     <td>Fill multiple form fields</td>
                 </tr>
                 <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/browser/{browser_id}/get_content</code></td>
+                    <td>Get page HTML</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/browser/{browser_id}/get_element_data</code></td>
+                    <td>Get element text, attribute, or property</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/browser/{browser_id}/get_url</code></td>
+                    <td>Get current URL</td>
+                </tr>
+                <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/gui_click</code></td>
-                    <td>Click using selector or screen coordinates</td>
+                    <td>GUI click by selector or coordinates</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/gui_hover_xy</code></td>
+                    <td>GUI hover at coordinates</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/gui_press_keys_xy</code></td>
+                    <td>Press keys at coordinates (click to focus, then send keys)</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
+                    <td><code>/browser/{browser_id}/gui_type_xy</code></td>
+                    <td>GUI type at coordinates - clicks then types text</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/history</code></td>
-                    <td>Execute history action: back, forward, or refresh</td>
+                    <td>History: back, forward, or refresh</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/mouse</code></td>
-                    <td>Mouse action: hover or drag</td>
+                    <td>Mouse: hover or drag</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/navigate</code></td>
-                    <td>Navigate to a URL</td>
+                    <td>Navigate to URL</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
-                    <td><code>/browser/{browser_id}/network</code></td>
-                    <td>Get or clear network logs</td>
+                    <td><code>/browser/{browser_id}/network_logs</code></td>
+                    <td>Network logs: get or clear</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/performance</code></td>
-                    <td>Manage performance: start_trace, stop_trace, metrics, or analyze</td>
+                    <td>Performance: start_trace, stop_trace, metrics, analyze</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/press_keys</code></td>
-                    <td>Press keys on an element</td>
+                    <td>Press keyboard keys</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
@@ -285,12 +285,12 @@
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/screenshot</code></td>
-                    <td>Take a screenshot</td>
+                    <td>Take screenshot</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/scroll</code></td>
-                    <td>Scroll to element/coordinates (absolute) or by delta (relative)</td>
+                    <td>Scroll to element/coords or by delta</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
@@ -300,42 +300,32 @@
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/snapshot</code></td>
-                    <td>Take DOM/accessibility snapshot</td>
-                </tr>
-                <tr>
-                    <td><span class="method" style="background: #40B66B">GET</span></td>
-                    <td><code>/browser/{browser_id}/status</code></td>
-                    <td>Get browser status</td>
+                    <td>DOM or accessibility snapshot</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/tabs</code></td>
-                    <td>Manage browser tabs: list, new, switch, close, or current</td>
+                    <td>Tabs: list, new, switch, close, current</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/type</code></td>
-                    <td>Type text into an element</td>
+                    <td>Type text into element</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/upload_file</code></td>
-                    <td>Upload a file</td>
-                </tr>
-                <tr>
-                    <td><span class="method" style="background: #40B66B">GET</span></td>
-                    <td><code>/browser/{browser_id}/url</code></td>
-                    <td>Get current page URL</td>
+                    <td>Upload file to input</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/wait_element</code></td>
-                    <td>Wait for element to become visible or hidden</td>
+                    <td>Wait for element to be visible or hidden</td>
                 </tr>
                 <tr>
-                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/browser/{browser_id}/what_is_visible</code></td>
-                    <td>Analyze visible page content using AI</td>
+                    <td>AI page analysis - what&#x27;s visible</td>
                 </tr></tbody>
                 </table>
             </div>
@@ -376,14 +366,14 @@
                 <table class="endpoint-table">
                     <tbody>
                 <tr>
-                    <td><span class="method" style="background: #40B66B">GET</span></td>
-                    <td><code>/profiles/</code></td>
-                    <td>List all browser profiles</td>
-                </tr>
-                <tr>
                     <td><span class="method" style="background: #4C82FB">POST</span></td>
                     <td><code>/profiles/</code></td>
                     <td>Create a new browser profile</td>
+                </tr>
+                <tr>
+                    <td><span class="method" style="background: #40B66B">GET</span></td>
+                    <td><code>/profiles/</code></td>
+                    <td>List all browser profiles</td>
                 </tr>
                 <tr>
                     <td><span class="method" style="background: #FF5757">DELETE</span></td>
@@ -838,7 +828,7 @@
             <div class="mcp-header-dot green"></div>
         </div>
         <div class="mcp-header-title">MCP Tools Reference</div>
-        <div class="mcp-header-badge" id="toolCount">33 tools</div>
+        <div class="mcp-header-badge" id="toolCount">36 tools</div>
     </div>
 
     <div class="mcp-search">
@@ -854,7 +844,7 @@
             <div class="mcp-category active" data-category="all">
                 <span class="mcp-category-icon">◈</span>
                 <span>All Tools</span>
-                <span class="mcp-category-count" id="countAll">33</span>
+                <span class="mcp-category-count" id="countAll">36</span>
             </div>
             <div class="mcp-category" data-category="lifecycle">
                 <span class="mcp-category-icon">⚡</span>
@@ -920,14 +910,14 @@
     </div>
 
     <div class="mcp-footer">
-        <div class="mcp-footer-stat">Showing <span id="visibleCount">33</span> of <span>33</span> tools</div>
+        <div class="mcp-footer-stat">Showing <span id="visibleCount">36</span> of <span>36</span> tools</div>
         <div class="mcp-footer-stat">MCP endpoint: <span>http://localhost:18080/mcp</span></div>
     </div>
 </div>
 
 <script>
 // MCP Tools Data - will be populated by generate_docs.py
-const MCP_TOOLS = [{"name": "create_browser", "title": "Create browser instance.", "description": ""}, {"name": "close_browser", "title": "Close browser instance.", "description": ""}, {"name": "browsers", "title": "Admin: list all, get info, or close all browsers.", "description": ""}, {"name": "navigate_browser", "title": "Navigate to URL.", "description": ""}, {"name": "get_url", "title": "Get current URL.", "description": ""}, {"name": "history", "title": "History: back, forward, or refresh.", "description": ""}, {"name": "click", "title": "Click element. Use if_visible=True to only click if visible.", "description": ""}, {"name": "type_text", "title": "Type text into element.", "description": ""}, {"name": "press_keys", "title": "Press keyboard keys.", "description": ""}, {"name": "check_element", "title": "Check if element exists or is visible.", "description": ""}, {"name": "wait_element", "title": "Wait for element to be visible or hidden.", "description": ""}, {"name": "get_element_data", "title": "Get element text, attribute, or property.", "description": ""}, {"name": "mouse", "title": "Mouse: hover or drag.", "description": ""}, {"name": "scroll", "title": "SCROLL TO ELEMENT OR POSITION - Scroll the page to bring an element into view or to specific coordinates.", "description": "Can scroll to:\n- An element by CSS selector (scrolls element to center of viewport)\n- Absolute coordinates (x, y position on page)\n\nUse `scroll_by` for relative scrolling."}, {"name": "fill_form", "title": "BATCH FORM FILLING - Fill multiple form fields at once.", "description": "More efficient than calling `type_text` multiple times. Pass an array of field definitions:\n[{\"selector\": \"#email\", \"value\": \"user@example.com\"}, {\"selector\": \"#password\", \"value\": \"secret\"}]\n\nReturns which fields were filled successfully and any errors encountered."}, {"name": "select", "title": "Select dropdown: select option or get options.", "description": ""}, {"name": "upload_file", "title": "Upload file to input.", "description": ""}, {"name": "gui_click", "title": "GUI CLICK WITH SELECTOR - Click elements using CSS/XPath selectors with undetectable GUI automation.", "description": "**WORKFLOW**: Always call `get_page_content` first to understand the page structure and identify\nthe correct selector for the element you want to click.\n\n**CRITICAL FOR CAPTCHAs**: Use this for CAPTCHA interactions when you can identify them with\nCSS selectors. For complex pages where selectors are hard to find, use `detect_coordinates` +\n`gui_click_xy` instead.\n\n**Best for pages < 100KB**: When HTML is manageable and you can parse it to find selectors.\nFor larger/complex pages, use the vision-based approach with `detect_coordinates`.\n\nUses Chrome DevTools Protocol to calculate screen coordinates and PyAutoGUI to perform\nthe actual click, making it undetectable by anti-automation measures.\n\n**When to use this tool:**\n- CAPTCHAs where you can identify the selector (e.g., iframe[src*=\"hcaptcha\"])\n- Elements that don't respond to regular clicks but have clear selectors\n- Anti-automation sites when you know the element selector\n- Elements inside iframes or shadow DOM with identifiable selectors\n\n**Parameters:**\n- fx, fy: Optional fractional offsets (0.0-1.0) within element to click"}, {"name": "detect_coordinates", "title": "VISION-BASED ELEMENT DETECTION - Find elements using AI vision when HTML parsing is impractical.", "description": "**Best for large/complex pages (>100KB HTML)**: When `get_page_content` returns too much data\nto parse effectively, use this to locate elements by visual description instead.\n\n**Alternative to HTML parsing**: Instead of analyzing HTML source, this takes a screenshot\nand uses AI vision to find elements by natural language description.\n\n**Perfect for:**\n- CAPTCHAs in complex layouts (\"find the hCaptcha checkbox\")\n- Dynamic content without stable selectors\n- Elements easier to describe than locate in HTML (\"the blue Submit button\")\n- Pages with overwhelming HTML structure\n\n**Workflow**: Use this to get coordinates, then use `gui_click_xy` to click at those coordinates.\n\nReturns:\n- Bounding box coordinates (x, y, width, height)\n- Recommended click point (center of element)\n- Detection confidence score\n- Screenshot path for verification\n- Vision model used for detection"}, {"name": "what_is_visible", "title": "PRIMARY TOOL FOR UNDERSTANDING WEBPAGES - Comprehensive page state analysis.", "description": "This is the BEST tool to use when you need to understand what's currently happening on a webpage.\nIt automatically analyzes and reports on:\n\n- **Form fields**: Which are filled, empty, or required\n- **Interactive elements**: Checkbox/radio states, button availability\n- **CAPTCHA status**: Present, solved, or needs attention\n- **Messages**: Errors, success notifications, validation feedback\n- **Form progress**: Multi-step form status and current step\n- **Page purpose**: What the user should do next\n\n**Use this when you need to:**\n- Understand the current state of any webpage\n- Check if forms are filled correctly\n- Verify CAPTCHA completion\n- Identify what actions are available\n- Debug form submission issues"}, {"name": "take_screenshot", "title": "Take a screenshot of the browser (returns image URL only).", "description": "NOTE: If you want to UNDERSTAND what's on the page, use `what_is_visible` instead!\n`what_is_visible` combines screenshot + AI analysis for better understanding."}, {"name": "get_content", "title": "GET PAGE HTML CONTENT - Retrieve the full HTML source of the current page.", "description": "**Best for smaller pages (<100KB)**: When you need to understand page structure and find\nCSS selectors for elements. Returns the complete HTML source code.\n\n**Use this to:**\n- Analyze page structure before using `gui_click` with selectors\n- Find form fields, buttons, and interactive elements\n- Understand page layout and identify CAPTCHA containers\n- Parse structured data from the page\n\n**If HTML is too large/complex**: Use `what_is_visible` for visual understanding or\n`detect_coordinates` to find elements by description instead of parsing HTML.\n\nReturns: HTML content, current URL, and page title."}, {"name": "execute_script", "title": "Execute JavaScript.", "description": ""}, {"name": "resize", "title": "Resize viewport.", "description": ""}, {"name": "snapshot", "title": "DOM or accessibility snapshot.", "description": ""}, {"name": "console_logs", "title": "List recent browser console messages (best-effort; depends on Chrome/Selenium logging support).", "description": "Useful for debugging JavaScript errors, network issues, or application logs.\nUse action=\"get\" to retrieve logs, action=\"clear\" to clear them."}, {"name": "network_logs", "title": "List recent network events captured from Chrome performance logs.", "description": "This is best-effort and may require Chrome logging support in the underlying driver.\nUseful for debugging API calls, failed requests, or performance issues.\nUse action=\"get\" to retrieve logs, action=\"clear\" to clear them."}, {"name": "tabs", "title": "Tabs: list, new, switch, close, current.", "description": ""}, {"name": "dialog", "title": "DIALOG HANDLING - Accept, dismiss, or interact with browser dialogs.", "description": "Handles JavaScript alert(), confirm(), and prompt() dialogs.\n- action=\"get\": Get current dialog info\n- action=\"accept\": Click OK/Accept\n- action=\"dismiss\": Click Cancel/Dismiss\n- text: For prompt dialogs, provide input text before accepting"}, {"name": "emulate", "title": "DEVICE EMULATION - Emulate mobile devices, tablets, or custom viewports.", "description": "Use device presets like \"iPhone 14\", \"iPad\", \"Pixel 7\" or specify custom dimensions.\nAffects viewport size, user agent, touch events, and device scale factor.\n\nCall `list_devices` to see available device presets."}, {"name": "performance", "title": "Performance: start_trace, stop_trace, metrics, analyze.", "description": ""}, {"name": "get_pool_status", "title": "Get pool status.", "description": ""}, {"name": "health_check", "title": "Health check.", "description": ""}];
+const MCP_TOOLS = [{"name": "create_browser", "title": "Create browser instance with optional persistent profile.", "description": ""}, {"name": "close_browser", "title": "Close browser instance.", "description": ""}, {"name": "browsers", "title": "Admin: list all, get info, or close all browsers.", "description": ""}, {"name": "navigate_browser", "title": "Navigate to URL.", "description": ""}, {"name": "get_url", "title": "Get the current page URL.", "description": "**NOTE**: If you just called `what_is_visible`, the URL is already included in its response.\nDon't call this tool redundantly after using vision tools.\n\nUse this only when you specifically need the URL without visual verification."}, {"name": "history", "title": "History: back, forward, or refresh.", "description": ""}, {"name": "click", "title": "Click on an element using CSS selector or XPath.", "description": "**PREFER VISION + GUI**: If AI vision is enabled, prefer using `detect_coordinates` + `gui_click_xy`:\n1. Use `detect_coordinates` to find the element by description\n2. Use `gui_click_xy` with the returned coordinates\nThis approach is more robust and undetectable by anti-automation systems.\n\n**Use this tool only when:**\n- You already know the exact CSS/XPath selector\n- The page HTML is small enough to parse\n- Vision tools are not available\n\n**SELECTOR SYNTAX**: Use standard CSS selectors or XPath only. Playwright-style selectors\nlike `:has-text()` are NOT supported. Examples:\n- CSS: `a[href*=\"example\"]`, `button.submit`, `#login-btn`\n- XPath (use by=\"xpath\"): `//a[contains(text(), \"Click me\")]`, `//button[@type=\"submit\"]`\n\n**COMMON ISSUES:**\n- Generic `input` selector may match file inputs, which cannot be clicked (use more specific selectors)\n- For file uploads, use `upload_file` tool instead of click\n\n**VERIFICATION**: Use `what_is_visible` to verify the action worked."}, {"name": "type_text", "title": "Type text into an input field using CSS selector or XPath.", "description": "**PREFER VISION + GUI**: If AI vision is enabled, prefer using `detect_coordinates` + `gui_type_xy`:\n1. Use `detect_coordinates` to find the input field by description\n2. Use `gui_type_xy` with the returned coordinates and text to type\nThis approach is more robust and undetectable by anti-automation systems.\n\n**Use this tool only when:**\n- You already know the exact CSS/XPath selector\n- The page HTML is small enough to parse\n- Vision tools are not available\n\n**SELECTOR SYNTAX**: Use standard CSS selectors or XPath only. Playwright-style selectors\nlike `:has-text()` are NOT supported.\n\n**COMMON SELECTOR ISSUES:**\n- Google search now uses `<textarea name=\"q\">` NOT `<input name=\"q\">`\n- For Google: use `textarea[name=\"q\"]` or prefer vision-based `detect_coordinates` + `gui_type_xy`\n\n**VERIFICATION**: Use `what_is_visible` to verify the text was entered correctly."}, {"name": "press_keys", "title": "Press keyboard keys on an element. Supports special keys (ENTER, TAB, ESCAPE, etc.)", "description": "and key combinations (CTRL+a, SHIFT+TAB).\n\n**VERIFICATION**: After pressing ENTER to submit a form or perform a search, ALWAYS verify:\n- **If AI vision enabled**: Use `what_is_visible` - shows resulting page, success/error messages\n- **Otherwise**: Use `get_content` to check the resulting page\n\nDon't assume the key press had the intended effect without verification."}, {"name": "check_element", "title": "Check if element exists or is visible.", "description": ""}, {"name": "wait_element", "title": "Wait for element to be visible or hidden.", "description": ""}, {"name": "get_element_data", "title": "Get element text, attribute, or property.", "description": ""}, {"name": "mouse", "title": "Mouse: hover or drag.", "description": ""}, {"name": "scroll", "title": "SCROLL TO ELEMENT OR POSITION - Scroll the page to bring an element into view or to specific coordinates.", "description": "Can scroll to:\n- An element by CSS selector (scrolls element to center of viewport)\n- Absolute coordinates (x, y position on page)\n\nUse `scroll_by` for relative scrolling."}, {"name": "fill_form", "title": "BATCH FORM FILLING - Fill multiple form fields at once.", "description": "More efficient than calling `type_text` multiple times. Pass an array of field definitions:\n[{\"selector\": \"#email\", \"value\": \"user@example.com\"}, {\"selector\": \"#password\", \"value\": \"secret\"}]\n\nReturns which fields were filled successfully and any errors encountered."}, {"name": "select", "title": "Select dropdown: select option or get options.", "description": ""}, {"name": "upload_file", "title": "Upload file to input.", "description": ""}, {"name": "gui_click", "title": "GUI CLICK WITH SELECTOR - Click elements using CSS/XPath selectors with undetectable GUI automation.", "description": "**SELECTOR SYNTAX**: Use standard CSS selectors or XPath only. Playwright-style selectors\nlike `:has-text()` are NOT supported. Examples:\n- CSS: `iframe[src*=\"hcaptcha\"]`, `button.submit`, `#checkbox`\n- XPath (use by=\"xpath\"): `//button[contains(text(), \"Submit\")]`\n\n**WORKFLOW**: Always call `get_page_content` first to understand the page structure and identify\nthe correct selector for the element you want to click.\n\n**CRITICAL FOR CAPTCHAs**: Use this for CAPTCHA interactions when you can identify them with\nCSS selectors. For complex pages where selectors are hard to find, use `detect_coordinates` +\n`gui_click_xy` instead.\n\n**Best for pages < 100KB**: When HTML is manageable and you can parse it to find selectors.\nFor larger/complex pages, use the vision-based approach with `detect_coordinates`.\n\nUses Chrome DevTools Protocol to calculate screen coordinates and PyAutoGUI to perform\nthe actual click, making it undetectable by anti-automation measures.\n\n**When to use this tool:**\n- CAPTCHAs where you can identify the selector (e.g., iframe[src*=\"hcaptcha\"])\n- Elements that don't respond to regular clicks but have clear selectors\n- Anti-automation sites when you know the element selector\n- Elements inside iframes or shadow DOM with identifiable selectors\n\n**VERIFICATION**: After clicking, use `what_is_visible` to verify the action worked.\n\n**Parameters:**\n- fx, fy: Optional fractional offsets (0.0-1.0) within element to click"}, {"name": "gui_type_xy", "title": "GUI TYPE AT COORDINATES - Click at coordinates then type text using undetectable GUI automation.", "description": "**PREFERRED WORKFLOW** when AI vision is enabled:\n1. Call `detect_coordinates` with a description like \"the email input field\"\n2. Use the returned coordinates with this tool to click and type text\n\n**Use this when:**\n- AI vision is enabled and you need to type into an element\n- Page HTML is too large/complex for selector parsing\n- Input fields on anti-automation sites\n- Dynamic elements without stable selectors\n\nThis performs a real GUI click at coordinates, then types using PyAutoGUI - completely undetectable.\n\n**VERIFICATION**: After typing, use `what_is_visible` to verify the text was entered correctly."}, {"name": "gui_hover_xy", "title": "GUI HOVER AT COORDINATES - Move mouse to coordinates using GUI automation.", "description": "**Use with `detect_coordinates`**:\n1. Call `detect_coordinates` to find element position\n2. Use this tool to hover over the element\n\n**Use this for:**\n- Revealing tooltips or dropdown menus\n- Triggering hover effects before clicking\n- Elements that require mouse interaction to become visible\n\n**VERIFICATION**: After hovering, use `what_is_visible` to see what appeared."}, {"name": "gui_press_keys_xy", "title": "GUI PRESS KEYS AT COORDINATES - Click to focus, then press special keys.", "description": "**Use with `detect_coordinates`**:\n1. Call `detect_coordinates` to find element position\n2. Use `gui_press_keys_xy` to click and press keys (ENTER, TAB, etc.)\n\n**Supports:**\n- Single keys: ENTER, TAB, ESCAPE, BACKSPACE, DELETE, SPACE\n- Arrow keys: UP, DOWN, LEFT, RIGHT, HOME, END, PAGE_UP, PAGE_DOWN\n- Function keys: F1-F12\n- Modifiers: CTRL, ALT, SHIFT, META, COMMAND\n- Combinations: \"CTRL+a\", \"SHIFT+TAB\", \"CTRL+ENTER\"\n\n**Example workflow for Google search:**\n1. `detect_coordinates` \u2192 find search box\n2. `gui_type_xy` \u2192 type \"openai\"\n3. `gui_press_keys_xy` \u2192 press \"ENTER\" to search\n\n**VERIFICATION**: Use `what_is_visible` after pressing keys to verify result."}, {"name": "detect_coordinates", "title": "VISION-BASED ELEMENT DETECTION - Find elements using AI vision. PREFER THIS over HTML parsing.", "description": "**RECOMMENDED APPROACH**: When AI vision is enabled, use this tool to locate elements instead of\nparsing HTML. It's more robust, works on any page, and enables undetectable GUI interactions.\n\n**Workflow - CLICK**: `detect_coordinates` \u2192 `gui_click_xy`\n**Workflow - TYPE**: `detect_coordinates` \u2192 `gui_type_xy`\n**Workflow - HOVER**: `detect_coordinates` \u2192 `gui_hover_xy`\n\n**Perfect for:**\n- Any page when AI vision is enabled (preferred over selectors)\n- CAPTCHAs in complex layouts (\"find the hCaptcha checkbox\")\n- Dynamic content without stable selectors\n- Elements easier to describe than locate in HTML (\"the blue Submit button\")\n- Large/complex pages where HTML parsing is impractical\n\n**IMPORTANT - BE SPECIFIC IN YOUR PROMPTS**: The tool clicks at the CENTER of detected elements.\nFor wide elements with icons (like search boxes with camera/voice icons on the right), be specific\nabout which part you want to click:\n\n**Good prompts** (specific):\n- \"the text input area of the search box\" (not the whole search bar)\n- \"the Google Search button\" (specific button, not the search box)\n- \"the email text field\" (clickable input area)\n- \"the Submit button with blue background\"\n- \"the checkbox next to 'Remember me'\"\n\n**Bad prompts** (too broad):\n- \"the search box\" (may include icons, clicking center could hit camera icon)\n- \"the input field\" (ambiguous if multiple exist)\n- \"the button\" (which button?)\n\n**More examples:**\n- \"the password input field\"\n- \"the blue Submit button at the bottom of the form\"\n- \"the login button in the top right corner\"\n- \"the dropdown menu labeled 'Country'\"\n\n**Click Position Control (fx, fy parameters):**\nFor wide elements with icons on the right (like Google's search box), use fx to click\nleft of center and avoid hitting the wrong element:\n- `fx=0.2` - clicks at 20% from left edge (avoids right-side icons like Google Lens)\n- `fx=0.5` - clicks at center (default)\n- `fx=0.8` - clicks at 80% from left edge\n- `fy` controls vertical position similarly (0.0=top, 0.5=center, 1.0=bottom)\n\nExample: For Google search, use `fx=0.2` to click the text input area, not the camera icon.\n\nReturns:\n- Bounding box coordinates (x, y, width, height)\n- Recommended click point (calculated using fx, fy offsets)\n- Detection confidence score"}, {"name": "what_is_visible", "title": "PRIMARY TOOL FOR VISUAL VERIFICATION - Use this instead of take_screenshot + curl + Read.", "description": "This is the BEST and FASTEST way to see what's on the page. It takes a screenshot internally\nand uses AI to analyze it, so you don't need to manually download and view screenshots.\n\n**Automatically analyzes:**\n- **Form fields**: Which are filled, empty, or required\n- **Interactive elements**: Checkbox/radio states, button availability\n- **CAPTCHA status**: Present, solved, or needs attention\n- **Messages**: Errors, success notifications, validation feedback\n- **Page purpose**: What the user should do next\n\n**Use this to:**\n- Verify actions worked (after click, type, navigate)\n- Understand current page state\n- Find elements to interact with\n- Debug issues"}, {"name": "take_screenshot", "title": "Take a screenshot of the browser.", "description": "**PREFER `what_is_visible`**: If AI vision is enabled (OPENROUTER_API_KEY set), use `what_is_visible`\ninstead - it's faster and provides AI analysis without manual screenshot download.\n\n**MANUAL SCREENSHOT WORKFLOW** (only if `what_is_visible` is not available):\n1. Call `take_screenshot` \u2192 get `screenshot_url`\n2. Download with curl: `curl -s <screenshot_url> -o /tmp/screenshot.png`\n3. Use the Read tool on `/tmp/screenshot.png` to view the image"}, {"name": "get_content", "title": "GET VISIBLE TEXT CONTENT - Retrieve the visible text from the current page (no HTML).", "description": "**PREFER `what_is_visible`**: If AI vision is enabled, use `what_is_visible` instead - it provides\nricher context including form states, interactive elements, and visual understanding without\nneeding to parse raw text.\n\n**Use `get_content` only when:**\n- You need to extract large amounts of text for processing (articles, documentation)\n- You need exact text for string matching or comparison\n- AI vision is not available\n\nReturns only the text that a user would see on the page, extracted from the DOM.\nText is truncated at 50,000 characters to stay within token limits.\n\nReturns: Visible text content, current URL, page title, and truncation flag."}, {"name": "execute_script", "title": "Execute JavaScript.", "description": ""}, {"name": "resize", "title": "Resize viewport.", "description": ""}, {"name": "snapshot", "title": "DOM or accessibility snapshot.", "description": ""}, {"name": "console_logs", "title": "List recent browser console messages (best-effort; depends on Chrome/Selenium logging support).", "description": "Useful for debugging JavaScript errors, network issues, or application logs.\nUse action=\"get\" to retrieve logs, action=\"clear\" to clear them."}, {"name": "network_logs", "title": "List recent network events captured from Chrome performance logs.", "description": "This is best-effort and may require Chrome logging support in the underlying driver.\nUseful for debugging API calls, failed requests, or performance issues.\nUse action=\"get\" to retrieve logs, action=\"clear\" to clear them."}, {"name": "tabs", "title": "Tabs: list, new, switch, close, current.", "description": ""}, {"name": "dialog", "title": "DIALOG HANDLING - Accept, dismiss, or interact with browser dialogs.", "description": "Handles JavaScript alert(), confirm(), and prompt() dialogs.\n- action=\"get\": Get current dialog info\n- action=\"accept\": Click OK/Accept\n- action=\"dismiss\": Click Cancel/Dismiss\n- text: For prompt dialogs, provide input text before accepting"}, {"name": "emulate", "title": "DEVICE EMULATION - Emulate mobile devices, tablets, or custom viewports.", "description": "Use device presets like \"iPhone 14\", \"iPad\", \"Pixel 7\" or specify custom dimensions.\nAffects viewport size, user agent, touch events, and device scale factor.\n\nCall `list_devices` to see available device presets."}, {"name": "performance", "title": "Performance: start_trace, stop_trace, metrics, analyze.", "description": ""}, {"name": "get_pool_status", "title": "Get pool status.", "description": ""}, {"name": "health_check", "title": "Health check.", "description": ""}];
 
 // Category mapping
 const CATEGORY_MAP = {
