@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.4.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.3.0...v1.4.0) (2025-12-26)
+
+
+### Features
+
+* **vision:** add debug info to detect_coordinates response ([ccfae7a](https://github.com/ifokeev/airbrowser-mcp/commit/ccfae7a57bef54930e8fddd816d2b5ceae5cce35))
+
+
+### Bug Fixes
+
+* **compose:** enable hot-reload with FLASK_ENV=development ([77c62e7](https://github.com/ifokeev/airbrowser-mcp/commit/77c62e7599c81a0b2060839a1ca586e8831a1b40))
+* **display:** reduce default screen resolution to 1600x900 ([fa859a7](https://github.com/ifokeev/airbrowser-mcp/commit/fa859a792226c45f4d8cf37025eebf90c150f0dd))
+* **launcher:** maximize window by default, position at (0,0) ([82d5d11](https://github.com/ifokeev/airbrowser-mcp/commit/82d5d1175cd0a1a2c62d45d42b77d60e795e3b52))
+* **vision:** improve coordinate detection prompt for precise clicks ([a74be50](https://github.com/ifokeev/airbrowser-mcp/commit/a74be50ba7b3af6daf6641829e4d7ca5f8ce481e))
+* **vision:** require image_size in coordinate transform ([adaddc8](https://github.com/ifokeev/airbrowser-mcp/commit/adaddc8978dba67531311c1d8e2807436e82dc5c))
+
 ## [1.3.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.2.4...v1.3.0) (2025-12-26)
 
 
