@@ -103,6 +103,7 @@ If not found: {{"found": false, "error": "reason"}}"""
         """Get image dimensions, defaults to 1920x1080."""
         try:
             from PIL import Image
+
             with Image.open(image_path) as img:
                 return img.size
         except Exception:
@@ -111,6 +112,7 @@ If not found: {{"found": false, "error": "reason"}}"""
     def detect(self, image_path: str, prompt: str) -> dict[str, Any]:
         """Detect UI element coordinates."""
         import os
+
         if not os.path.exists(image_path):
             return {"success": False, "error": f"Image not found: {image_path}"}
 

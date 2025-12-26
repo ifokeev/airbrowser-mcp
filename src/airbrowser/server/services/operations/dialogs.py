@@ -15,9 +15,7 @@ class DialogOperations:
     def __init__(self, browser_pool: BrowserPoolAdapter):
         self.browser_pool = browser_pool
 
-    def handle_dialog(
-        self, browser_id: str, action: str = "accept", text: str | None = None
-    ) -> dict[str, Any]:
+    def handle_dialog(self, browser_id: str, action: str = "accept", text: str | None = None) -> dict[str, Any]:
         """Handle a browser dialog.
 
         Args:
@@ -26,9 +24,7 @@ class DialogOperations:
             text: Optional text for prompt dialogs
         """
         try:
-            browser_action = BrowserAction(
-                action="handle_dialog", options={"action": action, "text": text}
-            )
+            browser_action = BrowserAction(action="handle_dialog", options={"action": action, "text": text})
             result = self.browser_pool.execute_action(browser_id, browser_action)
 
             if result.success:

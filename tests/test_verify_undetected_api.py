@@ -10,8 +10,12 @@ import time
 import airbrowser_client
 import pytest
 from airbrowser_client.api import browser_api
-from airbrowser_client.models import CreateBrowserRequest, ExecuteScriptRequest, NavigateBrowserRequest, TakeScreenshotRequest
-
+from airbrowser_client.models import (
+    CreateBrowserRequest,
+    ExecuteScriptRequest,
+    NavigateBrowserRequest,
+    TakeScreenshotRequest,
+)
 from conftest import get_api_base_url
 
 
@@ -42,19 +46,17 @@ class TestUndetected:
         result = self.browser_client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        self.browser_id = result.data['browser_id']
+        self.browser_id = result.data["browser_id"]
         return self.browser_id
 
     def verify_success(self):
         """Verify that we passed the detection test"""
         try:
             # Use get_element_data with direct parameters
-            result = self.browser_client.get_element_data(
-                self.browser_id, selector="h1", data_type="text"
-            )
+            result = self.browser_client.get_element_data(self.browser_id, selector="h1", data_type="text")
 
             if result.success and result.data:
-                h1_text = result.data.get('text') if 'text' in result.data else str(result.data)
+                h1_text = result.data.get("text") if "text" in result.data else str(result.data)
 
                 if "OH YEAH, you passed!" in str(h1_text):
                     print("\nSuccess! Website did not detect Selenium!")
@@ -67,8 +69,12 @@ class TestUndetected:
                 )
                 result = self.browser_client.execute_script(self.browser_id, payload=exec_request)
 
-                if result.success and result.data and result.data.get('result'):
-                    h1_text = result.data.get('result').get("value", "") if isinstance(result.data.get('result'), dict) else str(result.data.get('result'))
+                if result.success and result.data and result.data.get("result"):
+                    h1_text = (
+                        result.data.get("result").get("value", "")
+                        if isinstance(result.data.get("result"), dict)
+                        else str(result.data.get("result"))
+                    )
 
                     if "OH YEAH, you passed!" in str(h1_text):
                         print("\nSuccess! Website did not detect Selenium!")
@@ -83,8 +89,8 @@ class TestUndetected:
         try:
             exec_request = ExecuteScriptRequest(script="return document.documentElement.outerHTML;")
             result = self.browser_client.execute_script(self.browser_id, payload=exec_request)
-            if result and result.success and result.data and result.data.get('result'):
-                script_result = result.data.get('result')
+            if result and result.success and result.data and result.data.get("result"):
+                script_result = result.data.get("result")
                 return script_result.get("value", "") if isinstance(script_result, dict) else str(script_result)
         except:
             pass
@@ -187,7 +193,7 @@ class TestUndetected:
         result = self.browser_client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        self.browser_id = result.data['browser_id']
+        self.browser_id = result.data["browser_id"]
 
         # Navigate to a site that shows user agent
         nav_request = NavigateBrowserRequest(url="https://example.com")
@@ -199,8 +205,8 @@ class TestUndetected:
             exec_request = ExecuteScriptRequest(script="return navigator.userAgent;")
             result = self.browser_client.execute_script(self.browser_id, payload=exec_request)
 
-            if result.success and result.data and result.data.get('result'):
-                script_result = result.data.get('result')
+            if result.success and result.data and result.data.get("result"):
+                script_result = result.data.get("result")
                 ua_text = script_result.get("value", "") if isinstance(script_result, dict) else str(script_result)
 
                 print(f"User Agent: {ua_text}")

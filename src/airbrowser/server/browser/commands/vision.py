@@ -98,7 +98,6 @@ def handle_detect_coordinates(driver, command: dict, browser_id: str = "unknown"
 
     # Fractional click offsets (0.0-1.0): 0.5 = center (default)
     fx_explicit = command.get("fx") is not None
-    fy_explicit = command.get("fy") is not None
     fx = float(command.get("fx", 0.5))
     fy = float(command.get("fy", 0.5))
     # Clamp to valid range
@@ -116,10 +115,10 @@ def handle_detect_coordinates(driver, command: dict, browser_id: str = "unknown"
             width = coords.get("width", 0)
             height = coords.get("height", 1)
             aspect_ratio = width / height if height > 0 else 0
-            if not fx_explicit:
-                if aspect_ratio > 10:  # Very wide element (e.g., search box)
-                    fx = 0.25  # Click at 25% from left to avoid right-side icons
-                    logger.debug(f"Auto left-bias: aspect_ratio={aspect_ratio:.1f}, using fx={fx}")
+            if not fx_explicit and aspect_ratio > 10:
+                # Very wide element (e.g., search box) - click left to avoid right-side icons
+                fx = 0.25
+                logger.debug(f"Auto left-bias: aspect_ratio={aspect_ratio:.1f}, using fx={fx}")
 
             coords = _transform_to_screen_coords(driver, coords, fx, fy)
             coords["screenshot_url"] = screenshot["url"]

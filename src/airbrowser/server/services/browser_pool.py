@@ -80,7 +80,9 @@ class BrowserPoolAdapter:
 
         # Check if profile is already in use
         if profile_name and profile_name in self.active_profiles:
-            raise ValueError(f"Profile '{profile_name}' is already in use by browser {self.active_profiles[profile_name]}")
+            raise ValueError(
+                f"Profile '{profile_name}' is already in use by browser {self.active_profiles[profile_name]}"
+            )
 
         logger.info(f"Creating browser with config: proxy={config.proxy}, profile={profile_name}")
 
@@ -272,8 +274,11 @@ class BrowserPoolAdapter:
 
             elif action.action == "press_keys":
                 response = self.client.execute_command(
-                    browser_id, "press_keys", selector=action.selector, text=action.text,
-                    by=getattr(action, "by", "css")
+                    browser_id,
+                    "press_keys",
+                    selector=action.selector,
+                    text=action.text,
+                    by=getattr(action, "by", "css"),
                 )
 
             elif action.action == "gui_click":
@@ -619,13 +624,15 @@ class BrowserPoolAdapter:
                     size_mb = size_bytes / (1024 * 1024)
                     # Get last modified time
                     mtime = profile_path.stat().st_mtime
-                    profiles.append({
-                        "name": name,
-                        "path": str(profile_path),
-                        "size_mb": round(size_mb, 2),
-                        "last_used": datetime.fromtimestamp(mtime).isoformat(),
-                        "in_use": name in self.active_profiles,
-                    })
+                    profiles.append(
+                        {
+                            "name": name,
+                            "path": str(profile_path),
+                            "size_mb": round(size_mb, 2),
+                            "last_used": datetime.fromtimestamp(mtime).isoformat(),
+                            "in_use": name in self.active_profiles,
+                        }
+                    )
         return sorted(profiles, key=lambda p: p["name"])
 
     def create_profile(self, name: str) -> dict[str, Any]:

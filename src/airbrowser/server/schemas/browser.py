@@ -704,7 +704,9 @@ def register_browser_schemas(api):
         {
             "selector": fields.String(required=True, description="Select element selector"),
             "by": fields.String(description="Selector type (css, id, name, xpath)", default="css"),
-            "action": fields.String(description="Action: select or options", default="select", enum=["select", "options"]),
+            "action": fields.String(
+                description="Action: select or options", default="select", enum=["select", "options"]
+            ),
             "value": fields.String(description="Option value to select"),
             "text": fields.String(description="Option text to select"),
             "index": fields.Integer(description="Option index to select"),

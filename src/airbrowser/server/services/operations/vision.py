@@ -60,12 +60,6 @@ class VisionOperations:
                     message=result.message,
                 )
             else:
-                # Include extra data for debugging failed detections
-                error_data = {
-                    "prompt": prompt,
-                    "models_tried": (result.data.get("models_tried") if isinstance(result.data, dict) else []),
-                    "screenshot_url": (result.data.get("screenshot_url") or result.data.get("screenshot_path") if isinstance(result.data, dict) else None),
-                }
                 return _error(result.message)
 
         except Exception as e:

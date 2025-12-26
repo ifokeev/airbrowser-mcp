@@ -100,9 +100,7 @@ class MCPIntegration:
             print(f"[MCP] Warning: Could not register tool '{name}': {e}")
             return None
 
-    def _create_standard_wrapper(
-        self, name: str, method: Callable, params: list, doc: str
-    ) -> Callable:
+    def _create_standard_wrapper(self, name: str, method: Callable, params: list, doc: str) -> Callable:
         """Create a standard async wrapper for a method."""
         # Get type hints for better MCP schema generation
         try:
@@ -134,15 +132,11 @@ class MCPIntegration:
 
         # Set return type
         return_annotation = hints.get("return", dict[str, Any])
-        wrapper.__signature__ = inspect.Signature(
-            parameters=new_params, return_annotation=return_annotation
-        )
+        wrapper.__signature__ = inspect.Signature(parameters=new_params, return_annotation=return_annotation)
 
         return wrapper
 
-    def _create_start_time_wrapper(
-        self, name: str, method: Callable, params: list, doc: str
-    ) -> Callable:
+    def _create_start_time_wrapper(self, name: str, method: Callable, params: list, doc: str) -> Callable:
         """Create wrapper for methods that need start_time injected."""
         start_time = self.start_time
 
@@ -154,9 +148,7 @@ class MCPIntegration:
         wrapper.__name__ = name
 
         # These methods typically have no other params after excluding start_time
-        wrapper.__signature__ = inspect.Signature(
-            parameters=[], return_annotation=dict[str, Any]
-        )
+        wrapper.__signature__ = inspect.Signature(parameters=[], return_annotation=dict[str, Any])
 
         return wrapper
 
@@ -164,9 +156,7 @@ class MCPIntegration:
         """Get the MCP server instance."""
         return self.mcp
 
-    def run_mcp_server(
-        self, host: str = "0.0.0.0", port: int = 3001, path: str = "/mcp", quiet: bool = False
-    ):
+    def run_mcp_server(self, host: str = "0.0.0.0", port: int = 3001, path: str = "/mcp", quiet: bool = False):
         """Run the MCP server independently."""
         try:
             if not quiet:

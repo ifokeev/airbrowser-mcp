@@ -2,9 +2,9 @@
 """Generate static documentation from OpenAPI spec and MCP tools."""
 
 import argparse
+import html
 import json
 import re
-import html
 from pathlib import Path
 
 
@@ -17,15 +17,17 @@ def parse_openapi(openapi_path: str) -> dict:
     for path, methods in spec.get("paths", {}).items():
         for method, details in methods.items():
             if method in ("get", "post", "put", "delete", "patch"):
-                endpoints.append({
-                    "method": method.upper(),
-                    "path": path,
-                    "summary": details.get("summary", ""),
-                    "description": details.get("description", ""),
-                    "tags": details.get("tags", []),
-                    "parameters": details.get("parameters", []),
-                    "request_body": details.get("requestBody", {}),
-                })
+                endpoints.append(
+                    {
+                        "method": method.upper(),
+                        "path": path,
+                        "summary": details.get("summary", ""),
+                        "description": details.get("description", ""),
+                        "tags": details.get("tags", []),
+                        "parameters": details.get("parameters", []),
+                        "request_body": details.get("requestBody", {}),
+                    }
+                )
 
     # Group by tag
     grouped = {}
@@ -53,7 +55,7 @@ def parse_mcp_tools(tools_path: str) -> list:
 
     # Find all method definitions with docstrings (handles multiline signatures)
     # Use a two-step approach: find method names, then find their docstrings
-    method_pattern = r'^\s{4}def (\w+)\('
+    method_pattern = r"^\s{4}def (\w+)\("
     method_names = re.findall(method_pattern, content, re.MULTILINE)
 
     # For each method, find its docstring
@@ -83,17 +85,21 @@ def parse_mcp_tools(tools_path: str) -> list:
             continue
 
         if name in enhanced:
-            tools.append({
-                "name": name,
-                "title": enhanced[name]["title"],
-                "description": enhanced[name]["description"],
-            })
+            tools.append(
+                {
+                    "name": name,
+                    "title": enhanced[name]["title"],
+                    "description": enhanced[name]["description"],
+                }
+            )
         else:
-            tools.append({
-                "name": name,
-                "title": docstring.strip(),
-                "description": "",
-            })
+            tools.append(
+                {
+                    "name": name,
+                    "title": docstring.strip(),
+                    "description": "",
+                }
+            )
 
     return tools
 
@@ -113,10 +119,10 @@ def get_mcp_section_html(tools_json: str, tools_count: int) -> str:
     html = template.replace("{{MCP_TOOLS_JSON}}", tools_json)
 
     # Update tool count in the header badge and footer
-    html = html.replace('>33 tools<', f'>{tools_count} tools<')
+    html = html.replace(">33 tools<", f">{tools_count} tools<")
     html = html.replace('"countAll">33<', f'"countAll">{tools_count}<')
     html = html.replace('"visibleCount">33<', f'"visibleCount">{tools_count}<')
-    html = html.replace('of <span>33<', f'of <span>{tools_count}<')
+    html = html.replace("of <span>33<", f"of <span>{tools_count}<")
 
     return html
 
@@ -141,30 +147,29 @@ def generate_html(openapi_data: dict, mcp_tools: list, version: str) -> str:
         for ep in endpoints:
             color = method_color(ep["method"])
             desc = html.escape(ep["summary"] or ep["description"][:100])
-            rows.append(f'''
+            rows.append(f"""
                 <tr>
                     <td><span class="method" style="background: {color}">{ep["method"]}</span></td>
                     <td><code>{html.escape(ep["path"])}</code></td>
                     <td>{desc}</td>
-                </tr>''')
+                </tr>""")
 
-        api_sections.append(f'''
+        api_sections.append(f"""
             <div class="api-group">
                 <h4>{html.escape(tag)}</h4>
                 <table class="endpoint-table">
                     <tbody>{"".join(rows)}</tbody>
                 </table>
-            </div>''')
+            </div>""")
 
     # Build MCP tools JSON for the terminal-style interface
     import json
-    mcp_tools_json = json.dumps([{
-        "name": tool["name"],
-        "title": tool["title"],
-        "description": tool["description"]
-    } for tool in mcp_tools])
 
-    return f'''<!DOCTYPE html>
+    mcp_tools_json = json.dumps(
+        [{"name": tool["name"], "title": tool["title"], "description": tool["description"]} for tool in mcp_tools]
+    )
+
+    return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -412,7 +417,7 @@ npm install airbrowser-client
         }}
     </script>
 </body>
-</html>'''
+</html>"""
 
 
 def main():

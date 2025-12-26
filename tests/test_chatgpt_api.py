@@ -15,7 +15,6 @@ from airbrowser_client.models import (
     NavigateBrowserRequest,
     TakeScreenshotRequest,
 )
-
 from conftest import get_api_base_url
 
 
@@ -37,7 +36,7 @@ def test_chatgpt_interaction():
         result = browser_client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data['browser_id']
+        browser_id = result.data["browser_id"]
         assert browser_id is not None
 
         time.sleep(1)
@@ -82,7 +81,7 @@ def test_chatgpt_page_loads():
         result = browser_client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data['browser_id']
+        browser_id = result.data["browser_id"]
 
         time.sleep(1)
 
@@ -96,7 +95,7 @@ def test_chatgpt_page_loads():
         # Verify we're on ChatGPT by checking URL
         url_result = browser_client.get_url(browser_id)
         assert url_result.success
-        current_url = url_result.data.get('url', '')
+        current_url = url_result.data.get("url", "")
 
         # ChatGPT may redirect, but should contain chatgpt or openai
         assert "chatgpt" in current_url.lower() or "openai" in current_url.lower(), f"Unexpected URL: {current_url}"

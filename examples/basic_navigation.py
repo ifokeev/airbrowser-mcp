@@ -24,19 +24,14 @@ def main():
 
         # 1. Create an undetectable browser
         print("Creating browser...")
-        response = api.create_browser(payload={
-            "window_size": [1280, 800]
-        })
-        browser_id = response.data['browser_id']
+        response = api.create_browser(payload={"window_size": [1280, 800]})
+        browser_id = response.data["browser_id"]
         print(f"Browser created: {browser_id}")
 
         try:
             # 2. Navigate to a URL
             print("Navigating to example.com...")
-            api.navigate_browser(
-                browser_id=browser_id,
-                payload={"url": "https://example.com", "timeout": 30}
-            )
+            api.navigate_browser(browser_id=browser_id, payload={"url": "https://example.com", "timeout": 30})
             print("Navigation complete")
 
             # 3. Get current URL (verify navigation worked)

@@ -51,7 +51,9 @@ class ElementOperations:
         except Exception as e:
             return _error(f"Type operation failed: {str(e)}")
 
-    def click_element(self, browser_id: str, selector: str, timeout: int | None = None, by: str = "css") -> dict[str, Any]:
+    def click_element(
+        self, browser_id: str, selector: str, timeout: int | None = None, by: str = "css"
+    ) -> dict[str, Any]:
         """Click on an element in the browser."""
         try:
             action = BrowserAction(
@@ -96,7 +98,9 @@ class ElementOperations:
         except Exception as e:
             return _error(f"Get text failed: {str(e)}")
 
-    def wait_for_element(self, browser_id: str, selector: str, timeout: int | None = None, by: str = "css") -> dict[str, Any]:
+    def wait_for_element(
+        self, browser_id: str, selector: str, timeout: int | None = None, by: str = "css"
+    ) -> dict[str, Any]:
         """Wait for an element to appear on the page."""
         try:
             action = BrowserAction(
@@ -127,9 +131,7 @@ class ElementOperations:
         except Exception as e:
             return _error(f"click_if_visible failed: {str(e)}")
 
-    def wait_not_visible(
-        self, browser_id: str, selector: str, timeout: int = 20, by: str = "css"
-    ) -> dict[str, Any]:
+    def wait_not_visible(self, browser_id: str, selector: str, timeout: int = 20, by: str = "css") -> dict[str, Any]:
         """Wait for an element to become invisible."""
         try:
             action = BrowserAction(action="wait_for_element_not_visible", selector=selector, timeout=timeout, by=by)

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 # Methods to exclude from auto-generation (in separate namespaces)
 EXCLUDE_METHODS = {
-    "health_check",     # Health endpoint (separate /health namespace)
+    "health_check",  # Health endpoint (separate /health namespace)
     "get_pool_status",  # Pool status (separate /pool namespace)
 }
 
@@ -28,6 +28,7 @@ PATH_OVERRIDES = {
     "take_screenshot": "screenshot",
     "execute_js": "execute",
 }
+
 
 # Type hint to Flask-RESTX field mapping
 def _get_field_for_type(annotation: Any, param_name: str) -> fields.Raw:
@@ -52,13 +53,13 @@ def _get_field_for_type(annotation: Any, param_name: str) -> fields.Raw:
         return fields.String(description=param_name)
 
     # Basic types
-    if annotation is str or annotation == str:
+    if annotation is str:
         return fields.String(description=param_name)
-    elif annotation is int or annotation == int:
+    elif annotation is int:
         return fields.Integer(description=param_name)
-    elif annotation is float or annotation == float:
+    elif annotation is float:
         return fields.Float(description=param_name)
-    elif annotation is bool or annotation == bool:
+    elif annotation is bool:
         return fields.Boolean(description=param_name)
     elif origin is list or annotation is list:
         # Get the item type from list[X]
@@ -92,7 +93,7 @@ def _get_http_method(name: str) -> str:
 
 def _has_browser_id_param(sig: inspect.Signature) -> bool:
     """Check if method has browser_id as first parameter."""
-    params = [p for p in sig.parameters.keys() if p != "self"]
+    params = [p for p in sig.parameters if p != "self"]
     return len(params) > 0 and params[0] == "browser_id"
 
 
@@ -143,6 +144,7 @@ def _create_resource_class(
 
     def create_handler(method_ref, needs_browser_id, route_name):
         """Create handler function with proper closure."""
+
         def handler(self, browser_id=None):
             data = request.get_json(silent=True) or {}
 
@@ -186,8 +188,8 @@ def _create_resource_class(
     if http_method in ("GET", "DELETE") and request_schema:
         # Extract fields from schema and add as params
         for field_name, field_obj in request_schema.items():
-            required = getattr(field_obj, 'required', False)
-            description = getattr(field_obj, 'description', field_name)
+            required = getattr(field_obj, "required", False)
+            description = getattr(field_obj, "description", field_name)
             handler = ns.param(field_name, description, required=required)(handler)
 
     # Create Resource class with handler in class dict (required for swagger generation)

@@ -16,6 +16,7 @@ from airbrowser_client.models import (
     GuiTypeXyRequest,
     NavigateBrowserRequest,
 )
+from pydantic import ValidationError
 
 
 @pytest.fixture(scope="class")
@@ -24,7 +25,7 @@ def browser_with_form(browser_client):
     config = CreateBrowserRequest(window_size=[1920, 1080])
     result = browser_client.create_browser(payload=config)
     assert result is not None and result.success
-    bid = result.data['browser_id']
+    bid = result.data["browser_id"]
 
     # Navigate to example.com
     browser_client.navigate_browser(bid, payload=NavigateBrowserRequest(url="https://example.com"))
@@ -84,17 +85,14 @@ class TestGuiTypeXy:
 
         # Call the endpoint with valid coordinates
         # Even if the actual GUI operation fails (headless), the action should be recognized
-        result = browser_client.gui_type_xy(
-            bid, payload=GuiTypeXyRequest(x=500.0, y=300.0, text="test@example.com")
-        )
+        result = browser_client.gui_type_xy(bid, payload=GuiTypeXyRequest(x=500.0, y=300.0, text="test@example.com"))
 
         # The action should be recognized (not "Unknown action")
         # It may fail for other reasons in headless mode, but action routing works
         assert result is not None
         if not result.success:
             # Should NOT be "Unknown action" error - that means execute_action is missing the handler
-            assert "Unknown action" not in str(result.message), \
-                "gui_type_xy action not registered in execute_action"
+            assert "Unknown action" not in str(result.message), "gui_type_xy action not registered in execute_action"
 
     def test_gui_type_xy_with_timeframe(self, browser_client, browser_with_form):
         """Test gui_type_xy with custom timeframe parameter."""
@@ -113,19 +111,15 @@ class TestGuiTypeXy:
         bid = browser_with_form
 
         # Pydantic should reject None for required field
-        with pytest.raises(Exception):
-            browser_client.gui_type_xy(
-                bid, payload=GuiTypeXyRequest(x=None, y=100.0, text="test")
-            )
+        with pytest.raises(ValidationError):
+            browser_client.gui_type_xy(bid, payload=GuiTypeXyRequest(x=None, y=100.0, text="test"))
 
     def test_gui_type_xy_validation_missing_text(self, browser_client, browser_with_form):
         """Test that missing text fails validation."""
         bid = browser_with_form
 
-        with pytest.raises(Exception):
-            browser_client.gui_type_xy(
-                bid, payload=GuiTypeXyRequest(x=100.0, y=100.0, text=None)
-            )
+        with pytest.raises(ValidationError):
+            browser_client.gui_type_xy(bid, payload=GuiTypeXyRequest(x=100.0, y=100.0, text=None))
 
 
 @pytest.mark.browser
@@ -136,23 +130,18 @@ class TestGuiHoverXy:
         """Test that gui_hover_xy action is properly registered and executes."""
         bid = browser_with_form
 
-        result = browser_client.gui_hover_xy(
-            bid, payload=GuiHoverXyRequest(x=500.0, y=300.0)
-        )
+        result = browser_client.gui_hover_xy(bid, payload=GuiHoverXyRequest(x=500.0, y=300.0))
 
         assert result is not None
         if not result.success:
             # Should NOT be "Unknown action" error
-            assert "Unknown action" not in str(result.message), \
-                "gui_hover_xy action not registered in execute_action"
+            assert "Unknown action" not in str(result.message), "gui_hover_xy action not registered in execute_action"
 
     def test_gui_hover_xy_with_timeframe(self, browser_client, browser_with_form):
         """Test gui_hover_xy with custom timeframe parameter."""
         bid = browser_with_form
 
-        result = browser_client.gui_hover_xy(
-            bid, payload=GuiHoverXyRequest(x=500.0, y=300.0, timeframe=0.5)
-        )
+        result = browser_client.gui_hover_xy(bid, payload=GuiHoverXyRequest(x=500.0, y=300.0, timeframe=0.5))
 
         assert result is not None
         if not result.success:
@@ -162,10 +151,8 @@ class TestGuiHoverXy:
         """Test that missing coordinates fails validation."""
         bid = browser_with_form
 
-        with pytest.raises(Exception):
-            browser_client.gui_hover_xy(
-                bid, payload=GuiHoverXyRequest(x=None, y=100.0)
-            )
+        with pytest.raises(ValidationError):
+            browser_client.gui_hover_xy(bid, payload=GuiHoverXyRequest(x=None, y=100.0))
 
 
 @pytest.mark.browser
@@ -176,14 +163,11 @@ class TestGuiClickXy:
         """Test that gui_click with x,y coordinates works."""
         bid = browser_with_form
 
-        result = browser_client.gui_click(
-            bid, payload=GuiClickRequest(x=500.0, y=300.0)
-        )
+        result = browser_client.gui_click(bid, payload=GuiClickRequest(x=500.0, y=300.0))
 
         assert result is not None
         if not result.success:
-            assert "Unknown action" not in str(result.message), \
-                "gui_click_xy action not registered in execute_action"
+            assert "Unknown action" not in str(result.message), "gui_click_xy action not registered in execute_action"
 
 
 @pytest.mark.browser
@@ -196,13 +180,13 @@ class TestGuiOperationsIntegration:
         bid = browser_with_form
 
         import os
+
         if not os.environ.get("OPENROUTER_API_KEY"):
             pytest.skip("OPENROUTER_API_KEY not set")
 
         from airbrowser_client.models import DetectCoordinatesRequest
-        result = browser_client.detect_coordinates(
-            bid, payload=DetectCoordinatesRequest(prompt="the Submit button")
-        )
+
+        result = browser_client.detect_coordinates(bid, payload=DetectCoordinatesRequest(prompt="the Submit button"))
 
         if result.success:
             coords = result.data
@@ -214,10 +198,12 @@ class TestGuiOperationsIntegration:
         bid = browser_with_form
 
         import os
+
         if not os.environ.get("OPENROUTER_API_KEY"):
             pytest.skip("OPENROUTER_API_KEY not set")
 
         from airbrowser_client.models import DetectCoordinatesRequest
+
         result = browser_client.detect_coordinates(
             bid, payload=DetectCoordinatesRequest(prompt="the email input field")
         )

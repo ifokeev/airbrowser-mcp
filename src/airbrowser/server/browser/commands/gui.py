@@ -88,9 +88,11 @@ def handle_gui_type_xy(driver, command: dict) -> dict:
         try:
             focused = driver.execute_script("return document.activeElement;")
             if focused:
-                tag = focused.tag_name.lower() if hasattr(focused, 'tag_name') else ''
-                is_editable = focused.get_attribute('contenteditable') == 'true' if hasattr(focused, 'get_attribute') else False
-                if tag in ('input', 'textarea') or is_editable:
+                tag = focused.tag_name.lower() if hasattr(focused, "tag_name") else ""
+                is_editable = (
+                    focused.get_attribute("contenteditable") == "true" if hasattr(focused, "get_attribute") else False
+                )
+                if tag in ("input", "textarea") or is_editable:
                     # Clear and type using Selenium (triggers proper browser events)
                     try:
                         focused.clear()
@@ -101,8 +103,10 @@ def handle_gui_type_xy(driver, command: dict) -> dict:
                     return {
                         "status": "success",
                         "message": "Typed at coordinates",
-                        "x": x, "y": y, "text_length": len(text),
-                        "method": "send_keys"
+                        "x": x,
+                        "y": y,
+                        "text_length": len(text),
+                        "method": "send_keys",
                     }
         except Exception as e:
             logger.debug(f"gui_type_xy: send_keys failed, falling back to pyautogui: {e}")
@@ -114,13 +118,16 @@ def handle_gui_type_xy(driver, command: dict) -> dict:
             driver.cdp.gui_write(text)
         else:
             import pyautogui
+
             pyautogui.write(text)
 
         return {
             "status": "success",
             "message": "Typed at coordinates",
-            "x": x, "y": y, "text_length": len(text),
-            "method": "pyautogui"
+            "x": x,
+            "y": y,
+            "text_length": len(text),
+            "method": "pyautogui",
         }
     except Exception as e:
         return {"status": "error", "message": f"Failed to type at xy: {str(e)}"}
@@ -144,6 +151,7 @@ def handle_gui_hover_xy(driver, command: dict) -> dict:
         else:
             # Fallback to pyautogui moveTo
             import pyautogui
+
             pyautogui.moveTo(float(x), float(y), float(timeframe))
 
         return {"status": "success", "message": "Hovered at coordinates", "x": x, "y": y}
@@ -316,10 +324,6 @@ def handle_gui_press_keys_xy(driver, command: dict) -> dict:
             key = KEY_MAP.get(keys.upper(), keys)
             focused.send_keys(key)
 
-        return {
-            "status": "success",
-            "message": "Pressed keys at coordinates",
-            "x": x, "y": y, "keys": keys
-        }
+        return {"status": "success", "message": "Pressed keys at coordinates", "x": x, "y": y, "keys": keys}
     except Exception as e:
         return {"status": "error", "message": f"Failed to press keys: {str(e)}"}

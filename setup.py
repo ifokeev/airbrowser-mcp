@@ -1,17 +1,19 @@
 """Setup configuration for Airbrowser."""
 
-from setuptools import setup, find_packages
-import os
+from setuptools import find_packages, setup
+
 
 # Read the README file
 def read_readme():
-    with open("README.md", "r", encoding="utf-8") as fh:
+    with open("README.md", encoding="utf-8") as fh:
         return fh.read()
+
 
 # Read requirements from requirements.txt
 def read_requirements():
-    with open("requirements.txt", "r", encoding="utf-8") as fh:
+    with open("requirements.txt", encoding="utf-8") as fh:
         return [line.strip() for line in fh if line.strip() and not line.startswith("#")]
+
 
 setup(
     name="airbrowser-mcp",

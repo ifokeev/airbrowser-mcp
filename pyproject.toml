@@ -42,6 +42,7 @@ ignore = [
     "E722",   # bare except (common in cleanup code)
     "E402",   # module level import not at top of file (sometimes necessary)
     "B008",   # function call in default argument (common in Flask)
+    "B017",   # pytest.raises(Exception) - acceptable in validation tests
     "B904",   # raise without from (too noisy)
     "SIM105", # contextlib.suppress (try-except-pass is often clearer)
     "SIM108", # ternary operator (readability preference)

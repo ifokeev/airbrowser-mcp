@@ -9,8 +9,13 @@ Run with: pytest tests/test_generated_client_complete.py -v
 import airbrowser_client
 import pytest
 from airbrowser_client.api import browser_api, health_api
-from airbrowser_client.models import BrowsersRequest, CreateBrowserRequest, ExecuteScriptRequest, NavigateBrowserRequest, TakeScreenshotRequest
-
+from airbrowser_client.models import (
+    BrowsersRequest,
+    CreateBrowserRequest,
+    ExecuteScriptRequest,
+    NavigateBrowserRequest,
+    TakeScreenshotRequest,
+)
 from conftest import get_api_base_url
 
 
@@ -37,9 +42,9 @@ def test_browser_pool_complete():
     create_result = browser_client.create_browser(payload=browser_config)
     assert create_result is not None, "Create browser returned None"
     assert create_result.success, f"Create browser failed: {create_result.message}"
-    assert create_result.data['browser_id'] is not None, "Browser ID is None"
+    assert create_result.data["browser_id"] is not None, "Browser ID is None"
 
-    browser_id = create_result.data['browser_id']
+    browser_id = create_result.data["browser_id"]
 
     try:
         # Wait for browser to initialize
@@ -50,12 +55,11 @@ def test_browser_pool_complete():
         assert nav_result is not None, "Navigate returned None"
         assert nav_result.success, f"Navigation failed: {nav_result.message}"
 
-
         # Test get URL
         url_result = browser_client.get_url(browser_id)
         assert url_result is not None, "Get URL returned None"
         assert url_result.success, f"Get URL failed: {url_result.message}"
-        assert "example.com" in url_result.data.get('url', ''), f"Unexpected URL: {url_result.data.get('url', '')}"
+        assert "example.com" in url_result.data.get("url", ""), f"Unexpected URL: {url_result.data.get('url', '')}"
 
         # Test execute script
         exec_request = ExecuteScriptRequest(script="return document.title")
@@ -72,7 +76,7 @@ def test_browser_pool_complete():
         list_result = browser_client.browsers(payload=BrowsersRequest(action="list"))
         assert list_result is not None, "List browsers returned None"
         assert list_result.success, f"List browsers failed: {list_result.message}"
-        assert list_result.data['count'] >= 1, "Expected at least 1 browser"
+        assert list_result.data["count"] >= 1, "Expected at least 1 browser"
 
     finally:
         # Clean up
@@ -98,15 +102,13 @@ def test_browser_with_uc_mode():
     assert create_result is not None, "Create browser returned None"
     assert create_result.success, f"Create browser failed: {create_result.message}"
 
-    browser_id = create_result.data['browser_id']
+    browser_id = create_result.data["browser_id"]
 
     try:
-
         # Navigate to a site
         nav_request = NavigateBrowserRequest(url="https://example.com")
         nav_result = browser_client.navigate_browser(browser_id, payload=nav_request)
         assert nav_result.success, f"Navigation failed: {nav_result.message}"
-
 
         # Take screenshot
         screenshot_result = browser_client.take_screenshot(browser_id, payload=TakeScreenshotRequest())
@@ -136,13 +138,13 @@ def test_browser_pool_scaling():
         config = CreateBrowserRequest()
         result = browser_client.create_browser(payload=config)
         assert result.success, f"Create browser {i} failed"
-        browser_ids.append(result.data['browser_id'])
+        browser_ids.append(result.data["browser_id"])
 
     try:
         # List browsers
         list_result = browser_client.browsers(payload=BrowsersRequest(action="list"))
         assert list_result.success, "List browsers failed"
-        assert list_result.data['count'] >= 2, f"Expected at least 2 browsers, got {list_result.data['count']}"
+        assert list_result.data["count"] >= 2, f"Expected at least 2 browsers, got {list_result.data['count']}"
 
     finally:
         # Close all created browsers

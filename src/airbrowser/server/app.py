@@ -65,10 +65,10 @@ def create_app():
     app.schemas = {**browser_schemas, **response_schemas}
 
     # Register routes
+    from .routes.auto_browser_routes import generate_browser_routes
     from .routes.health import create_health_namespace
     from .routes.pool import create_pool_namespace
     from .routes.profiles import create_profile_namespace
-    from .routes.auto_browser_routes import generate_browser_routes
 
     # Auto-generated routes for all browser operations (from BrowserOperations class)
     browser_ns = generate_browser_routes(api, browser_ops, app.schemas)

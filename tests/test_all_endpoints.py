@@ -9,9 +9,9 @@ Run with: pytest tests/test_all_endpoints.py -v
 import pytest
 from airbrowser_client.models import (
     BrowsersRequest,
-    CreateBrowserRequest,
     ClickRequest,
     ConsoleLogsRequest,
+    CreateBrowserRequest,
     ExecuteScriptRequest,
     HistoryRequest,
     NavigateBrowserRequest,
@@ -31,9 +31,9 @@ def browser_id(browser_client):
     assert result is not None, "Failed to create browser"
     assert result.success, f"Browser creation failed: {result.message}"
     assert result.data is not None, "Browser creation returned no data"
-    assert result.data.get('browser_id') is not None, "Browser ID is None"
+    assert result.data.get("browser_id") is not None, "Browser ID is None"
 
-    bid = result.data['browser_id']
+    bid = result.data["browser_id"]
 
     yield bid
 
@@ -74,9 +74,9 @@ class TestBrowserLifecycle:
         result = browser_client.create_browser(payload=config)
         assert result is not None
         assert result.success
-        assert result.data.get('browser_id') is not None
+        assert result.data.get("browser_id") is not None
 
-        bid = result.data['browser_id']
+        bid = result.data["browser_id"]
 
         # Cleanup
         browser_client.close_browser(bid)
@@ -84,17 +84,18 @@ class TestBrowserLifecycle:
     def test_list_browsers(self, browser_client, browser_id):
         """Test POST /browser/browsers endpoint with list action."""
         from airbrowser_client.models import BrowsersRequest
+
         result = browser_client.browsers(payload=BrowsersRequest(action="list"))
         assert result is not None
         assert result.success
-        assert result.data['count'] >= 1
+        assert result.data["count"] >= 1
 
     def test_close_browser(self, browser_client):
         """Test POST /browser/{browser_id}/close endpoint."""
         # Create a browser to close
         config = CreateBrowserRequest()
         create_result = browser_client.create_browser(payload=config)
-        bid = create_result.data['browser_id']
+        bid = create_result.data["browser_id"]
 
         result = browser_client.close_browser(bid)
         assert result is not None
@@ -118,7 +119,7 @@ class TestNavigationEndpoints:
         result = browser_client.get_url(browser_id)
         assert result is not None
         assert result.success
-        assert "example.com" in result.data.get('url', '')
+        assert "example.com" in result.data.get("url", "")
 
     def test_history_back(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/history with back action."""
@@ -358,10 +359,10 @@ class TestPageContent:
         assert result.success
         # Verify data structure matches schema
         assert result.data is not None, "Response data should not be None"
-        assert result.data.get('title') is not None, "Page title should be returned"
-        assert result.data.get('text') is not None, "Page text should be returned"
-        assert "Example Domain" in result.data.get('title', '')
-        assert "Example Domain" in result.data.get('text', '')
+        assert result.data.get("title") is not None, "Page title should be returned"
+        assert result.data.get("text") is not None, "Page text should be returned"
+        assert "Example Domain" in result.data.get("title", "")
+        assert "Example Domain" in result.data.get("text", "")
 
     def test_screenshot(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/screenshot endpoint."""
@@ -372,8 +373,8 @@ class TestPageContent:
         assert result.success
         # Verify data structure matches schema
         assert result.data is not None, "Response data should not be None"
-        assert result.data.get('screenshot_url') is not None, "Screenshot URL should be returned"
-        assert "screenshot" in result.data.get('screenshot_url', '').lower()
+        assert result.data.get("screenshot_url") is not None, "Screenshot URL should be returned"
+        assert "screenshot" in result.data.get("screenshot_url", "").lower()
 
     def test_execute_script(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/execute endpoint."""
@@ -385,10 +386,12 @@ class TestPageContent:
         assert result.success
         # Verify data structure matches schema
         assert result.data is not None, "Response data should not be None"
-        assert result.data.get('result') is not None, "Script result should be returned"
+        assert result.data.get("result") is not None, "Script result should be returned"
         # Result is wrapped in {"value": actual_result} for schema compatibility
-        script_result = result.data.get('result', {})
-        assert "Example Domain" in (script_result.get("value", "") if isinstance(script_result, dict) else str(script_result))
+        script_result = result.data.get("result", {})
+        assert "Example Domain" in (
+            script_result.get("value", "") if isinstance(script_result, dict) else str(script_result)
+        )
 
 
 class TestDebugEndpoints:

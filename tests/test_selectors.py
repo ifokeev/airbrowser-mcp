@@ -13,8 +13,8 @@ Run with: pytest tests/test_selectors.py -v
 
 import pytest
 from airbrowser_client.models import (
-    CreateBrowserRequest,
     ClickRequest,
+    CreateBrowserRequest,
     ExecuteScriptRequest,
     NavigateBrowserRequest,
     PressKeysRequest,
@@ -29,7 +29,7 @@ def browser_with_test_page(browser_client):
     config = CreateBrowserRequest(window_size=[1920, 1080])
     result = browser_client.create_browser(payload=config)
     assert result is not None and result.success
-    bid = result.data['browser_id']
+    bid = result.data["browser_id"]
 
     # Navigate to example.com
     browser_client.navigate_browser(bid, payload=NavigateBrowserRequest(url="https://example.com"))
@@ -144,7 +144,9 @@ class TestCSSSelectors:
         assert result is not None
         assert result.success
 
-        result = browser_client.check_element(browser_with_test_page, selector="#test-button", by="css", check="visible")
+        result = browser_client.check_element(
+            browser_with_test_page, selector="#test-button", by="css", check="visible"
+        )
         assert result is not None
         assert result.success
 
@@ -207,11 +209,15 @@ class TestXPathSelectors:
 
     def test_check_element_xpath_selector(self, browser_client, browser_with_test_page):
         """Test check_element with XPath selector."""
-        result = browser_client.check_element(browser_with_test_page, selector="//button[@id='test-button']", by="xpath", check="exists")
+        result = browser_client.check_element(
+            browser_with_test_page, selector="//button[@id='test-button']", by="xpath", check="exists"
+        )
         assert result is not None
         assert result.success
 
-        result = browser_client.check_element(browser_with_test_page, selector="//button[@id='test-button']", by="xpath", check="visible")
+        result = browser_client.check_element(
+            browser_with_test_page, selector="//button[@id='test-button']", by="xpath", check="visible"
+        )
         assert result is not None
         assert result.success
 
@@ -296,7 +302,9 @@ class TestNameSelectors:
 
     def test_check_element_name_selector(self, browser_client, browser_with_test_page):
         """Test check_element with name selector."""
-        result = browser_client.check_element(browser_with_test_page, selector="test-input-by-name", by="name", check="exists")
+        result = browser_client.check_element(
+            browser_with_test_page, selector="test-input-by-name", by="name", check="exists"
+        )
         assert result is not None
         assert result.success
 
@@ -356,7 +364,9 @@ class TestNonExistentSelectors:
         assert result.data.get("found") is False or result.data.get("exists") is False
 
         # XPath
-        result = browser_client.check_element(browser_with_test_page, selector="//div[@id='nonexistent']", by="xpath", check="exists")
+        result = browser_client.check_element(
+            browser_with_test_page, selector="//div[@id='nonexistent']", by="xpath", check="exists"
+        )
         assert result is not None
         assert result.success
         assert result.data.get("found") is False or result.data.get("exists") is False

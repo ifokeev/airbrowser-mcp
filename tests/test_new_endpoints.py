@@ -11,7 +11,6 @@ from airbrowser_client.models import (
     NavigateBrowserRequest,
     WaitElementRequest,
 )
-
 from conftest import get_api_base_url
 
 
@@ -35,7 +34,7 @@ def test_check_element_exists():
         result = client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data['browser_id']
+        browser_id = result.data["browser_id"]
 
         # Navigate to test page
         nav_request = NavigateBrowserRequest(url="https://www.example.com")
@@ -74,7 +73,7 @@ def test_check_element_visible():
         result = client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data['browser_id']
+        browser_id = result.data["browser_id"]
 
         # Navigate to test page
         nav_request = NavigateBrowserRequest(url="https://www.example.com")
@@ -113,7 +112,7 @@ def test_selector_types():
         result = client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data['browser_id']
+        browser_id = result.data["browser_id"]
 
         # Navigate to example.com for testing
         nav_request = NavigateBrowserRequest(url="https://www.example.com")
@@ -152,7 +151,7 @@ def test_wait_element_with_selector_types():
         result = client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data['browser_id']
+        browser_id = result.data["browser_id"]
 
         # Navigate to test page
         nav_request = NavigateBrowserRequest(url="https://www.example.com")

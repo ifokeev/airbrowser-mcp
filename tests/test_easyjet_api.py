@@ -11,7 +11,6 @@ import airbrowser_client
 import pytest
 from airbrowser_client.api import browser_api
 from airbrowser_client.models import CreateBrowserRequest, NavigateBrowserRequest, TakeScreenshotRequest
-
 from conftest import get_api_base_url
 
 
@@ -37,7 +36,7 @@ def test_easyjet_page_loads():
         result = browser_client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data['browser_id']
+        browser_id = result.data["browser_id"]
 
         time.sleep(1)
 
@@ -55,7 +54,7 @@ def test_easyjet_page_loads():
         # Verify URL contains easyjet
         url_result = browser_client.get_url(browser_id)
         assert url_result.success
-        current_url = url_result.data.get('url', '')
+        current_url = url_result.data.get("url", "")
 
         assert "easyjet" in current_url.lower(), f"Not on EasyJet, URL: {current_url}"
         print(f"EasyJet page loaded at: {current_url}")
@@ -90,7 +89,7 @@ def test_easyjet_simple_navigation():
         result = browser_client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data['browser_id']
+        browser_id = result.data["browser_id"]
 
         time.sleep(0.5)
 

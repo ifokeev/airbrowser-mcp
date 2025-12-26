@@ -78,9 +78,7 @@ class PerformanceOperations:
 
     # ==================== Combined Method ====================
 
-    def performance(
-        self, browser_id: str, action: PerformanceAction, categories: str | None = None
-    ) -> dict[str, Any]:
+    def performance(self, browser_id: str, action: PerformanceAction, categories: str | None = None) -> dict[str, Any]:
         """Manage performance tracing and metrics.
 
         Args:

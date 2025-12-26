@@ -1,6 +1,5 @@
 """Performance tracing browser commands."""
 
-import json
 import logging
 import time
 
@@ -161,9 +160,7 @@ def handle_analyze_insight(driver, command: dict) -> dict:
             if fcp < 1800:
                 insights.append({"metric": "FCP", "status": "good", "value": f"{fcp:.0f}ms"})
             elif fcp < 3000:
-                insights.append(
-                    {"metric": "FCP", "status": "needs_improvement", "value": f"{fcp:.0f}ms"}
-                )
+                insights.append({"metric": "FCP", "status": "needs_improvement", "value": f"{fcp:.0f}ms"})
             else:
                 insights.append({"metric": "FCP", "status": "poor", "value": f"{fcp:.0f}ms"})
 
@@ -173,9 +170,7 @@ def handle_analyze_insight(driver, command: dict) -> dict:
             if lcp < 2500:
                 insights.append({"metric": "LCP", "status": "good", "value": f"{lcp:.0f}ms"})
             elif lcp < 4000:
-                insights.append(
-                    {"metric": "LCP", "status": "needs_improvement", "value": f"{lcp:.0f}ms"}
-                )
+                insights.append({"metric": "LCP", "status": "needs_improvement", "value": f"{lcp:.0f}ms"})
             else:
                 insights.append({"metric": "LCP", "status": "poor", "value": f"{lcp:.0f}ms"})
 

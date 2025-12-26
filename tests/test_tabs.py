@@ -21,7 +21,7 @@ def browser_id(browser_client):
     config = CreateBrowserRequest(window_size=[1280, 900])
     result = browser_client.create_browser(payload=config)
     assert result.success, f"Failed to create browser: {result.message}"
-    bid = result.data['browser_id']
+    bid = result.data["browser_id"]
 
     yield bid
 
@@ -72,7 +72,6 @@ class TestNewTab:
         assert result is not None
         assert result.success
 
-
         # Verify we're on the new tab
         current = browser_client.tabs(browser_id, payload=TabsRequest(action="current"))
         assert current.success
@@ -109,6 +108,7 @@ class TestSwitchTab:
     def test_switch_tab_invalid_index(self, browser_client, browser_id):
         """Test switching to invalid tab index fails."""
         from airbrowser_client.exceptions import BadRequestException
+
         try:
             result = browser_client.tabs(browser_id, payload=TabsRequest(action="switch", index=999))
             # If no exception, the result should indicate failure
@@ -142,6 +142,7 @@ class TestCloseTab:
     def test_close_tab_last_tab_fails(self, browser_client, browser_id):
         """Test that closing the last tab fails."""
         from airbrowser_client.exceptions import BadRequestException
+
         try:
             result = browser_client.tabs(browser_id, payload=TabsRequest(action="close"))
             # If no exception, the result should indicate failure
@@ -152,6 +153,7 @@ class TestCloseTab:
     def test_close_tab_invalid_index(self, browser_client, browser_id):
         """Test closing tab with invalid index fails."""
         from airbrowser_client.exceptions import BadRequestException
+
         try:
             result = browser_client.tabs(browser_id, payload=TabsRequest(action="close", index=999))
             # If no exception, the result should indicate failure
@@ -209,7 +211,9 @@ class TestTabNavigation:
         assert new_tab_result.success, "Failed to create new tab"
 
         # Navigate second tab to example.org
-        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.org", timeout=60))
+        browser_client.navigate_browser(
+            browser_id, payload=NavigateBrowserRequest(url="https://example.org", timeout=60)
+        )
 
         # Verify second tab
         current = browser_client.tabs(browser_id, payload=TabsRequest(action="current"))

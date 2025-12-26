@@ -3,15 +3,13 @@
 import concurrent.futures
 import time
 
-import pytest
-
 
 class TestBrowserStatusLifecycle:
     """Test that browsers appear in list immediately with status updates."""
 
     def test_browser_shows_creating_status_immediately(self, browser_client):
         """Browser should appear in list with 'creating' status before creation completes."""
-        from airbrowser_client.models import CreateBrowserRequest, BrowsersRequest
+        from airbrowser_client.models import BrowsersRequest, CreateBrowserRequest
 
         creating_status_seen = False
         browser_id_found = None
@@ -29,8 +27,8 @@ class TestBrowserStatusLifecycle:
             while time.time() - start < timeout:
                 try:
                     result = browser_client.browsers(payload=BrowsersRequest(action="list"))
-                    if result.success and result.data.get('browsers', []):
-                        for browser in result.data.get('browsers', []):
+                    if result.success and result.data.get("browsers", []):
+                        for browser in result.data.get("browsers", []):
                             # browsers are returned as dicts
                             if browser.get("status") == "creating":
                                 creating_status_seen = True
@@ -57,8 +55,8 @@ class TestBrowserStatusLifecycle:
             poll_future.result(timeout=35)
 
         # Verify creation succeeded
-        assert create_result.success is True, f"Browser creation failed"
-        created_browser_id = create_result.data['browser_id']
+        assert create_result.success is True, "Browser creation failed"
+        created_browser_id = create_result.data["browser_id"]
 
         # Verify we saw 'creating' status
         assert creating_status_seen, "Browser should appear with 'creating' status during creation"
@@ -66,13 +64,13 @@ class TestBrowserStatusLifecycle:
         # Verify browser now shows 'ready' status
         list_result = browser_client.browsers(payload=BrowsersRequest(action="list"))
         created_browser = next(
-            (b for b in list_result.data.get('browsers', []) if b.get("id") == created_browser_id), None
+            (b for b in list_result.data.get("browsers", []) if b.get("id") == created_browser_id), None
         )
 
         if created_browser:
-            assert created_browser.get("status") == "ready", (
-                f"Browser should be 'ready' after creation, got: {created_browser.get('status')}"
-            )
+            assert (
+                created_browser.get("status") == "ready"
+            ), f"Browser should be 'ready' after creation, got: {created_browser.get('status')}"
 
         # Cleanup
         if created_browser_id:
@@ -80,24 +78,26 @@ class TestBrowserStatusLifecycle:
 
     def test_browser_status_after_creation(self, browser_client):
         """Verify browser has 'ready' status after creation completes."""
-        from airbrowser_client.models import CreateBrowserRequest, BrowsersRequest
+        from airbrowser_client.models import BrowsersRequest, CreateBrowserRequest
 
         # Create browser (blocking call)
         config = CreateBrowserRequest()
         response = browser_client.create_browser(payload=config)
 
         assert response.success is True
-        browser_id = response.data['browser_id']
+        browser_id = response.data["browser_id"]
 
         try:
             # List browsers and check status
             list_response = browser_client.browsers(payload=BrowsersRequest(action="list"))
-            browsers = list_response.data.get('browsers', [])
+            browsers = list_response.data.get("browsers", [])
 
             # browsers are returned as dicts
             created_browser = next((b for b in browsers if b.get("id") == browser_id), None)
             assert created_browser is not None, "Created browser should be in list"
-            assert created_browser.get("status") == "ready", f"Expected 'ready' status, got: {created_browser.get('status')}"
+            assert (
+                created_browser.get("status") == "ready"
+            ), f"Expected 'ready' status, got: {created_browser.get('status')}"
 
         finally:
             # Cleanup

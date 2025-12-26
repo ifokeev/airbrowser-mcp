@@ -69,9 +69,15 @@ class BrowserOperations:
     ) -> dict[str, Any]:
         """Create browser instance with optional persistent profile."""
         return self._lifecycle.create_browser(
-            uc=uc, proxy=proxy, window_size=window_size, user_agent=user_agent,
-            disable_gpu=disable_gpu, disable_images=disable_images,
-            disable_javascript=disable_javascript, extensions=extensions, custom_args=custom_args,
+            uc=uc,
+            proxy=proxy,
+            window_size=window_size,
+            user_agent=user_agent,
+            disable_gpu=disable_gpu,
+            disable_images=disable_images,
+            disable_javascript=disable_javascript,
+            extensions=extensions,
+            custom_args=custom_args,
             profile_name=profile_name,
         )
 
@@ -195,15 +201,11 @@ class BrowserOperations:
         """GUI click by selector or coordinates."""
         return self._gui.gui_click(browser_id, selector, x, y, timeframe, fx, fy)
 
-    def gui_type_xy(
-        self, browser_id: str, x: float, y: float, text: str, timeframe: float = 0.25
-    ) -> dict[str, Any]:
+    def gui_type_xy(self, browser_id: str, x: float, y: float, text: str, timeframe: float = 0.25) -> dict[str, Any]:
         """GUI type at coordinates - clicks then types text."""
         return self._gui.gui_type_xy(browser_id, x, y, text, timeframe)
 
-    def gui_hover_xy(
-        self, browser_id: str, x: float, y: float, timeframe: float = 0.25
-    ) -> dict[str, Any]:
+    def gui_hover_xy(self, browser_id: str, x: float, y: float, timeframe: float = 0.25) -> dict[str, Any]:
         """GUI hover at coordinates."""
         return self._gui.gui_hover_xy(browser_id, x, y, timeframe)
 
@@ -298,9 +300,7 @@ class BrowserOperations:
             browser_id, action, device, width, height, device_scale_factor, mobile, user_agent
         )
 
-    def performance(
-        self, browser_id: str, action: PerformanceAction, categories: str | None = None
-    ) -> dict[str, Any]:
+    def performance(self, browser_id: str, action: PerformanceAction, categories: str | None = None) -> dict[str, Any]:
         """Performance: start_trace, stop_trace, metrics, analyze."""
         return self._performance.performance(browser_id, action, categories)
 

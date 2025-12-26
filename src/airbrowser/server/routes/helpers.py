@@ -37,6 +37,7 @@ def browser_op(api, success_msg="Success", error_prefix="Operation"):
             data = request.get_json(silent=True) or {}
             return browser_ops.click(browser_id, data.get("selector"))
     """
+
     def decorator(fn):
         @wraps(fn)
         def wrapper(self, browser_id, *args, **kwargs):
@@ -56,7 +57,9 @@ def browser_op(api, success_msg="Success", error_prefix="Operation"):
                 api.abort(400, str(e))
             except Exception as e:
                 api.abort(400, f"{error_prefix} failed: {str(e)}")
+
         return wrapper
+
     return decorator
 
 
@@ -69,6 +72,7 @@ def pool_op(api, success_msg="Success", error_prefix="Operation"):
         def get(self):
             return browser_pool.list_browsers()
     """
+
     def decorator(fn):
         @wraps(fn)
         def wrapper(self, *args, **kwargs):
@@ -86,7 +90,9 @@ def pool_op(api, success_msg="Success", error_prefix="Operation"):
                 api.abort(400, str(e))
             except Exception as e:
                 api.abort(400, f"{error_prefix} failed: {str(e)}")
+
         return wrapper
+
     return decorator
 
 

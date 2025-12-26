@@ -92,8 +92,7 @@ class TestExampleFiles:
         assert "Completed:" in result.stdout
 
     @pytest.mark.skipif(
-        not os.environ.get("OPENROUTER_API_KEY"),
-        reason="Requires OPENROUTER_API_KEY environment variable"
+        not os.environ.get("OPENROUTER_API_KEY"), reason="Requires OPENROUTER_API_KEY environment variable"
     )
     def test_what_is_visible(self):
         """Test examples/what_is_visible.py runs without error."""

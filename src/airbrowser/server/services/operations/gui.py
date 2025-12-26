@@ -76,9 +76,7 @@ class GuiOperations:
         except Exception as e:
             return _error(f"gui_click_xy failed: {str(e)}")
 
-    def gui_type_xy(
-        self, browser_id: str, x: float, y: float, text: str, timeframe: float = 0.25
-    ) -> dict[str, Any]:
+    def gui_type_xy(self, browser_id: str, x: float, y: float, text: str, timeframe: float = 0.25) -> dict[str, Any]:
         """Click at coordinates then type text using GUI automation."""
         try:
             options = {"x": x, "y": y, "text": text, "timeframe": timeframe}

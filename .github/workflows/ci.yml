@@ -32,7 +32,7 @@ jobs:
         uses: astral-sh/setup-uv@v4
 
       - name: Lint with Ruff
-        run: uvx ruff check src/ --ignore=E501,F401
+        run: uvx ruff check src/
 
       - name: Compile Python (syntax check)
         run: python -m compileall -q src/

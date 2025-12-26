@@ -17,13 +17,15 @@ def handle_list_tabs(driver, command: dict) -> dict:
         for i, handle in enumerate(handles):
             # Switch to each tab to get info
             driver.switch_to.window(handle)
-            tabs.append({
-                "index": i,
-                "handle": handle,
-                "url": driver.current_url,
-                "title": driver.title if hasattr(driver, "title") else "",
-                "is_active": handle == current_handle,
-            })
+            tabs.append(
+                {
+                    "index": i,
+                    "handle": handle,
+                    "url": driver.current_url,
+                    "title": driver.title if hasattr(driver, "title") else "",
+                    "is_active": handle == current_handle,
+                }
+            )
 
         # Switch back to original tab
         driver.switch_to.window(current_handle)

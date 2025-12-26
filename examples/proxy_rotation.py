@@ -29,19 +29,13 @@ PROXIES = [
 def check_ip(api: BrowserApi, browser_id: str) -> str:
     """Navigate to IP check service and extract the IP."""
 
-    api.navigate_browser(
-        browser_id=browser_id,
-        payload={"url": "https://api.ipify.org", "timeout": 30}
-    )
+    api.navigate_browser(browser_id=browser_id, payload={"url": "https://api.ipify.org", "timeout": 30})
 
     # Execute JS to get the text content
-    result = api.execute_script(
-        browser_id=browser_id,
-        payload={"script": "return document.body.innerText;"}
-    )
+    result = api.execute_script(browser_id=browser_id, payload={"script": "return document.body.innerText;"})
 
     # Result is wrapped in {"value": ...}
-    result_data = result.data.get('result') if result.data else None
+    result_data = result.data.get("result") if result.data else None
     if result_data:
         ip = result_data.get("value", "") if isinstance(result_data, dict) else str(result_data)
         return ip.strip() if ip else "unknown"
@@ -64,11 +58,7 @@ def main():
             print(f"Proxy: {proxy or 'None (direct)'}")
 
             # Create browser with specific proxy
-            browser_config = {
-                "uc": True,
-                "headless": True,
-                "window_size": [1280, 800]
-            }
+            browser_config = {"uc": True, "headless": True, "window_size": [1280, 800]}
 
             if proxy:
                 browser_config["proxy"] = proxy
@@ -77,16 +67,12 @@ def main():
                 response = api.create_browser(payload=browser_config)
                 if not response.success:
                     raise Exception(response.message)
-                browser_id = response.data['browser_id']
+                browser_id = response.data["browser_id"]
                 print(f"Browser created: {browser_id[:8]}...")
 
             except Exception as e:
                 print(f"Failed to create browser: {e}")
-                results.append({
-                    "proxy": proxy,
-                    "success": False,
-                    "error": str(e)
-                })
+                results.append({"proxy": proxy, "success": False, "error": str(e)})
                 continue
 
             try:
@@ -94,19 +80,11 @@ def main():
                 ip = check_ip(api, browser_id)
                 print(f"Detected IP: {ip}")
 
-                results.append({
-                    "proxy": proxy or "direct",
-                    "success": True,
-                    "ip": ip
-                })
+                results.append({"proxy": proxy or "direct", "success": True, "ip": ip})
 
             except Exception as e:
                 print(f"Error checking IP: {e}")
-                results.append({
-                    "proxy": proxy or "direct",
-                    "success": False,
-                    "error": str(e)
-                })
+                results.append({"proxy": proxy or "direct", "success": False, "error": str(e)})
 
             finally:
                 # Clean up
@@ -131,7 +109,7 @@ def main():
             print(f"[FAILED] {r['proxy']:40} -> {r.get('error', 'unknown')}")
 
     # Check for unique IPs
-    unique_ips = set(r["ip"] for r in results if r.get("success"))
+    unique_ips = {r["ip"] for r in results if r.get("success")}
     print(f"\nUnique IPs detected: {len(unique_ips)}")
 
     if len(unique_ips) > 1:

@@ -91,6 +91,7 @@ def cleanup_browsers_after_module(browser_client):
     # Close all browsers after the module completes
     try:
         from airbrowser_client.models import BrowsersRequest
+
         browser_client.browsers(payload=BrowsersRequest(action="close_all"))
     except Exception:
         pass  # Ignore errors during cleanup

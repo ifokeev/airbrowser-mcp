@@ -41,7 +41,7 @@ class TestProfileManagement:
         assert result.success
         assert result.data is not None
         # data is ProfileListData Pydantic model with 'profiles' attribute
-        assert hasattr(result.data, 'profiles')
+        assert hasattr(result.data, "profiles")
         assert isinstance(result.data.profiles, list)
 
     def test_create_profile(self, profiles_client):
@@ -135,10 +135,10 @@ class TestBrowserWithProfile:
         assert result is not None
         assert result.success
         assert result.data is not None
-        assert result.data['browser_id'] is not None
-        assert result.data.get('config', {}).get("profile_name") == test_profile
+        assert result.data["browser_id"] is not None
+        assert result.data.get("config", {}).get("profile_name") == test_profile
 
-        browser_id = result.data['browser_id']
+        browser_id = result.data["browser_id"]
 
         # Wait for browser to initialize
 
@@ -157,12 +157,12 @@ class TestBrowserWithProfile:
         assert result is not None
         assert result.success
         assert result.data is not None
-        assert result.data['browser_id'] is not None
+        assert result.data["browser_id"] is not None
         # profile_name should be None or not present
-        assert result.data.get('config', {}).get("profile_name") is None
+        assert result.data.get("config", {}).get("profile_name") is None
 
         # Cleanup
-        browser_client.close_browser(result.data['browser_id'])
+        browser_client.close_browser(result.data["browser_id"])
 
     def test_profile_lock_prevents_duplicate_browser(self, browser_client, profiles_client, test_profile):
         """Test that only one browser can use a profile at a time."""
@@ -170,7 +170,7 @@ class TestBrowserWithProfile:
         config = CreateBrowserRequest(profile_name=test_profile)
         result1 = browser_client.create_browser(payload=config)
         assert result1.success
-        browser_id = result1.data['browser_id']
+        browser_id = result1.data["browser_id"]
 
         # Wait for browser to fully initialize and lock the profile
 
@@ -201,8 +201,7 @@ class TestBrowserWithProfile:
         config = CreateBrowserRequest(profile_name=test_profile)
         result = browser_client.create_browser(payload=config)
         assert result.success
-        browser_id = result.data['browser_id']
-
+        browser_id = result.data["browser_id"]
 
         # Verify profile is in use
         profile_info = profiles_client.get_profile(test_profile)
@@ -220,7 +219,7 @@ class TestBrowserWithProfile:
         assert result2.success
 
         # Cleanup
-        browser_client.close_browser(result2.data['browser_id'])
+        browser_client.close_browser(result2.data["browser_id"])
 
     def test_profile_released_on_close_all(self, browser_client, profiles_client, test_profile):
         """Test that profile is released when close_all is called."""
@@ -228,7 +227,6 @@ class TestBrowserWithProfile:
         config = CreateBrowserRequest(profile_name=test_profile)
         result = browser_client.create_browser(payload=config)
         assert result.success
-
 
         # Verify profile is in use
         profile_info = profiles_client.get_profile(test_profile)
@@ -252,8 +250,7 @@ class TestBrowserWithProfile:
         # Browser creation should succeed (profile is auto-created)
         assert result is not None
         assert result.success
-        browser_id = result.data['browser_id']
-
+        browser_id = result.data["browser_id"]
 
         # Cleanup
         browser_client.close_browser(browser_id)
@@ -269,7 +266,7 @@ class TestDeleteProfileInUse:
         config = CreateBrowserRequest(profile_name=test_profile)
         result = browser_client.create_browser(payload=config)
         assert result.success
-        browser_id = result.data['browser_id']
+        browser_id = result.data["browser_id"]
 
         # Wait for browser to fully initialize and lock the profile
 

@@ -10,8 +10,12 @@ import time
 import airbrowser_client
 import pytest
 from airbrowser_client.api import browser_api
-from airbrowser_client.models import CreateBrowserRequest, ExecuteScriptRequest, NavigateBrowserRequest, TakeScreenshotRequest
-
+from airbrowser_client.models import (
+    CreateBrowserRequest,
+    ExecuteScriptRequest,
+    NavigateBrowserRequest,
+    TakeScreenshotRequest,
+)
 from conftest import get_api_base_url
 
 
@@ -41,7 +45,7 @@ def test_multi_threaded_uc_detection(test_num):
         result = browser_client.create_browser(payload=browser_config)
         assert result is not None, "Failed to create browser"
         assert result.success, "Browser creation failed"
-        browser_id = result.data['browser_id']
+        browser_id = result.data["browser_id"]
         assert browser_id is not None, f"Browser ID is None for test {test_num}"
 
         print(f"\n[Test {test_num}] Created browser: {browser_id}")
@@ -70,7 +74,7 @@ def test_multi_threaded_uc_detection(test_num):
             exec_result = browser_client.execute_script(browser_id, payload=exec_request)
 
             if exec_result.success:
-                h1_text = exec_result.data.get('result') if exec_result.data else ""
+                h1_text = exec_result.data.get("result") if exec_result.data else ""
 
                 if "OH YEAH, you passed!" in str(h1_text):
                     print(f"[Test {test_num}] Success! Website did not detect Selenium!")
@@ -84,7 +88,7 @@ def test_multi_threaded_uc_detection(test_num):
 
                     exec_result = browser_client.execute_script(browser_id, payload=exec_request)
                     if exec_result.success:
-                        h1_text = exec_result.data.get('result') if exec_result.data else ""
+                        h1_text = exec_result.data.get("result") if exec_result.data else ""
                         print(f"[Test {test_num}] Retry H1 text: {h1_text}")
             else:
                 # Take screenshot for manual verification
@@ -129,7 +133,7 @@ def test_single_uc_detection():
         result = browser_client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data['browser_id']
+        browser_id = result.data["browser_id"]
 
         # Navigate to detection site
         nav_request = NavigateBrowserRequest(url="https://nowsecure.nl/#relax")
@@ -145,7 +149,7 @@ def test_single_uc_detection():
             exec_result = browser_client.execute_script(browser_id, payload=exec_request)
 
             if exec_result.success:
-                h1_text = exec_result.data.get('result') if exec_result.data else ""
+                h1_text = exec_result.data.get("result") if exec_result.data else ""
 
                 print(f"Detection result: {h1_text}")
 
@@ -184,7 +188,7 @@ def test_concurrent_browsers_different_sites():
             result = browser_client.create_browser(payload=browser_config)
             assert result is not None
             assert result.success
-            browser_id = result.data['browser_id']
+            browser_id = result.data["browser_id"]
             browser_ids.append(browser_id)
 
             print(f"Created browser {i + 1}: {browser_id}")

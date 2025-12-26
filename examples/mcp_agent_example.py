@@ -12,6 +12,7 @@ MCP Endpoint: http://localhost:18080/mcp
 """
 
 import asyncio
+
 from fastmcp import Client
 
 
@@ -29,30 +30,23 @@ async def main():
 
         # 1. Create a browser
         print("\n--- Creating Browser ---")
-        result = await client.call_tool("create_browser", {
-            "uc": True,
-            "headless": False,
-            "window_size": [1280, 800]
-        })
+        result = await client.call_tool("create_browser", {"uc": True, "headless": False, "window_size": [1280, 800]})
         browser_id = result["browser_id"]
         print(f"Browser created: {browser_id}")
 
         try:
             # 2. Navigate to a page
             print("\n--- Navigating ---")
-            await client.call_tool("navigate_browser", {
-                "browser_id": browser_id,
-                "url": "https://news.ycombinator.com"
-            })
+            await client.call_tool(
+                "navigate_browser", {"browser_id": browser_id, "url": "https://news.ycombinator.com"}
+            )
             print("Navigated to Hacker News")
 
             # 3. Use AI vision to understand the page
             #    (requires OPENROUTER_API_KEY environment variable)
             print("\n--- Analyzing Page with AI Vision ---")
             try:
-                analysis = await client.call_tool("what_is_visible", {
-                    "browser_id": browser_id
-                })
+                analysis = await client.call_tool("what_is_visible", {"browser_id": browser_id})
                 print("Page analysis:")
                 print(analysis.get("analysis", "No analysis available")[:500])
             except Exception as e:
@@ -61,35 +55,32 @@ async def main():
 
             # 4. Take a screenshot
             print("\n--- Taking Screenshot ---")
-            screenshot = await client.call_tool("take_screenshot", {
-                "browser_id": browser_id,
-                "full_page": False
-            })
+            screenshot = await client.call_tool("take_screenshot", {"browser_id": browser_id, "full_page": False})
             screenshot_url = screenshot.get("data", {}).get("screenshot_url", "saved")
             print(f"Screenshot: {screenshot_url}")
 
             # 5. Click on an element
             print("\n--- Clicking First Story ---")
-            await client.call_tool("click", {
-                "browser_id": browser_id,
-                "selector": ".titleline a"  # First story link
-            })
+            await client.call_tool(
+                "click",
+                {
+                    "browser_id": browser_id,
+                    "selector": ".titleline a",  # First story link
+                },
+            )
             print("Clicked first story")
 
             # 6. Get current URL
             await asyncio.sleep(2)  # Wait for navigation
-            url_result = await client.call_tool("get_url", {
-                "browser_id": browser_id
-            })
+            url_result = await client.call_tool("get_url", {"browser_id": browser_id})
             current_url = url_result.get("data", {}).get("url", "unknown")
             print(f"Now at: {current_url}")
 
             # 7. Execute JavaScript (get page title)
             print("\n--- Executing JavaScript ---")
-            js_result = await client.call_tool("execute_script", {
-                "browser_id": browser_id,
-                "script": "return document.title;"
-            })
+            js_result = await client.call_tool(
+                "execute_script", {"browser_id": browser_id, "script": "return document.title;"}
+            )
             script_result = js_result.get("data", {}).get("result", {})
             title = script_result.get("value", "unknown") if script_result else "unknown"
             print(f"Page title: {title}")
@@ -97,9 +88,7 @@ async def main():
         finally:
             # 8. Clean up
             print("\n--- Closing Browser ---")
-            await client.call_tool("close_browser", {
-                "browser_id": browser_id
-            })
+            await client.call_tool("close_browser", {"browser_id": browser_id})
             print("Browser closed")
 
     print("\nMCP example complete!")

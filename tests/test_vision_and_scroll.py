@@ -38,7 +38,7 @@ def browser_with_page(browser_client):
     config = CreateBrowserRequest(window_size=[1920, 1080])
     result = browser_client.create_browser(payload=config)
     assert result is not None and result.success
-    bid = result.data['browser_id']
+    bid = result.data["browser_id"]
 
     # Navigate to example.com
     browser_client.navigate_browser(bid, payload=NavigateBrowserRequest(url="https://example.com"))
@@ -103,14 +103,11 @@ class TestScrollOperations:
         """Test that scroll_by action is properly registered."""
         bid = browser_with_page
 
-        result = browser_client.scroll(
-            bid, payload=ScrollRequest(delta_y=500)
-        )
+        result = browser_client.scroll(bid, payload=ScrollRequest(delta_y=500))
 
         assert result is not None
         if not result.success:
-            assert "Unknown action" not in str(result.message), \
-                "scroll_by action not registered in execute_action"
+            assert "Unknown action" not in str(result.message), "scroll_by action not registered in execute_action"
 
     def test_scroll_by_down(self, browser_client, browser_with_page):
         """Test scrolling down the page."""
@@ -126,14 +123,12 @@ class TestScrollOperations:
         initial_y = 0
         if initial.success and initial.data:
             # Structure: data['result'] = {"value": raw_result}
-            result_wrapper = initial.data.get('result')
+            result_wrapper = initial.data.get("result")
             if isinstance(result_wrapper, dict):
-                initial_y = result_wrapper.get('value', 0) or 0
+                initial_y = result_wrapper.get("value", 0) or 0
 
         # Scroll down
-        result = browser_client.scroll(
-            bid, payload=ScrollRequest(delta_y=300)
-        )
+        result = browser_client.scroll(bid, payload=ScrollRequest(delta_y=300))
         assert result is not None
 
         # Check scroll position changed (allow time for smooth scroll)
@@ -142,9 +137,9 @@ class TestScrollOperations:
         after = browser_client.execute_script(bid, payload=exec_req)
         after_y = 0
         if after.success and after.data:
-            result_wrapper = after.data.get('result')
+            result_wrapper = after.data.get("result")
             if isinstance(result_wrapper, dict):
-                after_y = result_wrapper.get('value', 0) or 0
+                after_y = result_wrapper.get("value", 0) or 0
 
         # Position should have increased (scrolled down)
         assert after_y >= initial_y, f"Page should have scrolled down: initial={initial_y}, after={after_y}"
@@ -162,9 +157,9 @@ class TestScrollOperations:
         middle = browser_client.execute_script(bid, payload=exec_req)
         middle_y = 0
         if middle.success and middle.data:
-            result_wrapper = middle.data.get('result')
+            result_wrapper = middle.data.get("result")
             if isinstance(result_wrapper, dict):
-                middle_y = result_wrapper.get('value', 0) or 0
+                middle_y = result_wrapper.get("value", 0) or 0
 
         # Scroll up (negative delta)
         result = browser_client.scroll(bid, payload=ScrollRequest(delta_y=-200))
@@ -175,9 +170,9 @@ class TestScrollOperations:
         after = browser_client.execute_script(bid, payload=exec_req)
         after_y = 0
         if after.success and after.data:
-            result_wrapper = after.data.get('result')
+            result_wrapper = after.data.get("result")
             if isinstance(result_wrapper, dict):
-                after_y = result_wrapper.get('value', 0) or 0
+                after_y = result_wrapper.get("value", 0) or 0
 
         assert after_y < middle_y, f"Page should have scrolled up: middle={middle_y}, after={after_y}"
 
@@ -190,9 +185,7 @@ class TestScrollOperations:
         time.sleep(0.3)
 
         # Scroll to footer element
-        result = browser_client.scroll(
-            bid, payload=ScrollRequest(selector="#footer")
-        )
+        result = browser_client.scroll(bid, payload=ScrollRequest(selector="#footer"))
         assert result is not None
 
         time.sleep(0.5)
@@ -202,9 +195,9 @@ class TestScrollOperations:
         after = browser_client.execute_script(bid, payload=exec_req)
         after_y = 0
         if after.success and after.data:
-            result_wrapper = after.data.get('result')
+            result_wrapper = after.data.get("result")
             if isinstance(result_wrapper, dict):
-                after_y = result_wrapper.get('value', 0) or 0
+                after_y = result_wrapper.get("value", 0) or 0
 
         # Should have scrolled significantly to reach footer
         assert after_y > 100, f"Should have scrolled to reach footer: scrollY={after_y}"
@@ -225,13 +218,13 @@ class TestVisionOperations:
             assert result is not None
             if not result.success:
                 # Should NOT be "Unknown action" - that means handler is missing
-                assert "Unknown action" not in str(result.message), \
-                    "detect_coordinates action not registered in execute_action"
+                assert "Unknown action" not in str(
+                    result.message
+                ), "detect_coordinates action not registered in execute_action"
         except BadRequestException as e:
             # 400 error means the action was found but vision API not available
             # This is OK - it means the action handler is registered
-            assert "OpenRouter not available" in str(e) or "not available" in str(e), \
-                f"Unexpected error: {e}"
+            assert "OpenRouter not available" in str(e) or "not available" in str(e), f"Unexpected error: {e}"
 
     @pytest.mark.skipif(not has_openrouter_key(), reason="OPENROUTER_API_KEY not set")
     def test_detect_coordinates_finds_element(self, browser_client, browser_with_page):
@@ -247,7 +240,7 @@ class TestVisionOperations:
             assert result.data is not None
             # Check for coordinates
             data = result.data
-            coords = data.get('coordinates') if isinstance(data, dict) else {}
+            coords = data.get("coordinates") if isinstance(data, dict) else {}
             if isinstance(coords, dict):
                 assert coords.get("x") is not None or coords.get("click_point") is not None
 
@@ -261,7 +254,7 @@ class TestVisionOperations:
         )
 
         if result.success and result.data:
-            coords = result.data.get('coordinates') if isinstance(result.data, dict) else {}
+            coords = result.data.get("coordinates") if isinstance(result.data, dict) else {}
             if isinstance(coords, dict):
                 click_point = coords.get("click_point", {})
                 if click_point:
@@ -276,12 +269,12 @@ class TestVisionOperations:
             result = browser_client.what_is_visible(bid)
             assert result is not None
             if not result.success:
-                assert "Unknown action" not in str(result.message), \
-                    "what_is_visible action not registered in execute_action"
+                assert "Unknown action" not in str(
+                    result.message
+                ), "what_is_visible action not registered in execute_action"
         except BadRequestException as e:
             # 400 error means action was found but vision API not available
-            assert "OpenRouter not available" in str(e) or "not available" in str(e), \
-                f"Unexpected error: {e}"
+            assert "OpenRouter not available" in str(e) or "not available" in str(e), f"Unexpected error: {e}"
 
     @pytest.mark.skipif(not has_openrouter_key(), reason="OPENROUTER_API_KEY not set")
     def test_what_is_visible_returns_analysis(self, browser_client, browser_with_page):
@@ -291,7 +284,7 @@ class TestVisionOperations:
         result = browser_client.what_is_visible(bid)
 
         if result.success and result.data:
-            analysis = result.data.get('analysis') if isinstance(result.data, dict) else None
+            analysis = result.data.get("analysis") if isinstance(result.data, dict) else None
             assert analysis is not None, "Should return analysis"
             assert len(str(analysis)) > 50, "Analysis should be substantive"
 
@@ -312,7 +305,7 @@ class TestVisionGuiIntegration:
         if not detect_result.success:
             pytest.skip("Vision detection failed")
 
-        coords = detect_result.data.get('coordinates') if isinstance(detect_result.data, dict) else {}
+        coords = detect_result.data.get("coordinates") if isinstance(detect_result.data, dict) else {}
         if isinstance(coords, dict):
             click_point = coords.get("click_point", {})
         else:
@@ -322,10 +315,7 @@ class TestVisionGuiIntegration:
             pytest.skip("No click_point returned")
 
         click_result = browser_client.gui_click(
-            bid, payload=GuiClickRequest(
-                x=float(click_point["x"]),
-                y=float(click_point["y"])
-            )
+            bid, payload=GuiClickRequest(x=float(click_point["x"]), y=float(click_point["y"]))
         )
 
         assert click_result is not None
@@ -344,7 +334,7 @@ class TestVisionGuiIntegration:
         if not detect_result.success:
             pytest.skip("Vision detection failed")
 
-        coords = detect_result.data.get('coordinates') if isinstance(detect_result.data, dict) else {}
+        coords = detect_result.data.get("coordinates") if isinstance(detect_result.data, dict) else {}
         if isinstance(coords, dict):
             click_point = coords.get("click_point", {})
         else:
@@ -354,11 +344,7 @@ class TestVisionGuiIntegration:
             pytest.skip("No click_point returned")
 
         type_result = browser_client.gui_type_xy(
-            bid, payload=GuiTypeXyRequest(
-                x=float(click_point["x"]),
-                y=float(click_point["y"]),
-                text="test@example.com"
-            )
+            bid, payload=GuiTypeXyRequest(x=float(click_point["x"]), y=float(click_point["y"]), text="test@example.com")
         )
 
         assert type_result is not None
@@ -371,9 +357,7 @@ class TestVisionGuiIntegration:
         bid = browser_with_page
 
         # Scroll down to make footer visible
-        scroll_result = browser_client.scroll(
-            bid, payload=ScrollRequest(delta_y=1500)
-        )
+        scroll_result = browser_client.scroll(bid, payload=ScrollRequest(delta_y=1500))
         assert scroll_result is not None
 
         time.sleep(0.5)
@@ -384,6 +368,6 @@ class TestVisionGuiIntegration:
         )
 
         if detect_result.success:
-            coords = detect_result.data.get('coordinates') if isinstance(detect_result.data, dict) else {}
+            coords = detect_result.data.get("coordinates") if isinstance(detect_result.data, dict) else {}
             if isinstance(coords, dict):
                 assert coords.get("x") is not None or coords.get("click_point") is not None

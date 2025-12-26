@@ -16,6 +16,7 @@ from airbrowser_client.api import BrowserApi
 # Optional: aiohttp for async version
 try:
     import aiohttp
+
     AIOHTTP_AVAILABLE = True
 except ImportError:
     AIOHTTP_AVAILABLE = False
@@ -43,12 +44,14 @@ def process_url(url: str, browser_num: int) -> dict:
 
         # Create browser
         try:
-            response = api.create_browser(payload={
-                "uc": True,
-                "headless": True,  # Headless for parallel execution
-                "window_size": [1280, 800]
-            })
-            browser_id = response.data['browser_id']
+            response = api.create_browser(
+                payload={
+                    "uc": True,
+                    "headless": True,  # Headless for parallel execution
+                    "window_size": [1280, 800],
+                }
+            )
+            browser_id = response.data["browser_id"]
             result["browser_id"] = browser_id
             print(f"[Browser {browser_num}] Created: {browser_id[:8]}...")
 
@@ -59,18 +62,15 @@ def process_url(url: str, browser_num: int) -> dict:
         try:
             # Navigate
             print(f"[Browser {browser_num}] Navigating to {url}...")
-            api.navigate_browser(
-                browser_id=browser_id,
-                payload={"url": url, "timeout": 30}
-            )
+            api.navigate_browser(browser_id=browser_id, payload={"url": url, "timeout": 30})
 
             # Get page info
             content = api.get_content(browser_id=browser_id)
-            result["title"] = content.data.get('title', 'Unknown')
+            result["title"] = content.data.get("title", "Unknown")
 
             # Take screenshot
             screenshot = api.take_screenshot(browser_id=browser_id, payload={})
-            result["screenshot"] = screenshot.data.get('screenshot_url')
+            result["screenshot"] = screenshot.data.get("screenshot_url")
 
             result["success"] = True
             print(f"[Browser {browser_num}] Done: {result['title'][:40]}...")
@@ -97,10 +97,7 @@ def run_parallel_sync():
     print("=" * 60)
 
     with ThreadPoolExecutor(max_workers=4) as executor:
-        futures = [
-            executor.submit(process_url, url, i)
-            for i, url in enumerate(URLS)
-        ]
+        futures = [executor.submit(process_url, url, i) for i, url in enumerate(URLS)]
 
         results = [f.result() for f in futures]
 
@@ -115,17 +112,14 @@ async def run_parallel_async():
 
         try:
             # Create browser
-            async with session.post(f"{API_BASE}/browser/create", json={
-                "uc": True, "headless": True
-            }) as resp:
+            async with session.post(f"{API_BASE}/browser/create", json={"uc": True, "headless": True}) as resp:
                 data = await resp.json()
                 browser_id = data["data"]["browser_id"]
                 result["browser_id"] = browser_id
 
             # Navigate
             async with session.post(
-                f"{API_BASE}/browser/{browser_id}/navigate",
-                json={"url": url, "timeout": 30}
+                f"{API_BASE}/browser/{browser_id}/navigate", json={"url": url, "timeout": 30}
             ) as resp:
                 await resp.json()
 
@@ -135,9 +129,7 @@ async def run_parallel_async():
                 result["title"] = data["data"]["title"]
 
             # Screenshot
-            async with session.post(
-                f"{API_BASE}/browser/{browser_id}/screenshot"
-            ) as resp:
+            async with session.post(f"{API_BASE}/browser/{browser_id}/screenshot") as resp:
                 data = await resp.json()
                 result["screenshot"] = data["data"]["screenshot_url"]
 
@@ -155,10 +147,7 @@ async def run_parallel_async():
     print("=" * 60)
 
     async with aiohttp.ClientSession() as session:
-        tasks = [
-            process_url_async(session, url, i)
-            for i, url in enumerate(URLS)
-        ]
+        tasks = [process_url_async(session, url, i) for i, url in enumerate(URLS)]
         results = await asyncio.gather(*tasks)
 
     return results

@@ -115,7 +115,9 @@ def handle_type(driver, command: dict) -> dict:
     except Exception as e:
         error_msg = str(e)
         # Provide more helpful error for common selector issues
-        if "element" in error_msg.lower() and ("not found" in error_msg.lower() or "unable to locate" in error_msg.lower()):
+        if "element" in error_msg.lower() and (
+            "not found" in error_msg.lower() or "unable to locate" in error_msg.lower()
+        ):
             return {
                 "status": "error",
                 "message": f"Element not found for selector '{selector}'. "
@@ -434,9 +436,7 @@ def handle_scroll(driver, command: dict) -> dict:
             # Scroll to coordinates
             scroll_x = x if x is not None else 0
             scroll_y = y if y is not None else 0
-            driver.execute_script(
-                f"window.scrollTo({{left: {scroll_x}, top: {scroll_y}, behavior: '{behavior}'}});"
-            )
+            driver.execute_script(f"window.scrollTo({{left: {scroll_x}, top: {scroll_y}, behavior: '{behavior}'}});")
             return {"status": "success", "message": f"Scrolled to ({scroll_x}, {scroll_y})"}
         else:
             return {"status": "error", "message": "Either selector or coordinates (x, y) required"}
@@ -451,9 +451,7 @@ def handle_scroll_by(driver, command: dict) -> dict:
     behavior = command.get("behavior", "smooth")
 
     try:
-        driver.execute_script(
-            f"window.scrollBy({{left: {delta_x}, top: {delta_y}, behavior: '{behavior}'}});"
-        )
+        driver.execute_script(f"window.scrollBy({{left: {delta_x}, top: {delta_y}, behavior: '{behavior}'}});")
         return {"status": "success", "message": f"Scrolled by ({delta_x}, {delta_y})"}
     except Exception as e:
         return {"status": "error", "message": f"Failed to scroll: {str(e)}"}
@@ -513,12 +511,14 @@ def handle_get_select_options(driver, command: dict) -> dict:
         select = Select(element)
         options = []
         for i, opt in enumerate(select.options):
-            options.append({
-                "index": i,
-                "value": opt.get_attribute("value"),
-                "text": opt.text,
-                "selected": opt.is_selected(),
-            })
+            options.append(
+                {
+                    "index": i,
+                    "value": opt.get_attribute("value"),
+                    "text": opt.text,
+                    "selected": opt.is_selected(),
+                }
+            )
 
         selected = [opt.text for opt in select.all_selected_options]
 
