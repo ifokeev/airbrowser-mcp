@@ -77,10 +77,28 @@ def handle_click(driver, command: dict) -> dict:
         # Find the element and click it
         selenium_by = _get_selenium_by(by)
         element = driver.find_element(selenium_by, selector)
+
+        # Check if element is a file input (clicking these fails with "invalid argument")
+        element_type = element.get_attribute("type")
+        if element.tag_name.lower() == "input" and element_type == "file":
+            return {
+                "status": "error",
+                "message": f"Cannot click file input element (selector '{selector}' matched "
+                f"<input type='file'>). Use upload_file tool or a more specific selector.",
+            }
+
         element.click()
         return {"status": "success"}
     except Exception as e:
-        return {"status": "error", "message": f"Click failed: {str(e)}"}
+        error_msg = str(e)
+        # Provide clearer error for common issues
+        if "invalid argument" in error_msg.lower():
+            return {
+                "status": "error",
+                "message": f"Click failed: Element may be a file input or not clickable. "
+                f"Use a more specific selector. Details: {error_msg}",
+            }
+        return {"status": "error", "message": f"Click failed: {error_msg}"}
 
 
 def handle_type(driver, command: dict) -> dict:
@@ -95,7 +113,16 @@ def handle_type(driver, command: dict) -> dict:
         driver.type(selector, text, by=_get_selenium_by(by))
         return {"status": "success"}
     except Exception as e:
-        return {"status": "error", "message": f"Type failed: {str(e)}"}
+        error_msg = str(e)
+        # Provide more helpful error for common selector issues
+        if "element" in error_msg.lower() and ("not found" in error_msg.lower() or "unable to locate" in error_msg.lower()):
+            return {
+                "status": "error",
+                "message": f"Element not found for selector '{selector}'. "
+                f"Note: Google search now uses <textarea name='q'> instead of <input>. "
+                f"Try a different selector. Details: {error_msg}",
+            }
+        return {"status": "error", "message": f"Type failed: {error_msg}"}
 
 
 def handle_wait(driver, command: dict) -> dict:
