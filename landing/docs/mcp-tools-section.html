@@ -518,45 +518,8 @@
 </div>
 
 <script>
-// MCP Tools Data - will be populated by generate_docs.py
+// MCP Tools Data - populated by generate_docs.py (includes category)
 const MCP_TOOLS = {{MCP_TOOLS_JSON}};
-
-// Category mapping
-const CATEGORY_MAP = {
-    'create_browser': 'lifecycle',
-    'close_browser': 'lifecycle',
-    'browsers': 'lifecycle',
-    'navigate_browser': 'navigation',
-    'get_url': 'navigation',
-    'history': 'navigation',
-    'click': 'elements',
-    'type_text': 'elements',
-    'press_keys': 'elements',
-    'check_element': 'elements',
-    'wait_element': 'elements',
-    'get_element_data': 'elements',
-    'mouse': 'elements',
-    'scroll': 'elements',
-    'fill_form': 'forms',
-    'select': 'forms',
-    'upload_file': 'forms',
-    'gui_click': 'vision',
-    'detect_coordinates': 'vision',
-    'what_is_visible': 'vision',
-    'take_screenshot': 'page',
-    'get_content': 'page',
-    'execute_script': 'page',
-    'resize': 'page',
-    'snapshot': 'page',
-    'console_logs': 'debug',
-    'network_logs': 'debug',
-    'tabs': 'tabs',
-    'dialog': 'tabs',
-    'emulate': 'emulation',
-    'performance': 'emulation',
-    'get_pool_status': 'pool',
-    'health_check': 'pool'
-};
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
@@ -568,10 +531,10 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function updateCategoryCounts() {
-    // Count tools per category
+    // Count tools per category (category is included in tool data)
     const counts = { all: MCP_TOOLS.length };
     MCP_TOOLS.forEach(tool => {
-        const cat = CATEGORY_MAP[tool.name] || 'other';
+        const cat = tool.category || 'other';
         counts[cat] = (counts[cat] || 0) + 1;
     });
 
@@ -596,7 +559,7 @@ function renderTools(tools, filter = '', category = 'all') {
         const matchesSearch = filter === '' ||
             tool.name.toLowerCase().includes(filter.toLowerCase()) ||
             tool.title.toLowerCase().includes(filter.toLowerCase());
-        const matchesCategory = category === 'all' || CATEGORY_MAP[tool.name] === category;
+        const matchesCategory = category === 'all' || tool.category === category;
         return matchesSearch && matchesCategory;
     });
 
@@ -611,7 +574,7 @@ function renderTools(tools, filter = '', category = 'all') {
     document.getElementById('visibleCount').textContent = filteredTools.length;
 
     container.innerHTML = filteredTools.map((tool, idx) => {
-        const cat = CATEGORY_MAP[tool.name] || 'other';
+        const cat = tool.category || 'other';
         const desc = tool.description || '';
         return `
             <div class="mcp-tool" data-category="${cat}" data-name="${tool.name}">

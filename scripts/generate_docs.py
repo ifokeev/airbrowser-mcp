@@ -58,14 +58,14 @@ def parse_mcp_tools(tools_path: str) -> list:
     method_pattern = r"^\s{4}def (\w+)\("
     method_names = re.findall(method_pattern, content, re.MULTILINE)
 
-    # For each method, find its docstring
+    # For each method, find its docstring (handle multiline docstrings)
     methods = []
     for name in method_names:
-        # Find the docstring after the method definition (handles multiline params)
-        doc_pattern = rf'def {name}\([\s\S]*?\)(?:\s*->[^:]+)?:\s*"""([^"]+)"""'
-        match = re.search(doc_pattern, content)
+        # Find the docstring after the method definition (handles multiline params and docstrings)
+        doc_pattern = rf'def {name}\([^)]*\)(?:\s*->[^:]+)?:\s*"""(.*?)"""'
+        match = re.search(doc_pattern, content, re.DOTALL)
         if match:
-            methods.append((name, match.group(1)))
+            methods.append((name, match.group(1).strip()))
 
     # Parse enhanced descriptions from tool_descriptions.py
     enhanced = {}
@@ -96,12 +96,46 @@ def parse_mcp_tools(tools_path: str) -> list:
             tools.append(
                 {
                     "name": name,
-                    "title": docstring.strip(),
+                    "title": docstring.split("\n")[0].strip(),  # First line only for title
                     "description": "",
                 }
             )
 
     return tools
+
+
+def get_category_for_tool(name: str) -> str:
+    """Auto-categorize tool by name pattern."""
+    if name in ("create_browser", "close_browser", "browsers"):
+        return "lifecycle"
+    elif name in ("navigate_browser", "get_url", "history"):
+        return "navigation"
+    elif name in (
+        "click",
+        "type_text",
+        "press_keys",
+        "check_element",
+        "wait_element",
+        "get_element_data",
+        "mouse",
+        "scroll",
+    ):
+        return "elements"
+    elif name in ("fill_form", "select", "upload_file"):
+        return "forms"
+    elif "gui" in name or name in ("detect_coordinates", "what_is_visible"):
+        return "vision"
+    elif name in ("take_screenshot", "get_content", "execute_script", "resize", "snapshot"):
+        return "page"
+    elif name in ("console_logs", "network_logs"):
+        return "debug"
+    elif name in ("tabs", "dialog"):
+        return "tabs"
+    elif name in ("emulate", "performance"):
+        return "emulation"
+    elif name in ("get_pool_status", "health_check"):
+        return "pool"
+    return "other"
 
 
 def get_mcp_section_html(tools_json: str, tools_count: int) -> str:
@@ -162,12 +196,25 @@ def generate_html(openapi_data: dict, mcp_tools: list, version: str) -> str:
                 </table>
             </div>""")
 
-    # Build MCP tools JSON for the terminal-style interface
+    # Build MCP tools JSON for the terminal-style interface (with categories)
     import json
 
-    mcp_tools_json = json.dumps(
-        [{"name": tool["name"], "title": tool["title"], "description": tool["description"]} for tool in mcp_tools]
-    )
+    tools_with_categories = [
+        {
+            "name": tool["name"],
+            "title": tool["title"],
+            "description": tool["description"],
+            "category": get_category_for_tool(tool["name"]),
+        }
+        for tool in mcp_tools
+    ]
+    mcp_tools_json = json.dumps(tools_with_categories)
+
+    # Generate category counts
+    category_counts = {}
+    for tool in tools_with_categories:
+        cat = tool["category"]
+        category_counts[cat] = category_counts.get(cat, 0) + 1
 
     return f"""<!DOCTYPE html>
 <html lang="en">
