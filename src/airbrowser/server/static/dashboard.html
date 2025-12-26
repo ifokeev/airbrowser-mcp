@@ -797,12 +797,12 @@
 
         async function updatePoolStatus() {
             try {
-                const response = await fetch('/api/v1/browser/pool/status');
+                const response = await fetch('/api/v1/health/');
                 const data = await response.json();
 
-                if (data.success === true || data.status === 'success') {
-                    // Handle nested pool_metrics structure
-                    poolStatus = data.data.pool_metrics || data.data;
+                // Health endpoint returns {status, pool: {...}, timestamp}
+                if (data.status === 'healthy' || data.status === 'degraded') {
+                    poolStatus = data.pool || {};
                     document.getElementById('active-browsers').textContent = poolStatus.active_browsers || 0;
                     document.getElementById('total-browsers').textContent = poolStatus.total_browsers || 0;
                     document.getElementById('cpu-usage').textContent = Math.round(poolStatus.cpu_usage_percent || 0) + '%';
@@ -811,7 +811,7 @@
 
                     const dot = document.getElementById('status-dot');
                     const text = document.getElementById('status-text');
-                    if (poolStatus.healthy) {
+                    if (data.status === 'healthy') {
                         dot.className = 'status-dot';
                         text.textContent = 'Online';
                     } else {
@@ -829,10 +829,14 @@
 
         async function updateBrowserList() {
             try {
-                const response = await fetch('/api/v1/browser/list');
+                const response = await fetch('/api/v1/browser/browsers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'list' })
+                });
                 const data = await response.json();
 
-                if (data.success === true || data.status === 'success') {
+                if (data.success === true) {
                     const browserList = document.getElementById('browser-list');
                     const browserArray = data.data ? data.data.browsers : data.browsers || [];
 
@@ -919,7 +923,7 @@
                 addLog(`Creating browser${profileName ? ` with profile '${profileName}'` : ''}...`, 'info');
 
                 // Start creation request (don't await yet)
-                const createPromise = fetch('/api/v1/browser/create', {
+                const createPromise = fetch('/api/v1/browser/create_browser', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(config)
@@ -976,9 +980,9 @@
         async function closeBrowser(browserId) {
             try {
                 addLog(`Closing ${browserId.substring(0, 8)}...`, 'warning');
-                const response = await fetch(`/api/v1/browser/${browserId}/close`, { method: 'POST' });
+                const response = await fetch(`/api/v1/browser/${browserId}/close_browser`, { method: 'DELETE' });
                 const data = await response.json();
-                if (data.success === true || data.status === 'success') {
+                if (data.success === true) {
                     updateBrowserList();
                     loadProfiles(); // Refresh profiles to update in-use status
                 } else {
@@ -993,12 +997,13 @@
             if (!confirm('Close all browsers?')) return;
             try {
                 addLog('Closing all browsers...', 'warning');
-                const response = await fetch('/api/v1/browser/close_all', {
+                const response = await fetch('/api/v1/browser/browsers', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'close_all' })
                 });
                 const data = await response.json();
-                if (data.success === true || data.status === 'success') {
+                if (data.success === true) {
                     addLog('All browsers closed', 'info');
                     updateBrowserList();
                     loadProfiles(); // Refresh profiles to update in-use status
