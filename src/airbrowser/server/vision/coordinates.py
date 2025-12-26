@@ -18,12 +18,17 @@ class VisionCoordinateDetector:
 
     def _create_prompt(self, element_description: str) -> str:
         """Create coordinate detection prompt."""
-        return f"""Find the bounding box coordinates for: {element_description}
+        return f"""Find the EXACT clickable element for: {element_description}
+
+IMPORTANT: Return the precise bounding box of the clickable element itself, NOT its container.
+- For links: return ONLY the link text bounds, not the surrounding row or card
+- For buttons: return ONLY the button bounds
+- For inputs: return ONLY the input field bounds
 
 Return JSON only:
 {{"found": true, "element": "description", "x": 123, "y": 456, "width": 78, "height": 90, "confidence": 0.95}}
 
-Where x,y = top-left corner, coordinates in pixels, confidence 0.0-1.0.
+Where x,y = top-left corner of the clickable element, coordinates in pixels, confidence 0.0-1.0.
 
 If not found: {{"found": false, "error": "reason"}}"""
 
