@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/ifokeev/airbrowser-mcp/compare/v1.5.1...v1.5.2) (2025-12-26)
+
+
+### Bug Fixes
+
+* **nginx:** correct websockify proxy path ([6726532](https://github.com/ifokeev/airbrowser-mcp/commit/67265324c380324ed0b05501eaa6b5aa67f22ddb))
+
 ## [1.5.1](https://github.com/ifokeev/airbrowser-mcp/compare/v1.5.0...v1.5.1) (2025-12-26)
 
 
