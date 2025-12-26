@@ -314,10 +314,24 @@ class BrowserPoolAdapter:
                 timeframe = action.options.get("timeframe", 0.25) if action.options else 0.25
                 response = self.client.execute_command(browser_id, "gui_hover_xy", x=x, y=y, timeframe=timeframe)
 
+            elif action.action == "gui_press_keys_xy":
+                # Press keys at coordinates via PyAutoGUI
+                x = action.options.get("x") if action.options else None
+                y = action.options.get("y") if action.options else None
+                keys = action.options.get("keys") if action.options else None
+                timeframe = action.options.get("timeframe", 0.25) if action.options else 0.25
+                response = self.client.execute_command(
+                    browser_id, "gui_press_keys_xy", x=x, y=y, keys=keys, timeframe=timeframe
+                )
+
             elif action.action == "detect_coordinates":
                 # Detect element coordinates using vision models
                 prompt = action.options.get("prompt") if action.options else None
-                response = self.client.execute_command(browser_id, "detect_coordinates", prompt=prompt)
+                fx = action.options.get("fx", 0.5) if action.options else 0.5
+                fy = action.options.get("fy", 0.5) if action.options else 0.5
+                response = self.client.execute_command(
+                    browser_id, "detect_coordinates", prompt=prompt, fx=fx, fy=fy
+                )
 
             elif action.action == "what_is_visible":
                 # Comprehensive page state analysis - what's visible on the current page
