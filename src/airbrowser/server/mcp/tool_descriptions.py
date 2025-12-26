@@ -284,6 +284,10 @@ like `:has-text()` are NOT supported. Examples:
 - CSS: `a[href*="example"]`, `button.submit`, `#login-btn`
 - XPath (use by="xpath"): `//a[contains(text(), "Click me")]`, `//button[@type="submit"]`
 
+**COMMON ISSUES:**
+- Generic `input` selector may match file inputs, which cannot be clicked (use more specific selectors)
+- For file uploads, use `upload_file` tool instead of click
+
 **VERIFICATION**: Use `what_is_visible` to verify the action worked.
 """,
     "type_text": """
@@ -301,6 +305,10 @@ This approach is more robust and undetectable by anti-automation systems.
 
 **SELECTOR SYNTAX**: Use standard CSS selectors or XPath only. Playwright-style selectors
 like `:has-text()` are NOT supported.
+
+**COMMON SELECTOR ISSUES:**
+- Google search now uses `<textarea name="q">` NOT `<input name="q">`
+- For Google: use `textarea[name="q"]` or prefer vision-based `detect_coordinates` + `gui_type_xy`
 
 **VERIFICATION**: Use `what_is_visible` to verify the text was entered correctly.
 """,
