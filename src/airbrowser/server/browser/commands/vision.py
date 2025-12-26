@@ -104,7 +104,6 @@ def handle_detect_coordinates(driver, command: dict, browser_id: str = "unknown"
     # Clamp to valid range
     fx = max(0.0, min(1.0, fx))
     fy = max(0.0, min(1.0, fy))
-
     model = _get_model(command, "OPENROUTER_COORD_MODEL", DEFAULT_COORD_MODEL)
 
     try:
@@ -114,10 +113,10 @@ def handle_detect_coordinates(driver, command: dict, browser_id: str = "unknown"
         if coords.get("success"):
             # Auto left-bias for very wide elements (like search boxes with icons)
             # Only apply if fx was not explicitly set
+            width = coords.get("width", 0)
+            height = coords.get("height", 1)
+            aspect_ratio = width / height if height > 0 else 0
             if not fx_explicit:
-                width = coords.get("width", 0)
-                height = coords.get("height", 1)
-                aspect_ratio = width / height if height > 0 else 0
                 if aspect_ratio > 10:  # Very wide element (e.g., search box)
                     fx = 0.25  # Click at 25% from left to avoid right-side icons
                     logger.debug(f"Auto left-bias: aspect_ratio={aspect_ratio:.1f}, using fx={fx}")

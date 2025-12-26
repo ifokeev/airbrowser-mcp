@@ -14,21 +14,29 @@ class VisionOperations:
     def __init__(self, browser_pool: BrowserPoolAdapter):
         self.browser_pool = browser_pool
 
-    def detect_coordinates(self, browser_id: str, prompt: str, fx: float = 0.5, fy: float = 0.5) -> dict[str, Any]:
+    def detect_coordinates(
+        self, browser_id: str, prompt: str, fx: float | None = None, fy: float | None = None
+    ) -> dict[str, Any]:
         """
         Detect element coordinates using vision models without clicking.
 
         Args:
             browser_id: Browser instance identifier
             prompt: Natural language description of element to find
-            fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right)
-            fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
+            fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).
+                If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).
+            fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
 
         Returns:
             Dictionary with coordinate information
         """
         try:
-            options = {"prompt": prompt, "fx": fx, "fy": fy}
+            # Only include fx/fy if explicitly set - allows vision handler to apply auto-bias
+            options: dict[str, Any] = {"prompt": prompt}
+            if fx is not None:
+                options["fx"] = fx
+            if fy is not None:
+                options["fy"] = fy
             action = BrowserAction(action="detect_coordinates", options=options)
             result = self.browser_pool.execute_action(browser_id, action)
 
