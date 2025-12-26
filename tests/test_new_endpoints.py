@@ -7,9 +7,8 @@ import airbrowser_client
 import pytest
 from airbrowser_client.api import browser_api
 from airbrowser_client.models import (
-    BrowserConfig,
-    CheckElementRequest,
-    NavigateRequest,
+    CreateBrowserRequest,
+    NavigateBrowserRequest,
     WaitElementRequest,
 )
 
@@ -32,26 +31,24 @@ def test_check_element_exists():
 
     try:
         # Create browser
-        browser_config = BrowserConfig()
+        browser_config = CreateBrowserRequest()
         result = client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data.browser_id
+        browser_id = result.data['browser_id']
 
         # Navigate to test page
-        nav_request = NavigateRequest(url="https://www.example.com")
+        nav_request = NavigateBrowserRequest(url="https://www.example.com")
         client.navigate_browser(browser_id, payload=nav_request)
 
         # Test check_element with CSS selector (exists check)
-        check_request = CheckElementRequest(selector="h1", by="css", check="exists")
-        check_result = client.check_element(browser_id, payload=check_request)
+        check_result = client.check_element(browser_id, selector="h1", by="css", check="exists")
 
         assert check_result.success
         print("Found h1 element with CSS selector")
 
         # Test check non-existent element
-        check_request = CheckElementRequest(selector="nonexistent", by="css", check="exists")
-        check_result = client.check_element(browser_id, payload=check_request)
+        check_result = client.check_element(browser_id, selector="nonexistent", by="css", check="exists")
 
         assert check_result.success
         print("Correctly handled non-existent element check")
@@ -73,26 +70,24 @@ def test_check_element_visible():
 
     try:
         # Create browser
-        browser_config = BrowserConfig()
+        browser_config = CreateBrowserRequest()
         result = client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data.browser_id
+        browser_id = result.data['browser_id']
 
         # Navigate to test page
-        nav_request = NavigateRequest(url="https://www.example.com")
+        nav_request = NavigateBrowserRequest(url="https://www.example.com")
         client.navigate_browser(browser_id, payload=nav_request)
 
         # Test check_element visible with visible element
-        request = CheckElementRequest(selector="h1", by="css", check="visible")
-        result = client.check_element(browser_id, payload=request)
+        result = client.check_element(browser_id, selector="h1", by="css", check="visible")
 
         assert result.success
         print("h1 element visibility checked")
 
         # Test with non-existent element
-        request = CheckElementRequest(selector="nonexistent", by="css", check="visible")
-        result = client.check_element(browser_id, payload=request)
+        result = client.check_element(browser_id, selector="nonexistent", by="css", check="visible")
 
         assert result.success
         print("Correctly handled non-existent element visibility check")
@@ -114,26 +109,24 @@ def test_selector_types():
 
     try:
         # Create browser
-        browser_config = BrowserConfig()
+        browser_config = CreateBrowserRequest()
         result = client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data.browser_id
+        browser_id = result.data['browser_id']
 
         # Navigate to example.com for testing
-        nav_request = NavigateRequest(url="https://www.example.com")
+        nav_request = NavigateBrowserRequest(url="https://www.example.com")
         client.navigate_browser(browser_id, payload=nav_request)
 
         # Test XPath selector
-        check_request = CheckElementRequest(selector="//h1", by="xpath", check="exists")
-        check_result = client.check_element(browser_id, payload=check_request)
+        check_result = client.check_element(browser_id, selector="//h1", by="xpath", check="exists")
 
         assert check_result.success
         print("Found element with XPath selector")
 
         # Test CSS selector
-        check_request = CheckElementRequest(selector="h1", by="css", check="exists")
-        check_result = client.check_element(browser_id, payload=check_request)
+        check_result = client.check_element(browser_id, selector="h1", by="css", check="exists")
 
         assert check_result.success
         print("Found element with CSS selector")
@@ -155,14 +148,14 @@ def test_wait_element_with_selector_types():
 
     try:
         # Create browser
-        browser_config = BrowserConfig()
+        browser_config = CreateBrowserRequest()
         result = client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data.browser_id
+        browser_id = result.data['browser_id']
 
         # Navigate to test page
-        nav_request = NavigateRequest(url="https://www.example.com")
+        nav_request = NavigateBrowserRequest(url="https://www.example.com")
         client.navigate_browser(browser_id, payload=nav_request)
 
         # Test wait_element with CSS selector
@@ -180,17 +173,13 @@ def test_wait_element_with_selector_types():
 
 
 @pytest.mark.quick
-def test_server_status():
-    """Test the server pool status endpoint"""
-
-    client = create_client()
-
-    # Get current pool status
-    result = client.get_pool_status()
+def test_server_status(health_client):
+    """Test the server health endpoint"""
+    # Use health check instead of pool status (pool_status not exposed via REST)
+    result = health_client.health_check()
     assert result is not None
-    assert result.success
-    # data is a raw dict since PoolStatus.data is fields.Raw in schema
-    print(f"Server is running with {result.data.get('active_browsers', 0)} active browsers")
+    assert result.status in ["healthy", "degraded"]
+    print(f"Server is {result.status}")
 
 
 if __name__ == "__main__":

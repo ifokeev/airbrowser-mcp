@@ -10,7 +10,7 @@ import time
 import airbrowser_client
 import pytest
 from airbrowser_client.api import browser_api
-from airbrowser_client.models import BrowserConfig, ElementDataRequest, ExecuteRequest, NavigateRequest
+from airbrowser_client.models import CreateBrowserRequest, ExecuteScriptRequest, NavigateBrowserRequest, TakeScreenshotRequest
 
 from conftest import get_api_base_url
 
@@ -38,22 +38,23 @@ class TestUndetected:
 
     def create_uc_browser(self):
         """Create a new UC browser instance"""
-        browser_config = BrowserConfig(window_size=[1280, 720])
+        browser_config = CreateBrowserRequest(window_size=[1280, 720])
         result = self.browser_client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        self.browser_id = result.data.browser_id
+        self.browser_id = result.data['browser_id']
         return self.browser_id
 
     def verify_success(self):
         """Verify that we passed the detection test"""
         try:
-            # Use get_element_data with type="text" to get h1 text
-            request = ElementDataRequest(selector="h1", type="text")
-            result = self.browser_client.get_element_data(self.browser_id, payload=request)
+            # Use get_element_data with direct parameters
+            result = self.browser_client.get_element_data(
+                self.browser_id, selector="h1", data_type="text"
+            )
 
             if result.success and result.data:
-                h1_text = result.data.text if hasattr(result.data, 'text') else str(result.data)
+                h1_text = result.data.get('text') if 'text' in result.data else str(result.data)
 
                 if "OH YEAH, you passed!" in str(h1_text):
                     print("\nSuccess! Website did not detect Selenium!")
@@ -61,13 +62,13 @@ class TestUndetected:
         except Exception:
             # Fallback to execute_script if get_element_data fails
             try:
-                exec_request = ExecuteRequest(
+                exec_request = ExecuteScriptRequest(
                     script="return document.querySelector('h1') ? document.querySelector('h1').textContent : null;"
                 )
                 result = self.browser_client.execute_script(self.browser_id, payload=exec_request)
 
-                if result.success and result.data and result.data.result:
-                    h1_text = result.data.result.get("value", "") if isinstance(result.data.result, dict) else str(result.data.result)
+                if result.success and result.data and result.data.get('result'):
+                    h1_text = result.data.get('result').get("value", "") if isinstance(result.data.get('result'), dict) else str(result.data.get('result'))
 
                     if "OH YEAH, you passed!" in str(h1_text):
                         print("\nSuccess! Website did not detect Selenium!")
@@ -80,10 +81,10 @@ class TestUndetected:
     def get_page_source(self):
         """Get page source for debugging"""
         try:
-            exec_request = ExecuteRequest(script="return document.documentElement.outerHTML;")
+            exec_request = ExecuteScriptRequest(script="return document.documentElement.outerHTML;")
             result = self.browser_client.execute_script(self.browser_id, payload=exec_request)
-            if result and result.success and result.data and result.data.result:
-                script_result = result.data.result
+            if result and result.success and result.data and result.data.get('result'):
+                script_result = result.data.get('result')
                 return script_result.get("value", "") if isinstance(script_result, dict) else str(script_result)
         except:
             pass
@@ -92,7 +93,7 @@ class TestUndetected:
     def clear_cookies(self):
         """Clear all cookies"""
         try:
-            exec_request = ExecuteRequest(
+            exec_request = ExecuteScriptRequest(
                 script="""
                 document.cookie.split(";").forEach(function(c) {
                     document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
@@ -112,7 +113,7 @@ class TestUndetected:
         self.create_uc_browser()
         time.sleep(0.5)
 
-        nav_request = NavigateRequest(url="https://nowsecure.nl/#relax")
+        nav_request = NavigateBrowserRequest(url="https://nowsecure.nl/#relax")
         self.browser_client.navigate_browser(self.browser_id, payload=nav_request)
         time.sleep(1)
 
@@ -143,7 +144,7 @@ class TestUndetected:
 
         # Final attempt - take screenshot for manual verification
         print("Taking screenshot for manual verification...")
-        self.browser_client.take_screenshot(self.browser_id)
+        self.browser_client.take_screenshot(self.browser_id, payload=TakeScreenshotRequest())
 
         # Get page source for debugging
         page_source = self.get_page_source() or ""
@@ -164,7 +165,7 @@ class TestUndetected:
         self.create_uc_browser()
         time.sleep(0.5)
 
-        nav_request = NavigateRequest(url="https://nowsecure.nl/#relax")
+        nav_request = NavigateBrowserRequest(url="https://nowsecure.nl/#relax")
         self.browser_client.navigate_browser(self.browser_id, payload=nav_request)
         time.sleep(1)
 
@@ -174,32 +175,32 @@ class TestUndetected:
             return
 
         # Take screenshot for this attempt
-        self.browser_client.take_screenshot(self.browser_id)
+        self.browser_client.take_screenshot(self.browser_id, payload=TakeScreenshotRequest())
         print(f"[Attempt {attempt}] Screenshot saved for manual verification")
 
     @pytest.mark.browser
     def test_with_different_user_agents(self):
         """Test with custom user agent"""
-        browser_config = BrowserConfig(
+        browser_config = CreateBrowserRequest(
             window_size=[1280, 720],
         )
         result = self.browser_client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        self.browser_id = result.data.browser_id
+        self.browser_id = result.data['browser_id']
 
         # Navigate to a site that shows user agent
-        nav_request = NavigateRequest(url="https://example.com")
+        nav_request = NavigateBrowserRequest(url="https://example.com")
         self.browser_client.navigate_browser(self.browser_id, payload=nav_request)
         time.sleep(0.5)
 
         # Get the user agent via script
         try:
-            exec_request = ExecuteRequest(script="return navigator.userAgent;")
+            exec_request = ExecuteScriptRequest(script="return navigator.userAgent;")
             result = self.browser_client.execute_script(self.browser_id, payload=exec_request)
 
-            if result.success and result.data and result.data.result:
-                script_result = result.data.result
+            if result.success and result.data and result.data.get('result'):
+                script_result = result.data.get('result')
                 ua_text = script_result.get("value", "") if isinstance(script_result, dict) else str(script_result)
 
                 print(f"User Agent: {ua_text}")
@@ -210,4 +211,4 @@ class TestUndetected:
                 print("User agent looks clean!")
         except Exception as e:
             print(f"Could not verify user agent: {e}")
-            self.browser_client.take_screenshot(self.browser_id)
+            self.browser_client.take_screenshot(self.browser_id, payload=TakeScreenshotRequest())

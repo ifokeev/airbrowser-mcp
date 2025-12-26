@@ -11,8 +11,9 @@ import airbrowser_client
 import pytest
 from airbrowser_client.api import browser_api
 from airbrowser_client.models import (
-    BrowserConfig,
-    NavigateRequest,
+    CreateBrowserRequest,
+    NavigateBrowserRequest,
+    TakeScreenshotRequest,
 )
 
 from conftest import get_api_base_url
@@ -32,23 +33,23 @@ def test_chatgpt_interaction():
 
     try:
         # Create browser (UC+CDP enabled by default)
-        browser_config = BrowserConfig(window_size=[1920, 1080])
+        browser_config = CreateBrowserRequest(window_size=[1920, 1080])
         result = browser_client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data.browser_id
+        browser_id = result.data['browser_id']
         assert browser_id is not None
 
         time.sleep(1)
 
         # Navigate to ChatGPT
-        nav_request = NavigateRequest(url="https://chatgpt.com/")
+        nav_request = NavigateBrowserRequest(url="https://chatgpt.com/")
         nav_result = browser_client.navigate_browser(browser_id, payload=nav_request)
         assert nav_result.success
         time.sleep(1)
 
         # Take a screenshot for verification
-        screenshot_result = browser_client.take_screenshot(browser_id)
+        screenshot_result = browser_client.take_screenshot(browser_id, payload=TakeScreenshotRequest())
         assert screenshot_result.success
         print("Screenshot saved - ChatGPT page loaded")
 
@@ -77,16 +78,16 @@ def test_chatgpt_page_loads():
 
     try:
         # Create browser with UC mode
-        browser_config = BrowserConfig(window_size=[1920, 1080])
+        browser_config = CreateBrowserRequest(window_size=[1920, 1080])
         result = browser_client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data.browser_id
+        browser_id = result.data['browser_id']
 
         time.sleep(1)
 
         # Navigate to ChatGPT
-        nav_request = NavigateRequest(url="https://chatgpt.com/")
+        nav_request = NavigateBrowserRequest(url="https://chatgpt.com/")
         nav_result = browser_client.navigate_browser(browser_id, payload=nav_request)
         assert nav_result.success
 
@@ -95,13 +96,13 @@ def test_chatgpt_page_loads():
         # Verify we're on ChatGPT by checking URL
         url_result = browser_client.get_url(browser_id)
         assert url_result.success
-        current_url = url_result.data.url
+        current_url = url_result.data.get('url', '')
 
         # ChatGPT may redirect, but should contain chatgpt or openai
         assert "chatgpt" in current_url.lower() or "openai" in current_url.lower(), f"Unexpected URL: {current_url}"
 
         # Take screenshot
-        screenshot_result = browser_client.take_screenshot(browser_id)
+        screenshot_result = browser_client.take_screenshot(browser_id, payload=TakeScreenshotRequest())
         assert screenshot_result.success
         print(f"ChatGPT page loaded at: {current_url}")
 

@@ -44,24 +44,13 @@ cd /app/tests
 PYTEST_DEFAULT_ARGS="--tb=short -q"
 PYTEST_EXTRA_ARGS="${PYTEST_ARGS:-}"
 
-# If no command args provided, run in two phases
+# Run tests sequentially to avoid fixture conflicts with class-scoped browser fixtures
+# Note: Parallelism can be achieved within tests using multiple browsers/tabs from the pool
 if [ $# -eq 0 ] && [ -z "$PYTEST_EXTRA_ARGS" ]; then
-    echo "Phase 1: Running parallel tests (excluding close_all tests)..."
-    pytest $PYTEST_DEFAULT_ARGS -n 4 -k "not close_all"
-    PHASE1_EXIT=$?
-
-    echo ""
-    echo "Phase 2: Running close_all tests (sequential)..."
-    pytest $PYTEST_DEFAULT_ARGS -n0 -k "close_all"
-    PHASE2_EXIT=$?
-
-    # Exit with failure if either phase failed
-    if [ $PHASE1_EXIT -ne 0 ] || [ $PHASE2_EXIT -ne 0 ]; then
-        exit 1
-    fi
-    exit 0
+    echo "Running tests sequentially (browser fixtures are class-scoped)..."
+    exec pytest $PYTEST_DEFAULT_ARGS -n 1
 elif [ -z "$PYTEST_EXTRA_ARGS" ]; then
-    exec pytest $PYTEST_DEFAULT_ARGS -n 4
+    exec pytest $PYTEST_DEFAULT_ARGS -n 1
 else
     exec pytest $PYTEST_DEFAULT_ARGS $PYTEST_EXTRA_ARGS
 fi

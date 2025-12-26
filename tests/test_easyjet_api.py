@@ -10,7 +10,7 @@ import time
 import airbrowser_client
 import pytest
 from airbrowser_client.api import browser_api
-from airbrowser_client.models import BrowserConfig, NavigateRequest
+from airbrowser_client.models import CreateBrowserRequest, NavigateBrowserRequest, TakeScreenshotRequest
 
 from conftest import get_api_base_url
 
@@ -33,29 +33,29 @@ def test_easyjet_page_loads():
 
     try:
         # Create browser with UC mode
-        browser_config = BrowserConfig(window_size=[1920, 1080])
+        browser_config = CreateBrowserRequest(window_size=[1920, 1080])
         result = browser_client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data.browser_id
+        browser_id = result.data['browser_id']
 
         time.sleep(1)
 
         # Navigate to EasyJet
-        nav_request = NavigateRequest(url="https://www.easyjet.com/en/")
+        nav_request = NavigateBrowserRequest(url="https://www.easyjet.com/en/")
         nav_result = browser_client.navigate_browser(browser_id, payload=nav_request)
         assert nav_result.success
 
         time.sleep(1)
 
         # Take screenshot
-        screenshot_result = browser_client.take_screenshot(browser_id)
+        screenshot_result = browser_client.take_screenshot(browser_id, payload=TakeScreenshotRequest())
         assert screenshot_result.success
 
         # Verify URL contains easyjet
         url_result = browser_client.get_url(browser_id)
         assert url_result.success
-        current_url = url_result.data.url
+        current_url = url_result.data.get('url', '')
 
         assert "easyjet" in current_url.lower(), f"Not on EasyJet, URL: {current_url}"
         print(f"EasyJet page loaded at: {current_url}")
@@ -86,23 +86,23 @@ def test_easyjet_simple_navigation():
 
     try:
         # Create browser without UC mode for faster test
-        browser_config = BrowserConfig(window_size=[1920, 1080])
+        browser_config = CreateBrowserRequest(window_size=[1920, 1080])
         result = browser_client.create_browser(payload=browser_config)
         assert result is not None
         assert result.success
-        browser_id = result.data.browser_id
+        browser_id = result.data['browser_id']
 
         time.sleep(0.5)
 
         # Navigate to EasyJet
-        nav_request = NavigateRequest(url="https://www.easyjet.com/en/")
+        nav_request = NavigateBrowserRequest(url="https://www.easyjet.com/en/")
         nav_result = browser_client.navigate_browser(browser_id, payload=nav_request)
         assert nav_result.success
 
         time.sleep(1)
 
         # Take screenshot
-        screenshot_result = browser_client.take_screenshot(browser_id)
+        screenshot_result = browser_client.take_screenshot(browser_id, payload=TakeScreenshotRequest())
         assert screenshot_result.success
 
         # Verify URL

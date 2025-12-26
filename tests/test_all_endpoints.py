@@ -8,16 +8,17 @@ Run with: pytest tests/test_all_endpoints.py -v
 
 import pytest
 from airbrowser_client.models import (
-    BrowserConfig,
-    CheckElementRequest,
+    BrowsersRequest,
+    CreateBrowserRequest,
     ClickRequest,
     ConsoleLogsRequest,
-    ExecuteRequest,
+    ExecuteScriptRequest,
     HistoryRequest,
-    NavigateRequest,
+    NavigateBrowserRequest,
     NetworkLogsRequest,
     PressKeysRequest,
-    TypeRequest,
+    TakeScreenshotRequest,
+    TypeTextRequest,
     WaitElementRequest,
 )
 
@@ -25,14 +26,14 @@ from airbrowser_client.models import (
 @pytest.fixture(scope="class")
 def browser_id(browser_client):
     """Create a browser for testing and clean up after. Shared within test class."""
-    config = BrowserConfig(window_size=[1920, 1080])
+    config = CreateBrowserRequest(window_size=[1920, 1080])
     result = browser_client.create_browser(payload=config)
     assert result is not None, "Failed to create browser"
     assert result.success, f"Browser creation failed: {result.message}"
     assert result.data is not None, "Browser creation returned no data"
-    assert result.data.browser_id is not None, "Browser ID is None"
+    assert result.data.get('browser_id') is not None, "Browser ID is None"
 
-    bid = result.data.browser_id
+    bid = result.data['browser_id']
 
     yield bid
 
@@ -56,9 +57,10 @@ class TestHealthEndpoints:
 class TestPoolEndpoints:
     """Test pool-related endpoints."""
 
-    def test_pool_status(self, browser_client):
-        """Test GET /browser/pool/status endpoint."""
-        result = browser_client.get_pool_status()
+    def test_pool_scale(self, pool_client):
+        """Test POST /pool/scale endpoint."""
+        # Scale to current max (no-op but validates endpoint works)
+        result = pool_client.scale_pool(payload={"target_size": 10})
         assert result is not None
         assert result.success
 
@@ -68,37 +70,31 @@ class TestBrowserLifecycle:
 
     def test_create_browser(self, browser_client):
         """Test POST /browser/create endpoint."""
-        config = BrowserConfig()
+        config = CreateBrowserRequest()
         result = browser_client.create_browser(payload=config)
         assert result is not None
         assert result.success
-        assert result.data.browser_id is not None
+        assert result.data.get('browser_id') is not None
 
-        bid = result.data.browser_id
+        bid = result.data['browser_id']
 
         # Cleanup
         browser_client.close_browser(bid)
 
     def test_list_browsers(self, browser_client, browser_id):
-        """Test GET /browser/list endpoint."""
-        result = browser_client.list_browsers()
+        """Test POST /browser/browsers endpoint with list action."""
+        from airbrowser_client.models import BrowsersRequest
+        result = browser_client.browsers(payload=BrowsersRequest(action="list"))
         assert result is not None
         assert result.success
-        assert result.data.count >= 1
-
-    def test_get_browser_status(self, browser_client, browser_id):
-        """Test GET /browser/{browser_id}/status endpoint."""
-        result = browser_client.get_browser_status(browser_id)
-        assert result is not None
-        assert result.success
+        assert result.data['count'] >= 1
 
     def test_close_browser(self, browser_client):
         """Test POST /browser/{browser_id}/close endpoint."""
         # Create a browser to close
-        config = BrowserConfig()
+        config = CreateBrowserRequest()
         create_result = browser_client.create_browser(payload=config)
-        bid = create_result.data.browser_id
-
+        bid = create_result.data['browser_id']
 
         result = browser_client.close_browser(bid)
         assert result is not None
@@ -109,7 +105,7 @@ class TestNavigationEndpoints:
 
     def test_navigate(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/navigate endpoint."""
-        request = NavigateRequest(url="https://example.com", timeout=60)
+        request = NavigateBrowserRequest(url="https://example.com", timeout=60)
         result = browser_client.navigate_browser(browser_id, payload=request)
         assert result is not None
         assert result.success
@@ -117,18 +113,18 @@ class TestNavigationEndpoints:
     def test_get_url(self, browser_client, browser_id):
         """Test GET /browser/{browser_id}/url endpoint."""
         # First navigate somewhere
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         result = browser_client.get_url(browser_id)
         assert result is not None
         assert result.success
-        assert "example.com" in result.data.url
+        assert "example.com" in result.data.get('url', '')
 
     def test_history_back(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/history with back action."""
         # Navigate to two pages
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.org"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.org"))
 
         # Go back using history endpoint
         result = browser_client.history(browser_id, payload=HistoryRequest(action="back"))
@@ -138,8 +134,8 @@ class TestNavigationEndpoints:
     def test_history_forward(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/history with forward action."""
         # Navigate and go back first
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.org"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.org"))
         browser_client.history(browser_id, payload=HistoryRequest(action="back"))
 
         # Go forward using history endpoint
@@ -149,7 +145,7 @@ class TestNavigationEndpoints:
 
     def test_history_refresh(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/history with refresh action."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         result = browser_client.history(browser_id, payload=HistoryRequest(action="refresh"))
         assert result is not None
@@ -161,7 +157,7 @@ class TestElementInteraction:
 
     def test_click(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/click endpoint."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         # Wait for the h1 heading to be present first (more reliable than anchor)
         wait_request = WaitElementRequest(selector="h1", by="css", until="visible", timeout=10)
@@ -175,10 +171,10 @@ class TestElementInteraction:
 
     def test_type(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/type endpoint - using execute to create input."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         # Create an input element via JavaScript
-        exec_request = ExecuteRequest(
+        exec_request = ExecuteScriptRequest(
             script="""
             var input = document.createElement('input');
             input.id = 'test-input';
@@ -195,14 +191,14 @@ class TestElementInteraction:
         browser_client.wait_element(browser_id, payload=wait_request)
 
         # Now type into it
-        request = TypeRequest(selector="#test-input", text="test text", by="css", timeout=15)
+        request = TypeTextRequest(selector="#test-input", text="test text", by="css", timeout=15)
         result = browser_client.type_text(browser_id, payload=request)
         assert result is not None
         assert result.success
 
     def test_wait_element(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/wait_element endpoint."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         request = WaitElementRequest(selector="h1", by="css", until="visible", timeout=10)
         result = browser_client.wait_element(browser_id, payload=request)
@@ -211,35 +207,32 @@ class TestElementInteraction:
 
     def test_check_element_exists(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/check_element with exists check."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
-        request = CheckElementRequest(selector="h1", by="css", check="exists")
-        result = browser_client.check_element(browser_id, payload=request)
+        result = browser_client.check_element(browser_id, selector="h1", by="css", check="exists")
         assert result is not None
         assert result.success
 
     def test_check_element_visible(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/check_element with visible check."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         # Test visible element
-        request = CheckElementRequest(selector="h1", by="css", check="visible")
-        result = browser_client.check_element(browser_id, payload=request)
+        result = browser_client.check_element(browser_id, selector="h1", by="css", check="visible")
         assert result is not None
         assert result.success
 
         # Test non-existent element
-        request = CheckElementRequest(selector="nonexistent-element", by="css", check="visible")
-        result = browser_client.check_element(browser_id, payload=request)
+        result = browser_client.check_element(browser_id, selector="nonexistent-element", by="css", check="visible")
         assert result is not None
         assert result.success
 
     def test_press_keys_enter(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/press_keys with ENTER key."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         # Create an input element via JavaScript
-        exec_request = ExecuteRequest(
+        exec_request = ExecuteScriptRequest(
             script="""
             var input = document.createElement('input');
             input.id = 'test-input-keys';
@@ -266,10 +259,10 @@ class TestElementInteraction:
 
     def test_press_keys_tab(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/press_keys with TAB key."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         # Create two input elements
-        exec_request = ExecuteRequest(
+        exec_request = ExecuteScriptRequest(
             script="""
             var input1 = document.createElement('input');
             input1.id = 'input-tab-1';
@@ -297,10 +290,10 @@ class TestElementInteraction:
 
     def test_press_keys_combination(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/press_keys with key combination (CTRL+a)."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         # Create an input with text
-        exec_request = ExecuteRequest(
+        exec_request = ExecuteScriptRequest(
             script="""
             var input = document.createElement('input');
             input.id = 'input-combo';
@@ -326,10 +319,10 @@ class TestElementInteraction:
 
     def test_press_keys_escape(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/press_keys with ESCAPE key."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         # Create an input element for the ESCAPE test
-        exec_request = ExecuteRequest(
+        exec_request = ExecuteScriptRequest(
             script="""
             var input = document.createElement('input');
             input.id = 'input-escape';
@@ -358,43 +351,44 @@ class TestPageContent:
 
     def test_get_content(self, browser_client, browser_id):
         """Test GET /browser/{browser_id}/content endpoint."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         result = browser_client.get_content(browser_id)
         assert result is not None
         assert result.success
         # Verify data structure matches schema
         assert result.data is not None, "Response data should not be None"
-        assert result.data.title is not None, "Page title should be returned"
-        assert result.data.text is not None, "Page text should be returned"
-        assert "Example Domain" in result.data.title
-        assert "Example Domain" in result.data.text
+        assert result.data.get('title') is not None, "Page title should be returned"
+        assert result.data.get('text') is not None, "Page text should be returned"
+        assert "Example Domain" in result.data.get('title', '')
+        assert "Example Domain" in result.data.get('text', '')
 
     def test_screenshot(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/screenshot endpoint."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
-        result = browser_client.take_screenshot(browser_id)
+        result = browser_client.take_screenshot(browser_id, payload=TakeScreenshotRequest())
         assert result is not None
         assert result.success
         # Verify data structure matches schema
         assert result.data is not None, "Response data should not be None"
-        assert result.data.screenshot_url is not None, "Screenshot URL should be returned"
-        assert "screenshot" in result.data.screenshot_url.lower()
+        assert result.data.get('screenshot_url') is not None, "Screenshot URL should be returned"
+        assert "screenshot" in result.data.get('screenshot_url', '').lower()
 
     def test_execute_script(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/execute endpoint."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
-        request = ExecuteRequest(script="return document.title;")
+        request = ExecuteScriptRequest(script="return document.title;")
         result = browser_client.execute_script(browser_id, payload=request)
         assert result is not None
         assert result.success
         # Verify data structure matches schema
         assert result.data is not None, "Response data should not be None"
-        assert result.data.result is not None, "Script result should be returned"
+        assert result.data.get('result') is not None, "Script result should be returned"
         # Result is wrapped in {"value": actual_result} for schema compatibility
-        assert "Example Domain" in result.data.result.get("value", "")
+        script_result = result.data.get('result', {})
+        assert "Example Domain" in (script_result.get("value", "") if isinstance(script_result, dict) else str(script_result))
 
 
 class TestDebugEndpoints:
@@ -402,7 +396,7 @@ class TestDebugEndpoints:
 
     def test_console_logs(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/console endpoint."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         result = browser_client.console_logs(browser_id, payload=ConsoleLogsRequest(action="get"))
         assert result is not None
@@ -410,22 +404,23 @@ class TestDebugEndpoints:
 
     def test_network_logs(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/network endpoint."""
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         result = browser_client.network_logs(browser_id, payload=NetworkLogsRequest(action="get"))
         assert result is not None
         assert result.success
 
 
+@pytest.mark.browser
 class TestCloseAll:
     """Test close all browsers endpoint (runs separately after parallel tests)."""
 
     def test_close_all_browsers(self, browser_client):
-        """Test POST /browser/close_all endpoint."""
+        """Test POST /browser/browsers with close_all action."""
         # Create a test browser
-        config = BrowserConfig()
+        config = CreateBrowserRequest()
         browser_client.create_browser(payload=config)
 
-        result = browser_client.close_all_browsers()
+        result = browser_client.browsers(payload=BrowsersRequest(action="close_all"))
         assert result is not None
         assert result.success

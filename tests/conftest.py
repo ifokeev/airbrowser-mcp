@@ -78,3 +78,19 @@ def profiles_client(api_configuration):
     from airbrowser_client.api import profiles_api
 
     return profiles_api.ProfilesApi(airbrowser_client.ApiClient(api_configuration))
+
+
+@pytest.fixture(scope="module", autouse=True)
+def cleanup_browsers_after_module(browser_client):
+    """Cleanup all browsers after each test module to prevent pool exhaustion.
+
+    This fixture runs automatically for every test module and ensures that
+    any browsers created during the module are closed before the next module runs.
+    """
+    yield
+    # Close all browsers after the module completes
+    try:
+        from airbrowser_client.models import BrowsersRequest
+        browser_client.browsers(payload=BrowsersRequest(action="close_all"))
+    except Exception:
+        pass  # Ignore errors during cleanup

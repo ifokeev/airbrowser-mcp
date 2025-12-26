@@ -11,15 +11,15 @@ class TestBrowserStatusLifecycle:
 
     def test_browser_shows_creating_status_immediately(self, browser_client):
         """Browser should appear in list with 'creating' status before creation completes."""
-        from airbrowser_client.models import BrowserConfig
+        from airbrowser_client.models import CreateBrowserRequest, BrowsersRequest
 
         creating_status_seen = False
         browser_id_found = None
 
         def create_browser():
             """Create browser in background thread."""
-            config = BrowserConfig()
-            return browser_client.create_browser(config)
+            config = CreateBrowserRequest()
+            return browser_client.create_browser(payload=config)
 
         def poll_for_creating_status(timeout=30):
             """Poll browser list looking for 'creating' status."""
@@ -28,9 +28,9 @@ class TestBrowserStatusLifecycle:
 
             while time.time() - start < timeout:
                 try:
-                    result = browser_client.list_browsers()
-                    if result.success and result.data.browsers:
-                        for browser in result.data.browsers:
+                    result = browser_client.browsers(payload=BrowsersRequest(action="list"))
+                    if result.success and result.data.get('browsers', []):
+                        for browser in result.data.get('browsers', []):
                             # browsers are returned as dicts
                             if browser.get("status") == "creating":
                                 creating_status_seen = True
@@ -58,15 +58,15 @@ class TestBrowserStatusLifecycle:
 
         # Verify creation succeeded
         assert create_result.success is True, f"Browser creation failed"
-        created_browser_id = create_result.data.browser_id
+        created_browser_id = create_result.data['browser_id']
 
         # Verify we saw 'creating' status
         assert creating_status_seen, "Browser should appear with 'creating' status during creation"
 
         # Verify browser now shows 'ready' status
-        list_result = browser_client.list_browsers()
+        list_result = browser_client.browsers(payload=BrowsersRequest(action="list"))
         created_browser = next(
-            (b for b in list_result.data.browsers if b.get("id") == created_browser_id), None
+            (b for b in list_result.data.get('browsers', []) if b.get("id") == created_browser_id), None
         )
 
         if created_browser:
@@ -80,19 +80,19 @@ class TestBrowserStatusLifecycle:
 
     def test_browser_status_after_creation(self, browser_client):
         """Verify browser has 'ready' status after creation completes."""
-        from airbrowser_client.models import BrowserConfig
+        from airbrowser_client.models import CreateBrowserRequest, BrowsersRequest
 
         # Create browser (blocking call)
-        config = BrowserConfig()
-        response = browser_client.create_browser(config)
+        config = CreateBrowserRequest()
+        response = browser_client.create_browser(payload=config)
 
         assert response.success is True
-        browser_id = response.data.browser_id
+        browser_id = response.data['browser_id']
 
         try:
             # List browsers and check status
-            list_response = browser_client.list_browsers()
-            browsers = list_response.data.browsers
+            list_response = browser_client.browsers(payload=BrowsersRequest(action="list"))
+            browsers = list_response.data.get('browsers', [])
 
             # browsers are returned as dicts
             created_browser = next((b for b in browsers if b.get("id") == browser_id), None)

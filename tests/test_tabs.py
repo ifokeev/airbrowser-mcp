@@ -9,8 +9,8 @@ Run with: pytest tests/test_tabs.py -v
 
 import pytest
 from airbrowser_client.models import (
-    BrowserConfig,
-    NavigateRequest,
+    CreateBrowserRequest,
+    NavigateBrowserRequest,
     TabsRequest,
 )
 
@@ -18,10 +18,10 @@ from airbrowser_client.models import (
 @pytest.fixture(scope="function")
 def browser_id(browser_client):
     """Create a browser for testing and clean up after."""
-    config = BrowserConfig(window_size=[1280, 900])
+    config = CreateBrowserRequest(window_size=[1280, 900])
     result = browser_client.create_browser(payload=config)
     assert result.success, f"Failed to create browser: {result.message}"
-    bid = result.data.browser_id
+    bid = result.data['browser_id']
 
     yield bid
 
@@ -32,6 +32,7 @@ def browser_id(browser_client):
         pass
 
 
+@pytest.mark.browser
 class TestListTabs:
     """Test listing tabs."""
 
@@ -50,6 +51,7 @@ class TestListTabs:
         assert result.success
 
 
+@pytest.mark.browser
 @pytest.mark.flaky(reruns=2, reruns_delay=3)
 class TestNewTab:
     """Test opening new tabs."""
@@ -86,6 +88,7 @@ class TestNewTab:
         assert result.success
 
 
+@pytest.mark.browser
 @pytest.mark.flaky(reruns=2, reruns_delay=3)
 class TestSwitchTab:
     """Test switching between tabs."""
@@ -105,11 +108,16 @@ class TestSwitchTab:
 
     def test_switch_tab_invalid_index(self, browser_client, browser_id):
         """Test switching to invalid tab index fails."""
-        with pytest.raises(Exception) as exc_info:
-            browser_client.tabs(browser_id, payload=TabsRequest(action="switch", index=999))
-        assert "400" in str(exc_info.value)
+        from airbrowser_client.exceptions import BadRequestException
+        try:
+            result = browser_client.tabs(browser_id, payload=TabsRequest(action="switch", index=999))
+            # If no exception, the result should indicate failure
+            assert result.success is False, "Expected failure for invalid tab index"
+        except BadRequestException:
+            pass  # Expected for HTTP 400 errors
 
 
+@pytest.mark.browser
 class TestCloseTab:
     """Test closing tabs."""
 
@@ -133,18 +141,26 @@ class TestCloseTab:
 
     def test_close_tab_last_tab_fails(self, browser_client, browser_id):
         """Test that closing the last tab fails."""
-        # Try to close the only tab
-        with pytest.raises(Exception) as exc_info:
-            browser_client.tabs(browser_id, payload=TabsRequest(action="close"))
-        assert "400" in str(exc_info.value)
+        from airbrowser_client.exceptions import BadRequestException
+        try:
+            result = browser_client.tabs(browser_id, payload=TabsRequest(action="close"))
+            # If no exception, the result should indicate failure
+            assert result.success is False, "Expected failure for closing last tab"
+        except BadRequestException:
+            pass  # Expected for HTTP 400 errors
 
     def test_close_tab_invalid_index(self, browser_client, browser_id):
         """Test closing tab with invalid index fails."""
-        with pytest.raises(Exception) as exc_info:
-            browser_client.tabs(browser_id, payload=TabsRequest(action="close", index=999))
-        assert "400" in str(exc_info.value)
+        from airbrowser_client.exceptions import BadRequestException
+        try:
+            result = browser_client.tabs(browser_id, payload=TabsRequest(action="close", index=999))
+            # If no exception, the result should indicate failure
+            assert result.success is False, "Expected failure for invalid tab index"
+        except BadRequestException:
+            pass  # Expected for HTTP 400 errors
 
 
+@pytest.mark.browser
 @pytest.mark.flaky(reruns=2, reruns_delay=3)
 class TestGetCurrentTab:
     """Test getting current tab info."""
@@ -152,7 +168,7 @@ class TestGetCurrentTab:
     def test_get_current_tab(self, browser_client, browser_id):
         """Test POST /browser/{browser_id}/tabs with current action."""
         # Navigate to a page first
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         result = browser_client.tabs(browser_id, payload=TabsRequest(action="current"))
         assert result is not None
@@ -161,7 +177,7 @@ class TestGetCurrentTab:
     def test_get_current_tab_after_switch(self, browser_client, browser_id):
         """Test current tab info updates after switch."""
         # Navigate first tab
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         # Open a new blank tab
         browser_client.tabs(browser_id, payload=TabsRequest(action="new"))
@@ -178,6 +194,7 @@ class TestGetCurrentTab:
         assert result.success
 
 
+@pytest.mark.browser
 @pytest.mark.flaky(reruns=3, reruns_delay=5)
 class TestTabNavigation:
     """Test navigation within tabs."""
@@ -185,14 +202,14 @@ class TestTabNavigation:
     def test_navigate_in_different_tabs(self, browser_client, browser_id):
         """Test navigating in different tabs maintains separate state."""
         # Navigate first tab to example.com
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.com"))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.com"))
 
         # Open new tab
         new_tab_result = browser_client.tabs(browser_id, payload=TabsRequest(action="new"))
         assert new_tab_result.success, "Failed to create new tab"
 
         # Navigate second tab to example.org
-        browser_client.navigate_browser(browser_id, payload=NavigateRequest(url="https://example.org", timeout=60))
+        browser_client.navigate_browser(browser_id, payload=NavigateBrowserRequest(url="https://example.org", timeout=60))
 
         # Verify second tab
         current = browser_client.tabs(browser_id, payload=TabsRequest(action="current"))
