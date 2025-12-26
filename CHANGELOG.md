@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.3.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.2.4...v1.3.0) (2025-12-26)
+
+
+### Features
+
+* **api:** normalize responses to {success, message, data} format ([5c1ca3a](https://github.com/ifokeev/airbrowser-mcp/commit/5c1ca3a8d13ac1a6124028529d730ba0a3fdbed5))
+* **browser-pool:** show browsers immediately with status lifecycle ([f0caca9](https://github.com/ifokeev/airbrowser-mcp/commit/f0caca92b91a9c5bcd9e59d7d839602d4e321230))
+* **compose:** add NGINX_HTTPS_PORT environment variable ([d88b126](https://github.com/ifokeev/airbrowser-mcp/commit/d88b1263200ed7020a73b3fee590363647123d0f))
+* **ipc:** add configurable COMMAND_TIMEOUT_DEFAULT (20s) ([a382925](https://github.com/ifokeev/airbrowser-mcp/commit/a3829254b5da9ccdf74bbb258d15934e1e5db5f2))
+* **mcp:** change get_content to return visible text instead of HTML ([2b66a67](https://github.com/ifokeev/airbrowser-mcp/commit/2b66a676bb13fc557dd33d62ff638fd36b17b379))
+* **mcp:** conditionally expose vision tools based on API key ([b6a0a96](https://github.com/ifokeev/airbrowser-mcp/commit/b6a0a962786a8ad2f3b54fdcba4cdef012d7fdc0))
+* **nginx:** add HTTPS support with auto-generated certificates ([2403cbf](https://github.com/ifokeev/airbrowser-mcp/commit/2403cbfbcdac87e5c441fad80de029940395e43a))
+* **portable:** add environment variable support via .env file ([9141b10](https://github.com/ifokeev/airbrowser-mcp/commit/9141b106e48535f4a8dfa7420604d9624ceee0d3))
+* **portable:** add HTTPS port and update service URLs ([72ecad9](https://github.com/ifokeev/airbrowser-mcp/commit/72ecad9f8f058c7fcf1b064426e884086d531981))
+
+
+### Bug Fixes
+
+* **api:** add gui_press_keys_xy and pass fx/fy to detect_coordinates ([0ead28c](https://github.com/ifokeev/airbrowser-mcp/commit/0ead28c9badbd6382f28bbfbfa15d596533f34ea))
+* **browser:** pass text parameter correctly for press_keys command ([a77d6da](https://github.com/ifokeev/airbrowser-mcp/commit/a77d6dadc6a6b17198edac08d8e6f3aee60d849c))
+* **browser:** properly execute special keys like ENTER, TAB in press_keys ([689ae41](https://github.com/ifokeev/airbrowser-mcp/commit/689ae4152ff5af4eb2ce7279750be88073615d74))
+* **commands:** improve click/type error messages for file inputs and selectors ([518bb99](https://github.com/ifokeev/airbrowser-mcp/commit/518bb99ba5ae601e3b47e8ffdfc0ece828665363))
+* **commands:** remove stacktrace from error responses ([a346473](https://github.com/ifokeev/airbrowser-mcp/commit/a3464735c7966565d3b2e3d9968931db57a9a370))
+* **dashboard:** sync browser list with IPC service and add loading indicator ([6427827](https://github.com/ifokeev/airbrowser-mcp/commit/6427827c04fd7ec79fa41e8720cb50a0300efa79))
+* **dashboard:** update API endpoints to match new routes ([6336adf](https://github.com/ifokeev/airbrowser-mcp/commit/6336adf75424809feacf62588d808000fc2e4f15))
+* **elements:** add proper selector support for XPath, ID, and name ([448c199](https://github.com/ifokeev/airbrowser-mcp/commit/448c199b467408c248a0d6aa70cd26a5c2d8c1ed))
+* **ipc:** add 60s timeout for vision commands (what_is_visible, detect_coordinates) ([b936c21](https://github.com/ifokeev/airbrowser-mcp/commit/b936c213baf68e38fe7c2e7b519d044419b22a47))
+* **mcp:** return screenshot URL only, not internal Docker path ([2ad9b81](https://github.com/ifokeev/airbrowser-mcp/commit/2ad9b810e532023ddc59f8669b870e99bc79e967))
+* **models:** add uc field to BrowserConfig for MCP compatibility ([c9a3abd](https://github.com/ifokeev/airbrowser-mcp/commit/c9a3abd75e8884c96c686d0c2774b3e420cc9ed3))
+* **nginx:** serve screenshots at /screenshots/ path on port 18080 ([ebe4786](https://github.com/ifokeev/airbrowser-mcp/commit/ebe47867d4a2391b6ab6b40252d3bad95741f0bd))
+* **vision:** preserve auto left-bias for wide elements in detect_coordinates ([a5ec79c](https://github.com/ifokeev/airbrowser-mcp/commit/a5ec79c01aa9cbe90c35b411d47b7c2b2aea0719))
+* **vision:** preserve auto-bias for wide elements in detect_coordinates ([337854f](https://github.com/ifokeev/airbrowser-mcp/commit/337854fab28ea473e3b9fbb4d49e390d6e94b5ff))
+
 ## [1.2.4](https://github.com/ifokeev/airbrowser-mcp/compare/v1.2.3...v1.2.4) (2025-12-24)
 
 
