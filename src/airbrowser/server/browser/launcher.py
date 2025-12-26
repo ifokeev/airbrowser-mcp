@@ -107,18 +107,23 @@ def create_browser(config: dict):
         driver = Driver(**opts)
         logger.info(f"Browser created successfully, session_id: {getattr(driver, 'session_id', 'unknown')}")
 
-        # Set window size
+        # Set window position and size
         try:
-            window_size = config.get("window_size", [1280, 900])
-            if isinstance(window_size, (list, tuple)) and len(window_size) >= 2:
-                width, height = int(window_size[0]), int(window_size[1])
-            elif isinstance(window_size, str) and "," in window_size:
-                width, height = map(int, window_size.split(","))
+            driver.set_window_position(0, 0)
+            window_size = config.get("window_size")
+            if window_size:
+                # Use specified size
+                if isinstance(window_size, list | tuple) and len(window_size) >= 2:
+                    width, height = int(window_size[0]), int(window_size[1])
+                elif isinstance(window_size, str) and "," in window_size:
+                    width, height = map(int, window_size.split(","))
+                else:
+                    width, height = None, None
+                if width and height:
+                    driver.set_window_size(width, height)
             else:
-                width, height = 1280, 900
-
-            driver.set_window_size(width, height)
-            driver.set_window_position(50, 50)
+                # No size specified - maximize
+                driver.maximize_window()
         except Exception as e:
             logger.warning(f"Could not set window size: {e}")
 
