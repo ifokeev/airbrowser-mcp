@@ -35,7 +35,7 @@ def main():
             "headless": False,
             "window_size": [1280, 900]
         })
-        browser_id = response.data.browser_id
+        browser_id = response.data['browser_id']
         print(f"Browser created: {browser_id}")
 
         try:
@@ -135,8 +135,8 @@ def main():
 
             # Final screenshot
             print("\nTaking final screenshot...")
-            screenshot = api.take_screenshot(browser_id=browser_id)
-            print(f"Screenshot: {screenshot.data.screenshot_url}")
+            screenshot = api.take_screenshot(browser_id=browser_id, payload={})
+            print(f"Screenshot: {screenshot.data.get('screenshot_url')}")
 
             print("\n" + "=" * 60)
             print("SUCCESS! what_is_visible provides:")
@@ -150,7 +150,7 @@ def main():
         finally:
             # Cleanup
             print(f"\nClosing browser {browser_id}...")
-            api.delete_browser(browser_id=browser_id)
+            api.close_browser(browser_id=browser_id)
             print("Browser closed")
 
 

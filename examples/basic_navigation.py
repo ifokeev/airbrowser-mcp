@@ -27,7 +27,7 @@ def main():
         response = api.create_browser(payload={
             "window_size": [1280, 800]
         })
-        browser_id = response.data.browser_id
+        browser_id = response.data['browser_id']
         print(f"Browser created: {browser_id}")
 
         try:
@@ -41,21 +41,21 @@ def main():
 
             # 3. Get current URL (verify navigation worked)
             url_response = api.get_url(browser_id=browser_id)
-            print(f"Current URL: {url_response.data.url}")
+            print(f"Current URL: {url_response.data.get('url')}")
 
             # 4. Take a screenshot
             print("Taking screenshot...")
-            screenshot = api.take_screenshot(browser_id=browser_id)
-            print(f"Screenshot saved: {screenshot.data.screenshot_url}")
+            screenshot = api.take_screenshot(browser_id=browser_id, payload={})
+            print(f"Screenshot saved: {screenshot.data.get('screenshot_url')}")
 
             # 5. Get page content (HTML)
             content = api.get_content(browser_id=browser_id)
-            print(f"Page title: {content.data.title}")
+            print(f"Page title: {content.data.get('title')}")
 
         finally:
             # 6. Always clean up
             print("Closing browser...")
-            api.delete_browser(browser_id=browser_id)
+            api.close_browser(browser_id=browser_id)
             print("Done!")
 
 

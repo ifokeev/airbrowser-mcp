@@ -41,8 +41,9 @@ def check_ip(api: BrowserApi, browser_id: str) -> str:
     )
 
     # Result is wrapped in {"value": ...}
-    if result.data.result:
-        ip = result.data.result.get("value", "")
+    result_data = result.data.get('result') if result.data else None
+    if result_data:
+        ip = result_data.get("value", "") if isinstance(result_data, dict) else str(result_data)
         return ip.strip() if ip else "unknown"
     return "unknown"
 
@@ -74,7 +75,9 @@ def main():
 
             try:
                 response = api.create_browser(payload=browser_config)
-                browser_id = response.data.browser_id
+                if not response.success:
+                    raise Exception(response.message)
+                browser_id = response.data['browser_id']
                 print(f"Browser created: {browser_id[:8]}...")
 
             except Exception as e:
@@ -108,7 +111,7 @@ def main():
             finally:
                 # Clean up
                 try:
-                    api.delete_browser(browser_id=browser_id)
+                    api.close_browser(browser_id=browser_id)
                     print("Browser closed")
                 except Exception:
                     pass

@@ -48,7 +48,7 @@ def process_url(url: str, browser_num: int) -> dict:
                 "headless": True,  # Headless for parallel execution
                 "window_size": [1280, 800]
             })
-            browser_id = response.data.browser_id
+            browser_id = response.data['browser_id']
             result["browser_id"] = browser_id
             print(f"[Browser {browser_num}] Created: {browser_id[:8]}...")
 
@@ -66,11 +66,11 @@ def process_url(url: str, browser_num: int) -> dict:
 
             # Get page info
             content = api.get_content(browser_id=browser_id)
-            result["title"] = content.data.title
+            result["title"] = content.data.get('title', 'Unknown')
 
             # Take screenshot
-            screenshot = api.take_screenshot(browser_id=browser_id)
-            result["screenshot"] = screenshot.data.screenshot_url
+            screenshot = api.take_screenshot(browser_id=browser_id, payload={})
+            result["screenshot"] = screenshot.data.get('screenshot_url')
 
             result["success"] = True
             print(f"[Browser {browser_num}] Done: {result['title'][:40]}...")
@@ -82,7 +82,7 @@ def process_url(url: str, browser_num: int) -> dict:
         finally:
             # Always clean up
             try:
-                api.delete_browser(browser_id=browser_id)
+                api.close_browser(browser_id=browser_id)
                 print(f"[Browser {browser_num}] Closed")
             except Exception:
                 pass

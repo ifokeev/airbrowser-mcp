@@ -28,7 +28,7 @@ def main():
             "headless": False,
             "window_size": [1366, 768]
         })
-        browser_id = response.data.browser_id
+        browser_id = response.data['browser_id']
         print(f"Browser: {browser_id}")
 
         try:
@@ -100,8 +100,8 @@ def main():
 
             # Take screenshot before submit
             print("\nTaking screenshot of filled form...")
-            screenshot = api.take_screenshot(browser_id=browser_id)
-            print(f"Screenshot: {screenshot.data.screenshot_url}")
+            screenshot = api.take_screenshot(browser_id=browser_id, payload={})
+            print(f"Screenshot: {screenshot.data.get('screenshot_url')}")
 
             # Submit the form
             print("\nSubmitting form...")
@@ -116,11 +116,11 @@ def main():
             # Get the response content
             api.get_content(browser_id=browser_id)
             print("\nForm submitted! Response page loaded.")
-            print(f"New URL: {api.get_url(browser_id=browser_id).data.url}")
+            print(f"New URL: {api.get_url(browser_id=browser_id).data.get('url')}")
 
         finally:
             print("\nClosing browser...")
-            api.delete_browser(browser_id=browser_id)
+            api.close_browser(browser_id=browser_id)
             print("Done!")
 
 
