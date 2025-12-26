@@ -81,6 +81,58 @@ class TestBrowserLifecycle:
         # Cleanup
         browser_client.close_browser(bid)
 
+    def test_create_browser_maximized_by_default(self, browser_client):
+        """Test that browser is maximized when no window_size is specified."""
+        # Create browser without window_size - should maximize
+        config = CreateBrowserRequest()
+        result = browser_client.create_browser(payload=config)
+        assert result.success
+        bid = result.data["browser_id"]
+
+        try:
+            # Get window dimensions
+            script = "return JSON.stringify({x: window.screenX, y: window.screenY, w: window.outerWidth, h: window.outerHeight})"
+            exec_result = browser_client.execute_script(bid, payload=ExecuteScriptRequest(script=script))
+            assert exec_result.success
+
+            import json
+
+            dims = json.loads(exec_result.data["result"]["value"])
+
+            # Window should be at (0, 0)
+            assert dims["x"] == 0, f"Expected x=0, got {dims['x']}"
+            assert dims["y"] == 0, f"Expected y=0, got {dims['y']}"
+
+            # Window should be reasonably large (maximized)
+            assert dims["w"] >= 1024, f"Expected width >= 1024, got {dims['w']}"
+            assert dims["h"] >= 600, f"Expected height >= 600, got {dims['h']}"
+        finally:
+            browser_client.close_browser(bid)
+
+    def test_create_browser_with_custom_size(self, browser_client):
+        """Test that browser uses specified window_size when provided."""
+        # Create browser with specific size
+        config = CreateBrowserRequest(window_size=[800, 600])
+        result = browser_client.create_browser(payload=config)
+        assert result.success
+        bid = result.data["browser_id"]
+
+        try:
+            # Get window dimensions
+            script = "return JSON.stringify({w: window.outerWidth, h: window.outerHeight})"
+            exec_result = browser_client.execute_script(bid, payload=ExecuteScriptRequest(script=script))
+            assert exec_result.success
+
+            import json
+
+            dims = json.loads(exec_result.data["result"]["value"])
+
+            # Window should match requested size
+            assert dims["w"] == 800, f"Expected width=800, got {dims['w']}"
+            assert dims["h"] == 600, f"Expected height=600, got {dims['h']}"
+        finally:
+            browser_client.close_browser(bid)
+
     def test_list_browsers(self, browser_client, browser_id):
         """Test POST /browser/browsers endpoint with list action."""
         from airbrowser_client.models import BrowsersRequest
