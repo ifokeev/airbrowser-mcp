@@ -17,47 +17,37 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from typing_extensions import Annotated
 
 from pydantic import Field, StrictStr
+from typing import Optional
 from typing_extensions import Annotated
-from airbrowser_client.models.action_result import ActionResult
-from airbrowser_client.models.attribute_response import AttributeResponse
-from airbrowser_client.models.base_response import BaseResponse
-from airbrowser_client.models.browser_config import BrowserConfig
-from airbrowser_client.models.browser_created import BrowserCreated
-from airbrowser_client.models.browser_info_response import BrowserInfoResponse
-from airbrowser_client.models.browser_list import BrowserList
-from airbrowser_client.models.check_element_request import CheckElementRequest
+from airbrowser_client.models.browsers_request import BrowsersRequest
 from airbrowser_client.models.click_request import ClickRequest
-from airbrowser_client.models.combined_dialog_request import CombinedDialogRequest
-from airbrowser_client.models.combined_emulate_request import CombinedEmulateRequest
-from airbrowser_client.models.combined_gui_click_request import CombinedGuiClickRequest
-from airbrowser_client.models.combined_scroll_request import CombinedScrollRequest
 from airbrowser_client.models.console_logs_request import ConsoleLogsRequest
-from airbrowser_client.models.content_response import ContentResponse
+from airbrowser_client.models.create_browser_request import CreateBrowserRequest
 from airbrowser_client.models.detect_coordinates_request import DetectCoordinatesRequest
-from airbrowser_client.models.detect_coordinates_result import DetectCoordinatesResult
-from airbrowser_client.models.element_data_request import ElementDataRequest
-from airbrowser_client.models.execute_request import ExecuteRequest
-from airbrowser_client.models.execute_response import ExecuteResponse
+from airbrowser_client.models.dialog_request import DialogRequest
+from airbrowser_client.models.emulate_request import EmulateRequest
+from airbrowser_client.models.execute_script_request import ExecuteScriptRequest
 from airbrowser_client.models.fill_form_request import FillFormRequest
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.models.gui_click_request import GuiClickRequest
+from airbrowser_client.models.gui_hover_xy_request import GuiHoverXyRequest
+from airbrowser_client.models.gui_press_keys_xy_request import GuiPressKeysXyRequest
+from airbrowser_client.models.gui_type_xy_request import GuiTypeXyRequest
 from airbrowser_client.models.history_request import HistoryRequest
-from airbrowser_client.models.logs_response import LogsResponse
 from airbrowser_client.models.mouse_request import MouseRequest
-from airbrowser_client.models.navigate_request import NavigateRequest
+from airbrowser_client.models.navigate_browser_request import NavigateBrowserRequest
 from airbrowser_client.models.network_logs_request import NetworkLogsRequest
 from airbrowser_client.models.performance_request import PerformanceRequest
-from airbrowser_client.models.pool_status_response import PoolStatusResponse
 from airbrowser_client.models.press_keys_request import PressKeysRequest
 from airbrowser_client.models.resize_request import ResizeRequest
-from airbrowser_client.models.screenshot_response import ScreenshotResponse
+from airbrowser_client.models.scroll_request import ScrollRequest
 from airbrowser_client.models.select_request import SelectRequest
 from airbrowser_client.models.snapshot_request import SnapshotRequest
-from airbrowser_client.models.success_response import SuccessResponse
 from airbrowser_client.models.tabs_request import TabsRequest
-from airbrowser_client.models.type_request import TypeRequest
+from airbrowser_client.models.take_screenshot_request import TakeScreenshotRequest
+from airbrowser_client.models.type_text_request import TypeTextRequest
 from airbrowser_client.models.upload_file_request import UploadFileRequest
-from airbrowser_client.models.url_response import UrlResponse
 from airbrowser_client.models.wait_element_request import WaitElementRequest
-from airbrowser_client.models.what_is_visible_result import WhatIsVisibleResult
 
 from airbrowser_client.api_client import ApiClient, RequestSerialized
 from airbrowser_client.api_response import ApiResponse
@@ -78,10 +68,9 @@ class BrowserApi:
 
 
     @validate_call
-    def check_element(
+    def browsers(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CheckElementRequest,
+        payload: BrowsersRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -94,14 +83,12 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> SuccessResponse:
-        """Check if element exists or is visible
+    ) -> GenericResponse:
+        """Admin: list all, get info, or close all browsers
 
 
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
         :param payload: (required)
-        :type payload: CheckElementRequest
+        :type payload: BrowsersRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -124,8 +111,7 @@ class BrowserApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._check_element_serialize(
-            browser_id=browser_id,
+        _param = self._browsers_serialize(
             payload=payload,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -134,7 +120,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -148,10 +134,9 @@ class BrowserApi:
 
 
     @validate_call
-    def check_element_with_http_info(
+    def browsers_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CheckElementRequest,
+        payload: BrowsersRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -164,14 +149,12 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[SuccessResponse]:
-        """Check if element exists or is visible
+    ) -> ApiResponse[GenericResponse]:
+        """Admin: list all, get info, or close all browsers
 
 
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
         :param payload: (required)
-        :type payload: CheckElementRequest
+        :type payload: BrowsersRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -194,8 +177,7 @@ class BrowserApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._check_element_serialize(
-            browser_id=browser_id,
+        _param = self._browsers_serialize(
             payload=payload,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -204,7 +186,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -218,10 +200,9 @@ class BrowserApi:
 
 
     @validate_call
-    def check_element_without_preload_content(
+    def browsers_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CheckElementRequest,
+        payload: BrowsersRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -235,13 +216,11 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Check if element exists or is visible
+        """Admin: list all, get info, or close all browsers
 
 
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
         :param payload: (required)
-        :type payload: CheckElementRequest
+        :type payload: BrowsersRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -264,8 +243,7 @@ class BrowserApi:
         :return: Returns the result object.
         """ # noqa: E501
 
-        _param = self._check_element_serialize(
-            browser_id=browser_id,
+        _param = self._browsers_serialize(
             payload=payload,
             _request_auth=_request_auth,
             _content_type=_content_type,
@@ -274,7 +252,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -283,9 +261,8 @@ class BrowserApi:
         return response_data.response
 
 
-    def _check_element_serialize(
+    def _browsers_serialize(
         self,
-        browser_id,
         payload,
         _request_auth,
         _content_type,
@@ -308,8 +285,6 @@ class BrowserApi:
         _body_params: Optional[bytes] = None
 
         # process the path parameters
-        if browser_id is not None:
-            _path_params['browser_id'] = browser_id
         # process the query parameters
         # process the header parameters
         # process the form parameters
@@ -346,6 +321,314 @@ class BrowserApi:
 
         return self.api_client.param_serialize(
             method='POST',
+            resource_path='/browser/browsers',
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth
+        )
+
+
+
+
+    @validate_call
+    def check_element(
+        self,
+        browser_id: StrictStr,
+        selector: Annotated[StrictStr, Field(description="selector")],
+        check: Annotated[StrictStr, Field(description="check")],
+        by: Annotated[Optional[StrictStr], Field(description="by")] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> GenericResponse:
+        """Check if element exists or is visible
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param selector: selector (required)
+        :type selector: str
+        :param check: check (required)
+        :type check: str
+        :param by: by
+        :type by: str
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._check_element_serialize(
+            browser_id=browser_id,
+            selector=selector,
+            check=check,
+            by=by,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+
+    @validate_call
+    def check_element_with_http_info(
+        self,
+        browser_id: StrictStr,
+        selector: Annotated[StrictStr, Field(description="selector")],
+        check: Annotated[StrictStr, Field(description="check")],
+        by: Annotated[Optional[StrictStr], Field(description="by")] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[GenericResponse]:
+        """Check if element exists or is visible
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param selector: selector (required)
+        :type selector: str
+        :param check: check (required)
+        :type check: str
+        :param by: by
+        :type by: str
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._check_element_serialize(
+            browser_id=browser_id,
+            selector=selector,
+            check=check,
+            by=by,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+
+    @validate_call
+    def check_element_without_preload_content(
+        self,
+        browser_id: StrictStr,
+        selector: Annotated[StrictStr, Field(description="selector")],
+        check: Annotated[StrictStr, Field(description="check")],
+        by: Annotated[Optional[StrictStr], Field(description="by")] = None,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Check if element exists or is visible
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param selector: selector (required)
+        :type selector: str
+        :param check: check (required)
+        :type check: str
+        :param by: by
+        :type by: str
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._check_element_serialize(
+            browser_id=browser_id,
+            selector=selector,
+            check=check,
+            by=by,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+
+    def _check_element_serialize(
+        self,
+        browser_id,
+        selector,
+        check,
+        by,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {
+        }
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[
+            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
+        ] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        if browser_id is not None:
+            _path_params['browser_id'] = browser_id
+        # process the query parameters
+        if selector is not None:
+            
+            _query_params.append(('selector', selector))
+            
+        if check is not None:
+            
+            _query_params.append(('check', check))
+            
+        if by is not None:
+            
+            _query_params.append(('by', by))
+            
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+
+
+        # set the HTTP header `Accept`
+        if 'Accept' not in _header_params:
+            _header_params['Accept'] = self.api_client.select_header_accept(
+                [
+                    'application/json'
+                ]
+            )
+
+
+        # authentication setting
+        _auth_settings: List[str] = [
+        ]
+
+        return self.api_client.param_serialize(
+            method='GET',
             resource_path='/browser/{browser_id}/check_element',
             path_params=_path_params,
             query_params=_query_params,
@@ -365,7 +648,7 @@ class BrowserApi:
     @validate_call
     def click(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: ClickRequest,
         _request_timeout: Union[
             None,
@@ -379,12 +662,12 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ActionResult:
+    ) -> GenericResponse:
         """Click element
 
-        Use if_visible=true to only click if visible.
+        Use if_visible=True to only click if visible.
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: ClickRequest
@@ -420,7 +703,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -436,7 +719,7 @@ class BrowserApi:
     @validate_call
     def click_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: ClickRequest,
         _request_timeout: Union[
             None,
@@ -450,12 +733,12 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ActionResult]:
+    ) -> ApiResponse[GenericResponse]:
         """Click element
 
-        Use if_visible=true to only click if visible.
+        Use if_visible=True to only click if visible.
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: ClickRequest
@@ -491,7 +774,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -507,7 +790,7 @@ class BrowserApi:
     @validate_call
     def click_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: ClickRequest,
         _request_timeout: Union[
             None,
@@ -524,9 +807,9 @@ class BrowserApi:
     ) -> RESTResponseType:
         """Click element
 
-        Use if_visible=true to only click if visible.
+        Use if_visible=True to only click if visible.
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: ClickRequest
@@ -562,7 +845,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -651,251 +934,9 @@ class BrowserApi:
 
 
     @validate_call
-    def close_all_browsers(
-        self,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> BaseResponse:
-        """Close all active browser instances
-
-
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._close_all_browsers_serialize(
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BaseResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-
-    @validate_call
-    def close_all_browsers_with_http_info(
-        self,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[BaseResponse]:
-        """Close all active browser instances
-
-
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._close_all_browsers_serialize(
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BaseResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-
-    @validate_call
-    def close_all_browsers_without_preload_content(
-        self,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """Close all active browser instances
-
-
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._close_all_browsers_serialize(
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BaseResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-
-    def _close_all_browsers_serialize(
-        self,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {
-        }
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[
-            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
-        ] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-
-
-        # set the HTTP header `Accept`
-        if 'Accept' not in _header_params:
-            _header_params['Accept'] = self.api_client.select_header_accept(
-                [
-                    'application/json'
-                ]
-            )
-
-
-        # authentication setting
-        _auth_settings: List[str] = [
-        ]
-
-        return self.api_client.param_serialize(
-            method='POST',
-            resource_path='/browser/close_all',
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth
-        )
-
-
-
-
-    @validate_call
     def close_browser(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -908,11 +949,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> BaseResponse:
-        """Close a browser instance
+    ) -> GenericResponse:
+        """Close browser instance
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -945,7 +986,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BaseResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -961,7 +1002,7 @@ class BrowserApi:
     @validate_call
     def close_browser_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -974,11 +1015,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[BaseResponse]:
-        """Close a browser instance
+    ) -> ApiResponse[GenericResponse]:
+        """Close browser instance
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -1011,7 +1052,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BaseResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -1027,7 +1068,7 @@ class BrowserApi:
     @validate_call
     def close_browser_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1041,10 +1082,10 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Close a browser instance
+        """Close browser instance
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -1077,7 +1118,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BaseResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -1132,8 +1173,8 @@ class BrowserApi:
         ]
 
         return self.api_client.param_serialize(
-            method='POST',
-            resource_path='/browser/{browser_id}/close',
+            method='DELETE',
+            resource_path='/browser/{browser_id}/close_browser',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -1152,7 +1193,7 @@ class BrowserApi:
     @validate_call
     def console_logs(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: ConsoleLogsRequest,
         _request_timeout: Union[
             None,
@@ -1166,11 +1207,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> LogsResponse:
-        """Get or clear console logs
+    ) -> GenericResponse:
+        """Console logs: get or clear
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: ConsoleLogsRequest
@@ -1206,7 +1247,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "LogsResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -1222,7 +1263,7 @@ class BrowserApi:
     @validate_call
     def console_logs_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: ConsoleLogsRequest,
         _request_timeout: Union[
             None,
@@ -1236,11 +1277,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[LogsResponse]:
-        """Get or clear console logs
+    ) -> ApiResponse[GenericResponse]:
+        """Console logs: get or clear
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: ConsoleLogsRequest
@@ -1276,7 +1317,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "LogsResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -1292,7 +1333,7 @@ class BrowserApi:
     @validate_call
     def console_logs_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: ConsoleLogsRequest,
         _request_timeout: Union[
             None,
@@ -1307,10 +1348,10 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Get or clear console logs
+        """Console logs: get or clear
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: ConsoleLogsRequest
@@ -1346,7 +1387,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "LogsResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -1418,7 +1459,7 @@ class BrowserApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/browser/{browser_id}/console',
+            resource_path='/browser/{browser_id}/console_logs',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -1437,7 +1478,7 @@ class BrowserApi:
     @validate_call
     def create_browser(
         self,
-        payload: BrowserConfig,
+        payload: CreateBrowserRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1450,12 +1491,12 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> BrowserCreated:
-        """Create a new browser instance
+    ) -> GenericResponse:
+        """Create browser instance with optional persistent profile
 
 
         :param payload: (required)
-        :type payload: BrowserConfig
+        :type payload: CreateBrowserRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1487,8 +1528,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '400': "ErrorResponse",
-            '200': "BrowserCreated",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -1504,7 +1544,7 @@ class BrowserApi:
     @validate_call
     def create_browser_with_http_info(
         self,
-        payload: BrowserConfig,
+        payload: CreateBrowserRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1517,12 +1557,12 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[BrowserCreated]:
-        """Create a new browser instance
+    ) -> ApiResponse[GenericResponse]:
+        """Create browser instance with optional persistent profile
 
 
         :param payload: (required)
-        :type payload: BrowserConfig
+        :type payload: CreateBrowserRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1554,8 +1594,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '400': "ErrorResponse",
-            '200': "BrowserCreated",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -1571,7 +1610,7 @@ class BrowserApi:
     @validate_call
     def create_browser_without_preload_content(
         self,
-        payload: BrowserConfig,
+        payload: CreateBrowserRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -1585,11 +1624,11 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Create a new browser instance
+        """Create browser instance with optional persistent profile
 
 
         :param payload: (required)
-        :type payload: BrowserConfig
+        :type payload: CreateBrowserRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -1621,8 +1660,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '400': "ErrorResponse",
-            '200': "BrowserCreated",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -1691,264 +1729,7 @@ class BrowserApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/browser/create',
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth
-        )
-
-
-
-
-    @validate_call
-    def delete_browser(
-        self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> BaseResponse:
-        """Close and remove a browser instance
-
-
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._delete_browser_serialize(
-            browser_id=browser_id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BaseResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-
-    @validate_call
-    def delete_browser_with_http_info(
-        self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[BaseResponse]:
-        """Close and remove a browser instance
-
-
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._delete_browser_serialize(
-            browser_id=browser_id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BaseResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-
-    @validate_call
-    def delete_browser_without_preload_content(
-        self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """Close and remove a browser instance
-
-
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._delete_browser_serialize(
-            browser_id=browser_id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BaseResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-
-    def _delete_browser_serialize(
-        self,
-        browser_id,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {
-        }
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[
-            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
-        ] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        if browser_id is not None:
-            _path_params['browser_id'] = browser_id
-        # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-
-
-        # set the HTTP header `Accept`
-        if 'Accept' not in _header_params:
-            _header_params['Accept'] = self.api_client.select_header_accept(
-                [
-                    'application/json'
-                ]
-            )
-
-
-        # authentication setting
-        _auth_settings: List[str] = [
-        ]
-
-        return self.api_client.param_serialize(
-            method='DELETE',
-            resource_path='/browser/{browser_id}',
+            resource_path='/browser/create_browser',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -1967,7 +1748,7 @@ class BrowserApi:
     @validate_call
     def detect_coordinates(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: DetectCoordinatesRequest,
         _request_timeout: Union[
             None,
@@ -1981,11 +1762,12 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> DetectCoordinatesResult:
-        """Detect element coordinates using AI vision
+    ) -> GenericResponse:
+        """Detect element coordinates using vision
 
+        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         Use fx=0.2 for wide elements with icons on the right (like Google search).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: DetectCoordinatesRequest
@@ -2021,7 +1803,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "DetectCoordinatesResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -2037,7 +1819,7 @@ class BrowserApi:
     @validate_call
     def detect_coordinates_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: DetectCoordinatesRequest,
         _request_timeout: Union[
             None,
@@ -2051,11 +1833,12 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[DetectCoordinatesResult]:
-        """Detect element coordinates using AI vision
+    ) -> ApiResponse[GenericResponse]:
+        """Detect element coordinates using vision
 
+        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         Use fx=0.2 for wide elements with icons on the right (like Google search).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: DetectCoordinatesRequest
@@ -2091,7 +1874,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "DetectCoordinatesResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -2107,7 +1890,7 @@ class BrowserApi:
     @validate_call
     def detect_coordinates_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: DetectCoordinatesRequest,
         _request_timeout: Union[
             None,
@@ -2122,10 +1905,11 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Detect element coordinates using AI vision
+        """Detect element coordinates using vision
 
+        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         Use fx=0.2 for wide elements with icons on the right (like Google search).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: DetectCoordinatesRequest
@@ -2161,7 +1945,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "DetectCoordinatesResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -2252,8 +2036,8 @@ class BrowserApi:
     @validate_call
     def dialog(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CombinedDialogRequest,
+        browser_id: StrictStr,
+        payload: DialogRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2266,14 +2050,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> SuccessResponse:
-        """Manage browser dialogs: get, accept, or dismiss
+    ) -> GenericResponse:
+        """Dialogs: get, accept, dismiss
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: CombinedDialogRequest
+        :type payload: DialogRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2306,7 +2090,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -2322,8 +2106,8 @@ class BrowserApi:
     @validate_call
     def dialog_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CombinedDialogRequest,
+        browser_id: StrictStr,
+        payload: DialogRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2336,14 +2120,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[SuccessResponse]:
-        """Manage browser dialogs: get, accept, or dismiss
+    ) -> ApiResponse[GenericResponse]:
+        """Dialogs: get, accept, dismiss
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: CombinedDialogRequest
+        :type payload: DialogRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2376,7 +2160,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -2392,8 +2176,8 @@ class BrowserApi:
     @validate_call
     def dialog_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CombinedDialogRequest,
+        browser_id: StrictStr,
+        payload: DialogRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2407,13 +2191,13 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Manage browser dialogs: get, accept, or dismiss
+        """Dialogs: get, accept, dismiss
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: CombinedDialogRequest
+        :type payload: DialogRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2446,7 +2230,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -2537,8 +2321,8 @@ class BrowserApi:
     @validate_call
     def emulate(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CombinedEmulateRequest,
+        browser_id: StrictStr,
+        payload: EmulateRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2551,14 +2335,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> SuccessResponse:
-        """Manage device emulation: set, clear, or list_devices
+    ) -> GenericResponse:
+        """Emulation: set, clear, list_devices
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: CombinedEmulateRequest
+        :type payload: EmulateRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2591,7 +2375,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -2607,8 +2391,8 @@ class BrowserApi:
     @validate_call
     def emulate_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CombinedEmulateRequest,
+        browser_id: StrictStr,
+        payload: EmulateRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2621,14 +2405,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[SuccessResponse]:
-        """Manage device emulation: set, clear, or list_devices
+    ) -> ApiResponse[GenericResponse]:
+        """Emulation: set, clear, list_devices
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: CombinedEmulateRequest
+        :type payload: EmulateRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2661,7 +2445,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -2677,8 +2461,8 @@ class BrowserApi:
     @validate_call
     def emulate_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CombinedEmulateRequest,
+        browser_id: StrictStr,
+        payload: EmulateRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2692,13 +2476,13 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Manage device emulation: set, clear, or list_devices
+        """Emulation: set, clear, list_devices
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: CombinedEmulateRequest
+        :type payload: EmulateRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2731,7 +2515,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -2822,8 +2606,8 @@ class BrowserApi:
     @validate_call
     def execute_script(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: ExecuteRequest,
+        browser_id: StrictStr,
+        payload: ExecuteScriptRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2836,14 +2620,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ExecuteResponse:
+    ) -> GenericResponse:
         """Execute JavaScript
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: ExecuteRequest
+        :type payload: ExecuteScriptRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2876,7 +2660,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ExecuteResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -2892,8 +2676,8 @@ class BrowserApi:
     @validate_call
     def execute_script_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: ExecuteRequest,
+        browser_id: StrictStr,
+        payload: ExecuteScriptRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2906,14 +2690,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ExecuteResponse]:
+    ) -> ApiResponse[GenericResponse]:
         """Execute JavaScript
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: ExecuteRequest
+        :type payload: ExecuteScriptRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -2946,7 +2730,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ExecuteResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -2962,8 +2746,8 @@ class BrowserApi:
     @validate_call
     def execute_script_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: ExecuteRequest,
+        browser_id: StrictStr,
+        payload: ExecuteScriptRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -2980,10 +2764,10 @@ class BrowserApi:
         """Execute JavaScript
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: ExecuteRequest
+        :type payload: ExecuteScriptRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -3016,7 +2800,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ExecuteResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -3088,7 +2872,7 @@ class BrowserApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/browser/{browser_id}/execute',
+            resource_path='/browser/{browser_id}/execute_script',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -3107,7 +2891,7 @@ class BrowserApi:
     @validate_call
     def fill_form(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: FillFormRequest,
         _request_timeout: Union[
             None,
@@ -3121,11 +2905,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> SuccessResponse:
+    ) -> GenericResponse:
         """Fill multiple form fields
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: FillFormRequest
@@ -3161,7 +2945,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -3177,7 +2961,7 @@ class BrowserApi:
     @validate_call
     def fill_form_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: FillFormRequest,
         _request_timeout: Union[
             None,
@@ -3191,11 +2975,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[SuccessResponse]:
+    ) -> ApiResponse[GenericResponse]:
         """Fill multiple form fields
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: FillFormRequest
@@ -3231,7 +3015,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -3247,7 +3031,7 @@ class BrowserApi:
     @validate_call
     def fill_form_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: FillFormRequest,
         _request_timeout: Union[
             None,
@@ -3265,7 +3049,7 @@ class BrowserApi:
         """Fill multiple form fields
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: FillFormRequest
@@ -3301,7 +3085,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -3390,526 +3174,9 @@ class BrowserApi:
 
 
     @validate_call
-    def get_browser(
-        self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> BrowserInfoResponse:
-        """Get browser instance details
-
-
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._get_browser_serialize(
-            browser_id=browser_id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '404': "ErrorResponse",
-            '200': "BrowserInfoResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-
-    @validate_call
-    def get_browser_with_http_info(
-        self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[BrowserInfoResponse]:
-        """Get browser instance details
-
-
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._get_browser_serialize(
-            browser_id=browser_id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '404': "ErrorResponse",
-            '200': "BrowserInfoResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-
-    @validate_call
-    def get_browser_without_preload_content(
-        self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """Get browser instance details
-
-
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._get_browser_serialize(
-            browser_id=browser_id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '404': "ErrorResponse",
-            '200': "BrowserInfoResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-
-    def _get_browser_serialize(
-        self,
-        browser_id,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {
-        }
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[
-            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
-        ] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        if browser_id is not None:
-            _path_params['browser_id'] = browser_id
-        # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-
-
-        # set the HTTP header `Accept`
-        if 'Accept' not in _header_params:
-            _header_params['Accept'] = self.api_client.select_header_accept(
-                [
-                    'application/json'
-                ]
-            )
-
-
-        # authentication setting
-        _auth_settings: List[str] = [
-        ]
-
-        return self.api_client.param_serialize(
-            method='GET',
-            resource_path='/browser/{browser_id}',
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth
-        )
-
-
-
-
-    @validate_call
-    def get_browser_status(
-        self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> BrowserInfoResponse:
-        """Get browser status
-
-
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._get_browser_status_serialize(
-            browser_id=browser_id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BrowserInfoResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-
-    @validate_call
-    def get_browser_status_with_http_info(
-        self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[BrowserInfoResponse]:
-        """Get browser status
-
-
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._get_browser_status_serialize(
-            browser_id=browser_id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BrowserInfoResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-
-    @validate_call
-    def get_browser_status_without_preload_content(
-        self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """Get browser status
-
-
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._get_browser_status_serialize(
-            browser_id=browser_id,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BrowserInfoResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-
-    def _get_browser_status_serialize(
-        self,
-        browser_id,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {
-        }
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[
-            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
-        ] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        if browser_id is not None:
-            _path_params['browser_id'] = browser_id
-        # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-
-
-        # set the HTTP header `Accept`
-        if 'Accept' not in _header_params:
-            _header_params['Accept'] = self.api_client.select_header_accept(
-                [
-                    'application/json'
-                ]
-            )
-
-
-        # authentication setting
-        _auth_settings: List[str] = [
-        ]
-
-        return self.api_client.param_serialize(
-            method='GET',
-            resource_path='/browser/{browser_id}/status',
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth
-        )
-
-
-
-
-    @validate_call
     def get_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -3922,11 +3189,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ContentResponse:
-        """Get page HTML content
+    ) -> GenericResponse:
+        """Get page HTML
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -3959,7 +3226,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ContentResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -3975,7 +3242,7 @@ class BrowserApi:
     @validate_call
     def get_content_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -3988,11 +3255,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ContentResponse]:
-        """Get page HTML content
+    ) -> ApiResponse[GenericResponse]:
+        """Get page HTML
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -4025,7 +3292,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ContentResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -4041,7 +3308,7 @@ class BrowserApi:
     @validate_call
     def get_content_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -4055,10 +3322,10 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Get page HTML content
+        """Get page HTML
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -4091,7 +3358,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ContentResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -4147,7 +3414,7 @@ class BrowserApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/browser/{browser_id}/content',
+            resource_path='/browser/{browser_id}/get_content',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -4166,8 +3433,11 @@ class BrowserApi:
     @validate_call
     def get_element_data(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: ElementDataRequest,
+        browser_id: StrictStr,
+        selector: Annotated[StrictStr, Field(description="selector")],
+        data_type: Annotated[StrictStr, Field(description="data_type")],
+        name: Annotated[Optional[StrictStr], Field(description="name")] = None,
+        by: Annotated[Optional[StrictStr], Field(description="by")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -4180,14 +3450,20 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> AttributeResponse:
+    ) -> GenericResponse:
         """Get element text, attribute, or property
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
-        :param payload: (required)
-        :type payload: ElementDataRequest
+        :param selector: selector (required)
+        :type selector: str
+        :param data_type: data_type (required)
+        :type data_type: str
+        :param name: name
+        :type name: str
+        :param by: by
+        :type by: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -4212,7 +3488,10 @@ class BrowserApi:
 
         _param = self._get_element_data_serialize(
             browser_id=browser_id,
-            payload=payload,
+            selector=selector,
+            data_type=data_type,
+            name=name,
+            by=by,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -4220,7 +3499,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "AttributeResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -4236,8 +3515,11 @@ class BrowserApi:
     @validate_call
     def get_element_data_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: ElementDataRequest,
+        browser_id: StrictStr,
+        selector: Annotated[StrictStr, Field(description="selector")],
+        data_type: Annotated[StrictStr, Field(description="data_type")],
+        name: Annotated[Optional[StrictStr], Field(description="name")] = None,
+        by: Annotated[Optional[StrictStr], Field(description="by")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -4250,14 +3532,20 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[AttributeResponse]:
+    ) -> ApiResponse[GenericResponse]:
         """Get element text, attribute, or property
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
-        :param payload: (required)
-        :type payload: ElementDataRequest
+        :param selector: selector (required)
+        :type selector: str
+        :param data_type: data_type (required)
+        :type data_type: str
+        :param name: name
+        :type name: str
+        :param by: by
+        :type by: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -4282,7 +3570,10 @@ class BrowserApi:
 
         _param = self._get_element_data_serialize(
             browser_id=browser_id,
-            payload=payload,
+            selector=selector,
+            data_type=data_type,
+            name=name,
+            by=by,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -4290,7 +3581,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "AttributeResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -4306,8 +3597,11 @@ class BrowserApi:
     @validate_call
     def get_element_data_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: ElementDataRequest,
+        browser_id: StrictStr,
+        selector: Annotated[StrictStr, Field(description="selector")],
+        data_type: Annotated[StrictStr, Field(description="data_type")],
+        name: Annotated[Optional[StrictStr], Field(description="name")] = None,
+        by: Annotated[Optional[StrictStr], Field(description="by")] = None,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -4324,10 +3618,16 @@ class BrowserApi:
         """Get element text, attribute, or property
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
-        :param payload: (required)
-        :type payload: ElementDataRequest
+        :param selector: selector (required)
+        :type selector: str
+        :param data_type: data_type (required)
+        :type data_type: str
+        :param name: name
+        :type name: str
+        :param by: by
+        :type by: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -4352,7 +3652,10 @@ class BrowserApi:
 
         _param = self._get_element_data_serialize(
             browser_id=browser_id,
-            payload=payload,
+            selector=selector,
+            data_type=data_type,
+            name=name,
+            by=by,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -4360,7 +3663,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "AttributeResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -4372,7 +3675,10 @@ class BrowserApi:
     def _get_element_data_serialize(
         self,
         browser_id,
-        payload,
+        selector,
+        data_type,
+        name,
+        by,
         _request_auth,
         _content_type,
         _headers,
@@ -4397,263 +3703,22 @@ class BrowserApi:
         if browser_id is not None:
             _path_params['browser_id'] = browser_id
         # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-        if payload is not None:
-            _body_params = payload
-
-
-        # set the HTTP header `Accept`
-        if 'Accept' not in _header_params:
-            _header_params['Accept'] = self.api_client.select_header_accept(
-                [
-                    'application/json'
-                ]
-            )
-
-        # set the HTTP header `Content-Type`
-        if _content_type:
-            _header_params['Content-Type'] = _content_type
-        else:
-            _default_content_type = (
-                self.api_client.select_header_content_type(
-                    [
-                        'application/json'
-                    ]
-                )
-            )
-            if _default_content_type is not None:
-                _header_params['Content-Type'] = _default_content_type
-
-        # authentication setting
-        _auth_settings: List[str] = [
-        ]
-
-        return self.api_client.param_serialize(
-            method='POST',
-            resource_path='/browser/{browser_id}/element_data',
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth
-        )
-
-
-
-
-    @validate_call
-    def get_pool_status(
-        self,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> PoolStatusResponse:
-        """Get browser pool status
-
-
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._get_pool_status_serialize(
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "PoolStatusResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-
-    @validate_call
-    def get_pool_status_with_http_info(
-        self,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[PoolStatusResponse]:
-        """Get browser pool status
-
-
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._get_pool_status_serialize(
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "PoolStatusResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-
-    @validate_call
-    def get_pool_status_without_preload_content(
-        self,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """Get browser pool status
-
-
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._get_pool_status_serialize(
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "PoolStatusResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-
-    def _get_pool_status_serialize(
-        self,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {
-        }
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[
-            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
-        ] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        # process the query parameters
+        if selector is not None:
+            
+            _query_params.append(('selector', selector))
+            
+        if data_type is not None:
+            
+            _query_params.append(('data_type', data_type))
+            
+        if name is not None:
+            
+            _query_params.append(('name', name))
+            
+        if by is not None:
+            
+            _query_params.append(('by', by))
+            
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -4674,7 +3739,7 @@ class BrowserApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/browser/pool/status',
+            resource_path='/browser/{browser_id}/get_element_data',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -4693,7 +3758,7 @@ class BrowserApi:
     @validate_call
     def get_url(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -4706,11 +3771,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> UrlResponse:
-        """Get current page URL
+    ) -> GenericResponse:
+        """Get current URL
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -4743,7 +3808,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "UrlResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -4759,7 +3824,7 @@ class BrowserApi:
     @validate_call
     def get_url_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -4772,11 +3837,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[UrlResponse]:
-        """Get current page URL
+    ) -> ApiResponse[GenericResponse]:
+        """Get current URL
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -4809,7 +3874,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "UrlResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -4825,7 +3890,7 @@ class BrowserApi:
     @validate_call
     def get_url_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -4839,10 +3904,10 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Get current page URL
+        """Get current URL
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -4875,7 +3940,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "UrlResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -4931,7 +3996,7 @@ class BrowserApi:
 
         return self.api_client.param_serialize(
             method='GET',
-            resource_path='/browser/{browser_id}/url',
+            resource_path='/browser/{browser_id}/get_url',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -4950,8 +4015,8 @@ class BrowserApi:
     @validate_call
     def gui_click(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CombinedGuiClickRequest,
+        browser_id: StrictStr,
+        payload: GuiClickRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -4964,14 +4029,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ActionResult:
-        """Click using selector or screen coordinates
+    ) -> GenericResponse:
+        """GUI click by selector or coordinates
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: CombinedGuiClickRequest
+        :type payload: GuiClickRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -5004,7 +4069,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -5020,8 +4085,8 @@ class BrowserApi:
     @validate_call
     def gui_click_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CombinedGuiClickRequest,
+        browser_id: StrictStr,
+        payload: GuiClickRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -5034,14 +4099,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ActionResult]:
-        """Click using selector or screen coordinates
+    ) -> ApiResponse[GenericResponse]:
+        """GUI click by selector or coordinates
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: CombinedGuiClickRequest
+        :type payload: GuiClickRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -5074,7 +4139,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -5090,8 +4155,8 @@ class BrowserApi:
     @validate_call
     def gui_click_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CombinedGuiClickRequest,
+        browser_id: StrictStr,
+        payload: GuiClickRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -5105,13 +4170,13 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Click using selector or screen coordinates
+        """GUI click by selector or coordinates
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: CombinedGuiClickRequest
+        :type payload: GuiClickRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -5144,7 +4209,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -5233,9 +4298,864 @@ class BrowserApi:
 
 
     @validate_call
+    def gui_hover_xy(
+        self,
+        browser_id: StrictStr,
+        payload: GuiHoverXyRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> GenericResponse:
+        """GUI hover at coordinates
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: GuiHoverXyRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._gui_hover_xy_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+
+    @validate_call
+    def gui_hover_xy_with_http_info(
+        self,
+        browser_id: StrictStr,
+        payload: GuiHoverXyRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[GenericResponse]:
+        """GUI hover at coordinates
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: GuiHoverXyRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._gui_hover_xy_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+
+    @validate_call
+    def gui_hover_xy_without_preload_content(
+        self,
+        browser_id: StrictStr,
+        payload: GuiHoverXyRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """GUI hover at coordinates
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: GuiHoverXyRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._gui_hover_xy_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+
+    def _gui_hover_xy_serialize(
+        self,
+        browser_id,
+        payload,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {
+        }
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[
+            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
+        ] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        if browser_id is not None:
+            _path_params['browser_id'] = browser_id
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+        if payload is not None:
+            _body_params = payload
+
+
+        # set the HTTP header `Accept`
+        if 'Accept' not in _header_params:
+            _header_params['Accept'] = self.api_client.select_header_accept(
+                [
+                    'application/json'
+                ]
+            )
+
+        # set the HTTP header `Content-Type`
+        if _content_type:
+            _header_params['Content-Type'] = _content_type
+        else:
+            _default_content_type = (
+                self.api_client.select_header_content_type(
+                    [
+                        'application/json'
+                    ]
+                )
+            )
+            if _default_content_type is not None:
+                _header_params['Content-Type'] = _default_content_type
+
+        # authentication setting
+        _auth_settings: List[str] = [
+        ]
+
+        return self.api_client.param_serialize(
+            method='POST',
+            resource_path='/browser/{browser_id}/gui_hover_xy',
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth
+        )
+
+
+
+
+    @validate_call
+    def gui_press_keys_xy(
+        self,
+        browser_id: StrictStr,
+        payload: GuiPressKeysXyRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> GenericResponse:
+        """Press keys at coordinates (click to focus, then send keys)
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: GuiPressKeysXyRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._gui_press_keys_xy_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+
+    @validate_call
+    def gui_press_keys_xy_with_http_info(
+        self,
+        browser_id: StrictStr,
+        payload: GuiPressKeysXyRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[GenericResponse]:
+        """Press keys at coordinates (click to focus, then send keys)
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: GuiPressKeysXyRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._gui_press_keys_xy_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+
+    @validate_call
+    def gui_press_keys_xy_without_preload_content(
+        self,
+        browser_id: StrictStr,
+        payload: GuiPressKeysXyRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """Press keys at coordinates (click to focus, then send keys)
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: GuiPressKeysXyRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._gui_press_keys_xy_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+
+    def _gui_press_keys_xy_serialize(
+        self,
+        browser_id,
+        payload,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {
+        }
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[
+            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
+        ] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        if browser_id is not None:
+            _path_params['browser_id'] = browser_id
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+        if payload is not None:
+            _body_params = payload
+
+
+        # set the HTTP header `Accept`
+        if 'Accept' not in _header_params:
+            _header_params['Accept'] = self.api_client.select_header_accept(
+                [
+                    'application/json'
+                ]
+            )
+
+        # set the HTTP header `Content-Type`
+        if _content_type:
+            _header_params['Content-Type'] = _content_type
+        else:
+            _default_content_type = (
+                self.api_client.select_header_content_type(
+                    [
+                        'application/json'
+                    ]
+                )
+            )
+            if _default_content_type is not None:
+                _header_params['Content-Type'] = _default_content_type
+
+        # authentication setting
+        _auth_settings: List[str] = [
+        ]
+
+        return self.api_client.param_serialize(
+            method='POST',
+            resource_path='/browser/{browser_id}/gui_press_keys_xy',
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth
+        )
+
+
+
+
+    @validate_call
+    def gui_type_xy(
+        self,
+        browser_id: StrictStr,
+        payload: GuiTypeXyRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> GenericResponse:
+        """GUI type at coordinates - clicks then types text
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: GuiTypeXyRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._gui_type_xy_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+
+    @validate_call
+    def gui_type_xy_with_http_info(
+        self,
+        browser_id: StrictStr,
+        payload: GuiTypeXyRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[GenericResponse]:
+        """GUI type at coordinates - clicks then types text
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: GuiTypeXyRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._gui_type_xy_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+
+    @validate_call
+    def gui_type_xy_without_preload_content(
+        self,
+        browser_id: StrictStr,
+        payload: GuiTypeXyRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """GUI type at coordinates - clicks then types text
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: GuiTypeXyRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._gui_type_xy_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+
+    def _gui_type_xy_serialize(
+        self,
+        browser_id,
+        payload,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {
+        }
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[
+            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
+        ] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        if browser_id is not None:
+            _path_params['browser_id'] = browser_id
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+        if payload is not None:
+            _body_params = payload
+
+
+        # set the HTTP header `Accept`
+        if 'Accept' not in _header_params:
+            _header_params['Accept'] = self.api_client.select_header_accept(
+                [
+                    'application/json'
+                ]
+            )
+
+        # set the HTTP header `Content-Type`
+        if _content_type:
+            _header_params['Content-Type'] = _content_type
+        else:
+            _default_content_type = (
+                self.api_client.select_header_content_type(
+                    [
+                        'application/json'
+                    ]
+                )
+            )
+            if _default_content_type is not None:
+                _header_params['Content-Type'] = _default_content_type
+
+        # authentication setting
+        _auth_settings: List[str] = [
+        ]
+
+        return self.api_client.param_serialize(
+            method='POST',
+            resource_path='/browser/{browser_id}/gui_type_xy',
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth
+        )
+
+
+
+
+    @validate_call
     def history(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: HistoryRequest,
         _request_timeout: Union[
             None,
@@ -5249,11 +5169,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ActionResult:
-        """Execute history action: back, forward, or refresh
+    ) -> GenericResponse:
+        """History: back, forward, or refresh
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: HistoryRequest
@@ -5289,7 +5209,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -5305,7 +5225,7 @@ class BrowserApi:
     @validate_call
     def history_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: HistoryRequest,
         _request_timeout: Union[
             None,
@@ -5319,11 +5239,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ActionResult]:
-        """Execute history action: back, forward, or refresh
+    ) -> ApiResponse[GenericResponse]:
+        """History: back, forward, or refresh
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: HistoryRequest
@@ -5359,7 +5279,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -5375,7 +5295,7 @@ class BrowserApi:
     @validate_call
     def history_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: HistoryRequest,
         _request_timeout: Union[
             None,
@@ -5390,10 +5310,10 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Execute history action: back, forward, or refresh
+        """History: back, forward, or refresh
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: HistoryRequest
@@ -5429,7 +5349,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -5518,251 +5438,9 @@ class BrowserApi:
 
 
     @validate_call
-    def list_browsers(
-        self,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> BrowserList:
-        """List all active browser instances
-
-
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._list_browsers_serialize(
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BrowserList",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-
-    @validate_call
-    def list_browsers_with_http_info(
-        self,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[BrowserList]:
-        """List all active browser instances
-
-
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._list_browsers_serialize(
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BrowserList",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-
-    @validate_call
-    def list_browsers_without_preload_content(
-        self,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """List all active browser instances
-
-
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._list_browsers_serialize(
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "BrowserList",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-
-    def _list_browsers_serialize(
-        self,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {
-        }
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[
-            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
-        ] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-
-
-        # set the HTTP header `Accept`
-        if 'Accept' not in _header_params:
-            _header_params['Accept'] = self.api_client.select_header_accept(
-                [
-                    'application/json'
-                ]
-            )
-
-
-        # authentication setting
-        _auth_settings: List[str] = [
-        ]
-
-        return self.api_client.param_serialize(
-            method='GET',
-            resource_path='/browser/list',
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth
-        )
-
-
-
-
-    @validate_call
     def mouse(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: MouseRequest,
         _request_timeout: Union[
             None,
@@ -5776,11 +5454,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> SuccessResponse:
-        """Mouse action: hover or drag
+    ) -> GenericResponse:
+        """Mouse: hover or drag
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: MouseRequest
@@ -5816,7 +5494,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -5832,7 +5510,7 @@ class BrowserApi:
     @validate_call
     def mouse_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: MouseRequest,
         _request_timeout: Union[
             None,
@@ -5846,11 +5524,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[SuccessResponse]:
-        """Mouse action: hover or drag
+    ) -> ApiResponse[GenericResponse]:
+        """Mouse: hover or drag
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: MouseRequest
@@ -5886,7 +5564,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -5902,7 +5580,7 @@ class BrowserApi:
     @validate_call
     def mouse_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: MouseRequest,
         _request_timeout: Union[
             None,
@@ -5917,10 +5595,10 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Mouse action: hover or drag
+        """Mouse: hover or drag
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: MouseRequest
@@ -5956,7 +5634,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -6047,8 +5725,8 @@ class BrowserApi:
     @validate_call
     def navigate_browser(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: NavigateRequest,
+        browser_id: StrictStr,
+        payload: NavigateBrowserRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -6061,14 +5739,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ActionResult:
-        """Navigate to a URL
+    ) -> GenericResponse:
+        """Navigate to URL
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: NavigateRequest
+        :type payload: NavigateBrowserRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -6101,7 +5779,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -6117,8 +5795,8 @@ class BrowserApi:
     @validate_call
     def navigate_browser_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: NavigateRequest,
+        browser_id: StrictStr,
+        payload: NavigateBrowserRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -6131,14 +5809,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ActionResult]:
-        """Navigate to a URL
+    ) -> ApiResponse[GenericResponse]:
+        """Navigate to URL
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: NavigateRequest
+        :type payload: NavigateBrowserRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -6171,7 +5849,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -6187,8 +5865,8 @@ class BrowserApi:
     @validate_call
     def navigate_browser_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: NavigateRequest,
+        browser_id: StrictStr,
+        payload: NavigateBrowserRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -6202,13 +5880,13 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Navigate to a URL
+        """Navigate to URL
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: NavigateRequest
+        :type payload: NavigateBrowserRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -6241,7 +5919,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -6332,7 +6010,7 @@ class BrowserApi:
     @validate_call
     def network_logs(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: NetworkLogsRequest,
         _request_timeout: Union[
             None,
@@ -6346,11 +6024,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> LogsResponse:
-        """Get or clear network logs
+    ) -> GenericResponse:
+        """Network logs: get or clear
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: NetworkLogsRequest
@@ -6386,7 +6064,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "LogsResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -6402,7 +6080,7 @@ class BrowserApi:
     @validate_call
     def network_logs_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: NetworkLogsRequest,
         _request_timeout: Union[
             None,
@@ -6416,11 +6094,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[LogsResponse]:
-        """Get or clear network logs
+    ) -> ApiResponse[GenericResponse]:
+        """Network logs: get or clear
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: NetworkLogsRequest
@@ -6456,7 +6134,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "LogsResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -6472,7 +6150,7 @@ class BrowserApi:
     @validate_call
     def network_logs_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: NetworkLogsRequest,
         _request_timeout: Union[
             None,
@@ -6487,10 +6165,10 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Get or clear network logs
+        """Network logs: get or clear
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: NetworkLogsRequest
@@ -6526,7 +6204,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "LogsResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -6598,7 +6276,7 @@ class BrowserApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/browser/{browser_id}/network',
+            resource_path='/browser/{browser_id}/network_logs',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -6617,7 +6295,7 @@ class BrowserApi:
     @validate_call
     def performance(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: PerformanceRequest,
         _request_timeout: Union[
             None,
@@ -6631,11 +6309,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> SuccessResponse:
-        """Manage performance: start_trace, stop_trace, metrics, or analyze
+    ) -> GenericResponse:
+        """Performance: start_trace, stop_trace, metrics, analyze
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: PerformanceRequest
@@ -6671,7 +6349,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -6687,7 +6365,7 @@ class BrowserApi:
     @validate_call
     def performance_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: PerformanceRequest,
         _request_timeout: Union[
             None,
@@ -6701,11 +6379,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[SuccessResponse]:
-        """Manage performance: start_trace, stop_trace, metrics, or analyze
+    ) -> ApiResponse[GenericResponse]:
+        """Performance: start_trace, stop_trace, metrics, analyze
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: PerformanceRequest
@@ -6741,7 +6419,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -6757,7 +6435,7 @@ class BrowserApi:
     @validate_call
     def performance_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: PerformanceRequest,
         _request_timeout: Union[
             None,
@@ -6772,10 +6450,10 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Manage performance: start_trace, stop_trace, metrics, or analyze
+        """Performance: start_trace, stop_trace, metrics, analyze
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: PerformanceRequest
@@ -6811,7 +6489,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -6902,7 +6580,7 @@ class BrowserApi:
     @validate_call
     def press_keys(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: PressKeysRequest,
         _request_timeout: Union[
             None,
@@ -6916,11 +6594,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ActionResult:
-        """Press keys on an element
+    ) -> GenericResponse:
+        """Press keyboard keys
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: PressKeysRequest
@@ -6956,7 +6634,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -6972,7 +6650,7 @@ class BrowserApi:
     @validate_call
     def press_keys_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: PressKeysRequest,
         _request_timeout: Union[
             None,
@@ -6986,11 +6664,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ActionResult]:
-        """Press keys on an element
+    ) -> ApiResponse[GenericResponse]:
+        """Press keyboard keys
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: PressKeysRequest
@@ -7026,7 +6704,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -7042,7 +6720,7 @@ class BrowserApi:
     @validate_call
     def press_keys_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: PressKeysRequest,
         _request_timeout: Union[
             None,
@@ -7057,10 +6735,10 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Press keys on an element
+        """Press keyboard keys
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: PressKeysRequest
@@ -7096,7 +6774,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -7187,7 +6865,7 @@ class BrowserApi:
     @validate_call
     def resize(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: ResizeRequest,
         _request_timeout: Union[
             None,
@@ -7201,11 +6879,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> SuccessResponse:
+    ) -> GenericResponse:
         """Resize viewport
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: ResizeRequest
@@ -7241,7 +6919,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -7257,7 +6935,7 @@ class BrowserApi:
     @validate_call
     def resize_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: ResizeRequest,
         _request_timeout: Union[
             None,
@@ -7271,11 +6949,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[SuccessResponse]:
+    ) -> ApiResponse[GenericResponse]:
         """Resize viewport
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: ResizeRequest
@@ -7311,7 +6989,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -7327,7 +7005,7 @@ class BrowserApi:
     @validate_call
     def resize_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: ResizeRequest,
         _request_timeout: Union[
             None,
@@ -7345,7 +7023,7 @@ class BrowserApi:
         """Resize viewport
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: ResizeRequest
@@ -7381,7 +7059,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -7472,8 +7150,8 @@ class BrowserApi:
     @validate_call
     def scroll(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CombinedScrollRequest,
+        browser_id: StrictStr,
+        payload: ScrollRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -7486,14 +7164,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> SuccessResponse:
-        """Scroll to element/coordinates (absolute) or by delta (relative)
+    ) -> GenericResponse:
+        """Scroll to element/coords or by delta
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: CombinedScrollRequest
+        :type payload: ScrollRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -7526,7 +7204,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -7542,8 +7220,8 @@ class BrowserApi:
     @validate_call
     def scroll_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CombinedScrollRequest,
+        browser_id: StrictStr,
+        payload: ScrollRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -7556,14 +7234,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[SuccessResponse]:
-        """Scroll to element/coordinates (absolute) or by delta (relative)
+    ) -> ApiResponse[GenericResponse]:
+        """Scroll to element/coords or by delta
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: CombinedScrollRequest
+        :type payload: ScrollRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -7596,7 +7274,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -7612,8 +7290,8 @@ class BrowserApi:
     @validate_call
     def scroll_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: CombinedScrollRequest,
+        browser_id: StrictStr,
+        payload: ScrollRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -7627,13 +7305,13 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Scroll to element/coordinates (absolute) or by delta (relative)
+        """Scroll to element/coords or by delta
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: CombinedScrollRequest
+        :type payload: ScrollRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -7666,7 +7344,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -7757,7 +7435,7 @@ class BrowserApi:
     @validate_call
     def select(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: SelectRequest,
         _request_timeout: Union[
             None,
@@ -7771,11 +7449,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> SuccessResponse:
+    ) -> GenericResponse:
         """Select dropdown: select option or get options
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: SelectRequest
@@ -7811,7 +7489,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -7827,7 +7505,7 @@ class BrowserApi:
     @validate_call
     def select_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: SelectRequest,
         _request_timeout: Union[
             None,
@@ -7841,11 +7519,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[SuccessResponse]:
+    ) -> ApiResponse[GenericResponse]:
         """Select dropdown: select option or get options
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: SelectRequest
@@ -7881,7 +7559,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -7897,7 +7575,7 @@ class BrowserApi:
     @validate_call
     def select_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: SelectRequest,
         _request_timeout: Union[
             None,
@@ -7915,7 +7593,7 @@ class BrowserApi:
         """Select dropdown: select option or get options
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: SelectRequest
@@ -7951,7 +7629,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -8040,9 +7718,294 @@ class BrowserApi:
 
 
     @validate_call
+    def snapshot(
+        self,
+        browser_id: StrictStr,
+        payload: SnapshotRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> GenericResponse:
+        """DOM or accessibility snapshot
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: SnapshotRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._snapshot_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+
+    @validate_call
+    def snapshot_with_http_info(
+        self,
+        browser_id: StrictStr,
+        payload: SnapshotRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[GenericResponse]:
+        """DOM or accessibility snapshot
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: SnapshotRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._snapshot_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+
+    @validate_call
+    def snapshot_without_preload_content(
+        self,
+        browser_id: StrictStr,
+        payload: SnapshotRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """DOM or accessibility snapshot
+
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: SnapshotRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._snapshot_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GenericResponse",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+
+    def _snapshot_serialize(
+        self,
+        browser_id,
+        payload,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {
+        }
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[
+            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
+        ] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        if browser_id is not None:
+            _path_params['browser_id'] = browser_id
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+        if payload is not None:
+            _body_params = payload
+
+
+        # set the HTTP header `Accept`
+        if 'Accept' not in _header_params:
+            _header_params['Accept'] = self.api_client.select_header_accept(
+                [
+                    'application/json'
+                ]
+            )
+
+        # set the HTTP header `Content-Type`
+        if _content_type:
+            _header_params['Content-Type'] = _content_type
+        else:
+            _default_content_type = (
+                self.api_client.select_header_content_type(
+                    [
+                        'application/json'
+                    ]
+                )
+            )
+            if _default_content_type is not None:
+                _header_params['Content-Type'] = _default_content_type
+
+        # authentication setting
+        _auth_settings: List[str] = [
+        ]
+
+        return self.api_client.param_serialize(
+            method='POST',
+            resource_path='/browser/{browser_id}/snapshot',
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth
+        )
+
+
+
+
+    @validate_call
     def tabs(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: TabsRequest,
         _request_timeout: Union[
             None,
@@ -8056,11 +8019,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> SuccessResponse:
-        """Manage browser tabs: list, new, switch, close, or current
+    ) -> GenericResponse:
+        """Tabs: list, new, switch, close, current
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: TabsRequest
@@ -8096,7 +8059,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -8112,7 +8075,7 @@ class BrowserApi:
     @validate_call
     def tabs_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: TabsRequest,
         _request_timeout: Union[
             None,
@@ -8126,11 +8089,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[SuccessResponse]:
-        """Manage browser tabs: list, new, switch, close, or current
+    ) -> ApiResponse[GenericResponse]:
+        """Tabs: list, new, switch, close, current
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: TabsRequest
@@ -8166,7 +8129,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -8182,7 +8145,7 @@ class BrowserApi:
     @validate_call
     def tabs_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: TabsRequest,
         _request_timeout: Union[
             None,
@@ -8197,10 +8160,10 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Manage browser tabs: list, new, switch, close, or current
+        """Tabs: list, new, switch, close, current
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: TabsRequest
@@ -8236,7 +8199,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -8327,7 +8290,8 @@ class BrowserApi:
     @validate_call
     def take_screenshot(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
+        payload: TakeScreenshotRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -8340,12 +8304,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ScreenshotResponse:
-        """Take a screenshot
+    ) -> GenericResponse:
+        """Take screenshot
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
+        :param payload: (required)
+        :type payload: TakeScreenshotRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -8370,6 +8336,7 @@ class BrowserApi:
 
         _param = self._take_screenshot_serialize(
             browser_id=browser_id,
+            payload=payload,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -8377,7 +8344,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ScreenshotResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -8393,7 +8360,8 @@ class BrowserApi:
     @validate_call
     def take_screenshot_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
+        payload: TakeScreenshotRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -8406,12 +8374,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ScreenshotResponse]:
-        """Take a screenshot
+    ) -> ApiResponse[GenericResponse]:
+        """Take screenshot
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
+        :param payload: (required)
+        :type payload: TakeScreenshotRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -8436,6 +8406,7 @@ class BrowserApi:
 
         _param = self._take_screenshot_serialize(
             browser_id=browser_id,
+            payload=payload,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -8443,7 +8414,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ScreenshotResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -8459,7 +8430,8 @@ class BrowserApi:
     @validate_call
     def take_screenshot_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
+        payload: TakeScreenshotRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -8473,11 +8445,13 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Take a screenshot
+        """Take screenshot
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
+        :param payload: (required)
+        :type payload: TakeScreenshotRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -8502,6 +8476,7 @@ class BrowserApi:
 
         _param = self._take_screenshot_serialize(
             browser_id=browser_id,
+            payload=payload,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -8509,7 +8484,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ScreenshotResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -8519,275 +8494,6 @@ class BrowserApi:
 
 
     def _take_screenshot_serialize(
-        self,
-        browser_id,
-        _request_auth,
-        _content_type,
-        _headers,
-        _host_index,
-    ) -> RequestSerialized:
-
-        _host = None
-
-        _collection_formats: Dict[str, str] = {
-        }
-
-        _path_params: Dict[str, str] = {}
-        _query_params: List[Tuple[str, str]] = []
-        _header_params: Dict[str, Optional[str]] = _headers or {}
-        _form_params: List[Tuple[str, str]] = []
-        _files: Dict[
-            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
-        ] = {}
-        _body_params: Optional[bytes] = None
-
-        # process the path parameters
-        if browser_id is not None:
-            _path_params['browser_id'] = browser_id
-        # process the query parameters
-        # process the header parameters
-        # process the form parameters
-        # process the body parameter
-
-
-        # set the HTTP header `Accept`
-        if 'Accept' not in _header_params:
-            _header_params['Accept'] = self.api_client.select_header_accept(
-                [
-                    'application/json'
-                ]
-            )
-
-
-        # authentication setting
-        _auth_settings: List[str] = [
-        ]
-
-        return self.api_client.param_serialize(
-            method='POST',
-            resource_path='/browser/{browser_id}/screenshot',
-            path_params=_path_params,
-            query_params=_query_params,
-            header_params=_header_params,
-            body=_body_params,
-            post_params=_form_params,
-            files=_files,
-            auth_settings=_auth_settings,
-            collection_formats=_collection_formats,
-            _host=_host,
-            _request_auth=_request_auth
-        )
-
-
-
-
-    @validate_call
-    def take_snapshot(
-        self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: SnapshotRequest,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> SuccessResponse:
-        """Take DOM/accessibility snapshot
-
-
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
-        :param payload: (required)
-        :type payload: SnapshotRequest
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._take_snapshot_serialize(
-            browser_id=browser_id,
-            payload=payload,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        ).data
-
-
-    @validate_call
-    def take_snapshot_with_http_info(
-        self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: SnapshotRequest,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[SuccessResponse]:
-        """Take DOM/accessibility snapshot
-
-
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
-        :param payload: (required)
-        :type payload: SnapshotRequest
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._take_snapshot_serialize(
-            browser_id=browser_id,
-            payload=payload,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        response_data.read()
-        return self.api_client.response_deserialize(
-            response_data=response_data,
-            response_types_map=_response_types_map,
-        )
-
-
-    @validate_call
-    def take_snapshot_without_preload_content(
-        self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: SnapshotRequest,
-        _request_timeout: Union[
-            None,
-            Annotated[StrictFloat, Field(gt=0)],
-            Tuple[
-                Annotated[StrictFloat, Field(gt=0)],
-                Annotated[StrictFloat, Field(gt=0)]
-            ]
-        ] = None,
-        _request_auth: Optional[Dict[StrictStr, Any]] = None,
-        _content_type: Optional[StrictStr] = None,
-        _headers: Optional[Dict[StrictStr, Any]] = None,
-        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> RESTResponseType:
-        """Take DOM/accessibility snapshot
-
-
-        :param browser_id: Unique browser identifier (required)
-        :type browser_id: str
-        :param payload: (required)
-        :type payload: SnapshotRequest
-        :param _request_timeout: timeout setting for this request. If one
-                                 number provided, it will be total request
-                                 timeout. It can also be a pair (tuple) of
-                                 (connection, read) timeouts.
-        :type _request_timeout: int, tuple(int, int), optional
-        :param _request_auth: set to override the auth_settings for an a single
-                              request; this effectively ignores the
-                              authentication in the spec for a single request.
-        :type _request_auth: dict, optional
-        :param _content_type: force content-type for the request.
-        :type _content_type: str, Optional
-        :param _headers: set to override the headers for a single
-                         request; this effectively ignores the headers
-                         in the spec for a single request.
-        :type _headers: dict, optional
-        :param _host_index: set to override the host_index for a single
-                            request; this effectively ignores the host_index
-                            in the spec for a single request.
-        :type _host_index: int, optional
-        :return: Returns the result object.
-        """ # noqa: E501
-
-        _param = self._take_snapshot_serialize(
-            browser_id=browser_id,
-            payload=payload,
-            _request_auth=_request_auth,
-            _content_type=_content_type,
-            _headers=_headers,
-            _host_index=_host_index
-        )
-
-        _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
-        }
-        response_data = self.api_client.call_api(
-            *_param,
-            _request_timeout=_request_timeout
-        )
-        return response_data.response
-
-
-    def _take_snapshot_serialize(
         self,
         browser_id,
         payload,
@@ -8850,7 +8556,7 @@ class BrowserApi:
 
         return self.api_client.param_serialize(
             method='POST',
-            resource_path='/browser/{browser_id}/snapshot',
+            resource_path='/browser/{browser_id}/screenshot',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -8869,8 +8575,8 @@ class BrowserApi:
     @validate_call
     def type_text(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: TypeRequest,
+        browser_id: StrictStr,
+        payload: TypeTextRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -8883,14 +8589,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ActionResult:
-        """Type text into an element
+    ) -> GenericResponse:
+        """Type text into element
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: TypeRequest
+        :type payload: TypeTextRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -8923,7 +8629,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -8939,8 +8645,8 @@ class BrowserApi:
     @validate_call
     def type_text_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: TypeRequest,
+        browser_id: StrictStr,
+        payload: TypeTextRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -8953,14 +8659,14 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ActionResult]:
-        """Type text into an element
+    ) -> ApiResponse[GenericResponse]:
+        """Type text into element
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: TypeRequest
+        :type payload: TypeTextRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -8993,7 +8699,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -9009,8 +8715,8 @@ class BrowserApi:
     @validate_call
     def type_text_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
-        payload: TypeRequest,
+        browser_id: StrictStr,
+        payload: TypeTextRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -9024,13 +8730,13 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Type text into an element
+        """Type text into element
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
-        :type payload: TypeRequest
+        :type payload: TypeTextRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -9063,7 +8769,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -9154,7 +8860,7 @@ class BrowserApi:
     @validate_call
     def upload_file(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: UploadFileRequest,
         _request_timeout: Union[
             None,
@@ -9168,11 +8874,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> SuccessResponse:
-        """Upload a file
+    ) -> GenericResponse:
+        """Upload file to input
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: UploadFileRequest
@@ -9208,7 +8914,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -9224,7 +8930,7 @@ class BrowserApi:
     @validate_call
     def upload_file_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: UploadFileRequest,
         _request_timeout: Union[
             None,
@@ -9238,11 +8944,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[SuccessResponse]:
-        """Upload a file
+    ) -> ApiResponse[GenericResponse]:
+        """Upload file to input
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: UploadFileRequest
@@ -9278,7 +8984,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -9294,7 +9000,7 @@ class BrowserApi:
     @validate_call
     def upload_file_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: UploadFileRequest,
         _request_timeout: Union[
             None,
@@ -9309,10 +9015,10 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Upload a file
+        """Upload file to input
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: UploadFileRequest
@@ -9348,7 +9054,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "SuccessResponse",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -9439,7 +9145,7 @@ class BrowserApi:
     @validate_call
     def wait_element(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: WaitElementRequest,
         _request_timeout: Union[
             None,
@@ -9453,11 +9159,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ActionResult:
-        """Wait for element to become visible or hidden
+    ) -> GenericResponse:
+        """Wait for element to be visible or hidden
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: WaitElementRequest
@@ -9493,7 +9199,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -9509,7 +9215,7 @@ class BrowserApi:
     @validate_call
     def wait_element_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: WaitElementRequest,
         _request_timeout: Union[
             None,
@@ -9523,11 +9229,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[ActionResult]:
-        """Wait for element to become visible or hidden
+    ) -> ApiResponse[GenericResponse]:
+        """Wait for element to be visible or hidden
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: WaitElementRequest
@@ -9563,7 +9269,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -9579,7 +9285,7 @@ class BrowserApi:
     @validate_call
     def wait_element_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         payload: WaitElementRequest,
         _request_timeout: Union[
             None,
@@ -9594,10 +9300,10 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Wait for element to become visible or hidden
+        """Wait for element to be visible or hidden
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param payload: (required)
         :type payload: WaitElementRequest
@@ -9633,7 +9339,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ActionResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -9724,7 +9430,7 @@ class BrowserApi:
     @validate_call
     def what_is_visible(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -9737,11 +9443,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> WhatIsVisibleResult:
-        """Analyze visible page content using AI
+    ) -> GenericResponse:
+        """AI page analysis - what's visible
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -9774,7 +9480,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "WhatIsVisibleResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -9790,7 +9496,7 @@ class BrowserApi:
     @validate_call
     def what_is_visible_with_http_info(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -9803,11 +9509,11 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[WhatIsVisibleResult]:
-        """Analyze visible page content using AI
+    ) -> ApiResponse[GenericResponse]:
+        """AI page analysis - what's visible
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -9840,7 +9546,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "WhatIsVisibleResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -9856,7 +9562,7 @@ class BrowserApi:
     @validate_call
     def what_is_visible_without_preload_content(
         self,
-        browser_id: Annotated[StrictStr, Field(description="Unique browser identifier")],
+        browser_id: StrictStr,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -9870,10 +9576,10 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Analyze visible page content using AI
+        """AI page analysis - what's visible
 
 
-        :param browser_id: Unique browser identifier (required)
+        :param browser_id: (required)
         :type browser_id: str
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
@@ -9906,7 +9612,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "WhatIsVisibleResult",
+            '200': "GenericResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -9961,7 +9667,7 @@ class BrowserApi:
         ]
 
         return self.api_client.param_serialize(
-            method='GET',
+            method='POST',
             resource_path='/browser/{browser_id}/what_is_visible',
             path_params=_path_params,
             query_params=_query_params,

@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**type** | **str** | Snapshot type: dom or accessibility | [optional] [default to 'dom']
+**snapshot_type** | **str** | snapshot_type | [optional] [default to 'dom']
 
 ## Example
 

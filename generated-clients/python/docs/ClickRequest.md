@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**selector** | **str** | Element selector | 
-**by** | **str** | Selector type: css, id, name, xpath | [optional] [default to 'css']
-**timeout** | **int** | Timeout in seconds | [optional] 
-**if_visible** | **bool** | Only click if element is visible | [optional] [default to False]
+**selector** | **str** | selector | 
+**timeout** | **int** | timeout | [optional] 
+**by** | **str** | by | [optional] [default to 'css']
+**if_visible** | **bool** | if_visible | [optional] [default to False]
 
 ## Example
 

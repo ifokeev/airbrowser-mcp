@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **string** | History action: back, forward, or refresh | [default to undefined]
+**action** | **string** | action | [default to undefined]
 
 ## Example
 

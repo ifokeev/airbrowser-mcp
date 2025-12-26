@@ -5,12 +5,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**selector** | **str** | Select element selector | 
-**by** | **str** | Selector type (css, id, name, xpath) | [optional] [default to 'css']
-**action** | **str** | Action: select or options | [optional] [default to 'select']
-**value** | **str** | Option value to select | [optional] 
-**text** | **str** | Option text to select | [optional] 
-**index** | **int** | Option index to select | [optional] 
+**selector** | **str** | selector | 
+**action** | **str** | action | [optional] [default to 'select']
+**value** | **str** | value | [optional] 
+**text** | **str** | text | [optional] 
+**index** | **int** | index | [optional] 
+**by** | **str** | by | [optional] [default to 'css']
 
 ## Example
 

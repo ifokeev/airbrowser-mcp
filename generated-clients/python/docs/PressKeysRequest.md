@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**selector** | **str** | Element selector | 
-**by** | **str** | Selector type: css, id, name, xpath | [optional] [default to 'css']
-**keys** | **str** | Keys to press | 
+**selector** | **str** | selector | 
+**keys** | **str** | keys | 
+**by** | **str** | by | [optional] [default to 'css']
 
 ## Example
 

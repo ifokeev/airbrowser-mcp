@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**width** | **int** | Viewport width | 
-**height** | **int** | Viewport height | 
+**width** | **int** | width | 
+**height** | **int** | height | 
 
 ## Example
 

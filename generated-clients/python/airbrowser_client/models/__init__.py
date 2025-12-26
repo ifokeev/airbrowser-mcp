@@ -15,43 +15,30 @@
 
 if __import__("typing").TYPE_CHECKING:
     # import models into model package
-    from airbrowser_client.models.action_result import ActionResult
-    from airbrowser_client.models.attribute_response import AttributeResponse
     from airbrowser_client.models.base_response import BaseResponse
-    from airbrowser_client.models.browser_config import BrowserConfig
-    from airbrowser_client.models.browser_created import BrowserCreated
-    from airbrowser_client.models.browser_creation_data import BrowserCreationData
-    from airbrowser_client.models.browser_info_response import BrowserInfoResponse
-    from airbrowser_client.models.browser_list import BrowserList
-    from airbrowser_client.models.browser_list_data import BrowserListData
-    from airbrowser_client.models.check_element_request import CheckElementRequest
+    from airbrowser_client.models.browsers_request import BrowsersRequest
     from airbrowser_client.models.click_request import ClickRequest
-    from airbrowser_client.models.combined_dialog_request import CombinedDialogRequest
-    from airbrowser_client.models.combined_emulate_request import CombinedEmulateRequest
-    from airbrowser_client.models.combined_gui_click_request import CombinedGuiClickRequest
-    from airbrowser_client.models.combined_scroll_request import CombinedScrollRequest
     from airbrowser_client.models.console_logs_request import ConsoleLogsRequest
-    from airbrowser_client.models.content_data import ContentData
-    from airbrowser_client.models.content_response import ContentResponse
+    from airbrowser_client.models.create_browser_request import CreateBrowserRequest
     from airbrowser_client.models.create_profile_request import CreateProfileRequest
     from airbrowser_client.models.detect_coordinates_request import DetectCoordinatesRequest
-    from airbrowser_client.models.detect_coordinates_result import DetectCoordinatesResult
-    from airbrowser_client.models.element_data_request import ElementDataRequest
+    from airbrowser_client.models.dialog_request import DialogRequest
+    from airbrowser_client.models.emulate_request import EmulateRequest
     from airbrowser_client.models.error_response import ErrorResponse
-    from airbrowser_client.models.execute_data import ExecuteData
-    from airbrowser_client.models.execute_request import ExecuteRequest
-    from airbrowser_client.models.execute_response import ExecuteResponse
+    from airbrowser_client.models.execute_script_request import ExecuteScriptRequest
     from airbrowser_client.models.fill_form_request import FillFormRequest
-    from airbrowser_client.models.form_field import FormField
+    from airbrowser_client.models.generic_response import GenericResponse
+    from airbrowser_client.models.gui_click_request import GuiClickRequest
+    from airbrowser_client.models.gui_hover_xy_request import GuiHoverXyRequest
+    from airbrowser_client.models.gui_press_keys_xy_request import GuiPressKeysXyRequest
+    from airbrowser_client.models.gui_type_xy_request import GuiTypeXyRequest
     from airbrowser_client.models.health_status import HealthStatus
     from airbrowser_client.models.history_request import HistoryRequest
-    from airbrowser_client.models.logs_response import LogsResponse
     from airbrowser_client.models.mouse_request import MouseRequest
-    from airbrowser_client.models.navigate_request import NavigateRequest
+    from airbrowser_client.models.navigate_browser_request import NavigateBrowserRequest
     from airbrowser_client.models.network_logs_request import NetworkLogsRequest
     from airbrowser_client.models.performance_request import PerformanceRequest
     from airbrowser_client.models.pool_scaled import PoolScaled
-    from airbrowser_client.models.pool_status_response import PoolStatusResponse
     from airbrowser_client.models.press_keys_request import PressKeysRequest
     from airbrowser_client.models.profile_info import ProfileInfo
     from airbrowser_client.models.profile_list_data import ProfileListData
@@ -60,18 +47,14 @@ if __import__("typing").TYPE_CHECKING:
     from airbrowser_client.models.resize_request import ResizeRequest
     from airbrowser_client.models.scale_data import ScaleData
     from airbrowser_client.models.scale_pool import ScalePool
-    from airbrowser_client.models.screenshot_data import ScreenshotData
-    from airbrowser_client.models.screenshot_response import ScreenshotResponse
+    from airbrowser_client.models.scroll_request import ScrollRequest
     from airbrowser_client.models.select_request import SelectRequest
     from airbrowser_client.models.snapshot_request import SnapshotRequest
-    from airbrowser_client.models.success_response import SuccessResponse
     from airbrowser_client.models.tabs_request import TabsRequest
-    from airbrowser_client.models.type_request import TypeRequest
+    from airbrowser_client.models.take_screenshot_request import TakeScreenshotRequest
+    from airbrowser_client.models.type_text_request import TypeTextRequest
     from airbrowser_client.models.upload_file_request import UploadFileRequest
-    from airbrowser_client.models.url_data import UrlData
-    from airbrowser_client.models.url_response import UrlResponse
     from airbrowser_client.models.wait_element_request import WaitElementRequest
-    from airbrowser_client.models.what_is_visible_result import WhatIsVisibleResult
     
 else:
     from lazy_imports import LazyModule, as_package, load
@@ -80,43 +63,30 @@ else:
         LazyModule(
             *as_package(__file__),
             """# import models into model package
-from airbrowser_client.models.action_result import ActionResult
-from airbrowser_client.models.attribute_response import AttributeResponse
 from airbrowser_client.models.base_response import BaseResponse
-from airbrowser_client.models.browser_config import BrowserConfig
-from airbrowser_client.models.browser_created import BrowserCreated
-from airbrowser_client.models.browser_creation_data import BrowserCreationData
-from airbrowser_client.models.browser_info_response import BrowserInfoResponse
-from airbrowser_client.models.browser_list import BrowserList
-from airbrowser_client.models.browser_list_data import BrowserListData
-from airbrowser_client.models.check_element_request import CheckElementRequest
+from airbrowser_client.models.browsers_request import BrowsersRequest
 from airbrowser_client.models.click_request import ClickRequest
-from airbrowser_client.models.combined_dialog_request import CombinedDialogRequest
-from airbrowser_client.models.combined_emulate_request import CombinedEmulateRequest
-from airbrowser_client.models.combined_gui_click_request import CombinedGuiClickRequest
-from airbrowser_client.models.combined_scroll_request import CombinedScrollRequest
 from airbrowser_client.models.console_logs_request import ConsoleLogsRequest
-from airbrowser_client.models.content_data import ContentData
-from airbrowser_client.models.content_response import ContentResponse
+from airbrowser_client.models.create_browser_request import CreateBrowserRequest
 from airbrowser_client.models.create_profile_request import CreateProfileRequest
 from airbrowser_client.models.detect_coordinates_request import DetectCoordinatesRequest
-from airbrowser_client.models.detect_coordinates_result import DetectCoordinatesResult
-from airbrowser_client.models.element_data_request import ElementDataRequest
+from airbrowser_client.models.dialog_request import DialogRequest
+from airbrowser_client.models.emulate_request import EmulateRequest
 from airbrowser_client.models.error_response import ErrorResponse
-from airbrowser_client.models.execute_data import ExecuteData
-from airbrowser_client.models.execute_request import ExecuteRequest
-from airbrowser_client.models.execute_response import ExecuteResponse
+from airbrowser_client.models.execute_script_request import ExecuteScriptRequest
 from airbrowser_client.models.fill_form_request import FillFormRequest
-from airbrowser_client.models.form_field import FormField
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.models.gui_click_request import GuiClickRequest
+from airbrowser_client.models.gui_hover_xy_request import GuiHoverXyRequest
+from airbrowser_client.models.gui_press_keys_xy_request import GuiPressKeysXyRequest
+from airbrowser_client.models.gui_type_xy_request import GuiTypeXyRequest
 from airbrowser_client.models.health_status import HealthStatus
 from airbrowser_client.models.history_request import HistoryRequest
-from airbrowser_client.models.logs_response import LogsResponse
 from airbrowser_client.models.mouse_request import MouseRequest
-from airbrowser_client.models.navigate_request import NavigateRequest
+from airbrowser_client.models.navigate_browser_request import NavigateBrowserRequest
 from airbrowser_client.models.network_logs_request import NetworkLogsRequest
 from airbrowser_client.models.performance_request import PerformanceRequest
 from airbrowser_client.models.pool_scaled import PoolScaled
-from airbrowser_client.models.pool_status_response import PoolStatusResponse
 from airbrowser_client.models.press_keys_request import PressKeysRequest
 from airbrowser_client.models.profile_info import ProfileInfo
 from airbrowser_client.models.profile_list_data import ProfileListData
@@ -125,18 +95,14 @@ from airbrowser_client.models.profile_response import ProfileResponse
 from airbrowser_client.models.resize_request import ResizeRequest
 from airbrowser_client.models.scale_data import ScaleData
 from airbrowser_client.models.scale_pool import ScalePool
-from airbrowser_client.models.screenshot_data import ScreenshotData
-from airbrowser_client.models.screenshot_response import ScreenshotResponse
+from airbrowser_client.models.scroll_request import ScrollRequest
 from airbrowser_client.models.select_request import SelectRequest
 from airbrowser_client.models.snapshot_request import SnapshotRequest
-from airbrowser_client.models.success_response import SuccessResponse
 from airbrowser_client.models.tabs_request import TabsRequest
-from airbrowser_client.models.type_request import TypeRequest
+from airbrowser_client.models.take_screenshot_request import TakeScreenshotRequest
+from airbrowser_client.models.type_text_request import TypeTextRequest
 from airbrowser_client.models.upload_file_request import UploadFileRequest
-from airbrowser_client.models.url_data import UrlData
-from airbrowser_client.models.url_response import UrlResponse
 from airbrowser_client.models.wait_element_request import WaitElementRequest
-from airbrowser_client.models.what_is_visible_result import WhatIsVisibleResult
 
 """,
             name=__name__,

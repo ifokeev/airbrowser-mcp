@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,18 +26,11 @@ class TabsRequest(BaseModel):
     """
     TabsRequest
     """ # noqa: E501
-    action: StrictStr = Field(description="Tab action: list, new, switch, close, or current")
-    url: Optional[StrictStr] = Field(default=None, description="URL for new tab (for 'new' action)")
-    index: Optional[StrictInt] = Field(default=None, description="Tab index (for 'switch' or 'close' actions)")
-    handle: Optional[StrictStr] = Field(default=None, description="Tab handle (for 'switch' or 'close' actions)")
+    action: StrictStr = Field(description="action")
+    url: Optional[StrictStr] = Field(default=None, description="url")
+    index: Optional[StrictInt] = Field(default=None, description="index")
+    handle: Optional[StrictStr] = Field(default=None, description="handle")
     __properties: ClassVar[List[str]] = ["action", "url", "index", "handle"]
-
-    @field_validator('action')
-    def action_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['list', 'new', 'switch', 'close', 'current']):
-            raise ValueError("must be one of enum values ('list', 'new', 'switch', 'close', 'current')")
-        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

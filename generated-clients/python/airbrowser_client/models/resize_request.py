@@ -26,8 +26,8 @@ class ResizeRequest(BaseModel):
     """
     ResizeRequest
     """ # noqa: E501
-    width: StrictInt = Field(description="Viewport width")
-    height: StrictInt = Field(description="Viewport height")
+    width: StrictInt = Field(description="width")
+    height: StrictInt = Field(description="height")
     __properties: ClassVar[List[str]] = ["width", "height"]
 
     model_config = ConfigDict(

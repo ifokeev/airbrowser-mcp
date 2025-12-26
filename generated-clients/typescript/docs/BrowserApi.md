@@ -4,154 +4,94 @@ All URIs are relative to */api/v1*
 
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
-|[**checkElement**](#checkelement) | **POST** /browser/{browser_id}/check_element | Check if element exists or is visible|
+|[**browsers**](#browsers) | **POST** /browser/browsers | Admin: list all, get info, or close all browsers|
+|[**checkElement**](#checkelement) | **GET** /browser/{browser_id}/check_element | Check if element exists or is visible|
 |[**click**](#click) | **POST** /browser/{browser_id}/click | Click element|
-|[**closeAllBrowsers**](#closeallbrowsers) | **POST** /browser/close_all | Close all active browser instances|
-|[**closeBrowser**](#closebrowser) | **POST** /browser/{browser_id}/close | Close a browser instance|
-|[**consoleLogs**](#consolelogs) | **POST** /browser/{browser_id}/console | Get or clear console logs|
-|[**createBrowser**](#createbrowser) | **POST** /browser/create | Create a new browser instance|
-|[**deleteBrowser**](#deletebrowser) | **DELETE** /browser/{browser_id} | Close and remove a browser instance|
-|[**detectCoordinates**](#detectcoordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using AI vision|
-|[**dialog**](#dialog) | **POST** /browser/{browser_id}/dialog | Manage browser dialogs: get, accept, or dismiss|
-|[**emulate**](#emulate) | **POST** /browser/{browser_id}/emulate | Manage device emulation: set, clear, or list_devices|
-|[**executeScript**](#executescript) | **POST** /browser/{browser_id}/execute | Execute JavaScript|
+|[**closeBrowser**](#closebrowser) | **DELETE** /browser/{browser_id}/close_browser | Close browser instance|
+|[**consoleLogs**](#consolelogs) | **POST** /browser/{browser_id}/console_logs | Console logs: get or clear|
+|[**createBrowser**](#createbrowser) | **POST** /browser/create_browser | Create browser instance with optional persistent profile|
+|[**detectCoordinates**](#detectcoordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using vision|
+|[**dialog**](#dialog) | **POST** /browser/{browser_id}/dialog | Dialogs: get, accept, dismiss|
+|[**emulate**](#emulate) | **POST** /browser/{browser_id}/emulate | Emulation: set, clear, list_devices|
+|[**executeScript**](#executescript) | **POST** /browser/{browser_id}/execute_script | Execute JavaScript|
 |[**fillForm**](#fillform) | **POST** /browser/{browser_id}/fill_form | Fill multiple form fields|
-|[**getBrowser**](#getbrowser) | **GET** /browser/{browser_id} | Get browser instance details|
-|[**getBrowserStatus**](#getbrowserstatus) | **GET** /browser/{browser_id}/status | Get browser status|
-|[**getContent**](#getcontent) | **GET** /browser/{browser_id}/content | Get page HTML content|
-|[**getElementData**](#getelementdata) | **POST** /browser/{browser_id}/element_data | Get element text, attribute, or property|
-|[**getPoolStatus**](#getpoolstatus) | **GET** /browser/pool/status | Get browser pool status|
-|[**getUrl**](#geturl) | **GET** /browser/{browser_id}/url | Get current page URL|
-|[**guiClick**](#guiclick) | **POST** /browser/{browser_id}/gui_click | Click using selector or screen coordinates|
-|[**history**](#history) | **POST** /browser/{browser_id}/history | Execute history action: back, forward, or refresh|
-|[**listBrowsers**](#listbrowsers) | **GET** /browser/list | List all active browser instances|
-|[**mouse**](#mouse) | **POST** /browser/{browser_id}/mouse | Mouse action: hover or drag|
-|[**navigateBrowser**](#navigatebrowser) | **POST** /browser/{browser_id}/navigate | Navigate to a URL|
-|[**networkLogs**](#networklogs) | **POST** /browser/{browser_id}/network | Get or clear network logs|
-|[**performance**](#performance) | **POST** /browser/{browser_id}/performance | Manage performance: start_trace, stop_trace, metrics, or analyze|
-|[**pressKeys**](#presskeys) | **POST** /browser/{browser_id}/press_keys | Press keys on an element|
+|[**getContent**](#getcontent) | **GET** /browser/{browser_id}/get_content | Get page HTML|
+|[**getElementData**](#getelementdata) | **GET** /browser/{browser_id}/get_element_data | Get element text, attribute, or property|
+|[**getUrl**](#geturl) | **GET** /browser/{browser_id}/get_url | Get current URL|
+|[**guiClick**](#guiclick) | **POST** /browser/{browser_id}/gui_click | GUI click by selector or coordinates|
+|[**guiHoverXy**](#guihoverxy) | **POST** /browser/{browser_id}/gui_hover_xy | GUI hover at coordinates|
+|[**guiPressKeysXy**](#guipresskeysxy) | **POST** /browser/{browser_id}/gui_press_keys_xy | Press keys at coordinates (click to focus, then send keys)|
+|[**guiTypeXy**](#guitypexy) | **POST** /browser/{browser_id}/gui_type_xy | GUI type at coordinates - clicks then types text|
+|[**history**](#history) | **POST** /browser/{browser_id}/history | History: back, forward, or refresh|
+|[**mouse**](#mouse) | **POST** /browser/{browser_id}/mouse | Mouse: hover or drag|
+|[**navigateBrowser**](#navigatebrowser) | **POST** /browser/{browser_id}/navigate | Navigate to URL|
+|[**networkLogs**](#networklogs) | **POST** /browser/{browser_id}/network_logs | Network logs: get or clear|
+|[**performance**](#performance) | **POST** /browser/{browser_id}/performance | Performance: start_trace, stop_trace, metrics, analyze|
+|[**pressKeys**](#presskeys) | **POST** /browser/{browser_id}/press_keys | Press keyboard keys|
 |[**resize**](#resize) | **POST** /browser/{browser_id}/resize | Resize viewport|
-|[**scroll**](#scroll) | **POST** /browser/{browser_id}/scroll | Scroll to element/coordinates (absolute) or by delta (relative)|
+|[**scroll**](#scroll) | **POST** /browser/{browser_id}/scroll | Scroll to element/coords or by delta|
 |[**select**](#select) | **POST** /browser/{browser_id}/select | Select dropdown: select option or get options|
-|[**tabs**](#tabs) | **POST** /browser/{browser_id}/tabs | Manage browser tabs: list, new, switch, close, or current|
-|[**takeScreenshot**](#takescreenshot) | **POST** /browser/{browser_id}/screenshot | Take a screenshot|
-|[**takeSnapshot**](#takesnapshot) | **POST** /browser/{browser_id}/snapshot | Take DOM/accessibility snapshot|
-|[**typeText**](#typetext) | **POST** /browser/{browser_id}/type | Type text into an element|
-|[**uploadFile**](#uploadfile) | **POST** /browser/{browser_id}/upload_file | Upload a file|
-|[**waitElement**](#waitelement) | **POST** /browser/{browser_id}/wait_element | Wait for element to become visible or hidden|
-|[**whatIsVisible**](#whatisvisible) | **GET** /browser/{browser_id}/what_is_visible | Analyze visible page content using AI|
+|[**snapshot**](#snapshot) | **POST** /browser/{browser_id}/snapshot | DOM or accessibility snapshot|
+|[**tabs**](#tabs) | **POST** /browser/{browser_id}/tabs | Tabs: list, new, switch, close, current|
+|[**takeScreenshot**](#takescreenshot) | **POST** /browser/{browser_id}/screenshot | Take screenshot|
+|[**typeText**](#typetext) | **POST** /browser/{browser_id}/type | Type text into element|
+|[**uploadFile**](#uploadfile) | **POST** /browser/{browser_id}/upload_file | Upload file to input|
+|[**waitElement**](#waitelement) | **POST** /browser/{browser_id}/wait_element | Wait for element to be visible or hidden|
+|[**whatIsVisible**](#whatisvisible) | **POST** /browser/{browser_id}/what_is_visible | AI page analysis - what\&#39;s visible|
+
+# **browsers**
+> GenericResponse browsers(payload)
+
+
+### Example
+
+```typescript
+import {
+    BrowserApi,
+    Configuration,
+    BrowsersRequest
+} from 'airbrowser-client';
+
+const configuration = new Configuration();
+const apiInstance = new BrowserApi(configuration);
+
+let payload: BrowsersRequest; //
+
+const { status, data } = await apiInstance.browsers(
+    payload
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **payload** | **BrowsersRequest**|  | |
+
+
+### Return type
+
+**GenericResponse**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **checkElement**
-> SuccessResponse checkElement(payload)
-
-
-### Example
-
-```typescript
-import {
-    BrowserApi,
-    Configuration,
-    CheckElementRequest
-} from 'airbrowser-client';
-
-const configuration = new Configuration();
-const apiInstance = new BrowserApi(configuration);
-
-let browserId: string; //Unique browser identifier (default to undefined)
-let payload: CheckElementRequest; //
-
-const { status, data } = await apiInstance.checkElement(
-    browserId,
-    payload
-);
-```
-
-### Parameters
-
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **payload** | **CheckElementRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
-
-
-### Return type
-
-**SuccessResponse**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **click**
-> ActionResult click(payload)
-
-Use if_visible=true to only click if visible.
-
-### Example
-
-```typescript
-import {
-    BrowserApi,
-    Configuration,
-    ClickRequest
-} from 'airbrowser-client';
-
-const configuration = new Configuration();
-const apiInstance = new BrowserApi(configuration);
-
-let browserId: string; //Unique browser identifier (default to undefined)
-let payload: ClickRequest; //
-
-const { status, data } = await apiInstance.click(
-    browserId,
-    payload
-);
-```
-
-### Parameters
-
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **payload** | **ClickRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
-
-
-### Return type
-
-**ActionResult**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **closeAllBrowsers**
-> BaseResponse closeAllBrowsers()
+> GenericResponse checkElement()
 
 
 ### Example
@@ -165,16 +105,32 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-const { status, data } = await apiInstance.closeAllBrowsers();
+let browserId: string; // (default to undefined)
+let selector: string; //selector (default to undefined)
+let check: string; //check (default to undefined)
+let by: string; //by (optional) (default to undefined)
+
+const { status, data } = await apiInstance.checkElement(
+    browserId,
+    selector,
+    check,
+    by
+);
 ```
 
 ### Parameters
-This endpoint does not have any parameters.
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **browserId** | [**string**] |  | defaults to undefined|
+| **selector** | [**string**] | selector | defaults to undefined|
+| **check** | [**string**] | check | defaults to undefined|
+| **by** | [**string**] | by | (optional) defaults to undefined|
 
 
 ### Return type
 
-**BaseResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -193,8 +149,63 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **click**
+> GenericResponse click(payload)
+
+Use if_visible=True to only click if visible.
+
+### Example
+
+```typescript
+import {
+    BrowserApi,
+    Configuration,
+    ClickRequest
+} from 'airbrowser-client';
+
+const configuration = new Configuration();
+const apiInstance = new BrowserApi(configuration);
+
+let browserId: string; // (default to undefined)
+let payload: ClickRequest; //
+
+const { status, data } = await apiInstance.click(
+    browserId,
+    payload
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **payload** | **ClickRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**GenericResponse**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **closeBrowser**
-> BaseResponse closeBrowser()
+> GenericResponse closeBrowser()
 
 
 ### Example
@@ -208,7 +219,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.closeBrowser(
     browserId
@@ -219,12 +230,12 @@ const { status, data } = await apiInstance.closeBrowser(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**BaseResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -244,7 +255,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **consoleLogs**
-> LogsResponse consoleLogs(payload)
+> GenericResponse consoleLogs(payload)
 
 
 ### Example
@@ -259,7 +270,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 let payload: ConsoleLogsRequest; //
 
 const { status, data } = await apiInstance.consoleLogs(
@@ -273,12 +284,12 @@ const { status, data } = await apiInstance.consoleLogs(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **payload** | **ConsoleLogsRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**LogsResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -298,7 +309,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **createBrowser**
-> BrowserCreated createBrowser(payload)
+> GenericResponse createBrowser(payload)
 
 
 ### Example
@@ -307,13 +318,13 @@ No authorization required
 import {
     BrowserApi,
     Configuration,
-    BrowserConfig
+    CreateBrowserRequest
 } from 'airbrowser-client';
 
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let payload: BrowserConfig; //
+let payload: CreateBrowserRequest; //
 
 const { status, data } = await apiInstance.createBrowser(
     payload
@@ -324,12 +335,12 @@ const { status, data } = await apiInstance.createBrowser(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **payload** | **BrowserConfig**|  | |
+| **payload** | **CreateBrowserRequest**|  | |
 
 
 ### Return type
 
-**BrowserCreated**
+**GenericResponse**
 
 ### Authorization
 
@@ -344,64 +355,14 @@ No authorization required
 ### HTTP response details
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-|**400** | Bad request |  -  |
-|**200** | Browser created |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **deleteBrowser**
-> BaseResponse deleteBrowser()
-
-
-### Example
-
-```typescript
-import {
-    BrowserApi,
-    Configuration
-} from 'airbrowser-client';
-
-const configuration = new Configuration();
-const apiInstance = new BrowserApi(configuration);
-
-let browserId: string; //Unique browser identifier (default to undefined)
-
-const { status, data } = await apiInstance.deleteBrowser(
-    browserId
-);
-```
-
-### Parameters
-
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
-
-
-### Return type
-
-**BaseResponse**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
 |**200** | Success |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **detectCoordinates**
-> DetectCoordinatesResult detectCoordinates(payload)
+> GenericResponse detectCoordinates(payload)
 
+Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         Use fx=0.2 for wide elements with icons on the right (like Google search).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
 
 ### Example
 
@@ -415,7 +376,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 let payload: DetectCoordinatesRequest; //
 
 const { status, data } = await apiInstance.detectCoordinates(
@@ -429,12 +390,12 @@ const { status, data } = await apiInstance.detectCoordinates(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **payload** | **DetectCoordinatesRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**DetectCoordinatesResult**
+**GenericResponse**
 
 ### Authorization
 
@@ -454,7 +415,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **dialog**
-> SuccessResponse dialog(payload)
+> GenericResponse dialog(payload)
 
 
 ### Example
@@ -463,14 +424,14 @@ No authorization required
 import {
     BrowserApi,
     Configuration,
-    CombinedDialogRequest
+    DialogRequest
 } from 'airbrowser-client';
 
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
-let payload: CombinedDialogRequest; //
+let browserId: string; // (default to undefined)
+let payload: DialogRequest; //
 
 const { status, data } = await apiInstance.dialog(
     browserId,
@@ -482,13 +443,13 @@ const { status, data } = await apiInstance.dialog(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **payload** | **CombinedDialogRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **payload** | **DialogRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**SuccessResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -508,7 +469,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **emulate**
-> SuccessResponse emulate(payload)
+> GenericResponse emulate(payload)
 
 
 ### Example
@@ -517,14 +478,14 @@ No authorization required
 import {
     BrowserApi,
     Configuration,
-    CombinedEmulateRequest
+    EmulateRequest
 } from 'airbrowser-client';
 
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
-let payload: CombinedEmulateRequest; //
+let browserId: string; // (default to undefined)
+let payload: EmulateRequest; //
 
 const { status, data } = await apiInstance.emulate(
     browserId,
@@ -536,13 +497,13 @@ const { status, data } = await apiInstance.emulate(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **payload** | **CombinedEmulateRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **payload** | **EmulateRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**SuccessResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -562,7 +523,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **executeScript**
-> ExecuteResponse executeScript(payload)
+> GenericResponse executeScript(payload)
 
 
 ### Example
@@ -571,14 +532,14 @@ No authorization required
 import {
     BrowserApi,
     Configuration,
-    ExecuteRequest
+    ExecuteScriptRequest
 } from 'airbrowser-client';
 
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
-let payload: ExecuteRequest; //
+let browserId: string; // (default to undefined)
+let payload: ExecuteScriptRequest; //
 
 const { status, data } = await apiInstance.executeScript(
     browserId,
@@ -590,13 +551,13 @@ const { status, data } = await apiInstance.executeScript(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **payload** | **ExecuteRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **payload** | **ExecuteScriptRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**ExecuteResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -616,7 +577,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **fillForm**
-> SuccessResponse fillForm(payload)
+> GenericResponse fillForm(payload)
 
 
 ### Example
@@ -631,7 +592,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 let payload: FillFormRequest; //
 
 const { status, data } = await apiInstance.fillForm(
@@ -645,12 +606,12 @@ const { status, data } = await apiInstance.fillForm(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **payload** | **FillFormRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**SuccessResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -669,109 +630,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **getBrowser**
-> BrowserInfoResponse getBrowser()
-
-
-### Example
-
-```typescript
-import {
-    BrowserApi,
-    Configuration
-} from 'airbrowser-client';
-
-const configuration = new Configuration();
-const apiInstance = new BrowserApi(configuration);
-
-let browserId: string; //Unique browser identifier (default to undefined)
-
-const { status, data } = await apiInstance.getBrowser(
-    browserId
-);
-```
-
-### Parameters
-
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
-
-
-### Return type
-
-**BrowserInfoResponse**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**404** | Browser not found |  -  |
-|**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **getBrowserStatus**
-> BrowserInfoResponse getBrowserStatus()
-
-
-### Example
-
-```typescript
-import {
-    BrowserApi,
-    Configuration
-} from 'airbrowser-client';
-
-const configuration = new Configuration();
-const apiInstance = new BrowserApi(configuration);
-
-let browserId: string; //Unique browser identifier (default to undefined)
-
-const { status, data } = await apiInstance.getBrowserStatus(
-    browserId
-);
-```
-
-### Parameters
-
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
-
-
-### Return type
-
-**BrowserInfoResponse**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **getContent**
-> ContentResponse getContent()
+> GenericResponse getContent()
 
 
 ### Example
@@ -785,7 +645,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.getContent(
     browserId
@@ -796,12 +656,12 @@ const { status, data } = await apiInstance.getContent(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**ContentResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -821,61 +681,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **getElementData**
-> AttributeResponse getElementData(payload)
-
-
-### Example
-
-```typescript
-import {
-    BrowserApi,
-    Configuration,
-    ElementDataRequest
-} from 'airbrowser-client';
-
-const configuration = new Configuration();
-const apiInstance = new BrowserApi(configuration);
-
-let browserId: string; //Unique browser identifier (default to undefined)
-let payload: ElementDataRequest; //
-
-const { status, data } = await apiInstance.getElementData(
-    browserId,
-    payload
-);
-```
-
-### Parameters
-
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **payload** | **ElementDataRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
-
-
-### Return type
-
-**AttributeResponse**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **getPoolStatus**
-> PoolStatusResponse getPoolStatus()
+> GenericResponse getElementData()
 
 
 ### Example
@@ -889,16 +695,35 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-const { status, data } = await apiInstance.getPoolStatus();
+let browserId: string; // (default to undefined)
+let selector: string; //selector (default to undefined)
+let dataType: string; //data_type (default to undefined)
+let name: string; //name (optional) (default to undefined)
+let by: string; //by (optional) (default to undefined)
+
+const { status, data } = await apiInstance.getElementData(
+    browserId,
+    selector,
+    dataType,
+    name,
+    by
+);
 ```
 
 ### Parameters
-This endpoint does not have any parameters.
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **browserId** | [**string**] |  | defaults to undefined|
+| **selector** | [**string**] | selector | defaults to undefined|
+| **dataType** | [**string**] | data_type | defaults to undefined|
+| **name** | [**string**] | name | (optional) defaults to undefined|
+| **by** | [**string**] | by | (optional) defaults to undefined|
 
 
 ### Return type
 
-**PoolStatusResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -918,7 +743,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **getUrl**
-> UrlResponse getUrl()
+> GenericResponse getUrl()
 
 
 ### Example
@@ -932,7 +757,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.getUrl(
     browserId
@@ -943,12 +768,12 @@ const { status, data } = await apiInstance.getUrl(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**UrlResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -968,7 +793,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **guiClick**
-> ActionResult guiClick(payload)
+> GenericResponse guiClick(payload)
 
 
 ### Example
@@ -977,14 +802,14 @@ No authorization required
 import {
     BrowserApi,
     Configuration,
-    CombinedGuiClickRequest
+    GuiClickRequest
 } from 'airbrowser-client';
 
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
-let payload: CombinedGuiClickRequest; //
+let browserId: string; // (default to undefined)
+let payload: GuiClickRequest; //
 
 const { status, data } = await apiInstance.guiClick(
     browserId,
@@ -996,13 +821,175 @@ const { status, data } = await apiInstance.guiClick(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **payload** | **CombinedGuiClickRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **payload** | **GuiClickRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**ActionResult**
+**GenericResponse**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **guiHoverXy**
+> GenericResponse guiHoverXy(payload)
+
+
+### Example
+
+```typescript
+import {
+    BrowserApi,
+    Configuration,
+    GuiHoverXyRequest
+} from 'airbrowser-client';
+
+const configuration = new Configuration();
+const apiInstance = new BrowserApi(configuration);
+
+let browserId: string; // (default to undefined)
+let payload: GuiHoverXyRequest; //
+
+const { status, data } = await apiInstance.guiHoverXy(
+    browserId,
+    payload
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **payload** | **GuiHoverXyRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**GenericResponse**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **guiPressKeysXy**
+> GenericResponse guiPressKeysXy(payload)
+
+
+### Example
+
+```typescript
+import {
+    BrowserApi,
+    Configuration,
+    GuiPressKeysXyRequest
+} from 'airbrowser-client';
+
+const configuration = new Configuration();
+const apiInstance = new BrowserApi(configuration);
+
+let browserId: string; // (default to undefined)
+let payload: GuiPressKeysXyRequest; //
+
+const { status, data } = await apiInstance.guiPressKeysXy(
+    browserId,
+    payload
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **payload** | **GuiPressKeysXyRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**GenericResponse**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **guiTypeXy**
+> GenericResponse guiTypeXy(payload)
+
+
+### Example
+
+```typescript
+import {
+    BrowserApi,
+    Configuration,
+    GuiTypeXyRequest
+} from 'airbrowser-client';
+
+const configuration = new Configuration();
+const apiInstance = new BrowserApi(configuration);
+
+let browserId: string; // (default to undefined)
+let payload: GuiTypeXyRequest; //
+
+const { status, data } = await apiInstance.guiTypeXy(
+    browserId,
+    payload
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **payload** | **GuiTypeXyRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**GenericResponse**
 
 ### Authorization
 
@@ -1022,7 +1009,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **history**
-> ActionResult history(payload)
+> GenericResponse history(payload)
 
 
 ### Example
@@ -1037,7 +1024,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 let payload: HistoryRequest; //
 
 const { status, data } = await apiInstance.history(
@@ -1051,12 +1038,12 @@ const { status, data } = await apiInstance.history(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **payload** | **HistoryRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**ActionResult**
+**GenericResponse**
 
 ### Authorization
 
@@ -1075,51 +1062,8 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **listBrowsers**
-> BrowserList listBrowsers()
-
-
-### Example
-
-```typescript
-import {
-    BrowserApi,
-    Configuration
-} from 'airbrowser-client';
-
-const configuration = new Configuration();
-const apiInstance = new BrowserApi(configuration);
-
-const { status, data } = await apiInstance.listBrowsers();
-```
-
-### Parameters
-This endpoint does not have any parameters.
-
-
-### Return type
-
-**BrowserList**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **mouse**
-> SuccessResponse mouse(payload)
+> GenericResponse mouse(payload)
 
 
 ### Example
@@ -1134,7 +1078,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 let payload: MouseRequest; //
 
 const { status, data } = await apiInstance.mouse(
@@ -1148,12 +1092,12 @@ const { status, data } = await apiInstance.mouse(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **payload** | **MouseRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**SuccessResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -1173,7 +1117,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **navigateBrowser**
-> ActionResult navigateBrowser(payload)
+> GenericResponse navigateBrowser(payload)
 
 
 ### Example
@@ -1182,14 +1126,14 @@ No authorization required
 import {
     BrowserApi,
     Configuration,
-    NavigateRequest
+    NavigateBrowserRequest
 } from 'airbrowser-client';
 
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
-let payload: NavigateRequest; //
+let browserId: string; // (default to undefined)
+let payload: NavigateBrowserRequest; //
 
 const { status, data } = await apiInstance.navigateBrowser(
     browserId,
@@ -1201,13 +1145,13 @@ const { status, data } = await apiInstance.navigateBrowser(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **payload** | **NavigateRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **payload** | **NavigateBrowserRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**ActionResult**
+**GenericResponse**
 
 ### Authorization
 
@@ -1227,7 +1171,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **networkLogs**
-> LogsResponse networkLogs(payload)
+> GenericResponse networkLogs(payload)
 
 
 ### Example
@@ -1242,7 +1186,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 let payload: NetworkLogsRequest; //
 
 const { status, data } = await apiInstance.networkLogs(
@@ -1256,12 +1200,12 @@ const { status, data } = await apiInstance.networkLogs(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **payload** | **NetworkLogsRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**LogsResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -1281,7 +1225,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **performance**
-> SuccessResponse performance(payload)
+> GenericResponse performance(payload)
 
 
 ### Example
@@ -1296,7 +1240,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 let payload: PerformanceRequest; //
 
 const { status, data } = await apiInstance.performance(
@@ -1310,12 +1254,12 @@ const { status, data } = await apiInstance.performance(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **payload** | **PerformanceRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**SuccessResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -1335,7 +1279,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **pressKeys**
-> ActionResult pressKeys(payload)
+> GenericResponse pressKeys(payload)
 
 
 ### Example
@@ -1350,7 +1294,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 let payload: PressKeysRequest; //
 
 const { status, data } = await apiInstance.pressKeys(
@@ -1364,12 +1308,12 @@ const { status, data } = await apiInstance.pressKeys(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **payload** | **PressKeysRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**ActionResult**
+**GenericResponse**
 
 ### Authorization
 
@@ -1389,7 +1333,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **resize**
-> SuccessResponse resize(payload)
+> GenericResponse resize(payload)
 
 
 ### Example
@@ -1404,7 +1348,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 let payload: ResizeRequest; //
 
 const { status, data } = await apiInstance.resize(
@@ -1418,12 +1362,12 @@ const { status, data } = await apiInstance.resize(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **payload** | **ResizeRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**SuccessResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -1443,7 +1387,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **scroll**
-> SuccessResponse scroll(payload)
+> GenericResponse scroll(payload)
 
 
 ### Example
@@ -1452,14 +1396,14 @@ No authorization required
 import {
     BrowserApi,
     Configuration,
-    CombinedScrollRequest
+    ScrollRequest
 } from 'airbrowser-client';
 
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
-let payload: CombinedScrollRequest; //
+let browserId: string; // (default to undefined)
+let payload: ScrollRequest; //
 
 const { status, data } = await apiInstance.scroll(
     browserId,
@@ -1471,13 +1415,13 @@ const { status, data } = await apiInstance.scroll(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **payload** | **CombinedScrollRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **payload** | **ScrollRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**SuccessResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -1497,7 +1441,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **select**
-> SuccessResponse select(payload)
+> GenericResponse select(payload)
 
 
 ### Example
@@ -1512,7 +1456,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 let payload: SelectRequest; //
 
 const { status, data } = await apiInstance.select(
@@ -1526,12 +1470,66 @@ const { status, data } = await apiInstance.select(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **payload** | **SelectRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**SuccessResponse**
+**GenericResponse**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **snapshot**
+> GenericResponse snapshot(payload)
+
+
+### Example
+
+```typescript
+import {
+    BrowserApi,
+    Configuration,
+    SnapshotRequest
+} from 'airbrowser-client';
+
+const configuration = new Configuration();
+const apiInstance = new BrowserApi(configuration);
+
+let browserId: string; // (default to undefined)
+let payload: SnapshotRequest; //
+
+const { status, data } = await apiInstance.snapshot(
+    browserId,
+    payload
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **payload** | **SnapshotRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**GenericResponse**
 
 ### Authorization
 
@@ -1551,7 +1549,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **tabs**
-> SuccessResponse tabs(payload)
+> GenericResponse tabs(payload)
 
 
 ### Example
@@ -1566,7 +1564,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 let payload: TabsRequest; //
 
 const { status, data } = await apiInstance.tabs(
@@ -1580,12 +1578,12 @@ const { status, data } = await apiInstance.tabs(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **payload** | **TabsRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**SuccessResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -1605,57 +1603,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **takeScreenshot**
-> ScreenshotResponse takeScreenshot()
-
-
-### Example
-
-```typescript
-import {
-    BrowserApi,
-    Configuration
-} from 'airbrowser-client';
-
-const configuration = new Configuration();
-const apiInstance = new BrowserApi(configuration);
-
-let browserId: string; //Unique browser identifier (default to undefined)
-
-const { status, data } = await apiInstance.takeScreenshot(
-    browserId
-);
-```
-
-### Parameters
-
-|Name | Type | Description  | Notes|
-|------------- | ------------- | ------------- | -------------|
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
-
-
-### Return type
-
-**ScreenshotResponse**
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-
-### HTTP response details
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-|**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **takeSnapshot**
-> SuccessResponse takeSnapshot(payload)
+> GenericResponse takeScreenshot(payload)
 
 
 ### Example
@@ -1664,16 +1612,16 @@ No authorization required
 import {
     BrowserApi,
     Configuration,
-    SnapshotRequest
+    TakeScreenshotRequest
 } from 'airbrowser-client';
 
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
-let payload: SnapshotRequest; //
+let browserId: string; // (default to undefined)
+let payload: TakeScreenshotRequest; //
 
-const { status, data } = await apiInstance.takeSnapshot(
+const { status, data } = await apiInstance.takeScreenshot(
     browserId,
     payload
 );
@@ -1683,13 +1631,13 @@ const { status, data } = await apiInstance.takeSnapshot(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **payload** | **SnapshotRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **payload** | **TakeScreenshotRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**SuccessResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -1709,7 +1657,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **typeText**
-> ActionResult typeText(payload)
+> GenericResponse typeText(payload)
 
 
 ### Example
@@ -1718,14 +1666,14 @@ No authorization required
 import {
     BrowserApi,
     Configuration,
-    TypeRequest
+    TypeTextRequest
 } from 'airbrowser-client';
 
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
-let payload: TypeRequest; //
+let browserId: string; // (default to undefined)
+let payload: TypeTextRequest; //
 
 const { status, data } = await apiInstance.typeText(
     browserId,
@@ -1737,13 +1685,13 @@ const { status, data } = await apiInstance.typeText(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **payload** | **TypeRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **payload** | **TypeTextRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**ActionResult**
+**GenericResponse**
 
 ### Authorization
 
@@ -1763,7 +1711,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **uploadFile**
-> SuccessResponse uploadFile(payload)
+> GenericResponse uploadFile(payload)
 
 
 ### Example
@@ -1778,7 +1726,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 let payload: UploadFileRequest; //
 
 const { status, data } = await apiInstance.uploadFile(
@@ -1792,12 +1740,12 @@ const { status, data } = await apiInstance.uploadFile(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **payload** | **UploadFileRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**SuccessResponse**
+**GenericResponse**
 
 ### Authorization
 
@@ -1817,7 +1765,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **waitElement**
-> ActionResult waitElement(payload)
+> GenericResponse waitElement(payload)
 
 
 ### Example
@@ -1832,7 +1780,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 let payload: WaitElementRequest; //
 
 const { status, data } = await apiInstance.waitElement(
@@ -1846,12 +1794,12 @@ const { status, data } = await apiInstance.waitElement(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **payload** | **WaitElementRequest**|  | |
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**ActionResult**
+**GenericResponse**
 
 ### Authorization
 
@@ -1871,7 +1819,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **whatIsVisible**
-> WhatIsVisibleResult whatIsVisible()
+> GenericResponse whatIsVisible()
 
 
 ### Example
@@ -1885,7 +1833,7 @@ import {
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
-let browserId: string; //Unique browser identifier (default to undefined)
+let browserId: string; // (default to undefined)
 
 const { status, data } = await apiInstance.whatIsVisible(
     browserId
@@ -1896,12 +1844,12 @@ const { status, data } = await apiInstance.whatIsVisible(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
-| **browserId** | [**string**] | Unique browser identifier | defaults to undefined|
+| **browserId** | [**string**] |  | defaults to undefined|
 
 
 ### Return type
 
-**WhatIsVisibleResult**
+**GenericResponse**
 
 ### Authorization
 

@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**fields** | [**List[FormField]**](FormField.md) | Fields to fill | 
-**by** | **str** | Selector type (css, id, name, xpath) | [optional] [default to 'css']
+**fields** | **List[object]** | fields | 
+**by** | **str** | by | [optional] [default to 'css']
 
 ## Example
 

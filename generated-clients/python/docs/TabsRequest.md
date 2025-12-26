@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **str** | Tab action: list, new, switch, close, or current | 
-**url** | **str** | URL for new tab (for &#39;new&#39; action) | [optional] 
-**index** | **int** | Tab index (for &#39;switch&#39; or &#39;close&#39; actions) | [optional] 
-**handle** | **str** | Tab handle (for &#39;switch&#39; or &#39;close&#39; actions) | [optional] 
+**action** | **str** | action | 
+**url** | **str** | url | [optional] 
+**index** | **int** | index | [optional] 
+**handle** | **str** | handle | [optional] 
 
 ## Example
 

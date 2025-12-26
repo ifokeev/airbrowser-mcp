@@ -19,7 +19,6 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from airbrowser_client.models.form_field import FormField
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,8 +26,8 @@ class FillFormRequest(BaseModel):
     """
     FillFormRequest
     """ # noqa: E501
-    fields: List[FormField] = Field(description="Fields to fill")
-    by: Optional[StrictStr] = Field(default='css', description="Selector type (css, id, name, xpath)")
+    fields: List[Dict[str, Any]] = Field(description="fields")
+    by: Optional[StrictStr] = Field(default='css', description="by")
     __properties: ClassVar[List[str]] = ["fields", "by"]
 
     model_config = ConfigDict(
@@ -70,13 +69,6 @@ class FillFormRequest(BaseModel):
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in fields (list)
-        _items = []
-        if self.fields:
-            for _item_fields in self.fields:
-                if _item_fields:
-                    _items.append(_item_fields.to_dict())
-            _dict['fields'] = _items
         return _dict
 
     @classmethod
@@ -89,7 +81,7 @@ class FillFormRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "fields": [FormField.from_dict(_item) for _item in obj["fields"]] if obj.get("fields") is not None else None,
+            "fields": obj.get("fields"),
             "by": obj.get("by") if obj.get("by") is not None else 'css'
         })
         return _obj

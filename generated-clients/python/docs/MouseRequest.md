@@ -5,11 +5,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **str** | Action: hover or drag | 
-**selector** | **str** | Element selector (for hover) | [optional] 
-**source** | **str** | Source selector (for drag) | [optional] 
-**target** | **str** | Target selector (for drag) | [optional] 
-**by** | **str** | Selector type: css, id, name, xpath | [optional] [default to 'css']
+**action** | **str** | action | 
+**selector** | **str** | selector | [optional] 
+**source** | **str** | source | [optional] 
+**target** | **str** | target | [optional] 
+**by** | **str** | by | [optional] [default to 'css']
 
 ## Example
 

@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**type** | **string** | Snapshot type: dom or accessibility | [optional] [default to 'dom']
+**snapshot_type** | **string** | snapshot_type | [optional] [default to 'dom']
 
 ## Example
 
@@ -13,7 +13,7 @@ Name | Type | Description | Notes
 import { SnapshotRequest } from 'airbrowser-client';
 
 const instance: SnapshotRequest = {
-    type,
+    snapshot_type,
 };
 ```
 

@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,23 +26,13 @@ class SelectRequest(BaseModel):
     """
     SelectRequest
     """ # noqa: E501
-    selector: StrictStr = Field(description="Select element selector")
-    by: Optional[StrictStr] = Field(default='css', description="Selector type (css, id, name, xpath)")
-    action: Optional[StrictStr] = Field(default='select', description="Action: select or options")
-    value: Optional[StrictStr] = Field(default=None, description="Option value to select")
-    text: Optional[StrictStr] = Field(default=None, description="Option text to select")
-    index: Optional[StrictInt] = Field(default=None, description="Option index to select")
-    __properties: ClassVar[List[str]] = ["selector", "by", "action", "value", "text", "index"]
-
-    @field_validator('action')
-    def action_validate_enum(cls, value):
-        """Validates the enum"""
-        if value is None:
-            return value
-
-        if value not in set(['select', 'options']):
-            raise ValueError("must be one of enum values ('select', 'options')")
-        return value
+    selector: StrictStr = Field(description="selector")
+    action: Optional[StrictStr] = Field(default='select', description="action")
+    value: Optional[StrictStr] = Field(default=None, description="value")
+    text: Optional[StrictStr] = Field(default=None, description="text")
+    index: Optional[StrictInt] = Field(default=None, description="index")
+    by: Optional[StrictStr] = Field(default='css', description="by")
+    __properties: ClassVar[List[str]] = ["selector", "action", "value", "text", "index", "by"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -96,11 +86,11 @@ class SelectRequest(BaseModel):
 
         _obj = cls.model_validate({
             "selector": obj.get("selector"),
-            "by": obj.get("by") if obj.get("by") is not None else 'css',
             "action": obj.get("action") if obj.get("action") is not None else 'select',
             "value": obj.get("value"),
             "text": obj.get("text"),
-            "index": obj.get("index")
+            "index": obj.get("index"),
+            "by": obj.get("by") if obj.get("by") is not None else 'css'
         })
         return _obj
 

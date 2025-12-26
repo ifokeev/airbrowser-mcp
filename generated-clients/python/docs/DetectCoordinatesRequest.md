@@ -5,7 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**prompt** | **str** | Natural language description of element to find | 
+**prompt** | **str** | prompt | 
+**fx** | **float** | fx | [optional] 
+**fy** | **float** | fy | [optional] 
 
 ## Example
 

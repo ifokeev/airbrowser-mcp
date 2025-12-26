@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **str** | Action: get or clear | 
-**limit** | **int** | Max number of logs to return (for get) | [optional] 
+**action** | **str** | action | 
+**limit** | **int** | limit | [optional] 
 
 ## Example
 

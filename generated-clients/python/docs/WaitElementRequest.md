@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**selector** | **str** | Element selector | 
-**by** | **str** | Selector type (css, id, name, xpath) | [optional] [default to 'css']
-**until** | **str** | Wait until: visible or hidden | 
-**timeout** | **int** | Timeout in seconds | [optional] 
+**selector** | **str** | selector | 
+**until** | **str** | until | 
+**timeout** | **int** | timeout | [optional] 
+**by** | **str** | by | [optional] [default to 'css']
 
 ## Example
 

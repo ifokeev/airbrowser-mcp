@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **str** | History action: back, forward, or refresh | 
+**action** | **str** | action | 
 
 ## Example
 

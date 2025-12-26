@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -26,18 +26,11 @@ class WaitElementRequest(BaseModel):
     """
     WaitElementRequest
     """ # noqa: E501
-    selector: StrictStr = Field(description="Element selector")
-    by: Optional[StrictStr] = Field(default='css', description="Selector type (css, id, name, xpath)")
-    until: StrictStr = Field(description="Wait until: visible or hidden")
-    timeout: Optional[StrictInt] = Field(default=None, description="Timeout in seconds")
-    __properties: ClassVar[List[str]] = ["selector", "by", "until", "timeout"]
-
-    @field_validator('until')
-    def until_validate_enum(cls, value):
-        """Validates the enum"""
-        if value not in set(['visible', 'hidden']):
-            raise ValueError("must be one of enum values ('visible', 'hidden')")
-        return value
+    selector: StrictStr = Field(description="selector")
+    until: StrictStr = Field(description="until")
+    timeout: Optional[StrictInt] = Field(default=None, description="timeout")
+    by: Optional[StrictStr] = Field(default='css', description="by")
+    __properties: ClassVar[List[str]] = ["selector", "until", "timeout", "by"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -91,9 +84,9 @@ class WaitElementRequest(BaseModel):
 
         _obj = cls.model_validate({
             "selector": obj.get("selector"),
-            "by": obj.get("by") if obj.get("by") is not None else 'css',
             "until": obj.get("until"),
-            "timeout": obj.get("timeout")
+            "timeout": obj.get("timeout"),
+            "by": obj.get("by") if obj.get("by") is not None else 'css'
         })
         return _obj
 

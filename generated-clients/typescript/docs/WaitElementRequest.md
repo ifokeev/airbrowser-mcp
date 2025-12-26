@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**selector** | **string** | Element selector | [default to undefined]
-**by** | **string** | Selector type (css, id, name, xpath) | [optional] [default to 'css']
-**until** | **string** | Wait until: visible or hidden | [default to undefined]
-**timeout** | **number** | Timeout in seconds | [optional] [default to undefined]
+**selector** | **string** | selector | [default to undefined]
+**until** | **string** | until | [default to undefined]
+**timeout** | **number** | timeout | [optional] [default to undefined]
+**by** | **string** | by | [optional] [default to 'css']
 
 ## Example
 
@@ -17,9 +17,9 @@ import { WaitElementRequest } from 'airbrowser-client';
 
 const instance: WaitElementRequest = {
     selector,
-    by,
     until,
     timeout,
+    by,
 };
 ```
 

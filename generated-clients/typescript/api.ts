@@ -23,42 +23,6 @@ import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
-export interface ActionResult {
-    /**
-     * Operation success
-     */
-    'success': boolean;
-    /**
-     * Status message
-     */
-    'message': string;
-    /**
-     * Unix timestamp
-     */
-    'timestamp': number;
-    /**
-     * Action result data
-     */
-    'data'?: object;
-}
-export interface AttributeResponse {
-    /**
-     * Operation success
-     */
-    'success'?: boolean;
-    /**
-     * Status message
-     */
-    'message'?: string;
-    /**
-     * Unix timestamp
-     */
-    'timestamp'?: number;
-    /**
-     * Attribute/property data
-     */
-    'data'?: object;
-}
 export interface BaseResponse {
     /**
      * Operation success
@@ -73,325 +37,81 @@ export interface BaseResponse {
      */
     'timestamp': number;
 }
-export interface BrowserConfig {
+export interface BrowsersRequest {
     /**
-     * Profile name for persistent data. Omit for fresh session.
+     * action
      */
-    'profile_name'?: string;
-    /**
-     * Proxy server URL
-     */
-    'proxy'?: string;
-    /**
-     * Custom user agent string
-     */
-    'user_agent'?: string;
-    /**
-     * Browser window size [width, height]
-     */
-    'window_size'?: Array<number>;
-    /**
-     * Disable GPU acceleration
-     */
-    'disable_gpu'?: boolean;
-    /**
-     * Disable image loading
-     */
-    'disable_images'?: boolean;
-    /**
-     * Disable JavaScript
-     */
-    'disable_javascript'?: boolean;
-    /**
-     * Chrome extension paths
-     */
-    'extensions'?: Array<string>;
-    /**
-     * Custom Chrome arguments
-     */
-    'custom_args'?: Array<string>;
+    'action': string;
 }
-export interface BrowserCreated {
-    /**
-     * Operation success
-     */
-    'success': boolean;
-    /**
-     * Status message
-     */
-    'message': string;
-    /**
-     * Unix timestamp
-     */
-    'timestamp': number;
-    /**
-     * Browser creation data
-     */
-    'data'?: BrowserCreationData;
-}
-export interface BrowserCreationData {
-    /**
-     * Unique browser identifier
-     */
-    'browser_id': string;
-    /**
-     * Browser configuration used
-     */
-    'config'?: object;
-}
-export interface BrowserInfoResponse {
-    /**
-     * Operation success
-     */
-    'success': boolean;
-    /**
-     * Status message
-     */
-    'message': string;
-    /**
-     * Unix timestamp
-     */
-    'timestamp': number;
-    /**
-     * Browser information
-     */
-    'data'?: object;
-}
-export interface BrowserList {
-    /**
-     * Operation success
-     */
-    'success': boolean;
-    /**
-     * Status message
-     */
-    'message': string;
-    /**
-     * Unix timestamp
-     */
-    'timestamp': number;
-    /**
-     * Browser list data
-     */
-    'data'?: BrowserListData;
-}
-export interface BrowserListData {
-    /**
-     * List of active browsers
-     */
-    'browsers'?: Array<object>;
-    /**
-     * Total browser count
-     */
-    'count'?: number;
-}
-export interface CheckElementRequest {
-    /**
-     * Element selector
-     */
-    'selector': string;
-    /**
-     * Selector type (css, id, name, xpath)
-     */
-    'by'?: string;
-    /**
-     * Check type: exists or visible
-     */
-    'check': CheckElementRequestCheckEnum;
-}
-
-export const CheckElementRequestCheckEnum = {
-    Exists: 'exists',
-    Visible: 'visible'
-} as const;
-
-export type CheckElementRequestCheckEnum = typeof CheckElementRequestCheckEnum[keyof typeof CheckElementRequestCheckEnum];
-
 export interface ClickRequest {
     /**
-     * Element selector
+     * selector
      */
     'selector': string;
     /**
-     * Selector type: css, id, name, xpath
-     */
-    'by'?: string;
-    /**
-     * Timeout in seconds
+     * timeout
      */
     'timeout'?: number;
     /**
-     * Only click if element is visible
-     */
-    'if_visible'?: boolean;
-}
-export interface CombinedDialogRequest {
-    /**
-     * Dialog action: get, accept, or dismiss
-     */
-    'action': CombinedDialogRequestActionEnum;
-    /**
-     * Text to enter for prompt dialogs (for \'accept\' action)
-     */
-    'text'?: string;
-}
-
-export const CombinedDialogRequestActionEnum = {
-    Get: 'get',
-    Accept: 'accept',
-    Dismiss: 'dismiss'
-} as const;
-
-export type CombinedDialogRequestActionEnum = typeof CombinedDialogRequestActionEnum[keyof typeof CombinedDialogRequestActionEnum];
-
-export interface CombinedEmulateRequest {
-    /**
-     * Emulation action: set, clear, or list_devices
-     */
-    'action'?: CombinedEmulateRequestActionEnum;
-    /**
-     * Device preset name (e.g., iPhone 14, iPad)
-     */
-    'device'?: string;
-    /**
-     * Custom viewport width
-     */
-    'width'?: number;
-    /**
-     * Custom viewport height
-     */
-    'height'?: number;
-    /**
-     * Device pixel ratio
-     */
-    'device_scale_factor'?: number;
-    /**
-     * Enable touch events
-     */
-    'mobile'?: boolean;
-    /**
-     * Custom user agent
-     */
-    'user_agent'?: string;
-}
-
-export const CombinedEmulateRequestActionEnum = {
-    Set: 'set',
-    Clear: 'clear',
-    ListDevices: 'list_devices'
-} as const;
-
-export type CombinedEmulateRequestActionEnum = typeof CombinedEmulateRequestActionEnum[keyof typeof CombinedEmulateRequestActionEnum];
-
-export interface CombinedGuiClickRequest {
-    /**
-     * Element selector (for selector mode)
-     */
-    'selector'?: string;
-    /**
-     * Screen X coordinate (for coordinate mode)
-     */
-    'x'?: number;
-    /**
-     * Screen Y coordinate (for coordinate mode)
-     */
-    'y'?: number;
-    /**
-     * Mouse move duration (seconds)
-     */
-    'timeframe'?: number;
-    /**
-     * Relative X (0..1) within element to click
-     */
-    'fx'?: number;
-    /**
-     * Relative Y (0..1) within element to click
-     */
-    'fy'?: number;
-}
-export interface CombinedScrollRequest {
-    /**
-     * Element selector to scroll to
-     */
-    'selector'?: string;
-    /**
-     * Selector type (css, id, name, xpath)
+     * by
      */
     'by'?: string;
     /**
-     * X coordinate to scroll to (absolute)
+     * if_visible
      */
-    'x'?: number;
-    /**
-     * Y coordinate to scroll to (absolute)
-     */
-    'y'?: number;
-    /**
-     * Horizontal scroll amount (relative)
-     */
-    'delta_x'?: number;
-    /**
-     * Vertical scroll amount (relative)
-     */
-    'delta_y'?: number;
-    /**
-     * Scroll behavior: smooth or instant
-     */
-    'behavior'?: string;
+    'if_visible'?: boolean;
 }
 export interface ConsoleLogsRequest {
     /**
-     * Action: get or clear
+     * action
      */
-    'action': ConsoleLogsRequestActionEnum;
+    'action': string;
     /**
-     * Max number of logs to return (for get)
+     * limit
      */
     'limit'?: number;
 }
-
-export const ConsoleLogsRequestActionEnum = {
-    Get: 'get',
-    Clear: 'clear'
-} as const;
-
-export type ConsoleLogsRequestActionEnum = typeof ConsoleLogsRequestActionEnum[keyof typeof ConsoleLogsRequestActionEnum];
-
-export interface ContentData {
+export interface CreateBrowserRequest {
     /**
-     * Visible text content (no HTML tags)
+     * uc
      */
-    'text'?: string;
+    'uc'?: boolean;
     /**
-     * Page title
+     * proxy
      */
-    'title'?: string;
+    'proxy'?: string;
     /**
-     * Current URL
+     * window_size
      */
-    'url'?: string;
+    'window_size'?: Array<number>;
     /**
-     * Whether text was truncated
+     * user_agent
      */
-    'truncated'?: boolean;
-}
-export interface ContentResponse {
+    'user_agent'?: string;
     /**
-     * Operation success
+     * disable_gpu
      */
-    'success': boolean;
+    'disable_gpu'?: boolean;
     /**
-     * Status message
+     * disable_images
      */
-    'message': string;
+    'disable_images'?: boolean;
     /**
-     * Unix timestamp
+     * disable_javascript
      */
-    'timestamp': number;
+    'disable_javascript'?: boolean;
     /**
-     * Page content data
+     * extensions
      */
-    'data'?: ContentData;
+    'extensions'?: Array<string>;
+    /**
+     * custom_args
+     */
+    'custom_args'?: Array<string>;
+    /**
+     * profile_name
+     */
+    'profile_name'?: string;
 }
 export interface CreateProfileRequest {
     /**
@@ -401,91 +121,58 @@ export interface CreateProfileRequest {
 }
 export interface DetectCoordinatesRequest {
     /**
-     * Natural language description of element to find
+     * prompt
      */
     'prompt': string;
+    /**
+     * fx
+     */
+    'fx'?: number;
+    /**
+     * fy
+     */
+    'fy'?: number;
 }
-export interface DetectCoordinatesResult {
+export interface DialogRequest {
     /**
-     * Operation success
+     * action
      */
-    'success'?: boolean;
+    'action': string;
     /**
-     * Success message
+     * text
      */
-    'message'?: string;
-    /**
-     * Unix timestamp
-     */
-    'timestamp'?: number;
-    /**
-     * Element description used
-     */
-    'prompt'?: string;
-    /**
-     * Full coordinate information
-     */
-    'coordinates'?: object;
-    /**
-     * Element bounding box {x, y, width, height}
-     */
-    'bounding_box'?: object;
-    /**
-     * Recommended click point {x, y}
-     */
-    'click_point'?: object;
-    /**
-     * Path to screenshot analyzed
-     */
-    'screenshot_path'?: string;
-    /**
-     * Vision model used for detection
-     */
-    'model_used'?: string;
-    /**
-     * Detection confidence (0.0-1.0)
-     */
-    'confidence'?: number;
-    /**
-     * Models attempted if detection failed
-     */
-    'models_tried'?: Array<string>;
-    /**
-     * Additional result data
-     */
-    'data'?: object;
-    /**
-     * Error message if failed
-     */
-    'error'?: string;
+    'text'?: string;
 }
-export interface ElementDataRequest {
+export interface EmulateRequest {
     /**
-     * Element selector
+     * action
      */
-    'selector': string;
+    'action'?: string;
     /**
-     * Selector type (css, id, name, xpath)
+     * device
      */
-    'by'?: string;
+    'device'?: string;
     /**
-     * Data type: text, attribute, or property
+     * width
      */
-    'type': ElementDataRequestTypeEnum;
+    'width'?: number;
     /**
-     * Attribute/property name (required for attribute/property)
+     * height
      */
-    'name'?: string;
+    'height'?: number;
+    /**
+     * device_scale_factor
+     */
+    'device_scale_factor'?: number;
+    /**
+     * mobile
+     */
+    'mobile'?: boolean;
+    /**
+     * user_agent
+     */
+    'user_agent'?: string;
 }
-
-export const ElementDataRequestTypeEnum = {
-    Text: 'text',
-    Attribute: 'attribute',
-    Property: 'property'
-} as const;
-
-export type ElementDataRequestTypeEnum = typeof ElementDataRequestTypeEnum[keyof typeof ElementDataRequestTypeEnum];
-
 export interface ErrorResponse {
     /**
      * Operation success (false)
@@ -500,59 +187,111 @@ export interface ErrorResponse {
      */
     'timestamp'?: number;
 }
-export interface ExecuteData {
+export interface ExecuteScriptRequest {
     /**
-     * Script execution result
-     */
-    'result'?: object;
-}
-export interface ExecuteRequest {
-    /**
-     * JavaScript code to execute
+     * script
      */
     'script': string;
-    /**
-     * Timeout in seconds
-     */
-    'timeout'?: number;
-}
-export interface ExecuteResponse {
-    /**
-     * Operation success
-     */
-    'success': boolean;
-    /**
-     * Status message
-     */
-    'message': string;
-    /**
-     * Unix timestamp
-     */
-    'timestamp': number;
-    /**
-     * Execution result
-     */
-    'data'?: ExecuteData;
 }
 export interface FillFormRequest {
     /**
-     * Fields to fill
+     * fields
      */
-    'fields': Array<FormField>;
+    'fields': Array<object>;
     /**
-     * Selector type (css, id, name, xpath)
+     * by
      */
     'by'?: string;
 }
-export interface FormField {
+export interface GenericResponse {
     /**
-     * Field selector
+     * Whether the operation succeeded
      */
-    'selector': string;
+    'success'?: boolean;
     /**
-     * Value to fill
+     * Response message
      */
-    'value': string;
+    'message'?: string;
+    /**
+     * Response data
+     */
+    'data'?: object;
+}
+export interface GuiClickRequest {
+    /**
+     * selector
+     */
+    'selector'?: string;
+    /**
+     * x
+     */
+    'x'?: number;
+    /**
+     * y
+     */
+    'y'?: number;
+    /**
+     * timeframe
+     */
+    'timeframe'?: number;
+    /**
+     * fx
+     */
+    'fx'?: number;
+    /**
+     * fy
+     */
+    'fy'?: number;
+}
+export interface GuiHoverXyRequest {
+    /**
+     * x
+     */
+    'x': number;
+    /**
+     * y
+     */
+    'y': number;
+    /**
+     * timeframe
+     */
+    'timeframe'?: number;
+}
+export interface GuiPressKeysXyRequest {
+    /**
+     * x
+     */
+    'x': number;
+    /**
+     * y
+     */
+    'y': number;
+    /**
+     * keys
+     */
+    'keys': string;
+    /**
+     * timeframe
+     */
+    'timeframe'?: number;
+}
+export interface GuiTypeXyRequest {
+    /**
+     * x
+     */
+    'x': number;
+    /**
+     * y
+     */
+    'y': number;
+    /**
+     * text
+     */
+    'text': string;
+    /**
+     * timeframe
+     */
+    'timeframe'?: number;
 }
 export interface HealthStatus {
     /**
@@ -570,107 +309,62 @@ export interface HealthStatus {
 }
 export interface HistoryRequest {
     /**
-     * History action: back, forward, or refresh
+     * action
      */
-    'action': HistoryRequestActionEnum;
-}
-
-export const HistoryRequestActionEnum = {
-    Back: 'back',
-    Forward: 'forward',
-    Refresh: 'refresh'
-} as const;
-
-export type HistoryRequestActionEnum = typeof HistoryRequestActionEnum[keyof typeof HistoryRequestActionEnum];
-
-export interface LogsResponse {
-    /**
-     * Operation success
-     */
-    'success': boolean;
-    /**
-     * Status message
-     */
-    'message': string;
-    /**
-     * Unix timestamp
-     */
-    'timestamp': number;
-    /**
-     * Log entries
-     */
-    'data'?: object;
+    'action': string;
 }
 export interface MouseRequest {
     /**
-     * Action: hover or drag
+     * action
      */
     'action': string;
     /**
-     * Element selector (for hover)
+     * selector
      */
     'selector'?: string;
     /**
-     * Source selector (for drag)
+     * source
      */
     'source'?: string;
     /**
-     * Target selector (for drag)
+     * target
      */
     'target'?: string;
     /**
-     * Selector type: css, id, name, xpath
+     * by
      */
     'by'?: string;
 }
-export interface NavigateRequest {
+export interface NavigateBrowserRequest {
     /**
-     * URL to navigate to
+     * url
      */
     'url': string;
     /**
-     * Navigation timeout in seconds
+     * timeout
      */
     'timeout'?: number;
 }
 export interface NetworkLogsRequest {
     /**
-     * Action: get or clear
+     * action
      */
-    'action': NetworkLogsRequestActionEnum;
+    'action': string;
     /**
-     * Max number of logs to return (for get)
+     * limit
      */
     'limit'?: number;
 }
-
-export const NetworkLogsRequestActionEnum = {
-    Get: 'get',
-    Clear: 'clear'
-} as const;
-
-export type NetworkLogsRequestActionEnum = typeof NetworkLogsRequestActionEnum[keyof typeof NetworkLogsRequestActionEnum];
-
 export interface PerformanceRequest {
     /**
-     * Performance action: start_trace, stop_trace, metrics, or analyze
+     * action
      */
-    'action': PerformanceRequestActionEnum;
+    'action': string;
     /**
-     * Comma-separated trace categories (for start_trace)
+     * categories
      */
     'categories'?: string;
 }
-
-export const PerformanceRequestActionEnum = {
-    StartTrace: 'start_trace',
-    StopTrace: 'stop_trace',
-    Metrics: 'metrics',
-    Analyze: 'analyze'
-} as const;
-
-export type PerformanceRequestActionEnum = typeof PerformanceRequestActionEnum[keyof typeof PerformanceRequestActionEnum];
-
 export interface PoolScaled {
     /**
      * Operation success
@@ -689,37 +383,19 @@ export interface PoolScaled {
      */
     'data'?: ScaleData;
 }
-export interface PoolStatusResponse {
-    /**
-     * Operation success
-     */
-    'success': boolean;
-    /**
-     * Status message
-     */
-    'message': string;
-    /**
-     * Unix timestamp
-     */
-    'timestamp': number;
-    /**
-     * Pool status information
-     */
-    'data'?: object;
-}
 export interface PressKeysRequest {
     /**
-     * Element selector
+     * selector
      */
     'selector': string;
     /**
-     * Selector type: css, id, name, xpath
-     */
-    'by'?: string;
-    /**
-     * Keys to press
+     * keys
      */
     'keys': string;
+    /**
+     * by
+     */
+    'by'?: string;
 }
 export interface ProfileInfo {
     /**
@@ -781,11 +457,11 @@ export interface ProfileResponse {
 }
 export interface ResizeRequest {
     /**
-     * Viewport width
+     * width
      */
     'width': number;
     /**
-     * Viewport height
+     * height
      */
     'height': number;
 }
@@ -801,236 +477,141 @@ export interface ScalePool {
      */
     'target_size': number;
 }
-export interface ScreenshotData {
+export interface ScrollRequest {
     /**
-     * URL to screenshot
+     * selector
      */
-    'screenshot_url'?: string;
+    'selector'?: string;
     /**
-     * Path to screenshot file
+     * x
      */
-    'screenshot_path'?: string;
-}
-export interface ScreenshotResponse {
+    'x'?: number;
     /**
-     * Operation success
+     * y
      */
-    'success': boolean;
+    'y'?: number;
     /**
-     * Status message
+     * delta_x
      */
-    'message': string;
+    'delta_x'?: number;
     /**
-     * Unix timestamp
+     * delta_y
      */
-    'timestamp': number;
+    'delta_y'?: number;
     /**
-     * Screenshot data
+     * behavior
      */
-    'data'?: ScreenshotData;
+    'behavior'?: string;
+    /**
+     * by
+     */
+    'by'?: string;
 }
 export interface SelectRequest {
     /**
-     * Select element selector
+     * selector
      */
     'selector': string;
     /**
-     * Selector type (css, id, name, xpath)
+     * action
      */
-    'by'?: string;
+    'action'?: string;
     /**
-     * Action: select or options
-     */
-    'action'?: SelectRequestActionEnum;
-    /**
-     * Option value to select
+     * value
      */
     'value'?: string;
     /**
-     * Option text to select
+     * text
      */
     'text'?: string;
     /**
-     * Option index to select
+     * index
      */
     'index'?: number;
+    /**
+     * by
+     */
+    'by'?: string;
 }
-
-export const SelectRequestActionEnum = {
-    Select: 'select',
-    Options: 'options'
-} as const;
-
-export type SelectRequestActionEnum = typeof SelectRequestActionEnum[keyof typeof SelectRequestActionEnum];
-
 export interface SnapshotRequest {
     /**
-     * Snapshot type: dom or accessibility
+     * snapshot_type
      */
-    'type'?: string;
-}
-export interface SuccessResponse {
-    /**
-     * Operation success
-     */
-    'success'?: boolean;
-    /**
-     * Success message
-     */
-    'message'?: string;
-    /**
-     * Unix timestamp
-     */
-    'timestamp'?: number;
-    /**
-     * Additional result data
-     */
-    'data'?: object;
+    'snapshot_type'?: string;
 }
 export interface TabsRequest {
     /**
-     * Tab action: list, new, switch, close, or current
+     * action
      */
-    'action': TabsRequestActionEnum;
+    'action': string;
     /**
-     * URL for new tab (for \'new\' action)
+     * url
      */
     'url'?: string;
     /**
-     * Tab index (for \'switch\' or \'close\' actions)
+     * index
      */
     'index'?: number;
     /**
-     * Tab handle (for \'switch\' or \'close\' actions)
+     * handle
      */
     'handle'?: string;
 }
-
-export const TabsRequestActionEnum = {
-    List: 'list',
-    New: 'new',
-    Switch: 'switch',
-    Close: 'close',
-    Current: 'current'
-} as const;
-
-export type TabsRequestActionEnum = typeof TabsRequestActionEnum[keyof typeof TabsRequestActionEnum];
-
-export interface TypeRequest {
+export interface TakeScreenshotRequest {
     /**
-     * Element selector
+     * full_page
+     */
+    'full_page'?: boolean;
+}
+export interface TypeTextRequest {
+    /**
+     * selector
      */
     'selector': string;
     /**
-     * Selector type: css, id, name, xpath
-     */
-    'by'?: string;
-    /**
-     * Text to type
+     * text
      */
     'text': string;
     /**
-     * Timeout in seconds
+     * timeout
      */
     'timeout'?: number;
+    /**
+     * by
+     */
+    'by'?: string;
 }
 export interface UploadFileRequest {
     /**
-     * File input selector
+     * selector
      */
     'selector': string;
     /**
-     * Path to file to upload
+     * file_path
      */
     'file_path': string;
     /**
-     * Selector type (css, id, name, xpath)
+     * by
      */
     'by'?: string;
-}
-export interface UrlData {
-    /**
-     * Current URL
-     */
-    'url'?: string;
-}
-export interface UrlResponse {
-    /**
-     * Operation success
-     */
-    'success': boolean;
-    /**
-     * Status message
-     */
-    'message': string;
-    /**
-     * Unix timestamp
-     */
-    'timestamp': number;
-    /**
-     * URL data
-     */
-    'data'?: UrlData;
 }
 export interface WaitElementRequest {
     /**
-     * Element selector
+     * selector
      */
     'selector': string;
     /**
-     * Selector type (css, id, name, xpath)
+     * until
      */
-    'by'?: string;
+    'until': string;
     /**
-     * Wait until: visible or hidden
-     */
-    'until': WaitElementRequestUntilEnum;
-    /**
-     * Timeout in seconds
+     * timeout
      */
     'timeout'?: number;
-}
-
-export const WaitElementRequestUntilEnum = {
-    Visible: 'visible',
-    Hidden: 'hidden'
-} as const;
-
-export type WaitElementRequestUntilEnum = typeof WaitElementRequestUntilEnum[keyof typeof WaitElementRequestUntilEnum];
-
-export interface WhatIsVisibleResult {
     /**
-     * Operation success
+     * by
      */
-    'success'?: boolean;
-    /**
-     * Success message
-     */
-    'message'?: string;
-    /**
-     * Unix timestamp
-     */
-    'timestamp'?: number;
-    /**
-     * Comprehensive page state analysis
-     */
-    'analysis'?: string;
-    /**
-     * AI model used for analysis
-     */
-    'model'?: string;
-    /**
-     * URL to the screenshot
-     */
-    'screenshot_url'?: string;
-    /**
-     * Path to the screenshot file
-     */
-    'screenshot_path'?: string;
-    /**
-     * Error message if failed
-     */
-    'error'?: string;
+    'by'?: string;
 }
 
 /**
@@ -1040,19 +621,15 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
     return {
         /**
          * 
-         * @summary Check if element exists or is visible
-         * @param {string} browserId Unique browser identifier
-         * @param {CheckElementRequest} payload 
+         * @summary Admin: list all, get info, or close all browsers
+         * @param {BrowsersRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        checkElement: async (browserId: string, payload: CheckElementRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'browserId' is not null or undefined
-            assertParamExists('checkElement', 'browserId', browserId)
+        browsers: async (payload: BrowsersRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'payload' is not null or undefined
-            assertParamExists('checkElement', 'payload', payload)
-            const localVarPath = `/browser/{browser_id}/check_element`
-                .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
+            assertParamExists('browsers', 'payload', payload)
+            const localVarPath = `/browser/browsers`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1079,9 +656,62 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Use if_visible=true to only click if visible.
+         * 
+         * @summary Check if element exists or is visible
+         * @param {string} browserId 
+         * @param {string} selector selector
+         * @param {string} check check
+         * @param {string} [by] by
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkElement: async (browserId: string, selector: string, check: string, by?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'browserId' is not null or undefined
+            assertParamExists('checkElement', 'browserId', browserId)
+            // verify required parameter 'selector' is not null or undefined
+            assertParamExists('checkElement', 'selector', selector)
+            // verify required parameter 'check' is not null or undefined
+            assertParamExists('checkElement', 'check', check)
+            const localVarPath = `/browser/{browser_id}/check_element`
+                .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (selector !== undefined) {
+                localVarQueryParameter['selector'] = selector;
+            }
+
+            if (check !== undefined) {
+                localVarQueryParameter['check'] = check;
+            }
+
+            if (by !== undefined) {
+                localVarQueryParameter['by'] = by;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Use if_visible=True to only click if visible.
          * @summary Click element
-         * @param {string} browserId Unique browser identifier
+         * @param {string} browserId 
          * @param {ClickRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1120,155 +750,15 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Close all active browser instances
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        closeAllBrowsers: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/browser/close_all`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Close a browser instance
-         * @param {string} browserId Unique browser identifier
+         * @summary Close browser instance
+         * @param {string} browserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         closeBrowser: async (browserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'browserId' is not null or undefined
             assertParamExists('closeBrowser', 'browserId', browserId)
-            const localVarPath = `/browser/{browser_id}/close`
-                .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get or clear console logs
-         * @param {string} browserId Unique browser identifier
-         * @param {ConsoleLogsRequest} payload 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        consoleLogs: async (browserId: string, payload: ConsoleLogsRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'browserId' is not null or undefined
-            assertParamExists('consoleLogs', 'browserId', browserId)
-            // verify required parameter 'payload' is not null or undefined
-            assertParamExists('consoleLogs', 'payload', payload)
-            const localVarPath = `/browser/{browser_id}/console`
-                .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(payload, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Create a new browser instance
-         * @param {BrowserConfig} payload 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createBrowser: async (payload: BrowserConfig, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'payload' is not null or undefined
-            assertParamExists('createBrowser', 'payload', payload)
-            const localVarPath = `/browser/create`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(payload, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Close and remove a browser instance
-         * @param {string} browserId Unique browser identifier
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        deleteBrowser: async (browserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'browserId' is not null or undefined
-            assertParamExists('deleteBrowser', 'browserId', browserId)
-            const localVarPath = `/browser/{browser_id}`
+            const localVarPath = `/browser/{browser_id}/close_browser`
                 .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1294,8 +784,84 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Detect element coordinates using AI vision
-         * @param {string} browserId Unique browser identifier
+         * @summary Console logs: get or clear
+         * @param {string} browserId 
+         * @param {ConsoleLogsRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        consoleLogs: async (browserId: string, payload: ConsoleLogsRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'browserId' is not null or undefined
+            assertParamExists('consoleLogs', 'browserId', browserId)
+            // verify required parameter 'payload' is not null or undefined
+            assertParamExists('consoleLogs', 'payload', payload)
+            const localVarPath = `/browser/{browser_id}/console_logs`
+                .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(payload, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Create browser instance with optional persistent profile
+         * @param {CreateBrowserRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createBrowser: async (payload: CreateBrowserRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'payload' is not null or undefined
+            assertParamExists('createBrowser', 'payload', payload)
+            const localVarPath = `/browser/create_browser`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(payload, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         Use fx=0.2 for wide elements with icons on the right (like Google search).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
+         * @summary Detect element coordinates using vision
+         * @param {string} browserId 
          * @param {DetectCoordinatesRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1334,13 +900,13 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Manage browser dialogs: get, accept, or dismiss
-         * @param {string} browserId Unique browser identifier
-         * @param {CombinedDialogRequest} payload 
+         * @summary Dialogs: get, accept, dismiss
+         * @param {string} browserId 
+         * @param {DialogRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        dialog: async (browserId: string, payload: CombinedDialogRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        dialog: async (browserId: string, payload: DialogRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'browserId' is not null or undefined
             assertParamExists('dialog', 'browserId', browserId)
             // verify required parameter 'payload' is not null or undefined
@@ -1374,13 +940,13 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Manage device emulation: set, clear, or list_devices
-         * @param {string} browserId Unique browser identifier
-         * @param {CombinedEmulateRequest} payload 
+         * @summary Emulation: set, clear, list_devices
+         * @param {string} browserId 
+         * @param {EmulateRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        emulate: async (browserId: string, payload: CombinedEmulateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        emulate: async (browserId: string, payload: EmulateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'browserId' is not null or undefined
             assertParamExists('emulate', 'browserId', browserId)
             // verify required parameter 'payload' is not null or undefined
@@ -1415,17 +981,17 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary Execute JavaScript
-         * @param {string} browserId Unique browser identifier
-         * @param {ExecuteRequest} payload 
+         * @param {string} browserId 
+         * @param {ExecuteScriptRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        executeScript: async (browserId: string, payload: ExecuteRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        executeScript: async (browserId: string, payload: ExecuteScriptRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'browserId' is not null or undefined
             assertParamExists('executeScript', 'browserId', browserId)
             // verify required parameter 'payload' is not null or undefined
             assertParamExists('executeScript', 'payload', payload)
-            const localVarPath = `/browser/{browser_id}/execute`
+            const localVarPath = `/browser/{browser_id}/execute_script`
                 .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1455,7 +1021,7 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary Fill multiple form fields
-         * @param {string} browserId Unique browser identifier
+         * @param {string} browserId 
          * @param {FillFormRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1494,83 +1060,15 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Get browser instance details
-         * @param {string} browserId Unique browser identifier
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getBrowser: async (browserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'browserId' is not null or undefined
-            assertParamExists('getBrowser', 'browserId', browserId)
-            const localVarPath = `/browser/{browser_id}`
-                .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get browser status
-         * @param {string} browserId Unique browser identifier
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getBrowserStatus: async (browserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'browserId' is not null or undefined
-            assertParamExists('getBrowserStatus', 'browserId', browserId)
-            const localVarPath = `/browser/{browser_id}/status`
-                .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get page HTML content
-         * @param {string} browserId Unique browser identifier
+         * @summary Get page HTML
+         * @param {string} browserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         getContent: async (browserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'browserId' is not null or undefined
             assertParamExists('getContent', 'browserId', browserId)
-            const localVarPath = `/browser/{browser_id}/content`
+            const localVarPath = `/browser/{browser_id}/get_content`
                 .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1597,51 +1095,23 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary Get element text, attribute, or property
-         * @param {string} browserId Unique browser identifier
-         * @param {ElementDataRequest} payload 
+         * @param {string} browserId 
+         * @param {string} selector selector
+         * @param {string} dataType data_type
+         * @param {string} [name] name
+         * @param {string} [by] by
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getElementData: async (browserId: string, payload: ElementDataRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getElementData: async (browserId: string, selector: string, dataType: string, name?: string, by?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'browserId' is not null or undefined
             assertParamExists('getElementData', 'browserId', browserId)
-            // verify required parameter 'payload' is not null or undefined
-            assertParamExists('getElementData', 'payload', payload)
-            const localVarPath = `/browser/{browser_id}/element_data`
+            // verify required parameter 'selector' is not null or undefined
+            assertParamExists('getElementData', 'selector', selector)
+            // verify required parameter 'dataType' is not null or undefined
+            assertParamExists('getElementData', 'dataType', dataType)
+            const localVarPath = `/browser/{browser_id}/get_element_data`
                 .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(payload, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get browser pool status
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPoolStatus: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/browser/pool/status`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1653,6 +1123,22 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            if (selector !== undefined) {
+                localVarQueryParameter['selector'] = selector;
+            }
+
+            if (dataType !== undefined) {
+                localVarQueryParameter['data_type'] = dataType;
+            }
+
+            if (name !== undefined) {
+                localVarQueryParameter['name'] = name;
+            }
+
+            if (by !== undefined) {
+                localVarQueryParameter['by'] = by;
+            }
+
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -1666,15 +1152,15 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Get current page URL
-         * @param {string} browserId Unique browser identifier
+         * @summary Get current URL
+         * @param {string} browserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
         getUrl: async (browserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'browserId' is not null or undefined
             assertParamExists('getUrl', 'browserId', browserId)
-            const localVarPath = `/browser/{browser_id}/url`
+            const localVarPath = `/browser/{browser_id}/get_url`
                 .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1700,13 +1186,13 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Click using selector or screen coordinates
-         * @param {string} browserId Unique browser identifier
-         * @param {CombinedGuiClickRequest} payload 
+         * @summary GUI click by selector or coordinates
+         * @param {string} browserId 
+         * @param {GuiClickRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        guiClick: async (browserId: string, payload: CombinedGuiClickRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        guiClick: async (browserId: string, payload: GuiClickRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'browserId' is not null or undefined
             assertParamExists('guiClick', 'browserId', browserId)
             // verify required parameter 'payload' is not null or undefined
@@ -1740,8 +1226,128 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Execute history action: back, forward, or refresh
-         * @param {string} browserId Unique browser identifier
+         * @summary GUI hover at coordinates
+         * @param {string} browserId 
+         * @param {GuiHoverXyRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        guiHoverXy: async (browserId: string, payload: GuiHoverXyRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'browserId' is not null or undefined
+            assertParamExists('guiHoverXy', 'browserId', browserId)
+            // verify required parameter 'payload' is not null or undefined
+            assertParamExists('guiHoverXy', 'payload', payload)
+            const localVarPath = `/browser/{browser_id}/gui_hover_xy`
+                .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(payload, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Press keys at coordinates (click to focus, then send keys)
+         * @param {string} browserId 
+         * @param {GuiPressKeysXyRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        guiPressKeysXy: async (browserId: string, payload: GuiPressKeysXyRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'browserId' is not null or undefined
+            assertParamExists('guiPressKeysXy', 'browserId', browserId)
+            // verify required parameter 'payload' is not null or undefined
+            assertParamExists('guiPressKeysXy', 'payload', payload)
+            const localVarPath = `/browser/{browser_id}/gui_press_keys_xy`
+                .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(payload, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary GUI type at coordinates - clicks then types text
+         * @param {string} browserId 
+         * @param {GuiTypeXyRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        guiTypeXy: async (browserId: string, payload: GuiTypeXyRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'browserId' is not null or undefined
+            assertParamExists('guiTypeXy', 'browserId', browserId)
+            // verify required parameter 'payload' is not null or undefined
+            assertParamExists('guiTypeXy', 'payload', payload)
+            const localVarPath = `/browser/{browser_id}/gui_type_xy`
+                .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(payload, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary History: back, forward, or refresh
+         * @param {string} browserId 
          * @param {HistoryRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1780,38 +1386,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary List all active browser instances
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        listBrowsers: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/browser/list`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Mouse action: hover or drag
-         * @param {string} browserId Unique browser identifier
+         * @summary Mouse: hover or drag
+         * @param {string} browserId 
          * @param {MouseRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1850,13 +1426,13 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Navigate to a URL
-         * @param {string} browserId Unique browser identifier
-         * @param {NavigateRequest} payload 
+         * @summary Navigate to URL
+         * @param {string} browserId 
+         * @param {NavigateBrowserRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        navigateBrowser: async (browserId: string, payload: NavigateRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        navigateBrowser: async (browserId: string, payload: NavigateBrowserRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'browserId' is not null or undefined
             assertParamExists('navigateBrowser', 'browserId', browserId)
             // verify required parameter 'payload' is not null or undefined
@@ -1890,8 +1466,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Get or clear network logs
-         * @param {string} browserId Unique browser identifier
+         * @summary Network logs: get or clear
+         * @param {string} browserId 
          * @param {NetworkLogsRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1901,7 +1477,7 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             assertParamExists('networkLogs', 'browserId', browserId)
             // verify required parameter 'payload' is not null or undefined
             assertParamExists('networkLogs', 'payload', payload)
-            const localVarPath = `/browser/{browser_id}/network`
+            const localVarPath = `/browser/{browser_id}/network_logs`
                 .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1930,8 +1506,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Manage performance: start_trace, stop_trace, metrics, or analyze
-         * @param {string} browserId Unique browser identifier
+         * @summary Performance: start_trace, stop_trace, metrics, analyze
+         * @param {string} browserId 
          * @param {PerformanceRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -1970,8 +1546,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Press keys on an element
-         * @param {string} browserId Unique browser identifier
+         * @summary Press keyboard keys
+         * @param {string} browserId 
          * @param {PressKeysRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2011,7 +1587,7 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary Resize viewport
-         * @param {string} browserId Unique browser identifier
+         * @param {string} browserId 
          * @param {ResizeRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2050,13 +1626,13 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Scroll to element/coordinates (absolute) or by delta (relative)
-         * @param {string} browserId Unique browser identifier
-         * @param {CombinedScrollRequest} payload 
+         * @summary Scroll to element/coords or by delta
+         * @param {string} browserId 
+         * @param {ScrollRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        scroll: async (browserId: string, payload: CombinedScrollRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        scroll: async (browserId: string, payload: ScrollRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'browserId' is not null or undefined
             assertParamExists('scroll', 'browserId', browserId)
             // verify required parameter 'payload' is not null or undefined
@@ -2091,7 +1667,7 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         /**
          * 
          * @summary Select dropdown: select option or get options
-         * @param {string} browserId Unique browser identifier
+         * @param {string} browserId 
          * @param {SelectRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2130,8 +1706,48 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Manage browser tabs: list, new, switch, close, or current
-         * @param {string} browserId Unique browser identifier
+         * @summary DOM or accessibility snapshot
+         * @param {string} browserId 
+         * @param {SnapshotRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        snapshot: async (browserId: string, payload: SnapshotRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'browserId' is not null or undefined
+            assertParamExists('snapshot', 'browserId', browserId)
+            // verify required parameter 'payload' is not null or undefined
+            assertParamExists('snapshot', 'payload', payload)
+            const localVarPath = `/browser/{browser_id}/snapshot`
+                .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(payload, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Tabs: list, new, switch, close, current
+         * @param {string} browserId 
          * @param {TabsRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2170,52 +1786,18 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Take a screenshot
-         * @param {string} browserId Unique browser identifier
+         * @summary Take screenshot
+         * @param {string} browserId 
+         * @param {TakeScreenshotRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        takeScreenshot: async (browserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        takeScreenshot: async (browserId: string, payload: TakeScreenshotRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'browserId' is not null or undefined
             assertParamExists('takeScreenshot', 'browserId', browserId)
-            const localVarPath = `/browser/{browser_id}/screenshot`
-                .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Take DOM/accessibility snapshot
-         * @param {string} browserId Unique browser identifier
-         * @param {SnapshotRequest} payload 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        takeSnapshot: async (browserId: string, payload: SnapshotRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'browserId' is not null or undefined
-            assertParamExists('takeSnapshot', 'browserId', browserId)
             // verify required parameter 'payload' is not null or undefined
-            assertParamExists('takeSnapshot', 'payload', payload)
-            const localVarPath = `/browser/{browser_id}/snapshot`
+            assertParamExists('takeScreenshot', 'payload', payload)
+            const localVarPath = `/browser/{browser_id}/screenshot`
                 .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2244,13 +1826,13 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Type text into an element
-         * @param {string} browserId Unique browser identifier
-         * @param {TypeRequest} payload 
+         * @summary Type text into element
+         * @param {string} browserId 
+         * @param {TypeTextRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        typeText: async (browserId: string, payload: TypeRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        typeText: async (browserId: string, payload: TypeTextRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'browserId' is not null or undefined
             assertParamExists('typeText', 'browserId', browserId)
             // verify required parameter 'payload' is not null or undefined
@@ -2284,8 +1866,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Upload a file
-         * @param {string} browserId Unique browser identifier
+         * @summary Upload file to input
+         * @param {string} browserId 
          * @param {UploadFileRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2324,8 +1906,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Wait for element to become visible or hidden
-         * @param {string} browserId Unique browser identifier
+         * @summary Wait for element to be visible or hidden
+         * @param {string} browserId 
          * @param {WaitElementRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -2364,8 +1946,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Analyze visible page content using AI
-         * @param {string} browserId Unique browser identifier
+         * @summary AI page analysis - what\'s visible
+         * @param {string} browserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2381,7 +1963,7 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
@@ -2407,27 +1989,42 @@ export const BrowserApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Check if element exists or is visible
-         * @param {string} browserId Unique browser identifier
-         * @param {CheckElementRequest} payload 
+         * @summary Admin: list all, get info, or close all browsers
+         * @param {BrowsersRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async checkElement(browserId: string, payload: CheckElementRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SuccessResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.checkElement(browserId, payload, options);
+        async browsers(payload: BrowsersRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.browsers(payload, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BrowserApi.browsers']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Check if element exists or is visible
+         * @param {string} browserId 
+         * @param {string} selector selector
+         * @param {string} check check
+         * @param {string} [by] by
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async checkElement(browserId: string, selector: string, check: string, by?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.checkElement(browserId, selector, check, by, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.checkElement']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Use if_visible=true to only click if visible.
+         * Use if_visible=True to only click if visible.
          * @summary Click element
-         * @param {string} browserId Unique browser identifier
+         * @param {string} browserId 
          * @param {ClickRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async click(browserId: string, payload: ClickRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ActionResult>> {
+        async click(browserId: string, payload: ClickRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.click(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.click']?.[localVarOperationServerIndex]?.url;
@@ -2435,24 +2032,12 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Close all active browser instances
+         * @summary Close browser instance
+         * @param {string} browserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async closeAllBrowsers(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.closeAllBrowsers(options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['BrowserApi.closeAllBrowsers']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @summary Close a browser instance
-         * @param {string} browserId Unique browser identifier
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async closeBrowser(browserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponse>> {
+        async closeBrowser(browserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.closeBrowser(browserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.closeBrowser']?.[localVarOperationServerIndex]?.url;
@@ -2460,13 +2045,13 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Get or clear console logs
-         * @param {string} browserId Unique browser identifier
+         * @summary Console logs: get or clear
+         * @param {string} browserId 
          * @param {ConsoleLogsRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async consoleLogs(browserId: string, payload: ConsoleLogsRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LogsResponse>> {
+        async consoleLogs(browserId: string, payload: ConsoleLogsRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.consoleLogs(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.consoleLogs']?.[localVarOperationServerIndex]?.url;
@@ -2474,39 +2059,26 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Create a new browser instance
-         * @param {BrowserConfig} payload 
+         * @summary Create browser instance with optional persistent profile
+         * @param {CreateBrowserRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createBrowser(payload: BrowserConfig, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BrowserCreated>> {
+        async createBrowser(payload: CreateBrowserRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createBrowser(payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.createBrowser']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * 
-         * @summary Close and remove a browser instance
-         * @param {string} browserId Unique browser identifier
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async deleteBrowser(browserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BaseResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteBrowser(browserId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['BrowserApi.deleteBrowser']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @summary Detect element coordinates using AI vision
-         * @param {string} browserId Unique browser identifier
+         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         Use fx=0.2 for wide elements with icons on the right (like Google search).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
+         * @summary Detect element coordinates using vision
+         * @param {string} browserId 
          * @param {DetectCoordinatesRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async detectCoordinates(browserId: string, payload: DetectCoordinatesRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DetectCoordinatesResult>> {
+        async detectCoordinates(browserId: string, payload: DetectCoordinatesRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.detectCoordinates(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.detectCoordinates']?.[localVarOperationServerIndex]?.url;
@@ -2514,13 +2086,13 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Manage browser dialogs: get, accept, or dismiss
-         * @param {string} browserId Unique browser identifier
-         * @param {CombinedDialogRequest} payload 
+         * @summary Dialogs: get, accept, dismiss
+         * @param {string} browserId 
+         * @param {DialogRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async dialog(browserId: string, payload: CombinedDialogRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SuccessResponse>> {
+        async dialog(browserId: string, payload: DialogRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.dialog(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.dialog']?.[localVarOperationServerIndex]?.url;
@@ -2528,13 +2100,13 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Manage device emulation: set, clear, or list_devices
-         * @param {string} browserId Unique browser identifier
-         * @param {CombinedEmulateRequest} payload 
+         * @summary Emulation: set, clear, list_devices
+         * @param {string} browserId 
+         * @param {EmulateRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async emulate(browserId: string, payload: CombinedEmulateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SuccessResponse>> {
+        async emulate(browserId: string, payload: EmulateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.emulate(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.emulate']?.[localVarOperationServerIndex]?.url;
@@ -2543,12 +2115,12 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Execute JavaScript
-         * @param {string} browserId Unique browser identifier
-         * @param {ExecuteRequest} payload 
+         * @param {string} browserId 
+         * @param {ExecuteScriptRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async executeScript(browserId: string, payload: ExecuteRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ExecuteResponse>> {
+        async executeScript(browserId: string, payload: ExecuteScriptRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.executeScript(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.executeScript']?.[localVarOperationServerIndex]?.url;
@@ -2557,12 +2129,12 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Fill multiple form fields
-         * @param {string} browserId Unique browser identifier
+         * @param {string} browserId 
          * @param {FillFormRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async fillForm(browserId: string, payload: FillFormRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SuccessResponse>> {
+        async fillForm(browserId: string, payload: FillFormRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.fillForm(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.fillForm']?.[localVarOperationServerIndex]?.url;
@@ -2570,38 +2142,12 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Get browser instance details
-         * @param {string} browserId Unique browser identifier
+         * @summary Get page HTML
+         * @param {string} browserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getBrowser(browserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BrowserInfoResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getBrowser(browserId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['BrowserApi.getBrowser']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @summary Get browser status
-         * @param {string} browserId Unique browser identifier
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getBrowserStatus(browserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BrowserInfoResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getBrowserStatus(browserId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['BrowserApi.getBrowserStatus']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @summary Get page HTML content
-         * @param {string} browserId Unique browser identifier
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getContent(browserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ContentResponse>> {
+        async getContent(browserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getContent(browserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.getContent']?.[localVarOperationServerIndex]?.url;
@@ -2610,37 +2156,28 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Get element text, attribute, or property
-         * @param {string} browserId Unique browser identifier
-         * @param {ElementDataRequest} payload 
+         * @param {string} browserId 
+         * @param {string} selector selector
+         * @param {string} dataType data_type
+         * @param {string} [name] name
+         * @param {string} [by] by
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getElementData(browserId: string, payload: ElementDataRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AttributeResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getElementData(browserId, payload, options);
+        async getElementData(browserId: string, selector: string, dataType: string, name?: string, by?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getElementData(browserId, selector, dataType, name, by, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.getElementData']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @summary Get browser pool status
+         * @summary Get current URL
+         * @param {string} browserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPoolStatus(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PoolStatusResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPoolStatus(options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['BrowserApi.getPoolStatus']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @summary Get current page URL
-         * @param {string} browserId Unique browser identifier
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getUrl(browserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UrlResponse>> {
+        async getUrl(browserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getUrl(browserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.getUrl']?.[localVarOperationServerIndex]?.url;
@@ -2648,13 +2185,13 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Click using selector or screen coordinates
-         * @param {string} browserId Unique browser identifier
-         * @param {CombinedGuiClickRequest} payload 
+         * @summary GUI click by selector or coordinates
+         * @param {string} browserId 
+         * @param {GuiClickRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async guiClick(browserId: string, payload: CombinedGuiClickRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ActionResult>> {
+        async guiClick(browserId: string, payload: GuiClickRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.guiClick(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.guiClick']?.[localVarOperationServerIndex]?.url;
@@ -2662,13 +2199,55 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Execute history action: back, forward, or refresh
-         * @param {string} browserId Unique browser identifier
+         * @summary GUI hover at coordinates
+         * @param {string} browserId 
+         * @param {GuiHoverXyRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async guiHoverXy(browserId: string, payload: GuiHoverXyRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.guiHoverXy(browserId, payload, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BrowserApi.guiHoverXy']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Press keys at coordinates (click to focus, then send keys)
+         * @param {string} browserId 
+         * @param {GuiPressKeysXyRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async guiPressKeysXy(browserId: string, payload: GuiPressKeysXyRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.guiPressKeysXy(browserId, payload, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BrowserApi.guiPressKeysXy']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary GUI type at coordinates - clicks then types text
+         * @param {string} browserId 
+         * @param {GuiTypeXyRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async guiTypeXy(browserId: string, payload: GuiTypeXyRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.guiTypeXy(browserId, payload, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BrowserApi.guiTypeXy']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary History: back, forward, or refresh
+         * @param {string} browserId 
          * @param {HistoryRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async history(browserId: string, payload: HistoryRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ActionResult>> {
+        async history(browserId: string, payload: HistoryRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.history(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.history']?.[localVarOperationServerIndex]?.url;
@@ -2676,25 +2255,13 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary List all active browser instances
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async listBrowsers(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BrowserList>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.listBrowsers(options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['BrowserApi.listBrowsers']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @summary Mouse action: hover or drag
-         * @param {string} browserId Unique browser identifier
+         * @summary Mouse: hover or drag
+         * @param {string} browserId 
          * @param {MouseRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async mouse(browserId: string, payload: MouseRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SuccessResponse>> {
+        async mouse(browserId: string, payload: MouseRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.mouse(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.mouse']?.[localVarOperationServerIndex]?.url;
@@ -2702,13 +2269,13 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Navigate to a URL
-         * @param {string} browserId Unique browser identifier
-         * @param {NavigateRequest} payload 
+         * @summary Navigate to URL
+         * @param {string} browserId 
+         * @param {NavigateBrowserRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async navigateBrowser(browserId: string, payload: NavigateRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ActionResult>> {
+        async navigateBrowser(browserId: string, payload: NavigateBrowserRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.navigateBrowser(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.navigateBrowser']?.[localVarOperationServerIndex]?.url;
@@ -2716,13 +2283,13 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Get or clear network logs
-         * @param {string} browserId Unique browser identifier
+         * @summary Network logs: get or clear
+         * @param {string} browserId 
          * @param {NetworkLogsRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async networkLogs(browserId: string, payload: NetworkLogsRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LogsResponse>> {
+        async networkLogs(browserId: string, payload: NetworkLogsRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.networkLogs(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.networkLogs']?.[localVarOperationServerIndex]?.url;
@@ -2730,13 +2297,13 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Manage performance: start_trace, stop_trace, metrics, or analyze
-         * @param {string} browserId Unique browser identifier
+         * @summary Performance: start_trace, stop_trace, metrics, analyze
+         * @param {string} browserId 
          * @param {PerformanceRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async performance(browserId: string, payload: PerformanceRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SuccessResponse>> {
+        async performance(browserId: string, payload: PerformanceRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.performance(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.performance']?.[localVarOperationServerIndex]?.url;
@@ -2744,13 +2311,13 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Press keys on an element
-         * @param {string} browserId Unique browser identifier
+         * @summary Press keyboard keys
+         * @param {string} browserId 
          * @param {PressKeysRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async pressKeys(browserId: string, payload: PressKeysRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ActionResult>> {
+        async pressKeys(browserId: string, payload: PressKeysRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.pressKeys(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.pressKeys']?.[localVarOperationServerIndex]?.url;
@@ -2759,12 +2326,12 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Resize viewport
-         * @param {string} browserId Unique browser identifier
+         * @param {string} browserId 
          * @param {ResizeRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async resize(browserId: string, payload: ResizeRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SuccessResponse>> {
+        async resize(browserId: string, payload: ResizeRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.resize(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.resize']?.[localVarOperationServerIndex]?.url;
@@ -2772,13 +2339,13 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Scroll to element/coordinates (absolute) or by delta (relative)
-         * @param {string} browserId Unique browser identifier
-         * @param {CombinedScrollRequest} payload 
+         * @summary Scroll to element/coords or by delta
+         * @param {string} browserId 
+         * @param {ScrollRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async scroll(browserId: string, payload: CombinedScrollRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SuccessResponse>> {
+        async scroll(browserId: string, payload: ScrollRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.scroll(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.scroll']?.[localVarOperationServerIndex]?.url;
@@ -2787,12 +2354,12 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Select dropdown: select option or get options
-         * @param {string} browserId Unique browser identifier
+         * @param {string} browserId 
          * @param {SelectRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async select(browserId: string, payload: SelectRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SuccessResponse>> {
+        async select(browserId: string, payload: SelectRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.select(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.select']?.[localVarOperationServerIndex]?.url;
@@ -2800,13 +2367,27 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Manage browser tabs: list, new, switch, close, or current
-         * @param {string} browserId Unique browser identifier
+         * @summary DOM or accessibility snapshot
+         * @param {string} browserId 
+         * @param {SnapshotRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async snapshot(browserId: string, payload: SnapshotRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.snapshot(browserId, payload, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BrowserApi.snapshot']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Tabs: list, new, switch, close, current
+         * @param {string} browserId 
          * @param {TabsRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async tabs(browserId: string, payload: TabsRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SuccessResponse>> {
+        async tabs(browserId: string, payload: TabsRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.tabs(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.tabs']?.[localVarOperationServerIndex]?.url;
@@ -2814,40 +2395,27 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Take a screenshot
-         * @param {string} browserId Unique browser identifier
+         * @summary Take screenshot
+         * @param {string} browserId 
+         * @param {TakeScreenshotRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async takeScreenshot(browserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ScreenshotResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.takeScreenshot(browserId, options);
+        async takeScreenshot(browserId: string, payload: TakeScreenshotRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.takeScreenshot(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.takeScreenshot']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @summary Take DOM/accessibility snapshot
-         * @param {string} browserId Unique browser identifier
-         * @param {SnapshotRequest} payload 
+         * @summary Type text into element
+         * @param {string} browserId 
+         * @param {TypeTextRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async takeSnapshot(browserId: string, payload: SnapshotRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SuccessResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.takeSnapshot(browserId, payload, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['BrowserApi.takeSnapshot']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @summary Type text into an element
-         * @param {string} browserId Unique browser identifier
-         * @param {TypeRequest} payload 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async typeText(browserId: string, payload: TypeRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ActionResult>> {
+        async typeText(browserId: string, payload: TypeTextRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.typeText(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.typeText']?.[localVarOperationServerIndex]?.url;
@@ -2855,13 +2423,13 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Upload a file
-         * @param {string} browserId Unique browser identifier
+         * @summary Upload file to input
+         * @param {string} browserId 
          * @param {UploadFileRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async uploadFile(browserId: string, payload: UploadFileRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SuccessResponse>> {
+        async uploadFile(browserId: string, payload: UploadFileRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.uploadFile(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.uploadFile']?.[localVarOperationServerIndex]?.url;
@@ -2869,13 +2437,13 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Wait for element to become visible or hidden
-         * @param {string} browserId Unique browser identifier
+         * @summary Wait for element to be visible or hidden
+         * @param {string} browserId 
          * @param {WaitElementRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async waitElement(browserId: string, payload: WaitElementRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ActionResult>> {
+        async waitElement(browserId: string, payload: WaitElementRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.waitElement(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.waitElement']?.[localVarOperationServerIndex]?.url;
@@ -2883,12 +2451,12 @@ export const BrowserApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Analyze visible page content using AI
-         * @param {string} browserId Unique browser identifier
+         * @summary AI page analysis - what\'s visible
+         * @param {string} browserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async whatIsVisible(browserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<WhatIsVisibleResult>> {
+        async whatIsVisible(browserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.whatIsVisible(browserId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.whatIsVisible']?.[localVarOperationServerIndex]?.url;
@@ -2905,383 +2473,375 @@ export const BrowserApiFactory = function (configuration?: Configuration, basePa
     return {
         /**
          * 
-         * @summary Check if element exists or is visible
-         * @param {string} browserId Unique browser identifier
-         * @param {CheckElementRequest} payload 
+         * @summary Admin: list all, get info, or close all browsers
+         * @param {BrowsersRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        checkElement(browserId: string, payload: CheckElementRequest, options?: RawAxiosRequestConfig): AxiosPromise<SuccessResponse> {
-            return localVarFp.checkElement(browserId, payload, options).then((request) => request(axios, basePath));
+        browsers(payload: BrowsersRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
+            return localVarFp.browsers(payload, options).then((request) => request(axios, basePath));
         },
         /**
-         * Use if_visible=true to only click if visible.
+         * 
+         * @summary Check if element exists or is visible
+         * @param {string} browserId 
+         * @param {string} selector selector
+         * @param {string} check check
+         * @param {string} [by] by
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkElement(browserId: string, selector: string, check: string, by?: string, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
+            return localVarFp.checkElement(browserId, selector, check, by, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Use if_visible=True to only click if visible.
          * @summary Click element
-         * @param {string} browserId Unique browser identifier
+         * @param {string} browserId 
          * @param {ClickRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        click(browserId: string, payload: ClickRequest, options?: RawAxiosRequestConfig): AxiosPromise<ActionResult> {
+        click(browserId: string, payload: ClickRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.click(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Close all active browser instances
+         * @summary Close browser instance
+         * @param {string} browserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        closeAllBrowsers(options?: RawAxiosRequestConfig): AxiosPromise<BaseResponse> {
-            return localVarFp.closeAllBrowsers(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Close a browser instance
-         * @param {string} browserId Unique browser identifier
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        closeBrowser(browserId: string, options?: RawAxiosRequestConfig): AxiosPromise<BaseResponse> {
+        closeBrowser(browserId: string, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.closeBrowser(browserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Get or clear console logs
-         * @param {string} browserId Unique browser identifier
+         * @summary Console logs: get or clear
+         * @param {string} browserId 
          * @param {ConsoleLogsRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        consoleLogs(browserId: string, payload: ConsoleLogsRequest, options?: RawAxiosRequestConfig): AxiosPromise<LogsResponse> {
+        consoleLogs(browserId: string, payload: ConsoleLogsRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.consoleLogs(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Create a new browser instance
-         * @param {BrowserConfig} payload 
+         * @summary Create browser instance with optional persistent profile
+         * @param {CreateBrowserRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createBrowser(payload: BrowserConfig, options?: RawAxiosRequestConfig): AxiosPromise<BrowserCreated> {
+        createBrowser(payload: CreateBrowserRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.createBrowser(payload, options).then((request) => request(axios, basePath));
         },
         /**
-         * 
-         * @summary Close and remove a browser instance
-         * @param {string} browserId Unique browser identifier
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        deleteBrowser(browserId: string, options?: RawAxiosRequestConfig): AxiosPromise<BaseResponse> {
-            return localVarFp.deleteBrowser(browserId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Detect element coordinates using AI vision
-         * @param {string} browserId Unique browser identifier
+         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         Use fx=0.2 for wide elements with icons on the right (like Google search).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
+         * @summary Detect element coordinates using vision
+         * @param {string} browserId 
          * @param {DetectCoordinatesRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        detectCoordinates(browserId: string, payload: DetectCoordinatesRequest, options?: RawAxiosRequestConfig): AxiosPromise<DetectCoordinatesResult> {
+        detectCoordinates(browserId: string, payload: DetectCoordinatesRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.detectCoordinates(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Manage browser dialogs: get, accept, or dismiss
-         * @param {string} browserId Unique browser identifier
-         * @param {CombinedDialogRequest} payload 
+         * @summary Dialogs: get, accept, dismiss
+         * @param {string} browserId 
+         * @param {DialogRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        dialog(browserId: string, payload: CombinedDialogRequest, options?: RawAxiosRequestConfig): AxiosPromise<SuccessResponse> {
+        dialog(browserId: string, payload: DialogRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.dialog(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Manage device emulation: set, clear, or list_devices
-         * @param {string} browserId Unique browser identifier
-         * @param {CombinedEmulateRequest} payload 
+         * @summary Emulation: set, clear, list_devices
+         * @param {string} browserId 
+         * @param {EmulateRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        emulate(browserId: string, payload: CombinedEmulateRequest, options?: RawAxiosRequestConfig): AxiosPromise<SuccessResponse> {
+        emulate(browserId: string, payload: EmulateRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.emulate(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Execute JavaScript
-         * @param {string} browserId Unique browser identifier
-         * @param {ExecuteRequest} payload 
+         * @param {string} browserId 
+         * @param {ExecuteScriptRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        executeScript(browserId: string, payload: ExecuteRequest, options?: RawAxiosRequestConfig): AxiosPromise<ExecuteResponse> {
+        executeScript(browserId: string, payload: ExecuteScriptRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.executeScript(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Fill multiple form fields
-         * @param {string} browserId Unique browser identifier
+         * @param {string} browserId 
          * @param {FillFormRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        fillForm(browserId: string, payload: FillFormRequest, options?: RawAxiosRequestConfig): AxiosPromise<SuccessResponse> {
+        fillForm(browserId: string, payload: FillFormRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.fillForm(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Get browser instance details
-         * @param {string} browserId Unique browser identifier
+         * @summary Get page HTML
+         * @param {string} browserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getBrowser(browserId: string, options?: RawAxiosRequestConfig): AxiosPromise<BrowserInfoResponse> {
-            return localVarFp.getBrowser(browserId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get browser status
-         * @param {string} browserId Unique browser identifier
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getBrowserStatus(browserId: string, options?: RawAxiosRequestConfig): AxiosPromise<BrowserInfoResponse> {
-            return localVarFp.getBrowserStatus(browserId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get page HTML content
-         * @param {string} browserId Unique browser identifier
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getContent(browserId: string, options?: RawAxiosRequestConfig): AxiosPromise<ContentResponse> {
+        getContent(browserId: string, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.getContent(browserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Get element text, attribute, or property
-         * @param {string} browserId Unique browser identifier
-         * @param {ElementDataRequest} payload 
+         * @param {string} browserId 
+         * @param {string} selector selector
+         * @param {string} dataType data_type
+         * @param {string} [name] name
+         * @param {string} [by] by
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getElementData(browserId: string, payload: ElementDataRequest, options?: RawAxiosRequestConfig): AxiosPromise<AttributeResponse> {
-            return localVarFp.getElementData(browserId, payload, options).then((request) => request(axios, basePath));
+        getElementData(browserId: string, selector: string, dataType: string, name?: string, by?: string, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
+            return localVarFp.getElementData(browserId, selector, dataType, name, by, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Get browser pool status
+         * @summary Get current URL
+         * @param {string} browserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPoolStatus(options?: RawAxiosRequestConfig): AxiosPromise<PoolStatusResponse> {
-            return localVarFp.getPoolStatus(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get current page URL
-         * @param {string} browserId Unique browser identifier
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getUrl(browserId: string, options?: RawAxiosRequestConfig): AxiosPromise<UrlResponse> {
+        getUrl(browserId: string, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.getUrl(browserId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Click using selector or screen coordinates
-         * @param {string} browserId Unique browser identifier
-         * @param {CombinedGuiClickRequest} payload 
+         * @summary GUI click by selector or coordinates
+         * @param {string} browserId 
+         * @param {GuiClickRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        guiClick(browserId: string, payload: CombinedGuiClickRequest, options?: RawAxiosRequestConfig): AxiosPromise<ActionResult> {
+        guiClick(browserId: string, payload: GuiClickRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.guiClick(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Execute history action: back, forward, or refresh
-         * @param {string} browserId Unique browser identifier
+         * @summary GUI hover at coordinates
+         * @param {string} browserId 
+         * @param {GuiHoverXyRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        guiHoverXy(browserId: string, payload: GuiHoverXyRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
+            return localVarFp.guiHoverXy(browserId, payload, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Press keys at coordinates (click to focus, then send keys)
+         * @param {string} browserId 
+         * @param {GuiPressKeysXyRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        guiPressKeysXy(browserId: string, payload: GuiPressKeysXyRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
+            return localVarFp.guiPressKeysXy(browserId, payload, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary GUI type at coordinates - clicks then types text
+         * @param {string} browserId 
+         * @param {GuiTypeXyRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        guiTypeXy(browserId: string, payload: GuiTypeXyRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
+            return localVarFp.guiTypeXy(browserId, payload, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary History: back, forward, or refresh
+         * @param {string} browserId 
          * @param {HistoryRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        history(browserId: string, payload: HistoryRequest, options?: RawAxiosRequestConfig): AxiosPromise<ActionResult> {
+        history(browserId: string, payload: HistoryRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.history(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary List all active browser instances
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        listBrowsers(options?: RawAxiosRequestConfig): AxiosPromise<BrowserList> {
-            return localVarFp.listBrowsers(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Mouse action: hover or drag
-         * @param {string} browserId Unique browser identifier
+         * @summary Mouse: hover or drag
+         * @param {string} browserId 
          * @param {MouseRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        mouse(browserId: string, payload: MouseRequest, options?: RawAxiosRequestConfig): AxiosPromise<SuccessResponse> {
+        mouse(browserId: string, payload: MouseRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.mouse(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Navigate to a URL
-         * @param {string} browserId Unique browser identifier
-         * @param {NavigateRequest} payload 
+         * @summary Navigate to URL
+         * @param {string} browserId 
+         * @param {NavigateBrowserRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        navigateBrowser(browserId: string, payload: NavigateRequest, options?: RawAxiosRequestConfig): AxiosPromise<ActionResult> {
+        navigateBrowser(browserId: string, payload: NavigateBrowserRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.navigateBrowser(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Get or clear network logs
-         * @param {string} browserId Unique browser identifier
+         * @summary Network logs: get or clear
+         * @param {string} browserId 
          * @param {NetworkLogsRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        networkLogs(browserId: string, payload: NetworkLogsRequest, options?: RawAxiosRequestConfig): AxiosPromise<LogsResponse> {
+        networkLogs(browserId: string, payload: NetworkLogsRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.networkLogs(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Manage performance: start_trace, stop_trace, metrics, or analyze
-         * @param {string} browserId Unique browser identifier
+         * @summary Performance: start_trace, stop_trace, metrics, analyze
+         * @param {string} browserId 
          * @param {PerformanceRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        performance(browserId: string, payload: PerformanceRequest, options?: RawAxiosRequestConfig): AxiosPromise<SuccessResponse> {
+        performance(browserId: string, payload: PerformanceRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.performance(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Press keys on an element
-         * @param {string} browserId Unique browser identifier
+         * @summary Press keyboard keys
+         * @param {string} browserId 
          * @param {PressKeysRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        pressKeys(browserId: string, payload: PressKeysRequest, options?: RawAxiosRequestConfig): AxiosPromise<ActionResult> {
+        pressKeys(browserId: string, payload: PressKeysRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.pressKeys(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Resize viewport
-         * @param {string} browserId Unique browser identifier
+         * @param {string} browserId 
          * @param {ResizeRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        resize(browserId: string, payload: ResizeRequest, options?: RawAxiosRequestConfig): AxiosPromise<SuccessResponse> {
+        resize(browserId: string, payload: ResizeRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.resize(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Scroll to element/coordinates (absolute) or by delta (relative)
-         * @param {string} browserId Unique browser identifier
-         * @param {CombinedScrollRequest} payload 
+         * @summary Scroll to element/coords or by delta
+         * @param {string} browserId 
+         * @param {ScrollRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        scroll(browserId: string, payload: CombinedScrollRequest, options?: RawAxiosRequestConfig): AxiosPromise<SuccessResponse> {
+        scroll(browserId: string, payload: ScrollRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.scroll(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
          * @summary Select dropdown: select option or get options
-         * @param {string} browserId Unique browser identifier
+         * @param {string} browserId 
          * @param {SelectRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        select(browserId: string, payload: SelectRequest, options?: RawAxiosRequestConfig): AxiosPromise<SuccessResponse> {
+        select(browserId: string, payload: SelectRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.select(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Manage browser tabs: list, new, switch, close, or current
-         * @param {string} browserId Unique browser identifier
-         * @param {TabsRequest} payload 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        tabs(browserId: string, payload: TabsRequest, options?: RawAxiosRequestConfig): AxiosPromise<SuccessResponse> {
-            return localVarFp.tabs(browserId, payload, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Take a screenshot
-         * @param {string} browserId Unique browser identifier
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        takeScreenshot(browserId: string, options?: RawAxiosRequestConfig): AxiosPromise<ScreenshotResponse> {
-            return localVarFp.takeScreenshot(browserId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Take DOM/accessibility snapshot
-         * @param {string} browserId Unique browser identifier
+         * @summary DOM or accessibility snapshot
+         * @param {string} browserId 
          * @param {SnapshotRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        takeSnapshot(browserId: string, payload: SnapshotRequest, options?: RawAxiosRequestConfig): AxiosPromise<SuccessResponse> {
-            return localVarFp.takeSnapshot(browserId, payload, options).then((request) => request(axios, basePath));
+        snapshot(browserId: string, payload: SnapshotRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
+            return localVarFp.snapshot(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Type text into an element
-         * @param {string} browserId Unique browser identifier
-         * @param {TypeRequest} payload 
+         * @summary Tabs: list, new, switch, close, current
+         * @param {string} browserId 
+         * @param {TabsRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        typeText(browserId: string, payload: TypeRequest, options?: RawAxiosRequestConfig): AxiosPromise<ActionResult> {
+        tabs(browserId: string, payload: TabsRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
+            return localVarFp.tabs(browserId, payload, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Take screenshot
+         * @param {string} browserId 
+         * @param {TakeScreenshotRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        takeScreenshot(browserId: string, payload: TakeScreenshotRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
+            return localVarFp.takeScreenshot(browserId, payload, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Type text into element
+         * @param {string} browserId 
+         * @param {TypeTextRequest} payload 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        typeText(browserId: string, payload: TypeTextRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.typeText(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Upload a file
-         * @param {string} browserId Unique browser identifier
+         * @summary Upload file to input
+         * @param {string} browserId 
          * @param {UploadFileRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        uploadFile(browserId: string, payload: UploadFileRequest, options?: RawAxiosRequestConfig): AxiosPromise<SuccessResponse> {
+        uploadFile(browserId: string, payload: UploadFileRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.uploadFile(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Wait for element to become visible or hidden
-         * @param {string} browserId Unique browser identifier
+         * @summary Wait for element to be visible or hidden
+         * @param {string} browserId 
          * @param {WaitElementRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        waitElement(browserId: string, payload: WaitElementRequest, options?: RawAxiosRequestConfig): AxiosPromise<ActionResult> {
+        waitElement(browserId: string, payload: WaitElementRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.waitElement(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary Analyze visible page content using AI
-         * @param {string} browserId Unique browser identifier
+         * @summary AI page analysis - what\'s visible
+         * @param {string} browserId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        whatIsVisible(browserId: string, options?: RawAxiosRequestConfig): AxiosPromise<WhatIsVisibleResult> {
+        whatIsVisible(browserId: string, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
             return localVarFp.whatIsVisible(browserId, options).then((request) => request(axios, basePath));
         },
     };
@@ -3293,20 +2853,33 @@ export const BrowserApiFactory = function (configuration?: Configuration, basePa
 export class BrowserApi extends BaseAPI {
     /**
      * 
-     * @summary Check if element exists or is visible
-     * @param {string} browserId Unique browser identifier
-     * @param {CheckElementRequest} payload 
+     * @summary Admin: list all, get info, or close all browsers
+     * @param {BrowsersRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public checkElement(browserId: string, payload: CheckElementRequest, options?: RawAxiosRequestConfig) {
-        return BrowserApiFp(this.configuration).checkElement(browserId, payload, options).then((request) => request(this.axios, this.basePath));
+    public browsers(payload: BrowsersRequest, options?: RawAxiosRequestConfig) {
+        return BrowserApiFp(this.configuration).browsers(payload, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * Use if_visible=true to only click if visible.
+     * 
+     * @summary Check if element exists or is visible
+     * @param {string} browserId 
+     * @param {string} selector selector
+     * @param {string} check check
+     * @param {string} [by] by
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public checkElement(browserId: string, selector: string, check: string, by?: string, options?: RawAxiosRequestConfig) {
+        return BrowserApiFp(this.configuration).checkElement(browserId, selector, check, by, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Use if_visible=True to only click if visible.
      * @summary Click element
-     * @param {string} browserId Unique browser identifier
+     * @param {string} browserId 
      * @param {ClickRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3317,18 +2890,8 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary Close all active browser instances
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public closeAllBrowsers(options?: RawAxiosRequestConfig) {
-        return BrowserApiFp(this.configuration).closeAllBrowsers(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Close a browser instance
-     * @param {string} browserId Unique browser identifier
+     * @summary Close browser instance
+     * @param {string} browserId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -3338,8 +2901,8 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary Get or clear console logs
-     * @param {string} browserId Unique browser identifier
+     * @summary Console logs: get or clear
+     * @param {string} browserId 
      * @param {ConsoleLogsRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3350,30 +2913,19 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary Create a new browser instance
-     * @param {BrowserConfig} payload 
+     * @summary Create browser instance with optional persistent profile
+     * @param {CreateBrowserRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public createBrowser(payload: BrowserConfig, options?: RawAxiosRequestConfig) {
+    public createBrowser(payload: CreateBrowserRequest, options?: RawAxiosRequestConfig) {
         return BrowserApiFp(this.configuration).createBrowser(payload, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
-     * 
-     * @summary Close and remove a browser instance
-     * @param {string} browserId Unique browser identifier
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public deleteBrowser(browserId: string, options?: RawAxiosRequestConfig) {
-        return BrowserApiFp(this.configuration).deleteBrowser(browserId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Detect element coordinates using AI vision
-     * @param {string} browserId Unique browser identifier
+     * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         Use fx=0.2 for wide elements with icons on the right (like Google search).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
+     * @summary Detect element coordinates using vision
+     * @param {string} browserId 
      * @param {DetectCoordinatesRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3384,44 +2936,44 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary Manage browser dialogs: get, accept, or dismiss
-     * @param {string} browserId Unique browser identifier
-     * @param {CombinedDialogRequest} payload 
+     * @summary Dialogs: get, accept, dismiss
+     * @param {string} browserId 
+     * @param {DialogRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public dialog(browserId: string, payload: CombinedDialogRequest, options?: RawAxiosRequestConfig) {
+    public dialog(browserId: string, payload: DialogRequest, options?: RawAxiosRequestConfig) {
         return BrowserApiFp(this.configuration).dialog(browserId, payload, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary Manage device emulation: set, clear, or list_devices
-     * @param {string} browserId Unique browser identifier
-     * @param {CombinedEmulateRequest} payload 
+     * @summary Emulation: set, clear, list_devices
+     * @param {string} browserId 
+     * @param {EmulateRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public emulate(browserId: string, payload: CombinedEmulateRequest, options?: RawAxiosRequestConfig) {
+    public emulate(browserId: string, payload: EmulateRequest, options?: RawAxiosRequestConfig) {
         return BrowserApiFp(this.configuration).emulate(browserId, payload, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Execute JavaScript
-     * @param {string} browserId Unique browser identifier
-     * @param {ExecuteRequest} payload 
+     * @param {string} browserId 
+     * @param {ExecuteScriptRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public executeScript(browserId: string, payload: ExecuteRequest, options?: RawAxiosRequestConfig) {
+    public executeScript(browserId: string, payload: ExecuteScriptRequest, options?: RawAxiosRequestConfig) {
         return BrowserApiFp(this.configuration).executeScript(browserId, payload, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Fill multiple form fields
-     * @param {string} browserId Unique browser identifier
+     * @param {string} browserId 
      * @param {FillFormRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3432,30 +2984,8 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary Get browser instance details
-     * @param {string} browserId Unique browser identifier
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public getBrowser(browserId: string, options?: RawAxiosRequestConfig) {
-        return BrowserApiFp(this.configuration).getBrowser(browserId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get browser status
-     * @param {string} browserId Unique browser identifier
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public getBrowserStatus(browserId: string, options?: RawAxiosRequestConfig) {
-        return BrowserApiFp(this.configuration).getBrowserStatus(browserId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get page HTML content
-     * @param {string} browserId Unique browser identifier
+     * @summary Get page HTML
+     * @param {string} browserId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -3466,29 +2996,22 @@ export class BrowserApi extends BaseAPI {
     /**
      * 
      * @summary Get element text, attribute, or property
-     * @param {string} browserId Unique browser identifier
-     * @param {ElementDataRequest} payload 
+     * @param {string} browserId 
+     * @param {string} selector selector
+     * @param {string} dataType data_type
+     * @param {string} [name] name
+     * @param {string} [by] by
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getElementData(browserId: string, payload: ElementDataRequest, options?: RawAxiosRequestConfig) {
-        return BrowserApiFp(this.configuration).getElementData(browserId, payload, options).then((request) => request(this.axios, this.basePath));
+    public getElementData(browserId: string, selector: string, dataType: string, name?: string, by?: string, options?: RawAxiosRequestConfig) {
+        return BrowserApiFp(this.configuration).getElementData(browserId, selector, dataType, name, by, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary Get browser pool status
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public getPoolStatus(options?: RawAxiosRequestConfig) {
-        return BrowserApiFp(this.configuration).getPoolStatus(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get current page URL
-     * @param {string} browserId Unique browser identifier
+     * @summary Get current URL
+     * @param {string} browserId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -3498,20 +3021,56 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary Click using selector or screen coordinates
-     * @param {string} browserId Unique browser identifier
-     * @param {CombinedGuiClickRequest} payload 
+     * @summary GUI click by selector or coordinates
+     * @param {string} browserId 
+     * @param {GuiClickRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public guiClick(browserId: string, payload: CombinedGuiClickRequest, options?: RawAxiosRequestConfig) {
+    public guiClick(browserId: string, payload: GuiClickRequest, options?: RawAxiosRequestConfig) {
         return BrowserApiFp(this.configuration).guiClick(browserId, payload, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary Execute history action: back, forward, or refresh
-     * @param {string} browserId Unique browser identifier
+     * @summary GUI hover at coordinates
+     * @param {string} browserId 
+     * @param {GuiHoverXyRequest} payload 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public guiHoverXy(browserId: string, payload: GuiHoverXyRequest, options?: RawAxiosRequestConfig) {
+        return BrowserApiFp(this.configuration).guiHoverXy(browserId, payload, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Press keys at coordinates (click to focus, then send keys)
+     * @param {string} browserId 
+     * @param {GuiPressKeysXyRequest} payload 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public guiPressKeysXy(browserId: string, payload: GuiPressKeysXyRequest, options?: RawAxiosRequestConfig) {
+        return BrowserApiFp(this.configuration).guiPressKeysXy(browserId, payload, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary GUI type at coordinates - clicks then types text
+     * @param {string} browserId 
+     * @param {GuiTypeXyRequest} payload 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public guiTypeXy(browserId: string, payload: GuiTypeXyRequest, options?: RawAxiosRequestConfig) {
+        return BrowserApiFp(this.configuration).guiTypeXy(browserId, payload, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary History: back, forward, or refresh
+     * @param {string} browserId 
      * @param {HistoryRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3522,18 +3081,8 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary List all active browser instances
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public listBrowsers(options?: RawAxiosRequestConfig) {
-        return BrowserApiFp(this.configuration).listBrowsers(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Mouse action: hover or drag
-     * @param {string} browserId Unique browser identifier
+     * @summary Mouse: hover or drag
+     * @param {string} browserId 
      * @param {MouseRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3544,20 +3093,20 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary Navigate to a URL
-     * @param {string} browserId Unique browser identifier
-     * @param {NavigateRequest} payload 
+     * @summary Navigate to URL
+     * @param {string} browserId 
+     * @param {NavigateBrowserRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public navigateBrowser(browserId: string, payload: NavigateRequest, options?: RawAxiosRequestConfig) {
+    public navigateBrowser(browserId: string, payload: NavigateBrowserRequest, options?: RawAxiosRequestConfig) {
         return BrowserApiFp(this.configuration).navigateBrowser(browserId, payload, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary Get or clear network logs
-     * @param {string} browserId Unique browser identifier
+     * @summary Network logs: get or clear
+     * @param {string} browserId 
      * @param {NetworkLogsRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3568,8 +3117,8 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary Manage performance: start_trace, stop_trace, metrics, or analyze
-     * @param {string} browserId Unique browser identifier
+     * @summary Performance: start_trace, stop_trace, metrics, analyze
+     * @param {string} browserId 
      * @param {PerformanceRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3580,8 +3129,8 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary Press keys on an element
-     * @param {string} browserId Unique browser identifier
+     * @summary Press keyboard keys
+     * @param {string} browserId 
      * @param {PressKeysRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3593,7 +3142,7 @@ export class BrowserApi extends BaseAPI {
     /**
      * 
      * @summary Resize viewport
-     * @param {string} browserId Unique browser identifier
+     * @param {string} browserId 
      * @param {ResizeRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3604,20 +3153,20 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary Scroll to element/coordinates (absolute) or by delta (relative)
-     * @param {string} browserId Unique browser identifier
-     * @param {CombinedScrollRequest} payload 
+     * @summary Scroll to element/coords or by delta
+     * @param {string} browserId 
+     * @param {ScrollRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public scroll(browserId: string, payload: CombinedScrollRequest, options?: RawAxiosRequestConfig) {
+    public scroll(browserId: string, payload: ScrollRequest, options?: RawAxiosRequestConfig) {
         return BrowserApiFp(this.configuration).scroll(browserId, payload, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
      * @summary Select dropdown: select option or get options
-     * @param {string} browserId Unique browser identifier
+     * @param {string} browserId 
      * @param {SelectRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3628,8 +3177,20 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary Manage browser tabs: list, new, switch, close, or current
-     * @param {string} browserId Unique browser identifier
+     * @summary DOM or accessibility snapshot
+     * @param {string} browserId 
+     * @param {SnapshotRequest} payload 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public snapshot(browserId: string, payload: SnapshotRequest, options?: RawAxiosRequestConfig) {
+        return BrowserApiFp(this.configuration).snapshot(browserId, payload, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Tabs: list, new, switch, close, current
+     * @param {string} browserId 
      * @param {TabsRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3640,43 +3201,32 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary Take a screenshot
-     * @param {string} browserId Unique browser identifier
+     * @summary Take screenshot
+     * @param {string} browserId 
+     * @param {TakeScreenshotRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public takeScreenshot(browserId: string, options?: RawAxiosRequestConfig) {
-        return BrowserApiFp(this.configuration).takeScreenshot(browserId, options).then((request) => request(this.axios, this.basePath));
+    public takeScreenshot(browserId: string, payload: TakeScreenshotRequest, options?: RawAxiosRequestConfig) {
+        return BrowserApiFp(this.configuration).takeScreenshot(browserId, payload, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary Take DOM/accessibility snapshot
-     * @param {string} browserId Unique browser identifier
-     * @param {SnapshotRequest} payload 
+     * @summary Type text into element
+     * @param {string} browserId 
+     * @param {TypeTextRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public takeSnapshot(browserId: string, payload: SnapshotRequest, options?: RawAxiosRequestConfig) {
-        return BrowserApiFp(this.configuration).takeSnapshot(browserId, payload, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Type text into an element
-     * @param {string} browserId Unique browser identifier
-     * @param {TypeRequest} payload 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    public typeText(browserId: string, payload: TypeRequest, options?: RawAxiosRequestConfig) {
+    public typeText(browserId: string, payload: TypeTextRequest, options?: RawAxiosRequestConfig) {
         return BrowserApiFp(this.configuration).typeText(browserId, payload, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary Upload a file
-     * @param {string} browserId Unique browser identifier
+     * @summary Upload file to input
+     * @param {string} browserId 
      * @param {UploadFileRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3687,8 +3237,8 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary Wait for element to become visible or hidden
-     * @param {string} browserId Unique browser identifier
+     * @summary Wait for element to be visible or hidden
+     * @param {string} browserId 
      * @param {WaitElementRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3699,8 +3249,8 @@ export class BrowserApi extends BaseAPI {
 
     /**
      * 
-     * @summary Analyze visible page content using AI
-     * @param {string} browserId Unique browser identifier
+     * @summary AI page analysis - what\'s visible
+     * @param {string} browserId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */

@@ -4,56 +4,54 @@ All URIs are relative to */api/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**check_element**](BrowserApi.md#check_element) | **POST** /browser/{browser_id}/check_element | Check if element exists or is visible
+[**browsers**](BrowserApi.md#browsers) | **POST** /browser/browsers | Admin: list all, get info, or close all browsers
+[**check_element**](BrowserApi.md#check_element) | **GET** /browser/{browser_id}/check_element | Check if element exists or is visible
 [**click**](BrowserApi.md#click) | **POST** /browser/{browser_id}/click | Click element
-[**close_all_browsers**](BrowserApi.md#close_all_browsers) | **POST** /browser/close_all | Close all active browser instances
-[**close_browser**](BrowserApi.md#close_browser) | **POST** /browser/{browser_id}/close | Close a browser instance
-[**console_logs**](BrowserApi.md#console_logs) | **POST** /browser/{browser_id}/console | Get or clear console logs
-[**create_browser**](BrowserApi.md#create_browser) | **POST** /browser/create | Create a new browser instance
-[**delete_browser**](BrowserApi.md#delete_browser) | **DELETE** /browser/{browser_id} | Close and remove a browser instance
-[**detect_coordinates**](BrowserApi.md#detect_coordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using AI vision
-[**dialog**](BrowserApi.md#dialog) | **POST** /browser/{browser_id}/dialog | Manage browser dialogs: get, accept, or dismiss
-[**emulate**](BrowserApi.md#emulate) | **POST** /browser/{browser_id}/emulate | Manage device emulation: set, clear, or list_devices
-[**execute_script**](BrowserApi.md#execute_script) | **POST** /browser/{browser_id}/execute | Execute JavaScript
+[**close_browser**](BrowserApi.md#close_browser) | **DELETE** /browser/{browser_id}/close_browser | Close browser instance
+[**console_logs**](BrowserApi.md#console_logs) | **POST** /browser/{browser_id}/console_logs | Console logs: get or clear
+[**create_browser**](BrowserApi.md#create_browser) | **POST** /browser/create_browser | Create browser instance with optional persistent profile
+[**detect_coordinates**](BrowserApi.md#detect_coordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using vision
+[**dialog**](BrowserApi.md#dialog) | **POST** /browser/{browser_id}/dialog | Dialogs: get, accept, dismiss
+[**emulate**](BrowserApi.md#emulate) | **POST** /browser/{browser_id}/emulate | Emulation: set, clear, list_devices
+[**execute_script**](BrowserApi.md#execute_script) | **POST** /browser/{browser_id}/execute_script | Execute JavaScript
 [**fill_form**](BrowserApi.md#fill_form) | **POST** /browser/{browser_id}/fill_form | Fill multiple form fields
-[**get_browser**](BrowserApi.md#get_browser) | **GET** /browser/{browser_id} | Get browser instance details
-[**get_browser_status**](BrowserApi.md#get_browser_status) | **GET** /browser/{browser_id}/status | Get browser status
-[**get_content**](BrowserApi.md#get_content) | **GET** /browser/{browser_id}/content | Get page HTML content
-[**get_element_data**](BrowserApi.md#get_element_data) | **POST** /browser/{browser_id}/element_data | Get element text, attribute, or property
-[**get_pool_status**](BrowserApi.md#get_pool_status) | **GET** /browser/pool/status | Get browser pool status
-[**get_url**](BrowserApi.md#get_url) | **GET** /browser/{browser_id}/url | Get current page URL
-[**gui_click**](BrowserApi.md#gui_click) | **POST** /browser/{browser_id}/gui_click | Click using selector or screen coordinates
-[**history**](BrowserApi.md#history) | **POST** /browser/{browser_id}/history | Execute history action: back, forward, or refresh
-[**list_browsers**](BrowserApi.md#list_browsers) | **GET** /browser/list | List all active browser instances
-[**mouse**](BrowserApi.md#mouse) | **POST** /browser/{browser_id}/mouse | Mouse action: hover or drag
-[**navigate_browser**](BrowserApi.md#navigate_browser) | **POST** /browser/{browser_id}/navigate | Navigate to a URL
-[**network_logs**](BrowserApi.md#network_logs) | **POST** /browser/{browser_id}/network | Get or clear network logs
-[**performance**](BrowserApi.md#performance) | **POST** /browser/{browser_id}/performance | Manage performance: start_trace, stop_trace, metrics, or analyze
-[**press_keys**](BrowserApi.md#press_keys) | **POST** /browser/{browser_id}/press_keys | Press keys on an element
+[**get_content**](BrowserApi.md#get_content) | **GET** /browser/{browser_id}/get_content | Get page HTML
+[**get_element_data**](BrowserApi.md#get_element_data) | **GET** /browser/{browser_id}/get_element_data | Get element text, attribute, or property
+[**get_url**](BrowserApi.md#get_url) | **GET** /browser/{browser_id}/get_url | Get current URL
+[**gui_click**](BrowserApi.md#gui_click) | **POST** /browser/{browser_id}/gui_click | GUI click by selector or coordinates
+[**gui_hover_xy**](BrowserApi.md#gui_hover_xy) | **POST** /browser/{browser_id}/gui_hover_xy | GUI hover at coordinates
+[**gui_press_keys_xy**](BrowserApi.md#gui_press_keys_xy) | **POST** /browser/{browser_id}/gui_press_keys_xy | Press keys at coordinates (click to focus, then send keys)
+[**gui_type_xy**](BrowserApi.md#gui_type_xy) | **POST** /browser/{browser_id}/gui_type_xy | GUI type at coordinates - clicks then types text
+[**history**](BrowserApi.md#history) | **POST** /browser/{browser_id}/history | History: back, forward, or refresh
+[**mouse**](BrowserApi.md#mouse) | **POST** /browser/{browser_id}/mouse | Mouse: hover or drag
+[**navigate_browser**](BrowserApi.md#navigate_browser) | **POST** /browser/{browser_id}/navigate | Navigate to URL
+[**network_logs**](BrowserApi.md#network_logs) | **POST** /browser/{browser_id}/network_logs | Network logs: get or clear
+[**performance**](BrowserApi.md#performance) | **POST** /browser/{browser_id}/performance | Performance: start_trace, stop_trace, metrics, analyze
+[**press_keys**](BrowserApi.md#press_keys) | **POST** /browser/{browser_id}/press_keys | Press keyboard keys
 [**resize**](BrowserApi.md#resize) | **POST** /browser/{browser_id}/resize | Resize viewport
-[**scroll**](BrowserApi.md#scroll) | **POST** /browser/{browser_id}/scroll | Scroll to element/coordinates (absolute) or by delta (relative)
+[**scroll**](BrowserApi.md#scroll) | **POST** /browser/{browser_id}/scroll | Scroll to element/coords or by delta
 [**select**](BrowserApi.md#select) | **POST** /browser/{browser_id}/select | Select dropdown: select option or get options
-[**tabs**](BrowserApi.md#tabs) | **POST** /browser/{browser_id}/tabs | Manage browser tabs: list, new, switch, close, or current
-[**take_screenshot**](BrowserApi.md#take_screenshot) | **POST** /browser/{browser_id}/screenshot | Take a screenshot
-[**take_snapshot**](BrowserApi.md#take_snapshot) | **POST** /browser/{browser_id}/snapshot | Take DOM/accessibility snapshot
-[**type_text**](BrowserApi.md#type_text) | **POST** /browser/{browser_id}/type | Type text into an element
-[**upload_file**](BrowserApi.md#upload_file) | **POST** /browser/{browser_id}/upload_file | Upload a file
-[**wait_element**](BrowserApi.md#wait_element) | **POST** /browser/{browser_id}/wait_element | Wait for element to become visible or hidden
-[**what_is_visible**](BrowserApi.md#what_is_visible) | **GET** /browser/{browser_id}/what_is_visible | Analyze visible page content using AI
+[**snapshot**](BrowserApi.md#snapshot) | **POST** /browser/{browser_id}/snapshot | DOM or accessibility snapshot
+[**tabs**](BrowserApi.md#tabs) | **POST** /browser/{browser_id}/tabs | Tabs: list, new, switch, close, current
+[**take_screenshot**](BrowserApi.md#take_screenshot) | **POST** /browser/{browser_id}/screenshot | Take screenshot
+[**type_text**](BrowserApi.md#type_text) | **POST** /browser/{browser_id}/type | Type text into element
+[**upload_file**](BrowserApi.md#upload_file) | **POST** /browser/{browser_id}/upload_file | Upload file to input
+[**wait_element**](BrowserApi.md#wait_element) | **POST** /browser/{browser_id}/wait_element | Wait for element to be visible or hidden
+[**what_is_visible**](BrowserApi.md#what_is_visible) | **POST** /browser/{browser_id}/what_is_visible | AI page analysis - what&#39;s visible
 
 
-# **check_element**
-> SuccessResponse check_element(browser_id, payload)
+# **browsers**
+> GenericResponse browsers(payload)
 
-Check if element exists or is visible
+Admin: list all, get info, or close all browsers
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.check_element_request import CheckElementRequest
-from airbrowser_client.models.success_response import SuccessResponse
+from airbrowser_client.models.browsers_request import BrowsersRequest
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -68,12 +66,80 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
-    payload = airbrowser_client.CheckElementRequest() # CheckElementRequest | 
+    payload = airbrowser_client.BrowsersRequest() # BrowsersRequest | 
+
+    try:
+        # Admin: list all, get info, or close all browsers
+        api_response = api_instance.browsers(payload)
+        print("The response of BrowserApi->browsers:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling BrowserApi->browsers: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **payload** | [**BrowsersRequest**](BrowsersRequest.md)|  | 
+
+### Return type
+
+[**GenericResponse**](GenericResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **check_element**
+> GenericResponse check_element(browser_id, selector, check, by=by)
+
+Check if element exists or is visible
+
+### Example
+
+
+```python
+import airbrowser_client
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to /api/v1
+# See configuration.py for a list of all supported configuration parameters.
+configuration = airbrowser_client.Configuration(
+    host = "/api/v1"
+)
+
+
+# Enter a context with an instance of the API client
+with airbrowser_client.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = airbrowser_client.BrowserApi(api_client)
+    browser_id = 'browser_id_example' # str | 
+    selector = 'selector_example' # str | selector
+    check = 'check_example' # str | check
+    by = 'by_example' # str | by (optional)
 
     try:
         # Check if element exists or is visible
-        api_response = api_instance.check_element(browser_id, payload)
+        api_response = api_instance.check_element(browser_id, selector, check, by=by)
         print("The response of BrowserApi->check_element:\n")
         pprint(api_response)
     except Exception as e:
@@ -87,145 +153,14 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
- **payload** | [**CheckElementRequest**](CheckElementRequest.md)|  | 
+ **browser_id** | **str**|  | 
+ **selector** | **str**| selector | 
+ **check** | **str**| check | 
+ **by** | **str**| by | [optional] 
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-### HTTP response details
-
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **click**
-> ActionResult click(browser_id, payload)
-
-Click element
-
-Use if_visible=true to only click if visible.
-
-### Example
-
-
-```python
-import airbrowser_client
-from airbrowser_client.models.action_result import ActionResult
-from airbrowser_client.models.click_request import ClickRequest
-from airbrowser_client.rest import ApiException
-from pprint import pprint
-
-# Defining the host is optional and defaults to /api/v1
-# See configuration.py for a list of all supported configuration parameters.
-configuration = airbrowser_client.Configuration(
-    host = "/api/v1"
-)
-
-
-# Enter a context with an instance of the API client
-with airbrowser_client.ApiClient(configuration) as api_client:
-    # Create an instance of the API class
-    api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
-    payload = airbrowser_client.ClickRequest() # ClickRequest | 
-
-    try:
-        # Click element
-        api_response = api_instance.click(browser_id, payload)
-        print("The response of BrowserApi->click:\n")
-        pprint(api_response)
-    except Exception as e:
-        print("Exception when calling BrowserApi->click: %s\n" % e)
-```
-
-
-
-### Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
- **payload** | [**ClickRequest**](ClickRequest.md)|  | 
-
-### Return type
-
-[**ActionResult**](ActionResult.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-### HTTP response details
-
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **close_all_browsers**
-> BaseResponse close_all_browsers()
-
-Close all active browser instances
-
-### Example
-
-
-```python
-import airbrowser_client
-from airbrowser_client.models.base_response import BaseResponse
-from airbrowser_client.rest import ApiException
-from pprint import pprint
-
-# Defining the host is optional and defaults to /api/v1
-# See configuration.py for a list of all supported configuration parameters.
-configuration = airbrowser_client.Configuration(
-    host = "/api/v1"
-)
-
-
-# Enter a context with an instance of the API client
-with airbrowser_client.ApiClient(configuration) as api_client:
-    # Create an instance of the API class
-    api_instance = airbrowser_client.BrowserApi(api_client)
-
-    try:
-        # Close all active browser instances
-        api_response = api_instance.close_all_browsers()
-        print("The response of BrowserApi->close_all_browsers:\n")
-        pprint(api_response)
-    except Exception as e:
-        print("Exception when calling BrowserApi->close_all_browsers: %s\n" % e)
-```
-
-
-
-### Parameters
-
-This endpoint does not need any parameter.
-
-### Return type
-
-[**BaseResponse**](BaseResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -244,17 +179,20 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **close_browser**
-> BaseResponse close_browser(browser_id)
+# **click**
+> GenericResponse click(browser_id, payload)
 
-Close a browser instance
+Click element
+
+Use if_visible=True to only click if visible.
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.base_response import BaseResponse
+from airbrowser_client.models.click_request import ClickRequest
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -269,10 +207,78 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.ClickRequest() # ClickRequest | 
 
     try:
-        # Close a browser instance
+        # Click element
+        api_response = api_instance.click(browser_id, payload)
+        print("The response of BrowserApi->click:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling BrowserApi->click: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **browser_id** | **str**|  | 
+ **payload** | [**ClickRequest**](ClickRequest.md)|  | 
+
+### Return type
+
+[**GenericResponse**](GenericResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **close_browser**
+> GenericResponse close_browser(browser_id)
+
+Close browser instance
+
+### Example
+
+
+```python
+import airbrowser_client
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to /api/v1
+# See configuration.py for a list of all supported configuration parameters.
+configuration = airbrowser_client.Configuration(
+    host = "/api/v1"
+)
+
+
+# Enter a context with an instance of the API client
+with airbrowser_client.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = airbrowser_client.BrowserApi(api_client)
+    browser_id = 'browser_id_example' # str | 
+
+    try:
+        # Close browser instance
         api_response = api_instance.close_browser(browser_id)
         print("The response of BrowserApi->close_browser:\n")
         pprint(api_response)
@@ -287,11 +293,11 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
 
 ### Return type
 
-[**BaseResponse**](BaseResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -311,9 +317,9 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **console_logs**
-> LogsResponse console_logs(browser_id, payload)
+> GenericResponse console_logs(browser_id, payload)
 
-Get or clear console logs
+Console logs: get or clear
 
 ### Example
 
@@ -321,7 +327,7 @@ Get or clear console logs
 ```python
 import airbrowser_client
 from airbrowser_client.models.console_logs_request import ConsoleLogsRequest
-from airbrowser_client.models.logs_response import LogsResponse
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -336,11 +342,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
     payload = airbrowser_client.ConsoleLogsRequest() # ConsoleLogsRequest | 
 
     try:
-        # Get or clear console logs
+        # Console logs: get or clear
         api_response = api_instance.console_logs(browser_id, payload)
         print("The response of BrowserApi->console_logs:\n")
         pprint(api_response)
@@ -355,12 +361,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
  **payload** | [**ConsoleLogsRequest**](ConsoleLogsRequest.md)|  | 
 
 ### Return type
 
-[**LogsResponse**](LogsResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -380,17 +386,17 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **create_browser**
-> BrowserCreated create_browser(payload)
+> GenericResponse create_browser(payload)
 
-Create a new browser instance
+Create browser instance with optional persistent profile
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.browser_config import BrowserConfig
-from airbrowser_client.models.browser_created import BrowserCreated
+from airbrowser_client.models.create_browser_request import CreateBrowserRequest
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -405,10 +411,10 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    payload = airbrowser_client.BrowserConfig() # BrowserConfig | 
+    payload = airbrowser_client.CreateBrowserRequest() # CreateBrowserRequest | 
 
     try:
-        # Create a new browser instance
+        # Create browser instance with optional persistent profile
         api_response = api_instance.create_browser(payload)
         print("The response of BrowserApi->create_browser:\n")
         pprint(api_response)
@@ -423,11 +429,11 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **payload** | [**BrowserConfig**](BrowserConfig.md)|  | 
+ **payload** | [**CreateBrowserRequest**](CreateBrowserRequest.md)|  | 
 
 ### Return type
 
-[**BrowserCreated**](BrowserCreated.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -442,81 +448,21 @@ No authorization required
 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**400** | Bad request |  -  |
-**200** | Browser created |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **delete_browser**
-> BaseResponse delete_browser(browser_id)
-
-Close and remove a browser instance
-
-### Example
-
-
-```python
-import airbrowser_client
-from airbrowser_client.models.base_response import BaseResponse
-from airbrowser_client.rest import ApiException
-from pprint import pprint
-
-# Defining the host is optional and defaults to /api/v1
-# See configuration.py for a list of all supported configuration parameters.
-configuration = airbrowser_client.Configuration(
-    host = "/api/v1"
-)
-
-
-# Enter a context with an instance of the API client
-with airbrowser_client.ApiClient(configuration) as api_client:
-    # Create an instance of the API class
-    api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
-
-    try:
-        # Close and remove a browser instance
-        api_response = api_instance.delete_browser(browser_id)
-        print("The response of BrowserApi->delete_browser:\n")
-        pprint(api_response)
-    except Exception as e:
-        print("Exception when calling BrowserApi->delete_browser: %s\n" % e)
-```
-
-
-
-### Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
-
-### Return type
-
-[**BaseResponse**](BaseResponse.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-### HTTP response details
-
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
 **200** | Success |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **detect_coordinates**
-> DetectCoordinatesResult detect_coordinates(browser_id, payload)
+> GenericResponse detect_coordinates(browser_id, payload)
 
-Detect element coordinates using AI vision
+Detect element coordinates using vision
+
+Args:
+    browser_id: Browser instance identifier
+    prompt: Natural language description of element to find
+    fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).
+        Use fx=0.2 for wide elements with icons on the right (like Google search).
+    fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
 
 ### Example
 
@@ -524,7 +470,7 @@ Detect element coordinates using AI vision
 ```python
 import airbrowser_client
 from airbrowser_client.models.detect_coordinates_request import DetectCoordinatesRequest
-from airbrowser_client.models.detect_coordinates_result import DetectCoordinatesResult
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -539,11 +485,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
     payload = airbrowser_client.DetectCoordinatesRequest() # DetectCoordinatesRequest | 
 
     try:
-        # Detect element coordinates using AI vision
+        # Detect element coordinates using vision
         api_response = api_instance.detect_coordinates(browser_id, payload)
         print("The response of BrowserApi->detect_coordinates:\n")
         pprint(api_response)
@@ -558,12 +504,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
  **payload** | [**DetectCoordinatesRequest**](DetectCoordinatesRequest.md)|  | 
 
 ### Return type
 
-[**DetectCoordinatesResult**](DetectCoordinatesResult.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -583,17 +529,17 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **dialog**
-> SuccessResponse dialog(browser_id, payload)
+> GenericResponse dialog(browser_id, payload)
 
-Manage browser dialogs: get, accept, or dismiss
+Dialogs: get, accept, dismiss
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.combined_dialog_request import CombinedDialogRequest
-from airbrowser_client.models.success_response import SuccessResponse
+from airbrowser_client.models.dialog_request import DialogRequest
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -608,11 +554,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
-    payload = airbrowser_client.CombinedDialogRequest() # CombinedDialogRequest | 
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.DialogRequest() # DialogRequest | 
 
     try:
-        # Manage browser dialogs: get, accept, or dismiss
+        # Dialogs: get, accept, dismiss
         api_response = api_instance.dialog(browser_id, payload)
         print("The response of BrowserApi->dialog:\n")
         pprint(api_response)
@@ -627,12 +573,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
- **payload** | [**CombinedDialogRequest**](CombinedDialogRequest.md)|  | 
+ **browser_id** | **str**|  | 
+ **payload** | [**DialogRequest**](DialogRequest.md)|  | 
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -652,17 +598,17 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **emulate**
-> SuccessResponse emulate(browser_id, payload)
+> GenericResponse emulate(browser_id, payload)
 
-Manage device emulation: set, clear, or list_devices
+Emulation: set, clear, list_devices
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.combined_emulate_request import CombinedEmulateRequest
-from airbrowser_client.models.success_response import SuccessResponse
+from airbrowser_client.models.emulate_request import EmulateRequest
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -677,11 +623,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
-    payload = airbrowser_client.CombinedEmulateRequest() # CombinedEmulateRequest | 
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.EmulateRequest() # EmulateRequest | 
 
     try:
-        # Manage device emulation: set, clear, or list_devices
+        # Emulation: set, clear, list_devices
         api_response = api_instance.emulate(browser_id, payload)
         print("The response of BrowserApi->emulate:\n")
         pprint(api_response)
@@ -696,12 +642,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
- **payload** | [**CombinedEmulateRequest**](CombinedEmulateRequest.md)|  | 
+ **browser_id** | **str**|  | 
+ **payload** | [**EmulateRequest**](EmulateRequest.md)|  | 
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -721,7 +667,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **execute_script**
-> ExecuteResponse execute_script(browser_id, payload)
+> GenericResponse execute_script(browser_id, payload)
 
 Execute JavaScript
 
@@ -730,8 +676,8 @@ Execute JavaScript
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.execute_request import ExecuteRequest
-from airbrowser_client.models.execute_response import ExecuteResponse
+from airbrowser_client.models.execute_script_request import ExecuteScriptRequest
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -746,8 +692,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
-    payload = airbrowser_client.ExecuteRequest() # ExecuteRequest | 
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.ExecuteScriptRequest() # ExecuteScriptRequest | 
 
     try:
         # Execute JavaScript
@@ -765,12 +711,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
- **payload** | [**ExecuteRequest**](ExecuteRequest.md)|  | 
+ **browser_id** | **str**|  | 
+ **payload** | [**ExecuteScriptRequest**](ExecuteScriptRequest.md)|  | 
 
 ### Return type
 
-[**ExecuteResponse**](ExecuteResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -790,7 +736,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **fill_form**
-> SuccessResponse fill_form(browser_id, payload)
+> GenericResponse fill_form(browser_id, payload)
 
 Fill multiple form fields
 
@@ -800,7 +746,7 @@ Fill multiple form fields
 ```python
 import airbrowser_client
 from airbrowser_client.models.fill_form_request import FillFormRequest
-from airbrowser_client.models.success_response import SuccessResponse
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -815,7 +761,7 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
     payload = airbrowser_client.FillFormRequest() # FillFormRequest | 
 
     try:
@@ -834,12 +780,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
  **payload** | [**FillFormRequest**](FillFormRequest.md)|  | 
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -858,150 +804,17 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **get_browser**
-> BrowserInfoResponse get_browser(browser_id)
-
-Get browser instance details
-
-### Example
-
-
-```python
-import airbrowser_client
-from airbrowser_client.models.browser_info_response import BrowserInfoResponse
-from airbrowser_client.rest import ApiException
-from pprint import pprint
-
-# Defining the host is optional and defaults to /api/v1
-# See configuration.py for a list of all supported configuration parameters.
-configuration = airbrowser_client.Configuration(
-    host = "/api/v1"
-)
-
-
-# Enter a context with an instance of the API client
-with airbrowser_client.ApiClient(configuration) as api_client:
-    # Create an instance of the API class
-    api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
-
-    try:
-        # Get browser instance details
-        api_response = api_instance.get_browser(browser_id)
-        print("The response of BrowserApi->get_browser:\n")
-        pprint(api_response)
-    except Exception as e:
-        print("Exception when calling BrowserApi->get_browser: %s\n" % e)
-```
-
-
-
-### Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
-
-### Return type
-
-[**BrowserInfoResponse**](BrowserInfoResponse.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-### HTTP response details
-
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**404** | Browser not found |  -  |
-**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **get_browser_status**
-> BrowserInfoResponse get_browser_status(browser_id)
-
-Get browser status
-
-### Example
-
-
-```python
-import airbrowser_client
-from airbrowser_client.models.browser_info_response import BrowserInfoResponse
-from airbrowser_client.rest import ApiException
-from pprint import pprint
-
-# Defining the host is optional and defaults to /api/v1
-# See configuration.py for a list of all supported configuration parameters.
-configuration = airbrowser_client.Configuration(
-    host = "/api/v1"
-)
-
-
-# Enter a context with an instance of the API client
-with airbrowser_client.ApiClient(configuration) as api_client:
-    # Create an instance of the API class
-    api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
-
-    try:
-        # Get browser status
-        api_response = api_instance.get_browser_status(browser_id)
-        print("The response of BrowserApi->get_browser_status:\n")
-        pprint(api_response)
-    except Exception as e:
-        print("Exception when calling BrowserApi->get_browser_status: %s\n" % e)
-```
-
-
-
-### Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
-
-### Return type
-
-[**BrowserInfoResponse**](BrowserInfoResponse.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-### HTTP response details
-
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **get_content**
-> ContentResponse get_content(browser_id)
+> GenericResponse get_content(browser_id)
 
-Get page HTML content
+Get page HTML
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.content_response import ContentResponse
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -1016,10 +829,10 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
 
     try:
-        # Get page HTML content
+        # Get page HTML
         api_response = api_instance.get_content(browser_id)
         print("The response of BrowserApi->get_content:\n")
         pprint(api_response)
@@ -1034,11 +847,11 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
 
 ### Return type
 
-[**ContentResponse**](ContentResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -1058,7 +871,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_element_data**
-> AttributeResponse get_element_data(browser_id, payload)
+> GenericResponse get_element_data(browser_id, selector, data_type, name=name, by=by)
 
 Get element text, attribute, or property
 
@@ -1067,8 +880,7 @@ Get element text, attribute, or property
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.attribute_response import AttributeResponse
-from airbrowser_client.models.element_data_request import ElementDataRequest
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -1083,12 +895,15 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
-    payload = airbrowser_client.ElementDataRequest() # ElementDataRequest | 
+    browser_id = 'browser_id_example' # str | 
+    selector = 'selector_example' # str | selector
+    data_type = 'data_type_example' # str | data_type
+    name = 'name_example' # str | name (optional)
+    by = 'by_example' # str | by (optional)
 
     try:
         # Get element text, attribute, or property
-        api_response = api_instance.get_element_data(browser_id, payload)
+        api_response = api_instance.get_element_data(browser_id, selector, data_type, name=name, by=by)
         print("The response of BrowserApi->get_element_data:\n")
         pprint(api_response)
     except Exception as e:
@@ -1102,74 +917,15 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
- **payload** | [**ElementDataRequest**](ElementDataRequest.md)|  | 
+ **browser_id** | **str**|  | 
+ **selector** | **str**| selector | 
+ **data_type** | **str**| data_type | 
+ **name** | **str**| name | [optional] 
+ **by** | **str**| by | [optional] 
 
 ### Return type
 
-[**AttributeResponse**](AttributeResponse.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-### HTTP response details
-
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **get_pool_status**
-> PoolStatusResponse get_pool_status()
-
-Get browser pool status
-
-### Example
-
-
-```python
-import airbrowser_client
-from airbrowser_client.models.pool_status_response import PoolStatusResponse
-from airbrowser_client.rest import ApiException
-from pprint import pprint
-
-# Defining the host is optional and defaults to /api/v1
-# See configuration.py for a list of all supported configuration parameters.
-configuration = airbrowser_client.Configuration(
-    host = "/api/v1"
-)
-
-
-# Enter a context with an instance of the API client
-with airbrowser_client.ApiClient(configuration) as api_client:
-    # Create an instance of the API class
-    api_instance = airbrowser_client.BrowserApi(api_client)
-
-    try:
-        # Get browser pool status
-        api_response = api_instance.get_pool_status()
-        print("The response of BrowserApi->get_pool_status:\n")
-        pprint(api_response)
-    except Exception as e:
-        print("Exception when calling BrowserApi->get_pool_status: %s\n" % e)
-```
-
-
-
-### Parameters
-
-This endpoint does not need any parameter.
-
-### Return type
-
-[**PoolStatusResponse**](PoolStatusResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -1189,16 +945,16 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **get_url**
-> UrlResponse get_url(browser_id)
+> GenericResponse get_url(browser_id)
 
-Get current page URL
+Get current URL
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.url_response import UrlResponse
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -1213,10 +969,10 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
 
     try:
-        # Get current page URL
+        # Get current URL
         api_response = api_instance.get_url(browser_id)
         print("The response of BrowserApi->get_url:\n")
         pprint(api_response)
@@ -1231,11 +987,11 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
 
 ### Return type
 
-[**UrlResponse**](UrlResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -1255,17 +1011,17 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **gui_click**
-> ActionResult gui_click(browser_id, payload)
+> GenericResponse gui_click(browser_id, payload)
 
-Click using selector or screen coordinates
+GUI click by selector or coordinates
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.action_result import ActionResult
-from airbrowser_client.models.combined_gui_click_request import CombinedGuiClickRequest
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.models.gui_click_request import GuiClickRequest
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -1280,11 +1036,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
-    payload = airbrowser_client.CombinedGuiClickRequest() # CombinedGuiClickRequest | 
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.GuiClickRequest() # GuiClickRequest | 
 
     try:
-        # Click using selector or screen coordinates
+        # GUI click by selector or coordinates
         api_response = api_instance.gui_click(browser_id, payload)
         print("The response of BrowserApi->gui_click:\n")
         pprint(api_response)
@@ -1299,12 +1055,219 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
- **payload** | [**CombinedGuiClickRequest**](CombinedGuiClickRequest.md)|  | 
+ **browser_id** | **str**|  | 
+ **payload** | [**GuiClickRequest**](GuiClickRequest.md)|  | 
 
 ### Return type
 
-[**ActionResult**](ActionResult.md)
+[**GenericResponse**](GenericResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **gui_hover_xy**
+> GenericResponse gui_hover_xy(browser_id, payload)
+
+GUI hover at coordinates
+
+### Example
+
+
+```python
+import airbrowser_client
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.models.gui_hover_xy_request import GuiHoverXyRequest
+from airbrowser_client.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to /api/v1
+# See configuration.py for a list of all supported configuration parameters.
+configuration = airbrowser_client.Configuration(
+    host = "/api/v1"
+)
+
+
+# Enter a context with an instance of the API client
+with airbrowser_client.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = airbrowser_client.BrowserApi(api_client)
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.GuiHoverXyRequest() # GuiHoverXyRequest | 
+
+    try:
+        # GUI hover at coordinates
+        api_response = api_instance.gui_hover_xy(browser_id, payload)
+        print("The response of BrowserApi->gui_hover_xy:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling BrowserApi->gui_hover_xy: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **browser_id** | **str**|  | 
+ **payload** | [**GuiHoverXyRequest**](GuiHoverXyRequest.md)|  | 
+
+### Return type
+
+[**GenericResponse**](GenericResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **gui_press_keys_xy**
+> GenericResponse gui_press_keys_xy(browser_id, payload)
+
+Press keys at coordinates (click to focus, then send keys)
+
+### Example
+
+
+```python
+import airbrowser_client
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.models.gui_press_keys_xy_request import GuiPressKeysXyRequest
+from airbrowser_client.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to /api/v1
+# See configuration.py for a list of all supported configuration parameters.
+configuration = airbrowser_client.Configuration(
+    host = "/api/v1"
+)
+
+
+# Enter a context with an instance of the API client
+with airbrowser_client.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = airbrowser_client.BrowserApi(api_client)
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.GuiPressKeysXyRequest() # GuiPressKeysXyRequest | 
+
+    try:
+        # Press keys at coordinates (click to focus, then send keys)
+        api_response = api_instance.gui_press_keys_xy(browser_id, payload)
+        print("The response of BrowserApi->gui_press_keys_xy:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling BrowserApi->gui_press_keys_xy: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **browser_id** | **str**|  | 
+ **payload** | [**GuiPressKeysXyRequest**](GuiPressKeysXyRequest.md)|  | 
+
+### Return type
+
+[**GenericResponse**](GenericResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **gui_type_xy**
+> GenericResponse gui_type_xy(browser_id, payload)
+
+GUI type at coordinates - clicks then types text
+
+### Example
+
+
+```python
+import airbrowser_client
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.models.gui_type_xy_request import GuiTypeXyRequest
+from airbrowser_client.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to /api/v1
+# See configuration.py for a list of all supported configuration parameters.
+configuration = airbrowser_client.Configuration(
+    host = "/api/v1"
+)
+
+
+# Enter a context with an instance of the API client
+with airbrowser_client.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = airbrowser_client.BrowserApi(api_client)
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.GuiTypeXyRequest() # GuiTypeXyRequest | 
+
+    try:
+        # GUI type at coordinates - clicks then types text
+        api_response = api_instance.gui_type_xy(browser_id, payload)
+        print("The response of BrowserApi->gui_type_xy:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling BrowserApi->gui_type_xy: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **browser_id** | **str**|  | 
+ **payload** | [**GuiTypeXyRequest**](GuiTypeXyRequest.md)|  | 
+
+### Return type
+
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -1324,16 +1287,16 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **history**
-> ActionResult history(browser_id, payload)
+> GenericResponse history(browser_id, payload)
 
-Execute history action: back, forward, or refresh
+History: back, forward, or refresh
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.action_result import ActionResult
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.models.history_request import HistoryRequest
 from airbrowser_client.rest import ApiException
 from pprint import pprint
@@ -1349,11 +1312,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
     payload = airbrowser_client.HistoryRequest() # HistoryRequest | 
 
     try:
-        # Execute history action: back, forward, or refresh
+        # History: back, forward, or refresh
         api_response = api_instance.history(browser_id, payload)
         print("The response of BrowserApi->history:\n")
         pprint(api_response)
@@ -1368,12 +1331,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
  **payload** | [**HistoryRequest**](HistoryRequest.md)|  | 
 
 ### Return type
 
-[**ActionResult**](ActionResult.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -1392,80 +1355,18 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
-# **list_browsers**
-> BrowserList list_browsers()
-
-List all active browser instances
-
-### Example
-
-
-```python
-import airbrowser_client
-from airbrowser_client.models.browser_list import BrowserList
-from airbrowser_client.rest import ApiException
-from pprint import pprint
-
-# Defining the host is optional and defaults to /api/v1
-# See configuration.py for a list of all supported configuration parameters.
-configuration = airbrowser_client.Configuration(
-    host = "/api/v1"
-)
-
-
-# Enter a context with an instance of the API client
-with airbrowser_client.ApiClient(configuration) as api_client:
-    # Create an instance of the API class
-    api_instance = airbrowser_client.BrowserApi(api_client)
-
-    try:
-        # List all active browser instances
-        api_response = api_instance.list_browsers()
-        print("The response of BrowserApi->list_browsers:\n")
-        pprint(api_response)
-    except Exception as e:
-        print("Exception when calling BrowserApi->list_browsers: %s\n" % e)
-```
-
-
-
-### Parameters
-
-This endpoint does not need any parameter.
-
-### Return type
-
-[**BrowserList**](BrowserList.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-### HTTP response details
-
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
 # **mouse**
-> SuccessResponse mouse(browser_id, payload)
+> GenericResponse mouse(browser_id, payload)
 
-Mouse action: hover or drag
+Mouse: hover or drag
 
 ### Example
 
 
 ```python
 import airbrowser_client
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.models.mouse_request import MouseRequest
-from airbrowser_client.models.success_response import SuccessResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -1480,11 +1381,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
     payload = airbrowser_client.MouseRequest() # MouseRequest | 
 
     try:
-        # Mouse action: hover or drag
+        # Mouse: hover or drag
         api_response = api_instance.mouse(browser_id, payload)
         print("The response of BrowserApi->mouse:\n")
         pprint(api_response)
@@ -1499,12 +1400,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
  **payload** | [**MouseRequest**](MouseRequest.md)|  | 
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -1524,17 +1425,17 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **navigate_browser**
-> ActionResult navigate_browser(browser_id, payload)
+> GenericResponse navigate_browser(browser_id, payload)
 
-Navigate to a URL
+Navigate to URL
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.action_result import ActionResult
-from airbrowser_client.models.navigate_request import NavigateRequest
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.models.navigate_browser_request import NavigateBrowserRequest
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -1549,11 +1450,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
-    payload = airbrowser_client.NavigateRequest() # NavigateRequest | 
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.NavigateBrowserRequest() # NavigateBrowserRequest | 
 
     try:
-        # Navigate to a URL
+        # Navigate to URL
         api_response = api_instance.navigate_browser(browser_id, payload)
         print("The response of BrowserApi->navigate_browser:\n")
         pprint(api_response)
@@ -1568,12 +1469,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
- **payload** | [**NavigateRequest**](NavigateRequest.md)|  | 
+ **browser_id** | **str**|  | 
+ **payload** | [**NavigateBrowserRequest**](NavigateBrowserRequest.md)|  | 
 
 ### Return type
 
-[**ActionResult**](ActionResult.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -1593,16 +1494,16 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **network_logs**
-> LogsResponse network_logs(browser_id, payload)
+> GenericResponse network_logs(browser_id, payload)
 
-Get or clear network logs
+Network logs: get or clear
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.logs_response import LogsResponse
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.models.network_logs_request import NetworkLogsRequest
 from airbrowser_client.rest import ApiException
 from pprint import pprint
@@ -1618,11 +1519,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
     payload = airbrowser_client.NetworkLogsRequest() # NetworkLogsRequest | 
 
     try:
-        # Get or clear network logs
+        # Network logs: get or clear
         api_response = api_instance.network_logs(browser_id, payload)
         print("The response of BrowserApi->network_logs:\n")
         pprint(api_response)
@@ -1637,12 +1538,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
  **payload** | [**NetworkLogsRequest**](NetworkLogsRequest.md)|  | 
 
 ### Return type
 
-[**LogsResponse**](LogsResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -1662,17 +1563,17 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **performance**
-> SuccessResponse performance(browser_id, payload)
+> GenericResponse performance(browser_id, payload)
 
-Manage performance: start_trace, stop_trace, metrics, or analyze
+Performance: start_trace, stop_trace, metrics, analyze
 
 ### Example
 
 
 ```python
 import airbrowser_client
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.models.performance_request import PerformanceRequest
-from airbrowser_client.models.success_response import SuccessResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -1687,11 +1588,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
     payload = airbrowser_client.PerformanceRequest() # PerformanceRequest | 
 
     try:
-        # Manage performance: start_trace, stop_trace, metrics, or analyze
+        # Performance: start_trace, stop_trace, metrics, analyze
         api_response = api_instance.performance(browser_id, payload)
         print("The response of BrowserApi->performance:\n")
         pprint(api_response)
@@ -1706,12 +1607,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
  **payload** | [**PerformanceRequest**](PerformanceRequest.md)|  | 
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -1731,16 +1632,16 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **press_keys**
-> ActionResult press_keys(browser_id, payload)
+> GenericResponse press_keys(browser_id, payload)
 
-Press keys on an element
+Press keyboard keys
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.action_result import ActionResult
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.models.press_keys_request import PressKeysRequest
 from airbrowser_client.rest import ApiException
 from pprint import pprint
@@ -1756,11 +1657,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
     payload = airbrowser_client.PressKeysRequest() # PressKeysRequest | 
 
     try:
-        # Press keys on an element
+        # Press keyboard keys
         api_response = api_instance.press_keys(browser_id, payload)
         print("The response of BrowserApi->press_keys:\n")
         pprint(api_response)
@@ -1775,12 +1676,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
  **payload** | [**PressKeysRequest**](PressKeysRequest.md)|  | 
 
 ### Return type
 
-[**ActionResult**](ActionResult.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -1800,7 +1701,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **resize**
-> SuccessResponse resize(browser_id, payload)
+> GenericResponse resize(browser_id, payload)
 
 Resize viewport
 
@@ -1809,8 +1710,8 @@ Resize viewport
 
 ```python
 import airbrowser_client
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.models.resize_request import ResizeRequest
-from airbrowser_client.models.success_response import SuccessResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -1825,7 +1726,7 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
     payload = airbrowser_client.ResizeRequest() # ResizeRequest | 
 
     try:
@@ -1844,12 +1745,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
  **payload** | [**ResizeRequest**](ResizeRequest.md)|  | 
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -1869,17 +1770,17 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **scroll**
-> SuccessResponse scroll(browser_id, payload)
+> GenericResponse scroll(browser_id, payload)
 
-Scroll to element/coordinates (absolute) or by delta (relative)
+Scroll to element/coords or by delta
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.combined_scroll_request import CombinedScrollRequest
-from airbrowser_client.models.success_response import SuccessResponse
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.models.scroll_request import ScrollRequest
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -1894,11 +1795,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
-    payload = airbrowser_client.CombinedScrollRequest() # CombinedScrollRequest | 
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.ScrollRequest() # ScrollRequest | 
 
     try:
-        # Scroll to element/coordinates (absolute) or by delta (relative)
+        # Scroll to element/coords or by delta
         api_response = api_instance.scroll(browser_id, payload)
         print("The response of BrowserApi->scroll:\n")
         pprint(api_response)
@@ -1913,12 +1814,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
- **payload** | [**CombinedScrollRequest**](CombinedScrollRequest.md)|  | 
+ **browser_id** | **str**|  | 
+ **payload** | [**ScrollRequest**](ScrollRequest.md)|  | 
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -1938,7 +1839,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **select**
-> SuccessResponse select(browser_id, payload)
+> GenericResponse select(browser_id, payload)
 
 Select dropdown: select option or get options
 
@@ -1947,8 +1848,8 @@ Select dropdown: select option or get options
 
 ```python
 import airbrowser_client
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.models.select_request import SelectRequest
-from airbrowser_client.models.success_response import SuccessResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -1963,7 +1864,7 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
     payload = airbrowser_client.SelectRequest() # SelectRequest | 
 
     try:
@@ -1982,12 +1883,81 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
  **payload** | [**SelectRequest**](SelectRequest.md)|  | 
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+[**GenericResponse**](GenericResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **snapshot**
+> GenericResponse snapshot(browser_id, payload)
+
+DOM or accessibility snapshot
+
+### Example
+
+
+```python
+import airbrowser_client
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.models.snapshot_request import SnapshotRequest
+from airbrowser_client.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to /api/v1
+# See configuration.py for a list of all supported configuration parameters.
+configuration = airbrowser_client.Configuration(
+    host = "/api/v1"
+)
+
+
+# Enter a context with an instance of the API client
+with airbrowser_client.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = airbrowser_client.BrowserApi(api_client)
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.SnapshotRequest() # SnapshotRequest | 
+
+    try:
+        # DOM or accessibility snapshot
+        api_response = api_instance.snapshot(browser_id, payload)
+        print("The response of BrowserApi->snapshot:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling BrowserApi->snapshot: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **browser_id** | **str**|  | 
+ **payload** | [**SnapshotRequest**](SnapshotRequest.md)|  | 
+
+### Return type
+
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -2007,16 +1977,16 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **tabs**
-> SuccessResponse tabs(browser_id, payload)
+> GenericResponse tabs(browser_id, payload)
 
-Manage browser tabs: list, new, switch, close, or current
+Tabs: list, new, switch, close, current
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.success_response import SuccessResponse
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.models.tabs_request import TabsRequest
 from airbrowser_client.rest import ApiException
 from pprint import pprint
@@ -2032,11 +2002,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
     payload = airbrowser_client.TabsRequest() # TabsRequest | 
 
     try:
-        # Manage browser tabs: list, new, switch, close, or current
+        # Tabs: list, new, switch, close, current
         api_response = api_instance.tabs(browser_id, payload)
         print("The response of BrowserApi->tabs:\n")
         pprint(api_response)
@@ -2051,12 +2021,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
  **payload** | [**TabsRequest**](TabsRequest.md)|  | 
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -2076,16 +2046,17 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **take_screenshot**
-> ScreenshotResponse take_screenshot(browser_id)
+> GenericResponse take_screenshot(browser_id, payload)
 
-Take a screenshot
+Take screenshot
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.screenshot_response import ScreenshotResponse
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.models.take_screenshot_request import TakeScreenshotRequest
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -2100,11 +2071,12 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.TakeScreenshotRequest() # TakeScreenshotRequest | 
 
     try:
-        # Take a screenshot
-        api_response = api_instance.take_screenshot(browser_id)
+        # Take screenshot
+        api_response = api_instance.take_screenshot(browser_id, payload)
         print("The response of BrowserApi->take_screenshot:\n")
         pprint(api_response)
     except Exception as e:
@@ -2118,80 +2090,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
+ **payload** | [**TakeScreenshotRequest**](TakeScreenshotRequest.md)|  | 
 
 ### Return type
 
-[**ScreenshotResponse**](ScreenshotResponse.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: Not defined
- - **Accept**: application/json
-
-### HTTP response details
-
-| Status code | Description | Response headers |
-|-------------|-------------|------------------|
-**200** | Success |  -  |
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **take_snapshot**
-> SuccessResponse take_snapshot(browser_id, payload)
-
-Take DOM/accessibility snapshot
-
-### Example
-
-
-```python
-import airbrowser_client
-from airbrowser_client.models.snapshot_request import SnapshotRequest
-from airbrowser_client.models.success_response import SuccessResponse
-from airbrowser_client.rest import ApiException
-from pprint import pprint
-
-# Defining the host is optional and defaults to /api/v1
-# See configuration.py for a list of all supported configuration parameters.
-configuration = airbrowser_client.Configuration(
-    host = "/api/v1"
-)
-
-
-# Enter a context with an instance of the API client
-with airbrowser_client.ApiClient(configuration) as api_client:
-    # Create an instance of the API class
-    api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
-    payload = airbrowser_client.SnapshotRequest() # SnapshotRequest | 
-
-    try:
-        # Take DOM/accessibility snapshot
-        api_response = api_instance.take_snapshot(browser_id, payload)
-        print("The response of BrowserApi->take_snapshot:\n")
-        pprint(api_response)
-    except Exception as e:
-        print("Exception when calling BrowserApi->take_snapshot: %s\n" % e)
-```
-
-
-
-### Parameters
-
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
- **payload** | [**SnapshotRequest**](SnapshotRequest.md)|  | 
-
-### Return type
-
-[**SuccessResponse**](SuccessResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -2211,17 +2115,17 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **type_text**
-> ActionResult type_text(browser_id, payload)
+> GenericResponse type_text(browser_id, payload)
 
-Type text into an element
+Type text into element
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.action_result import ActionResult
-from airbrowser_client.models.type_request import TypeRequest
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.models.type_text_request import TypeTextRequest
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -2236,11 +2140,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
-    payload = airbrowser_client.TypeRequest() # TypeRequest | 
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.TypeTextRequest() # TypeTextRequest | 
 
     try:
-        # Type text into an element
+        # Type text into element
         api_response = api_instance.type_text(browser_id, payload)
         print("The response of BrowserApi->type_text:\n")
         pprint(api_response)
@@ -2255,12 +2159,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
- **payload** | [**TypeRequest**](TypeRequest.md)|  | 
+ **browser_id** | **str**|  | 
+ **payload** | [**TypeTextRequest**](TypeTextRequest.md)|  | 
 
 ### Return type
 
-[**ActionResult**](ActionResult.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -2280,16 +2184,16 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **upload_file**
-> SuccessResponse upload_file(browser_id, payload)
+> GenericResponse upload_file(browser_id, payload)
 
-Upload a file
+Upload file to input
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.success_response import SuccessResponse
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.models.upload_file_request import UploadFileRequest
 from airbrowser_client.rest import ApiException
 from pprint import pprint
@@ -2305,11 +2209,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
     payload = airbrowser_client.UploadFileRequest() # UploadFileRequest | 
 
     try:
-        # Upload a file
+        # Upload file to input
         api_response = api_instance.upload_file(browser_id, payload)
         print("The response of BrowserApi->upload_file:\n")
         pprint(api_response)
@@ -2324,12 +2228,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
  **payload** | [**UploadFileRequest**](UploadFileRequest.md)|  | 
 
 ### Return type
 
-[**SuccessResponse**](SuccessResponse.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -2349,16 +2253,16 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **wait_element**
-> ActionResult wait_element(browser_id, payload)
+> GenericResponse wait_element(browser_id, payload)
 
-Wait for element to become visible or hidden
+Wait for element to be visible or hidden
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.action_result import ActionResult
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.models.wait_element_request import WaitElementRequest
 from airbrowser_client.rest import ApiException
 from pprint import pprint
@@ -2374,11 +2278,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
     payload = airbrowser_client.WaitElementRequest() # WaitElementRequest | 
 
     try:
-        # Wait for element to become visible or hidden
+        # Wait for element to be visible or hidden
         api_response = api_instance.wait_element(browser_id, payload)
         print("The response of BrowserApi->wait_element:\n")
         pprint(api_response)
@@ -2393,12 +2297,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
  **payload** | [**WaitElementRequest**](WaitElementRequest.md)|  | 
 
 ### Return type
 
-[**ActionResult**](ActionResult.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 
@@ -2418,16 +2322,16 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **what_is_visible**
-> WhatIsVisibleResult what_is_visible(browser_id)
+> GenericResponse what_is_visible(browser_id)
 
-Analyze visible page content using AI
+AI page analysis - what's visible
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.what_is_visible_result import WhatIsVisibleResult
+from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -2442,10 +2346,10 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | Unique browser identifier
+    browser_id = 'browser_id_example' # str | 
 
     try:
-        # Analyze visible page content using AI
+        # AI page analysis - what's visible
         api_response = api_instance.what_is_visible(browser_id)
         print("The response of BrowserApi->what_is_visible:\n")
         pprint(api_response)
@@ -2460,11 +2364,11 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**| Unique browser identifier | 
+ **browser_id** | **str**|  | 
 
 ### Return type
 
-[**WhatIsVisibleResult**](WhatIsVisibleResult.md)
+[**GenericResponse**](GenericResponse.md)
 
 ### Authorization
 

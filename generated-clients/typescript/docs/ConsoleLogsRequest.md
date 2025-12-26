@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **string** | Action: get or clear | [default to undefined]
-**limit** | **number** | Max number of logs to return (for get) | [optional] [default to undefined]
+**action** | **string** | action | [default to undefined]
+**limit** | **number** | limit | [optional] [default to undefined]
 
 ## Example
 

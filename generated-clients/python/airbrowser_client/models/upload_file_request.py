@@ -26,9 +26,9 @@ class UploadFileRequest(BaseModel):
     """
     UploadFileRequest
     """ # noqa: E501
-    selector: StrictStr = Field(description="File input selector")
-    file_path: StrictStr = Field(description="Path to file to upload")
-    by: Optional[StrictStr] = Field(default='css', description="Selector type (css, id, name, xpath)")
+    selector: StrictStr = Field(description="selector")
+    file_path: StrictStr = Field(description="file_path")
+    by: Optional[StrictStr] = Field(default='css', description="by")
     __properties: ClassVar[List[str]] = ["selector", "file_path", "by"]
 
     model_config = ConfigDict(

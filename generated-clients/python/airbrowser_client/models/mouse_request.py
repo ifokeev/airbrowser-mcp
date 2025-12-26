@@ -26,11 +26,11 @@ class MouseRequest(BaseModel):
     """
     MouseRequest
     """ # noqa: E501
-    action: StrictStr = Field(description="Action: hover or drag")
-    selector: Optional[StrictStr] = Field(default=None, description="Element selector (for hover)")
-    source: Optional[StrictStr] = Field(default=None, description="Source selector (for drag)")
-    target: Optional[StrictStr] = Field(default=None, description="Target selector (for drag)")
-    by: Optional[StrictStr] = Field(default='css', description="Selector type: css, id, name, xpath")
+    action: StrictStr = Field(description="action")
+    selector: Optional[StrictStr] = Field(default=None, description="selector")
+    source: Optional[StrictStr] = Field(default=None, description="source")
+    target: Optional[StrictStr] = Field(default=None, description="target")
+    by: Optional[StrictStr] = Field(default='css', description="by")
     __properties: ClassVar[List[str]] = ["action", "selector", "source", "target", "by"]
 
     model_config = ConfigDict(

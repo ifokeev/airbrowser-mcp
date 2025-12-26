@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**width** | **number** | Viewport width | [default to undefined]
-**height** | **number** | Viewport height | [default to undefined]
+**width** | **number** | width | [default to undefined]
+**height** | **number** | height | [default to undefined]
 
 ## Example
 

@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**selector** | **string** | File input selector | [default to undefined]
-**file_path** | **string** | Path to file to upload | [default to undefined]
-**by** | **string** | Selector type (css, id, name, xpath) | [optional] [default to 'css']
+**selector** | **string** | selector | [default to undefined]
+**file_path** | **string** | file_path | [default to undefined]
+**by** | **string** | by | [optional] [default to 'css']
 
 ## Example
 

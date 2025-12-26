@@ -26,8 +26,8 @@ class SnapshotRequest(BaseModel):
     """
     SnapshotRequest
     """ # noqa: E501
-    type: Optional[StrictStr] = Field(default='dom', description="Snapshot type: dom or accessibility")
-    __properties: ClassVar[List[str]] = ["type"]
+    snapshot_type: Optional[StrictStr] = Field(default='dom', description="snapshot_type")
+    __properties: ClassVar[List[str]] = ["snapshot_type"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,7 +80,7 @@ class SnapshotRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "type": obj.get("type") if obj.get("type") is not None else 'dom'
+            "snapshot_type": obj.get("snapshot_type") if obj.get("snapshot_type") is not None else 'dom'
         })
         return _obj
 

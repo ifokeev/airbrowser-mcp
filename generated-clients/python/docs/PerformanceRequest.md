@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **str** | Performance action: start_trace, stop_trace, metrics, or analyze | 
-**categories** | **str** | Comma-separated trace categories (for start_trace) | [optional] 
+**action** | **str** | action | 
+**categories** | **str** | categories | [optional] 
 
 ## Example
 

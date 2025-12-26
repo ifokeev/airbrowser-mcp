@@ -5,7 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**prompt** | **string** | Natural language description of element to find | [default to undefined]
+**prompt** | **string** | prompt | [default to undefined]
+**fx** | **number** | fx | [optional] [default to undefined]
+**fy** | **number** | fy | [optional] [default to undefined]
 
 ## Example
 
@@ -14,6 +16,8 @@ import { DetectCoordinatesRequest } from 'airbrowser-client';
 
 const instance: DetectCoordinatesRequest = {
     prompt,
+    fx,
+    fy,
 };
 ```
 

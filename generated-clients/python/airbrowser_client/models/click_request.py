@@ -26,11 +26,11 @@ class ClickRequest(BaseModel):
     """
     ClickRequest
     """ # noqa: E501
-    selector: StrictStr = Field(description="Element selector")
-    by: Optional[StrictStr] = Field(default='css', description="Selector type: css, id, name, xpath")
-    timeout: Optional[StrictInt] = Field(default=None, description="Timeout in seconds")
-    if_visible: Optional[StrictBool] = Field(default=False, description="Only click if element is visible")
-    __properties: ClassVar[List[str]] = ["selector", "by", "timeout", "if_visible"]
+    selector: StrictStr = Field(description="selector")
+    timeout: Optional[StrictInt] = Field(default=None, description="timeout")
+    by: Optional[StrictStr] = Field(default='css', description="by")
+    if_visible: Optional[StrictBool] = Field(default=False, description="if_visible")
+    __properties: ClassVar[List[str]] = ["selector", "timeout", "by", "if_visible"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -84,8 +84,8 @@ class ClickRequest(BaseModel):
 
         _obj = cls.model_validate({
             "selector": obj.get("selector"),
-            "by": obj.get("by") if obj.get("by") is not None else 'css',
             "timeout": obj.get("timeout"),
+            "by": obj.get("by") if obj.get("by") is not None else 'css',
             "if_visible": obj.get("if_visible") if obj.get("if_visible") is not None else False
         })
         return _obj

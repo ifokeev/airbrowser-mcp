@@ -17,8 +17,8 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List
+from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr
+from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -26,8 +26,10 @@ class DetectCoordinatesRequest(BaseModel):
     """
     DetectCoordinatesRequest
     """ # noqa: E501
-    prompt: StrictStr = Field(description="Natural language description of element to find")
-    __properties: ClassVar[List[str]] = ["prompt"]
+    prompt: StrictStr = Field(description="prompt")
+    fx: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="fx")
+    fy: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="fy")
+    __properties: ClassVar[List[str]] = ["prompt", "fx", "fy"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,7 +82,9 @@ class DetectCoordinatesRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "prompt": obj.get("prompt")
+            "prompt": obj.get("prompt"),
+            "fx": obj.get("fx"),
+            "fy": obj.get("fy")
         })
         return _obj
 
