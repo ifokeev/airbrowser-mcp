@@ -4,6 +4,8 @@ from typing import Any
 
 from ...models import BrowserAction
 from ..browser_pool import BrowserPoolAdapter
+from .response import error as _error
+from .response import success as _success
 
 
 class PageOperations:
@@ -18,22 +20,21 @@ class PageOperations:
             action = BrowserAction(action="screenshot")
             result = self.browser_pool.execute_action(browser_id, action)
 
+            if not result.success:
+                return _error(result.message)
+
             screenshot_url = None
-            if result.success and isinstance(result.data, dict):
+            if isinstance(result.data, dict):
                 # Return URL only (path is internal Docker path, not accessible externally)
                 screenshot_url = result.data.get("url") or result.data.get("screenshot_url")
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": {
-                    "screenshot_url": screenshot_url,
-                },
-                "error": result.message if not result.success else None,
-            }
+            return _success(
+                data={"screenshot_url": screenshot_url},
+                message=result.message,
+            )
 
         except Exception as e:
-            return {"success": False, "error": f"Screenshot failed: {str(e)}"}
+            return _error(f"Screenshot failed: {str(e)}")
 
     def get_content(self, browser_id: str, max_length: int = 50000) -> dict[str, Any]:
         """Get the visible text content of the page (no HTML tags).
@@ -75,19 +76,21 @@ class PageOperations:
                         text = text[:max_length] + "\n\n... [truncated]"
                         truncated = True
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": {
+            if not result.success:
+                return _error(result.message)
+
+            return _success(
+                data={
                     "text": text,
                     "title": title,
                     "url": url,
                     "truncated": truncated,
                 },
-                "error": None if result.success else result.message,
-            }
+                message=result.message,
+            )
+
         except Exception as e:
-            return {"success": False, "error": f"get_content failed: {str(e)}"}
+            return _error(f"get_content failed: {str(e)}")
 
     def execute_script(self, browser_id: str, script: str) -> dict[str, Any]:
         """Execute JavaScript code in the browser."""
@@ -95,23 +98,22 @@ class PageOperations:
             action = BrowserAction(action="execute_script", text=script)
             result = self.browser_pool.execute_action(browser_id, action)
 
+            if not result.success:
+                return _error(result.message)
+
             script_result = None
-            if result.success and isinstance(result.data, dict):
+            if isinstance(result.data, dict):
                 raw_result = result.data.get("result")
                 # Wrap result in dict for schema compatibility (Raw field becomes dict in OpenAPI)
                 script_result = {"value": raw_result} if raw_result is not None else None
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": {
-                    "result": script_result,
-                },
-                "error": result.message if not result.success else None,
-            }
+            return _success(
+                data={"result": script_result},
+                message=result.message,
+            )
 
         except Exception as e:
-            return {"success": False, "error": f"JavaScript execution failed: {str(e)}"}
+            return _error(f"JavaScript execution failed: {str(e)}")
 
     def resize(self, browser_id: str, width: int, height: int) -> dict[str, Any]:
         """Resize the browser viewport."""
@@ -119,15 +121,12 @@ class PageOperations:
             action = BrowserAction(action="resize", options={"width": width, "height": height})
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.data if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"Resize failed: {str(e)}"}
+            return _error(f"Resize failed: {str(e)}")
 
     def snapshot(self, browser_id: str, snapshot_type: str = "dom") -> dict[str, Any]:
         """Take a DOM or accessibility tree snapshot."""
@@ -135,12 +134,9 @@ class PageOperations:
             action = BrowserAction(action="snapshot", options={"type": snapshot_type})
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.data if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"Snapshot failed: {str(e)}"}
+            return _error(f"Snapshot failed: {str(e)}")

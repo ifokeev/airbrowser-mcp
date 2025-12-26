@@ -42,9 +42,12 @@ COMMAND_HANDLERS = {
     # Dialogs
     "handle_dialog": dialogs.handle_dialog,
     "get_dialog": dialogs.handle_get_dialog,
-    # GUI clicks
+    # GUI operations
     "gui_click": gui.handle_gui_click,
     "gui_click_xy": gui.handle_gui_click_xy,
+    "gui_type_xy": gui.handle_gui_type_xy,
+    "gui_hover_xy": gui.handle_gui_hover_xy,
+    "gui_press_keys_xy": gui.handle_gui_press_keys_xy,
     # Page content
     "screenshot": page.handle_screenshot,
     "get_content": page.handle_get_content,

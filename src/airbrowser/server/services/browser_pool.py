@@ -297,6 +297,23 @@ class BrowserPoolAdapter:
                 timeframe = action.options.get("timeframe", 0.25) if action.options else 0.25
                 response = self.client.execute_command(browser_id, "gui_click_xy", x=x, y=y, timeframe=timeframe)
 
+            elif action.action == "gui_type_xy":
+                # Click at coordinates then type text via PyAutoGUI
+                x = action.options.get("x") if action.options else None
+                y = action.options.get("y") if action.options else None
+                text = action.options.get("text") if action.options else None
+                timeframe = action.options.get("timeframe", 0.25) if action.options else 0.25
+                response = self.client.execute_command(
+                    browser_id, "gui_type_xy", x=x, y=y, text=text, timeframe=timeframe
+                )
+
+            elif action.action == "gui_hover_xy":
+                # Hover at coordinates via PyAutoGUI
+                x = action.options.get("x") if action.options else None
+                y = action.options.get("y") if action.options else None
+                timeframe = action.options.get("timeframe", 0.25) if action.options else 0.25
+                response = self.client.execute_command(browser_id, "gui_hover_xy", x=x, y=y, timeframe=timeframe)
+
             elif action.action == "detect_coordinates":
                 # Detect element coordinates using vision models
                 prompt = action.options.get("prompt") if action.options else None
@@ -364,6 +381,31 @@ class BrowserPoolAdapter:
                     selector=action.selector,
                     file_path=file_path,
                     by=getattr(action, "by", "css"),
+                )
+
+            # Scroll operations
+            elif action.action == "scroll":
+                opts = action.options or {}
+                response = self.client.execute_command(
+                    browser_id,
+                    "scroll",
+                    selector=action.selector,
+                    x=opts.get("x"),
+                    y=opts.get("y"),
+                    delta_x=opts.get("delta_x"),
+                    delta_y=opts.get("delta_y"),
+                    behavior=opts.get("behavior", "smooth"),
+                    by=getattr(action, "by", "css"),
+                )
+
+            elif action.action == "scroll_by":
+                opts = action.options or {}
+                response = self.client.execute_command(
+                    browser_id,
+                    "scroll_by",
+                    delta_x=opts.get("delta_x", 0),
+                    delta_y=opts.get("delta_y", 0),
+                    behavior=opts.get("behavior", "smooth"),
                 )
 
             # Dialog handling
@@ -466,7 +508,7 @@ class BrowserPoolAdapter:
             if response.get("status") == "success":
                 return ActionResult(
                     success=True,
-                    message="Action completed successfully",
+                    message=response.get("message", "Action completed successfully"),
                     data=response,
                     screenshot_path=response.get("screenshot_url") if isinstance(response, dict) else None,
                 )
@@ -475,7 +517,7 @@ class BrowserPoolAdapter:
                 error_details = response.get("error", response.get("message", "Action failed"))
                 logger.error(f"Action failed for browser {browser_id}: {error_details}")
                 logger.error(f"Full response: {response}")
-                return ActionResult(success=False, message=f"{error_details} (Response: {response})")
+                return ActionResult(success=False, message=error_details, data=response)
 
         except Exception as e:
             return ActionResult(success=False, message=str(e))

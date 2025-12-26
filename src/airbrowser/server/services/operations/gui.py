@@ -4,6 +4,8 @@ from typing import Any
 
 from ...models import BrowserAction
 from ..browser_pool import BrowserPoolAdapter
+from .response import error as _error
+from .response import success as _success
 
 
 class GuiOperations:
@@ -51,16 +53,14 @@ class GuiOperations:
                 action = BrowserAction(action="gui_click", selector=selector, options=options)
                 result = self.browser_pool.execute_action(browser_id, action)
             else:
-                return {"success": False, "error": "Either 'selector' or both 'x' and 'y' must be provided."}
+                return _error("Either 'selector' or both 'x' and 'y' must be provided.")
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.to_dict() if result.success else None,
-                "error": None if result.success else result.message,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
         except Exception as e:
-            return {"success": False, "error": f"gui_click failed: {str(e)}"}
+            return _error(f"gui_click failed: {str(e)}")
 
     def gui_click_xy(self, browser_id: str, x: float, y: float, timeframe: float = 0.25) -> dict[str, Any]:
         """Click at specific coordinates."""
@@ -69,11 +69,55 @@ class GuiOperations:
             action = BrowserAction(action="gui_click_xy", options=options)
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.to_dict() if result.success else None,
-                "error": None if result.success else result.message,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
         except Exception as e:
-            return {"success": False, "error": f"gui_click_xy failed: {str(e)}"}
+            return _error(f"gui_click_xy failed: {str(e)}")
+
+    def gui_type_xy(
+        self, browser_id: str, x: float, y: float, text: str, timeframe: float = 0.25
+    ) -> dict[str, Any]:
+        """Click at coordinates then type text using GUI automation."""
+        try:
+            options = {"x": x, "y": y, "text": text, "timeframe": timeframe}
+            action = BrowserAction(action="gui_type_xy", options=options)
+            result = self.browser_pool.execute_action(browser_id, action)
+
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
+        except Exception as e:
+            return _error(f"gui_type_xy failed: {str(e)}")
+
+    def gui_hover_xy(self, browser_id: str, x: float, y: float, timeframe: float = 0.25) -> dict[str, Any]:
+        """Hover at specific coordinates using GUI automation."""
+        try:
+            options = {"x": x, "y": y, "timeframe": timeframe}
+            action = BrowserAction(action="gui_hover_xy", options=options)
+            result = self.browser_pool.execute_action(browser_id, action)
+
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
+        except Exception as e:
+            return _error(f"gui_hover_xy failed: {str(e)}")
+
+    def gui_press_keys_xy(
+        self, browser_id: str, x: float, y: float, keys: str, timeframe: float = 0.25
+    ) -> dict[str, Any]:
+        """Click at coordinates then press special keys."""
+        try:
+            options = {"x": x, "y": y, "keys": keys, "timeframe": timeframe}
+            action = BrowserAction(action="gui_press_keys_xy", options=options)
+            result = self.browser_pool.execute_action(browser_id, action)
+
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
+        except Exception as e:
+            return _error(f"gui_press_keys_xy failed: {str(e)}")

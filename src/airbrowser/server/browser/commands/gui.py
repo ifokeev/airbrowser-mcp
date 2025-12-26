@@ -3,6 +3,10 @@
 import logging
 import time
 
+from selenium.webdriver.common.action_chains import ActionChains
+
+from .elements import KEY_MAP
+
 logger = logging.getLogger(__name__)
 
 
@@ -58,6 +62,93 @@ def handle_gui_click_xy(driver, command: dict) -> dict:
         return {"status": "success", "message": "Clicked at coordinates", "x": x, "y": y}
     except Exception as e:
         return {"status": "error", "message": f"Failed to click xy: {str(e)}"}
+
+
+def handle_gui_type_xy(driver, command: dict) -> dict:
+    """Click at coordinates then type text using proper focus and browser events."""
+    x = command.get("x")
+    y = command.get("y")
+    text = command.get("text")
+    timeframe = command.get("timeframe", 0.25)
+
+    if x is None or y is None:
+        return {"status": "error", "message": "x and y coordinates are required"}
+    if not text:
+        return {"status": "error", "message": "text is required"}
+
+    _ensure_cdp_mode(driver)
+    _bring_window_to_front(driver)
+
+    try:
+        # Click to focus the element
+        _gui_click_at(driver, x, y, timeframe)
+        time.sleep(0.2)  # Wait for focus to complete
+
+        # Try to find focused element and use send_keys for proper browser events
+        try:
+            focused = driver.execute_script("return document.activeElement;")
+            if focused:
+                tag = focused.tag_name.lower() if hasattr(focused, 'tag_name') else ''
+                is_editable = focused.get_attribute('contenteditable') == 'true' if hasattr(focused, 'get_attribute') else False
+                if tag in ('input', 'textarea') or is_editable:
+                    # Clear and type using Selenium (triggers proper browser events)
+                    try:
+                        focused.clear()
+                    except Exception:
+                        pass  # Some elements don't support clear
+                    focused.send_keys(text)
+                    logger.debug(f"gui_type_xy: used send_keys on {tag} element")
+                    return {
+                        "status": "success",
+                        "message": "Typed at coordinates",
+                        "x": x, "y": y, "text_length": len(text),
+                        "method": "send_keys"
+                    }
+        except Exception as e:
+            logger.debug(f"gui_type_xy: send_keys failed, falling back to pyautogui: {e}")
+
+        # Fallback to PyAutoGUI if element not focusable via Selenium
+        if hasattr(driver, "uc_gui_write"):
+            driver.uc_gui_write(text)
+        elif hasattr(driver, "cdp") and hasattr(driver.cdp, "gui_write"):
+            driver.cdp.gui_write(text)
+        else:
+            import pyautogui
+            pyautogui.write(text)
+
+        return {
+            "status": "success",
+            "message": "Typed at coordinates",
+            "x": x, "y": y, "text_length": len(text),
+            "method": "pyautogui"
+        }
+    except Exception as e:
+        return {"status": "error", "message": f"Failed to type at xy: {str(e)}"}
+
+
+def handle_gui_hover_xy(driver, command: dict) -> dict:
+    """Hover at absolute screen coordinates using PyAutoGUI."""
+    x = command.get("x")
+    y = command.get("y")
+    timeframe = command.get("timeframe", 0.25)
+
+    if x is None or y is None:
+        return {"status": "error", "message": "x and y coordinates are required"}
+
+    _ensure_cdp_mode(driver)
+    _bring_window_to_front(driver)
+
+    try:
+        if hasattr(driver, "cdp") and hasattr(driver.cdp, "gui_hover_x_y"):
+            driver.cdp.gui_hover_x_y(float(x), float(y), timeframe=float(timeframe))
+        else:
+            # Fallback to pyautogui moveTo
+            import pyautogui
+            pyautogui.moveTo(float(x), float(y), float(timeframe))
+
+        return {"status": "success", "message": "Hovered at coordinates", "x": x, "y": y}
+    except Exception as e:
+        return {"status": "error", "message": f"Failed to hover at xy: {str(e)}"}
 
 
 def handle_gui_click(driver, command: dict) -> dict:
@@ -180,3 +271,55 @@ def _gui_click_fallback(driver, selector: str, timeframe: float, fx, fy) -> dict
             "status": "error",
             "message": f"CDP gui_click_element unavailable and fallback failed: {str(ef)}",
         }
+
+
+def handle_gui_press_keys_xy(driver, command: dict) -> dict:
+    """Press keys at coordinates (click to focus, then send keys)."""
+    x = command.get("x")
+    y = command.get("y")
+    keys = command.get("keys")
+    timeframe = command.get("timeframe", 0.25)
+
+    if x is None or y is None:
+        return {"status": "error", "message": "x and y coordinates are required"}
+    if not keys:
+        return {"status": "error", "message": "keys is required"}
+
+    _ensure_cdp_mode(driver)
+    _bring_window_to_front(driver)
+
+    try:
+        # Click to focus
+        _gui_click_at(driver, x, y, timeframe)
+        time.sleep(0.2)
+
+        # Find focused element
+        focused = driver.execute_script("return document.activeElement;")
+        if not focused:
+            return {"status": "error", "message": "No element focused after click"}
+
+        # Handle key combinations (e.g., "CTRL+a", "SHIFT+TAB")
+        if "+" in keys:
+            parts = [p.strip().upper() for p in keys.split("+")]
+            modifiers = parts[:-1]
+            final_key = parts[-1]
+
+            actions = ActionChains(driver)
+            for mod in modifiers:
+                actions.key_down(KEY_MAP.get(mod, mod))
+            actions.send_keys(KEY_MAP.get(final_key, final_key))
+            for mod in reversed(modifiers):
+                actions.key_up(KEY_MAP.get(mod, mod))
+            actions.perform()
+        else:
+            # Single key
+            key = KEY_MAP.get(keys.upper(), keys)
+            focused.send_keys(key)
+
+        return {
+            "status": "success",
+            "message": "Pressed keys at coordinates",
+            "x": x, "y": y, "keys": keys
+        }
+    except Exception as e:
+        return {"status": "error", "message": f"Failed to press keys: {str(e)}"}

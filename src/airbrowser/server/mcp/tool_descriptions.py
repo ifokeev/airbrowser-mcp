@@ -25,28 +25,58 @@ and uses AI to analyze it, so you don't need to manually download and view scree
 - Debug issues
 """,
     "detect_coordinates": """
-**VISION-BASED ELEMENT DETECTION** - Find elements using AI vision when HTML parsing is impractical.
+**VISION-BASED ELEMENT DETECTION** - Find elements using AI vision. PREFER THIS over HTML parsing.
 
-**Best for large/complex pages (>100KB HTML)**: When `get_page_content` returns too much data
-to parse effectively, use this to locate elements by visual description instead.
+**RECOMMENDED APPROACH**: When AI vision is enabled, use this tool to locate elements instead of
+parsing HTML. It's more robust, works on any page, and enables undetectable GUI interactions.
 
-**Alternative to HTML parsing**: Instead of analyzing HTML source, this takes a screenshot
-and uses AI vision to find elements by natural language description.
+**Workflow - CLICK**: `detect_coordinates` → `gui_click_xy`
+**Workflow - TYPE**: `detect_coordinates` → `gui_type_xy`
+**Workflow - HOVER**: `detect_coordinates` → `gui_hover_xy`
 
 **Perfect for:**
+- Any page when AI vision is enabled (preferred over selectors)
 - CAPTCHAs in complex layouts ("find the hCaptcha checkbox")
 - Dynamic content without stable selectors
 - Elements easier to describe than locate in HTML ("the blue Submit button")
-- Pages with overwhelming HTML structure
+- Large/complex pages where HTML parsing is impractical
 
-**Workflow**: Use this to get coordinates, then use `gui_click_xy` to click at those coordinates.
+**IMPORTANT - BE SPECIFIC IN YOUR PROMPTS**: The tool clicks at the CENTER of detected elements.
+For wide elements with icons (like search boxes with camera/voice icons on the right), be specific
+about which part you want to click:
+
+**Good prompts** (specific):
+- "the text input area of the search box" (not the whole search bar)
+- "the Google Search button" (specific button, not the search box)
+- "the email text field" (clickable input area)
+- "the Submit button with blue background"
+- "the checkbox next to 'Remember me'"
+
+**Bad prompts** (too broad):
+- "the search box" (may include icons, clicking center could hit camera icon)
+- "the input field" (ambiguous if multiple exist)
+- "the button" (which button?)
+
+**More examples:**
+- "the password input field"
+- "the blue Submit button at the bottom of the form"
+- "the login button in the top right corner"
+- "the dropdown menu labeled 'Country'"
+
+**Click Position Control (fx, fy parameters):**
+For wide elements with icons on the right (like Google's search box), use fx to click
+left of center and avoid hitting the wrong element:
+- `fx=0.2` - clicks at 20% from left edge (avoids right-side icons like Google Lens)
+- `fx=0.5` - clicks at center (default)
+- `fx=0.8` - clicks at 80% from left edge
+- `fy` controls vertical position similarly (0.0=top, 0.5=center, 1.0=bottom)
+
+Example: For Google search, use `fx=0.2` to click the text input area, not the camera icon.
 
 Returns:
 - Bounding box coordinates (x, y, width, height)
-- Recommended click point (center of element)
+- Recommended click point (calculated using fx, fy offsets)
 - Detection confidence score
-- Screenshot path for verification
-- Vision model used for detection
 """,
     "gui_click": """
 **GUI CLICK WITH SELECTOR** - Click elements using CSS/XPath selectors with undetectable GUI automation.
@@ -75,6 +105,8 @@ the actual click, making it undetectable by anti-automation measures.
 - Anti-automation sites when you know the element selector
 - Elements inside iframes or shadow DOM with identifiable selectors
 
+**VERIFICATION**: After clicking, use `what_is_visible` to verify the action worked.
+
 **Parameters:**
 - fx, fy: Optional fractional offsets (0.0-1.0) within element to click
 """,
@@ -95,21 +127,75 @@ to parse effectively, use this coordinate-based approach instead of selector-bas
 - Elements that are easier to describe visually than locate in HTML
 
 This performs the actual GUI click using PyAutoGUI, making it undetectable by anti-automation systems.
+
+**VERIFICATION**: After clicking, use `what_is_visible` to verify the action worked.
+""",
+    "gui_type_xy": """
+**GUI TYPE AT COORDINATES** - Click at coordinates then type text using undetectable GUI automation.
+
+**PREFERRED WORKFLOW** when AI vision is enabled:
+1. Call `detect_coordinates` with a description like "the email input field"
+2. Use the returned coordinates with this tool to click and type text
+
+**Use this when:**
+- AI vision is enabled and you need to type into an element
+- Page HTML is too large/complex for selector parsing
+- Input fields on anti-automation sites
+- Dynamic elements without stable selectors
+
+This performs a real GUI click at coordinates, then types using PyAutoGUI - completely undetectable.
+
+**VERIFICATION**: After typing, use `what_is_visible` to verify the text was entered correctly.
+""",
+    "gui_hover_xy": """
+**GUI HOVER AT COORDINATES** - Move mouse to coordinates using GUI automation.
+
+**Use with `detect_coordinates`**:
+1. Call `detect_coordinates` to find element position
+2. Use this tool to hover over the element
+
+**Use this for:**
+- Revealing tooltips or dropdown menus
+- Triggering hover effects before clicking
+- Elements that require mouse interaction to become visible
+
+**VERIFICATION**: After hovering, use `what_is_visible` to see what appeared.
+""",
+    "gui_press_keys_xy": """
+**GUI PRESS KEYS AT COORDINATES** - Click to focus, then press special keys.
+
+**Use with `detect_coordinates`**:
+1. Call `detect_coordinates` to find element position
+2. Use `gui_press_keys_xy` to click and press keys (ENTER, TAB, etc.)
+
+**Supports:**
+- Single keys: ENTER, TAB, ESCAPE, BACKSPACE, DELETE, SPACE
+- Arrow keys: UP, DOWN, LEFT, RIGHT, HOME, END, PAGE_UP, PAGE_DOWN
+- Function keys: F1-F12
+- Modifiers: CTRL, ALT, SHIFT, META, COMMAND
+- Combinations: "CTRL+a", "SHIFT+TAB", "CTRL+ENTER"
+
+**Example workflow for Google search:**
+1. `detect_coordinates` → find search box
+2. `gui_type_xy` → type "openai"
+3. `gui_press_keys_xy` → press "ENTER" to search
+
+**VERIFICATION**: Use `what_is_visible` after pressing keys to verify result.
 """,
     "get_content": """
 **GET VISIBLE TEXT CONTENT** - Retrieve the visible text from the current page (no HTML).
 
+**PREFER `what_is_visible`**: If AI vision is enabled, use `what_is_visible` instead - it provides
+richer context including form states, interactive elements, and visual understanding without
+needing to parse raw text.
+
+**Use `get_content` only when:**
+- You need to extract large amounts of text for processing (articles, documentation)
+- You need exact text for string matching or comparison
+- AI vision is not available
+
 Returns only the text that a user would see on the page, extracted from the DOM.
-Much more compact than raw HTML and suitable for understanding page content.
-
-**Use this to:**
-- Read article or page content
-- Extract visible text for analysis
-- Understand what the user sees without HTML clutter
-- Get page title and current URL
-
-**Note**: Text is truncated at 50,000 characters to stay within token limits.
-For visual understanding, use `what_is_visible` instead.
+Text is truncated at 50,000 characters to stay within token limits.
 
 Returns: Visible text content, current URL, page title, and truncation flag.
 """,
@@ -174,37 +260,66 @@ Use `scroll_by` for relative scrolling.
     "navigate": """
 Navigate the browser to a URL.
 
-**IMPORTANT**: After navigating, verify the page loaded correctly by calling `get_content`
-to check the page title and text content. Don't assume navigation succeeded just because
-the API returned success.
+**VERIFICATION**: After navigating, verify the page loaded correctly:
+- **If AI vision enabled**: Use `what_is_visible` - provides URL, page state, and visual confirmation
+- **Otherwise**: Use `get_content` to check page title and text content
+
+Don't assume navigation succeeded just because the API returned success.
 """,
     "click": """
 Click on an element using CSS selector or XPath.
+
+**PREFER VISION + GUI**: If AI vision is enabled, prefer using `detect_coordinates` + `gui_click_xy`:
+1. Use `detect_coordinates` to find the element by description
+2. Use `gui_click_xy` with the returned coordinates
+This approach is more robust and undetectable by anti-automation systems.
+
+**Use this tool only when:**
+- You already know the exact CSS/XPath selector
+- The page HTML is small enough to parse
+- Vision tools are not available
 
 **SELECTOR SYNTAX**: Use standard CSS selectors or XPath only. Playwright-style selectors
 like `:has-text()` are NOT supported. Examples:
 - CSS: `a[href*="example"]`, `button.submit`, `#login-btn`
 - XPath (use by="xpath"): `//a[contains(text(), "Click me")]`, `//button[@type="submit"]`
 
-**IMPORTANT**: After clicking (especially form submits, buttons), verify the action worked
-by calling `get_content` to check if the page changed as expected. Don't assume the click
-had the intended effect without verification.
+**VERIFICATION**: Use `what_is_visible` to verify the action worked.
 """,
     "type_text": """
 Type text into an input field using CSS selector or XPath.
 
+**PREFER VISION + GUI**: If AI vision is enabled, prefer using `detect_coordinates` + `gui_type_xy`:
+1. Use `detect_coordinates` to find the input field by description
+2. Use `gui_type_xy` with the returned coordinates and text to type
+This approach is more robust and undetectable by anti-automation systems.
+
+**Use this tool only when:**
+- You already know the exact CSS/XPath selector
+- The page HTML is small enough to parse
+- Vision tools are not available
+
 **SELECTOR SYNTAX**: Use standard CSS selectors or XPath only. Playwright-style selectors
 like `:has-text()` are NOT supported.
 
-After typing, consider verifying the text was entered correctly, especially before
-submitting forms. Use `get_content` or check element values if needed.
+**VERIFICATION**: Use `what_is_visible` to verify the text was entered correctly.
 """,
     "press_keys": """
 Press keyboard keys on an element. Supports special keys (ENTER, TAB, ESCAPE, etc.)
 and key combinations (CTRL+a, SHIFT+TAB).
 
-**IMPORTANT**: After pressing ENTER to submit a form or perform a search, ALWAYS verify
-the action worked by calling `get_content` to check the resulting page. Don't assume
-the key press had the intended effect without verification.
+**VERIFICATION**: After pressing ENTER to submit a form or perform a search, ALWAYS verify:
+- **If AI vision enabled**: Use `what_is_visible` - shows resulting page, success/error messages
+- **Otherwise**: Use `get_content` to check the resulting page
+
+Don't assume the key press had the intended effect without verification.
+""",
+    "get_url": """
+Get the current page URL.
+
+**NOTE**: If you just called `what_is_visible`, the URL is already included in its response.
+Don't call this tool redundantly after using vision tools.
+
+Use this only when you specifically need the URL without visual verification.
 """,
 }

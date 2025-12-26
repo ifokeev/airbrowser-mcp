@@ -75,6 +75,30 @@ If not found: {{"found": false, "error": "reason"}}"""
             logger.warning(f"Failed to normalize Gemini coordinates: {e}")
         return coords
 
+    def _clamp_to_image_bounds(self, coords: dict[str, Any], img_w: int, img_h: int) -> dict[str, Any]:
+        """Clamp coordinates to stay within image bounds."""
+        if not coords.get("success"):
+            return coords
+
+        x, y = coords.get("x", 0), coords.get("y", 0)
+        w, h = coords.get("width", 0), coords.get("height", 0)
+
+        # Check if element is significantly outside viewport (more than 50% hidden)
+        visible_h = min(y + h, img_h) - max(y, 0)
+        visible_w = min(x + w, img_w) - max(x, 0)
+        if visible_h < h * 0.5 or visible_w < w * 0.5:
+            coords["partially_visible"] = True
+            coords["visibility_warning"] = "Element is mostly off-screen, may need to scroll"
+
+        # Clamp to image bounds
+        coords["x"] = max(0, min(x, img_w - 1))
+        coords["y"] = max(0, min(y, img_h - 1))
+        # Ensure width/height don't extend past image
+        coords["width"] = min(w, img_w - coords["x"])
+        coords["height"] = min(h, img_h - coords["y"])
+
+        return coords
+
     def _get_image_size(self, image_path: str) -> tuple[int, int]:
         """Get image dimensions, defaults to 1920x1080."""
         try:
@@ -107,6 +131,9 @@ If not found: {{"found": false, "error": "reason"}}"""
 
             if "gemini" in self.model.lower():
                 coords = self._normalize_gemini_coords(coords, img_w, img_h)
+
+            # Clamp coordinates to image bounds to prevent clicking outside viewport
+            coords = self._clamp_to_image_bounds(coords, img_w, img_h)
 
             coords["model"] = self.model
             coords["image_path"] = image_path

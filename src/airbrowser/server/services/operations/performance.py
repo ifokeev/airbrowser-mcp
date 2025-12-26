@@ -5,6 +5,8 @@ from typing import Any
 from ...models import BrowserAction
 from ..browser_pool import BrowserPoolAdapter
 from .enums import PerformanceAction
+from .response import error as _error
+from .response import success as _success
 
 
 class PerformanceOperations:
@@ -28,15 +30,12 @@ class PerformanceOperations:
             action = BrowserAction(action="start_trace", options=options if options else None)
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.data if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"start_trace failed: {str(e)}"}
+            return _error(f"start_trace failed: {str(e)}")
 
     def stop_trace(self, browser_id: str) -> dict[str, Any]:
         """Stop performance tracing and return trace data."""
@@ -44,15 +43,12 @@ class PerformanceOperations:
             action = BrowserAction(action="stop_trace")
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.data if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"stop_trace failed: {str(e)}"}
+            return _error(f"stop_trace failed: {str(e)}")
 
     def get_metrics(self, browser_id: str) -> dict[str, Any]:
         """Get current performance metrics without tracing."""
@@ -60,15 +56,12 @@ class PerformanceOperations:
             action = BrowserAction(action="get_metrics")
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.data if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"get_metrics failed: {str(e)}"}
+            return _error(f"get_metrics failed: {str(e)}")
 
     def analyze_insight(self, browser_id: str) -> dict[str, Any]:
         """Analyze page performance and return insights."""
@@ -76,15 +69,12 @@ class PerformanceOperations:
             action = BrowserAction(action="analyze_insight")
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.data if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"analyze_insight failed: {str(e)}"}
+            return _error(f"analyze_insight failed: {str(e)}")
 
     # ==================== Combined Method ====================
 
@@ -107,4 +97,4 @@ class PerformanceOperations:
         elif action == PerformanceAction.ANALYZE:
             return self.analyze_insight(browser_id)
         else:
-            return {"success": False, "error": f"Invalid action: {action}"}
+            return _error(f"Invalid action: {action}")

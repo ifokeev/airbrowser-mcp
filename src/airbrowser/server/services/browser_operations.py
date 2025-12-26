@@ -65,12 +65,14 @@ class BrowserOperations:
         disable_javascript: bool = False,
         extensions: list[str] | None = None,
         custom_args: list[str] | None = None,
+        profile_name: str | None = None,
     ) -> dict[str, Any]:
-        """Create browser instance."""
+        """Create browser instance with optional persistent profile."""
         return self._lifecycle.create_browser(
             uc=uc, proxy=proxy, window_size=window_size, user_agent=user_agent,
             disable_gpu=disable_gpu, disable_images=disable_images,
             disable_javascript=disable_javascript, extensions=extensions, custom_args=custom_args,
+            profile_name=profile_name,
         )
 
     def close_browser(self, browser_id: str) -> dict[str, Any]:
@@ -193,9 +195,35 @@ class BrowserOperations:
         """GUI click by selector or coordinates."""
         return self._gui.gui_click(browser_id, selector, x, y, timeframe, fx, fy)
 
-    def detect_coordinates(self, browser_id: str, prompt: str) -> dict[str, Any]:
-        """Detect element coordinates using vision."""
-        return self._vision.detect_coordinates(browser_id, prompt)
+    def gui_type_xy(
+        self, browser_id: str, x: float, y: float, text: str, timeframe: float = 0.25
+    ) -> dict[str, Any]:
+        """GUI type at coordinates - clicks then types text."""
+        return self._gui.gui_type_xy(browser_id, x, y, text, timeframe)
+
+    def gui_hover_xy(
+        self, browser_id: str, x: float, y: float, timeframe: float = 0.25
+    ) -> dict[str, Any]:
+        """GUI hover at coordinates."""
+        return self._gui.gui_hover_xy(browser_id, x, y, timeframe)
+
+    def gui_press_keys_xy(
+        self, browser_id: str, x: float, y: float, keys: str, timeframe: float = 0.25
+    ) -> dict[str, Any]:
+        """Press keys at coordinates (click to focus, then send keys)."""
+        return self._gui.gui_press_keys_xy(browser_id, x, y, keys, timeframe)
+
+    def detect_coordinates(self, browser_id: str, prompt: str, fx: float = 0.5, fy: float = 0.5) -> dict[str, Any]:
+        """Detect element coordinates using vision.
+
+        Args:
+            browser_id: Browser instance identifier
+            prompt: Natural language description of element to find
+            fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).
+                Use fx=0.2 for wide elements with icons on the right (like Google search).
+            fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
+        """
+        return self._vision.detect_coordinates(browser_id, prompt, fx, fy)
 
     def what_is_visible(self, browser_id: str) -> dict[str, Any]:
         """AI page analysis - what's visible."""

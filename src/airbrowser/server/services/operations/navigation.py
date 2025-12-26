@@ -6,6 +6,8 @@ from typing import Any
 from ...models import BrowserAction
 from ..browser_pool import BrowserPoolAdapter
 from .enums import HistoryAction
+from .response import error as _error
+from .response import success as _success
 
 
 class NavigationOperations:
@@ -23,15 +25,12 @@ class NavigationOperations:
             action = BrowserAction(action="navigate", url=url, timeout=timeout)
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.to_dict() if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"Navigation failed: {str(e)}"}
+            return _error(f"Navigation failed: {str(e)}")
 
     def get_url(self, browser_id: str) -> dict[str, Any]:
         """Get the current URL of the browser."""
@@ -39,61 +38,56 @@ class NavigationOperations:
             action = BrowserAction(action="get_url")
             result = self.browser_pool.execute_action(browser_id, action)
 
+            if not result.success:
+                return _error(result.message)
+
             current_url = None
-            if result.success and isinstance(result.data, dict):
+            if isinstance(result.data, dict):
                 current_url = result.data.get("result") or result.data.get("url")
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": {"url": current_url} if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            return _success(data={"url": current_url}, message=result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"Get URL failed: {str(e)}"}
+            return _error(f"Get URL failed: {str(e)}")
 
     def go_back(self, browser_id: str) -> dict[str, Any]:
         """Navigate back in browser history."""
         try:
             action = BrowserAction(action="go_back")
             result = self.browser_pool.execute_action(browser_id, action)
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.to_dict() if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
         except Exception as e:
-            return {"success": False, "error": f"Go back failed: {str(e)}"}
+            return _error(f"Go back failed: {str(e)}")
 
     def go_forward(self, browser_id: str) -> dict[str, Any]:
         """Navigate forward in browser history."""
         try:
             action = BrowserAction(action="go_forward")
             result = self.browser_pool.execute_action(browser_id, action)
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.to_dict() if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
         except Exception as e:
-            return {"success": False, "error": f"Go forward failed: {str(e)}"}
+            return _error(f"Go forward failed: {str(e)}")
 
     def refresh(self, browser_id: str) -> dict[str, Any]:
         """Refresh the current page."""
         try:
             action = BrowserAction(action="refresh")
             result = self.browser_pool.execute_action(browser_id, action)
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.to_dict() if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
         except Exception as e:
-            return {"success": False, "error": f"Refresh failed: {str(e)}"}
+            return _error(f"Refresh failed: {str(e)}")
 
     def history(self, browser_id: str, action: HistoryAction) -> dict[str, Any]:
         """Execute browser history navigation.
@@ -112,4 +106,4 @@ class NavigationOperations:
         elif action == HistoryAction.REFRESH:
             return self.refresh(browser_id)
         else:
-            return {"success": False, "error": f"Invalid history action: {action}"}
+            return _error(f"Invalid history action: {action}")

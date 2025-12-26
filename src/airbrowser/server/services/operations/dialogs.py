@@ -5,6 +5,8 @@ from typing import Any
 from ...models import BrowserAction
 from ..browser_pool import BrowserPoolAdapter
 from .enums import DialogAction
+from .response import error as _error
+from .response import success as _success
 
 
 class DialogOperations:
@@ -29,15 +31,12 @@ class DialogOperations:
             )
             result = self.browser_pool.execute_action(browser_id, browser_action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.data if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"handle_dialog failed: {str(e)}"}
+            return _error(f"handle_dialog failed: {str(e)}")
 
     def get_dialog(self, browser_id: str) -> dict[str, Any]:
         """Get current dialog text without dismissing it."""
@@ -45,15 +44,12 @@ class DialogOperations:
             action = BrowserAction(action="get_dialog")
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.data if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"get_dialog failed: {str(e)}"}
+            return _error(f"get_dialog failed: {str(e)}")
 
     # ==================== Combined Method ====================
 
@@ -70,4 +66,4 @@ class DialogOperations:
         elif action in (DialogAction.ACCEPT, DialogAction.DISMISS):
             return self.handle_dialog(browser_id, action.value, text)
         else:
-            return {"success": False, "error": f"Invalid action: {action}"}
+            return _error(f"Invalid action: {action}")

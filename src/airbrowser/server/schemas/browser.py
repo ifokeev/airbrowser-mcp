@@ -556,6 +556,35 @@ def register_browser_schemas(api):
         },
     )
 
+    schemas["GuiTypeXyRequest"] = api.model(
+        "GuiTypeXyRequest",
+        {
+            "x": fields.Float(required=True, description="Screen X coordinate"),
+            "y": fields.Float(required=True, description="Screen Y coordinate"),
+            "text": fields.String(required=True, description="Text to type"),
+            "timeframe": fields.Float(description="Mouse move duration (seconds)", default=0.25),
+        },
+    )
+
+    schemas["GuiHoverXyRequest"] = api.model(
+        "GuiHoverXyRequest",
+        {
+            "x": fields.Float(required=True, description="Screen X coordinate"),
+            "y": fields.Float(required=True, description="Screen Y coordinate"),
+            "timeframe": fields.Float(description="Mouse move duration (seconds)", default=0.25),
+        },
+    )
+
+    schemas["GuiPressKeysXyRequest"] = api.model(
+        "GuiPressKeysXyRequest",
+        {
+            "x": fields.Float(required=True, description="Screen X coordinate"),
+            "y": fields.Float(required=True, description="Screen Y coordinate"),
+            "keys": fields.String(required=True, description="Keys to press (e.g., 'ENTER', 'TAB', 'CTRL+a')"),
+            "timeframe": fields.Float(description="Mouse move duration (seconds)", default=0.25),
+        },
+    )
+
     schemas["ConsoleLogsRequest"] = api.model(
         "ConsoleLogsRequest",
         {

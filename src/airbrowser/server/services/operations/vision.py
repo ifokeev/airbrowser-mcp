@@ -4,6 +4,8 @@ from typing import Any
 
 from ...models import BrowserAction
 from ..browser_pool import BrowserPoolAdapter
+from .response import error as _error
+from .response import success as _success
 
 
 class VisionOperations:
@@ -12,54 +14,54 @@ class VisionOperations:
     def __init__(self, browser_pool: BrowserPoolAdapter):
         self.browser_pool = browser_pool
 
-    def detect_coordinates(self, browser_id: str, prompt: str) -> dict[str, Any]:
+    def detect_coordinates(self, browser_id: str, prompt: str, fx: float = 0.5, fy: float = 0.5) -> dict[str, Any]:
         """
         Detect element coordinates using vision models without clicking.
 
         Args:
             browser_id: Browser instance identifier
             prompt: Natural language description of element to find
+            fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right)
+            fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
 
         Returns:
             Dictionary with coordinate information
         """
         try:
-            options = {"prompt": prompt}
+            options = {"prompt": prompt, "fx": fx, "fy": fy}
             action = BrowserAction(action="detect_coordinates", options=options)
             result = self.browser_pool.execute_action(browser_id, action)
 
             if result.success:
                 coord_data = result.data.get("coordinates", {}) if isinstance(result.data, dict) else {}
-                return {
-                    "success": True,
-                    "message": result.message,
-                    "prompt": prompt,
-                    "coordinates": coord_data,
-                    "screenshot_url": coord_data.get("screenshot_url") or coord_data.get("screenshot_path"),
-                    "model_used": coord_data.get("model_used"),
-                    "confidence": coord_data.get("confidence"),
-                    "click_point": coord_data.get("click_point"),
-                    "bounding_box": {
-                        "x": coord_data.get("x"),
-                        "y": coord_data.get("y"),
-                        "width": coord_data.get("width"),
-                        "height": coord_data.get("height"),
-                    }
-                    if coord_data.get("x") is not None
-                    else None,
-                    "data": result.to_dict(),
-                }
+                return _success(
+                    data={
+                        "prompt": prompt,
+                        "screenshot_url": coord_data.get("screenshot_url") or coord_data.get("screenshot_path"),
+                        "confidence": coord_data.get("confidence"),
+                        "click_point": coord_data.get("click_point"),
+                        "bounding_box": {
+                            "x": coord_data.get("x"),
+                            "y": coord_data.get("y"),
+                            "width": coord_data.get("width"),
+                            "height": coord_data.get("height"),
+                        }
+                        if coord_data.get("x") is not None
+                        else None,
+                    },
+                    message=result.message,
+                )
             else:
-                return {
-                    "success": False,
-                    "error": result.message,
+                # Include extra data for debugging failed detections
+                error_data = {
                     "prompt": prompt,
                     "models_tried": (result.data.get("models_tried") if isinstance(result.data, dict) else []),
                     "screenshot_url": (result.data.get("screenshot_url") or result.data.get("screenshot_path") if isinstance(result.data, dict) else None),
                 }
+                return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"Coordinate detection failed: {str(e)}", "prompt": prompt}
+            return _error(f"Coordinate detection failed: {str(e)}")
 
     def what_is_visible(self, browser_id: str) -> dict[str, Any]:
         """
@@ -86,20 +88,17 @@ class VisionOperations:
 
             if result.success:
                 data = result.data if isinstance(result.data, dict) else {}
-                return {
-                    "success": True,
-                    "message": result.message,
-                    "analysis": data.get("analysis"),
-                    "model": data.get("model"),
-                    "screenshot_url": data.get("screenshot_url"),
-                    "timestamp": data.get("timestamp"),
-                }
+                return _success(
+                    data={
+                        "analysis": data.get("analysis"),
+                        "model": data.get("model"),
+                        "screenshot_url": data.get("screenshot_url"),
+                        "timestamp": data.get("timestamp"),
+                    },
+                    message=result.message,
+                )
             else:
-                return {
-                    "success": False,
-                    "error": result.message,
-                    "screenshot_url": (result.data.get("screenshot_url") if isinstance(result.data, dict) else None),
-                }
+                return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"Page analysis failed: {str(e)}"}
+            return _error(f"Page analysis failed: {str(e)}")

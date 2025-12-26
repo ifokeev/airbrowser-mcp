@@ -5,6 +5,8 @@ from typing import Any
 from ...models import BrowserAction
 from ..browser_pool import BrowserPoolAdapter
 from .enums import EmulateAction
+from .response import error as _error
+from .response import success as _success
 
 
 class EmulationOperations:
@@ -42,7 +44,7 @@ class EmulationOperations:
         elif action == EmulateAction.LIST_DEVICES:
             return self.list_devices(browser_id)
         elif action != EmulateAction.SET:
-            return {"success": False, "error": f"Invalid action: {action}"}
+            return _error(f"Invalid action: {action}")
 
         # Set emulation
         try:
@@ -63,15 +65,12 @@ class EmulationOperations:
             browser_action = BrowserAction(action="emulate", options=options)
             result = self.browser_pool.execute_action(browser_id, browser_action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.data if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"emulate failed: {str(e)}"}
+            return _error(f"emulate failed: {str(e)}")
 
     def list_devices(self, browser_id: str) -> dict[str, Any]:
         """List available device presets."""
@@ -79,15 +78,12 @@ class EmulationOperations:
             action = BrowserAction(action="list_devices")
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.data if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"list_devices failed: {str(e)}"}
+            return _error(f"list_devices failed: {str(e)}")
 
     def clear_emulation(self, browser_id: str) -> dict[str, Any]:
         """Clear device emulation and restore defaults."""
@@ -95,12 +91,9 @@ class EmulationOperations:
             action = BrowserAction(action="clear_emulation")
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.data if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"clear_emulation failed: {str(e)}"}
+            return _error(f"clear_emulation failed: {str(e)}")

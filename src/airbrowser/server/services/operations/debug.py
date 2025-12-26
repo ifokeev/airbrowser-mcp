@@ -6,6 +6,8 @@ from typing import Any
 from ...models import BrowserAction
 from ..browser_pool import BrowserPoolAdapter
 from .enums import LogAction
+from .response import error as _error
+from .response import success as _success
 
 
 class DebugOperations:
@@ -20,33 +22,32 @@ class DebugOperations:
             action = BrowserAction(action="get_console_logs", options={"limit": limit})
             result = self.browser_pool.execute_action(browser_id, action)
 
+            if not result.success:
+                return _error(result.message)
+
             logs = None
-            if result.success and isinstance(result.data, dict):
+            if isinstance(result.data, dict):
                 logs = result.data.get("logs")
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "logs": logs,
-                "data": result.to_dict() if result.success else None,
-                "error": None if result.success else result.message,
-            }
+            data = result.data or {}
+            data["logs"] = logs
+            return _success(data=data, message=result.message)
+
         except Exception as e:
-            return {"success": False, "error": f"get_console_logs failed: {str(e)}"}
+            return _error(f"get_console_logs failed: {str(e)}")
 
     def clear_console_logs(self, browser_id: str) -> dict[str, Any]:
         """Clear buffered console messages (best-effort)."""
         try:
             action = BrowserAction(action="clear_console_logs")
             result = self.browser_pool.execute_action(browser_id, action)
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.to_dict() if result.success else None,
-                "error": None if result.success else result.message,
-            }
+
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
         except Exception as e:
-            return {"success": False, "error": f"clear_console_logs failed: {str(e)}"}
+            return _error(f"clear_console_logs failed: {str(e)}")
 
     def get_network_logs(self, browser_id: str, limit: int = 500) -> dict[str, Any]:
         """
@@ -79,30 +80,33 @@ class DebugOperations:
                     if isinstance(method, str) and method.startswith("Network."):
                         events.append(inner)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "events": events,
-                "raw_logs": raw_logs,
-                "data": result.to_dict() if result.success else None,
-                "error": None if result.success else result.message,
-            }
+            if not result.success:
+                return _error(result.message)
+
+            return _success(
+                data={
+                    "events": events,
+                    "raw_logs": raw_logs,
+                    **(result.data or {}),
+                },
+                message=result.message,
+            )
+
         except Exception as e:
-            return {"success": False, "error": f"get_network_logs failed: {str(e)}"}
+            return _error(f"get_network_logs failed: {str(e)}")
 
     def clear_network_logs(self, browser_id: str) -> dict[str, Any]:
         """Clear buffered performance/network logs (best-effort)."""
         try:
             action = BrowserAction(action="clear_performance_logs")
             result = self.browser_pool.execute_action(browser_id, action)
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.to_dict() if result.success else None,
-                "error": None if result.success else result.message,
-            }
+
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
         except Exception as e:
-            return {"success": False, "error": f"clear_network_logs failed: {str(e)}"}
+            return _error(f"clear_network_logs failed: {str(e)}")
 
     # ==================== Combined Methods ====================
 
@@ -119,7 +123,7 @@ class DebugOperations:
         elif action == LogAction.CLEAR:
             return self.clear_console_logs(browser_id)
         else:
-            return {"success": False, "error": f"Invalid action: {action}"}
+            return _error(f"Invalid action: {action}")
 
     def network_logs(self, browser_id: str, action: LogAction, limit: int = 500) -> dict[str, Any]:
         """Manage network logs.
@@ -134,4 +138,4 @@ class DebugOperations:
         elif action == LogAction.CLEAR:
             return self.clear_network_logs(browser_id)
         else:
-            return {"success": False, "error": f"Invalid action: {action}"}
+            return _error(f"Invalid action: {action}")

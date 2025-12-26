@@ -5,16 +5,15 @@ from typing import Any
 from ...models import BrowserAction
 from ..browser_pool import BrowserPoolAdapter
 from .enums import ElementCheck, ElementDataType, MouseAction, SelectAction, WaitUntil
+from .response import error as _error
+from .response import success as _success
 
 
 def _make_result(result, error_prefix: str = "Operation") -> dict[str, Any]:
     """Create standardized result dict from action result."""
-    return {
-        "success": result.success,
-        "message": result.message,
-        "data": result.data if result.success else None,
-        "error": None if result.success else result.message,
-    }
+    if result.success:
+        return _success(data=result.data, message=result.message)
+    return _error(result.message)
 
 
 class ElementOperations:
@@ -29,7 +28,7 @@ class ElementOperations:
             result = self.browser_pool.execute_action(browser_id, action)
             return _make_result(result, error_prefix)
         except Exception as e:
-            return {"success": False, "error": f"{error_prefix} failed: {str(e)}"}
+            return _error(f"{error_prefix} failed: {str(e)}")
 
     def type_text(
         self, browser_id: str, selector: str, text: str, timeout: int | None = None, by: str = "css"
@@ -45,15 +44,12 @@ class ElementOperations:
             )
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.to_dict() if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"Type operation failed: {str(e)}"}
+            return _error(f"Type operation failed: {str(e)}")
 
     def click_element(self, browser_id: str, selector: str, timeout: int | None = None, by: str = "css") -> dict[str, Any]:
         """Click on an element in the browser."""
@@ -66,15 +62,12 @@ class ElementOperations:
             )
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.to_dict() if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"Click operation failed: {str(e)}"}
+            return _error(f"Click operation failed: {str(e)}")
 
     def get_text(self, browser_id: str, selector: str, timeout: int | None = None, by: str = "css") -> dict[str, Any]:
         """Get text content from an element."""
@@ -87,22 +80,21 @@ class ElementOperations:
             )
             result = self.browser_pool.execute_action(browser_id, action)
 
+            if not result.success:
+                return _error(result.message)
+
             text_value = None
-            if result.success and isinstance(result.data, dict):
+            if isinstance(result.data, dict):
                 text_value = result.data.get("result") or (
                     (result.data.get("data") or {}).get("text") if isinstance(result.data.get("data"), dict) else None
                 )
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "text": text_value,
-                "data": result.to_dict() if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            data = result.data or {}
+            data["text"] = text_value
+            return _success(data=data, message=result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"Get text failed: {str(e)}"}
+            return _error(f"Get text failed: {str(e)}")
 
     def wait_for_element(self, browser_id: str, selector: str, timeout: int | None = None, by: str = "css") -> dict[str, Any]:
         """Wait for an element to appear on the page."""
@@ -115,29 +107,25 @@ class ElementOperations:
             )
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.to_dict() if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
 
         except Exception as e:
-            return {"success": False, "error": f"Wait operation failed: {str(e)}"}
+            return _error(f"Wait operation failed: {str(e)}")
 
     def click_if_visible(self, browser_id: str, selector: str, by: str = "css") -> dict[str, Any]:
         """Click an element if it's visible."""
         try:
             action = BrowserAction(action="click_if_visible", selector=selector, by=by)
             result = self.browser_pool.execute_action(browser_id, action)
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.to_dict() if result.success else None,
-                "error": None if result.success else result.message,
-            }
+
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
         except Exception as e:
-            return {"success": False, "error": f"click_if_visible failed: {str(e)}"}
+            return _error(f"click_if_visible failed: {str(e)}")
 
     def wait_not_visible(
         self, browser_id: str, selector: str, timeout: int = 20, by: str = "css"
@@ -146,70 +134,65 @@ class ElementOperations:
         try:
             action = BrowserAction(action="wait_for_element_not_visible", selector=selector, timeout=timeout, by=by)
             result = self.browser_pool.execute_action(browser_id, action)
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.to_dict() if result.success else None,
-                "error": None if result.success else result.message,
-            }
+
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
         except Exception as e:
-            return {"success": False, "error": f"wait_for_element_not_visible failed: {str(e)}"}
+            return _error(f"wait_for_element_not_visible failed: {str(e)}")
 
     def press_keys(self, browser_id: str, selector: str, keys: str, by: str = "css") -> dict[str, Any]:
         """Press keys on an element."""
         try:
             action = BrowserAction(action="press_keys", selector=selector, text=keys, by=by)
             result = self.browser_pool.execute_action(browser_id, action)
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.to_dict() if result.success else None,
-                "error": None if result.success else result.message,
-            }
+
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
         except Exception as e:
-            return {"success": False, "error": f"press_keys failed: {str(e)}"}
+            return _error(f"press_keys failed: {str(e)}")
 
     def hover(self, browser_id: str, selector: str, by: str = "css") -> dict[str, Any]:
         """Hover over an element."""
         try:
             action = BrowserAction(action="hover", selector=selector, by=by)
             result = self.browser_pool.execute_action(browser_id, action)
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.data if result.success else None,
-                "error": None if result.success else result.message,
-            }
+
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
         except Exception as e:
-            return {"success": False, "error": f"hover failed: {str(e)}"}
+            return _error(f"hover failed: {str(e)}")
 
     def drag(self, browser_id: str, source: str, target: str, by: str = "css") -> dict[str, Any]:
         """Drag element from source to target."""
         try:
             action = BrowserAction(action="drag", options={"source": source, "target": target}, by=by)
             result = self.browser_pool.execute_action(browser_id, action)
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.data if result.success else None,
-                "error": None if result.success else result.message,
-            }
+
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
         except Exception as e:
-            return {"success": False, "error": f"drag failed: {str(e)}"}
+            return _error(f"drag failed: {str(e)}")
 
     def fill_form(self, browser_id: str, fields: list[dict], by: str = "css") -> dict[str, Any]:
         """Fill multiple form fields at once."""
         try:
             action = BrowserAction(action="fill_form", options={"fields": fields}, by=by)
             result = self.browser_pool.execute_action(browser_id, action)
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": result.data if result.success else None,
-                "error": None if result.success else result.message,
-            }
+
+            if result.success:
+                return _success(data=result.data, message=result.message)
+            return _error(result.message)
+
         except Exception as e:
-            return {"success": False, "error": f"fill_form failed: {str(e)}"}
+            return _error(f"fill_form failed: {str(e)}")
 
     def upload_file(self, browser_id: str, selector: str, file_path: str, by: str = "css") -> dict[str, Any]:
         """Upload a file to a file input element."""
@@ -338,7 +321,7 @@ class ElementOperations:
         elif check == ElementCheck.VISIBLE:
             return self.is_visible(browser_id, selector, by)
         else:
-            return {"success": False, "error": f"Invalid check type: {check}"}
+            return _error(f"Invalid check type: {check}")
 
     def wait_element(
         self, browser_id: str, selector: str, until: WaitUntil, timeout: int | None = None, by: str = "css"
@@ -357,7 +340,7 @@ class ElementOperations:
         elif until == WaitUntil.HIDDEN:
             return self.wait_not_visible(browser_id, selector, timeout, by)
         else:
-            return {"success": False, "error": f"Invalid until value: {until}"}
+            return _error(f"Invalid until value: {until}")
 
     def get_element_data(
         self, browser_id: str, selector: str, data_type: ElementDataType, name: str | None = None, by: str = "css"
@@ -375,14 +358,14 @@ class ElementOperations:
             return self.get_text(browser_id, selector, by=by)
         elif data_type == ElementDataType.ATTRIBUTE:
             if not name:
-                return {"success": False, "error": "name required for attribute"}
+                return _error("name required for attribute")
             return self.get_attribute(browser_id, selector, name, by)
         elif data_type == ElementDataType.PROPERTY:
             if not name:
-                return {"success": False, "error": "name required for property"}
+                return _error("name required for property")
             return self.get_property(browser_id, selector, name, by)
         else:
-            return {"success": False, "error": f"Invalid data_type: {data_type}"}
+            return _error(f"Invalid data_type: {data_type}")
 
     def click(
         self, browser_id: str, selector: str, timeout: int | None = None, by: str = "css", if_visible: bool = False
@@ -404,13 +387,13 @@ class ElementOperations:
         """Mouse operations: hover or drag."""
         if action == MouseAction.HOVER:
             if not selector:
-                return {"success": False, "error": "selector required for hover"}
+                return _error("selector required for hover")
             return self.hover(browser_id, selector, by)
         elif action == MouseAction.DRAG:
             if not source or not target:
-                return {"success": False, "error": "source and target required for drag"}
+                return _error("source and target required for drag")
             return self.drag(browser_id, source, target, by)
-        return {"success": False, "error": f"Invalid mouse action: {action}"}
+        return _error(f"Invalid mouse action: {action}")
 
     def select_action(
         self,

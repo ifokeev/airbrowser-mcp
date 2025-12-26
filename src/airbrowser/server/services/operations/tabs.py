@@ -5,6 +5,8 @@ from typing import Any
 from ...models import BrowserAction
 from ..browser_pool import BrowserPoolAdapter
 from .enums import TabAction
+from .response import error as _error
+from .response import success as _success
 
 
 class TabOperations:
@@ -19,23 +21,24 @@ class TabOperations:
             action = BrowserAction(action="list_tabs")
             result = self.browser_pool.execute_action(browser_id, action)
 
+            if not result.success:
+                return _error(result.message)
+
             tabs = []
-            if result.success and isinstance(result.data, dict):
+            if isinstance(result.data, dict):
                 tabs = result.data.get("tabs", [])
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": {
+            return _success(
+                data={
                     "tabs": tabs,
                     "count": len(tabs),
                     "current_index": result.data.get("current_index", 0) if result.data else 0,
-                } if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+                },
+                message=result.message,
+            )
 
         except Exception as e:
-            return {"success": False, "error": f"List tabs failed: {str(e)}"}
+            return _error(f"List tabs failed: {str(e)}")
 
     def new_tab(self, browser_id: str, url: str | None = None) -> dict[str, Any]:
         """Open a new tab, optionally navigating to a URL."""
@@ -43,20 +46,21 @@ class TabOperations:
             action = BrowserAction(action="new_tab", options={"url": url} if url else None)
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": {
+            if not result.success:
+                return _error(result.message)
+
+            return _success(
+                data={
                     "handle": result.data.get("handle") if result.data else None,
                     "index": result.data.get("index") if result.data else None,
                     "url": result.data.get("url") if result.data else None,
                     "title": result.data.get("title") if result.data else None,
-                } if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+                },
+                message=result.message,
+            )
 
         except Exception as e:
-            return {"success": False, "error": f"New tab failed: {str(e)}"}
+            return _error(f"New tab failed: {str(e)}")
 
     def switch_tab(self, browser_id: str, index: int | None = None, handle: str | None = None) -> dict[str, Any]:
         """Switch to a specific tab by index or handle."""
@@ -70,20 +74,21 @@ class TabOperations:
             action = BrowserAction(action="switch_tab", options=options if options else None)
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": {
+            if not result.success:
+                return _error(result.message)
+
+            return _success(
+                data={
                     "handle": result.data.get("handle") if result.data else None,
                     "index": result.data.get("index") if result.data else None,
                     "url": result.data.get("url") if result.data else None,
                     "title": result.data.get("title") if result.data else None,
-                } if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+                },
+                message=result.message,
+            )
 
         except Exception as e:
-            return {"success": False, "error": f"Switch tab failed: {str(e)}"}
+            return _error(f"Switch tab failed: {str(e)}")
 
     def close_tab(self, browser_id: str, index: int | None = None, handle: str | None = None) -> dict[str, Any]:
         """Close a specific tab by index or handle. If neither provided, closes current tab."""
@@ -97,20 +102,21 @@ class TabOperations:
             action = BrowserAction(action="close_tab", options=options if options else None)
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": {
+            if not result.success:
+                return _error(result.message)
+
+            return _success(
+                data={
                     "closed_handle": result.data.get("closed_handle") if result.data else None,
                     "remaining_tabs": result.data.get("remaining_tabs") if result.data else None,
                     "current_handle": result.data.get("current_handle") if result.data else None,
                     "current_url": result.data.get("current_url") if result.data else None,
-                } if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+                },
+                message=result.message,
+            )
 
         except Exception as e:
-            return {"success": False, "error": f"Close tab failed: {str(e)}"}
+            return _error(f"Close tab failed: {str(e)}")
 
     def get_current_tab(self, browser_id: str) -> dict[str, Any]:
         """Get information about the current tab."""
@@ -118,21 +124,22 @@ class TabOperations:
             action = BrowserAction(action="get_current_tab")
             result = self.browser_pool.execute_action(browser_id, action)
 
-            return {
-                "success": result.success,
-                "message": result.message,
-                "data": {
+            if not result.success:
+                return _error(result.message)
+
+            return _success(
+                data={
                     "handle": result.data.get("handle") if result.data else None,
                     "index": result.data.get("index") if result.data else None,
                     "url": result.data.get("url") if result.data else None,
                     "title": result.data.get("title") if result.data else None,
                     "total_tabs": result.data.get("total_tabs") if result.data else None,
-                } if result.success else None,
-                "error": result.message if not result.success else None,
-            }
+                },
+                message=result.message,
+            )
 
         except Exception as e:
-            return {"success": False, "error": f"Get current tab failed: {str(e)}"}
+            return _error(f"Get current tab failed: {str(e)}")
 
     # ==================== Combined Method ====================
 
@@ -164,4 +171,4 @@ class TabOperations:
         elif action == TabAction.CURRENT:
             return self.get_current_tab(browser_id)
         else:
-            return {"success": False, "error": f"Invalid action: {action}"}
+            return _error(f"Invalid action: {action}")
