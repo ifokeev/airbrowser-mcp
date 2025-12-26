@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.5.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.4.0...v1.5.0) (2025-12-26)
+
+
+### Features
+
+* **dashboard:** add BASE_PATH support for reverse proxy deployment ([c8f8550](https://github.com/ifokeev/airbrowser-mcp/commit/c8f855048005583e15fadc1f910fd1abecb2d4d3))
+
+
+### Bug Fixes
+
+* **docs:** auto-generate MCP tool categories from Python ([e1f59b6](https://github.com/ifokeev/airbrowser-mcp/commit/e1f59b686f8d6121afa73ef0d3e121c2ecc7939e))
+* **docs:** escape HTML in tool descriptions to prevent broken rendering ([9aaf9e1](https://github.com/ifokeev/airbrowser-mcp/commit/9aaf9e18b1521121255b5c48679227df38d47c6e))
+
 ## [1.4.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.3.0...v1.4.0) (2025-12-26)
 
 
