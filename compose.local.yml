@@ -11,8 +11,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    # Use dev supervisord config with hot reload
-    command: ["supervisord", "-c", "/app/docker/supervisord.dev.conf"]
     # Linux: host networking lets browser access localhost directly
     # macOS/Windows: falls back to bridge, use host.docker.internal
     network_mode: "host"
@@ -20,14 +18,12 @@ services:
       - "host.docker.internal:host-gateway"
     environment:
       - PYTHONUNBUFFERED=1
-      - MAX_BROWSERS=${MAX_BROWSERS:-5}
-      - LOG_LEVEL=${LOG_LEVEL:-DEBUG}
-      - COMMAND_TIMEOUT_DEFAULT=90
+      - MAX_BROWSERS=${MAX_BROWSERS:-10}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - API_BASE_URL=http://localhost:18080
       - NGINX_HTTPS_PORT=18443
-      # Dev resolution (overrides default 1920x1080)
-      - SCREEN_WIDTH=1366
-      - SCREEN_HEIGHT=768
+      # Enable hot reload via fs_watcher in supervisord.dev.conf
+      - FLASK_ENV=development
       # AI Vision (optional)
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
     volumes:
