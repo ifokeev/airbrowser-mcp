@@ -110,6 +110,9 @@ class BrowserIPCClient:
         if timeout is None:
             if command_type == "navigate":
                 timeout = int(os.environ.get("NAVIGATE_TIMEOUT_DEFAULT", 60))
+            elif command_type in ("what_is_visible", "detect_coordinates"):
+                # Vision commands need longer timeout for API calls
+                timeout = int(os.environ.get("VISION_TIMEOUT_DEFAULT", 60))
             else:
                 timeout = int(os.environ.get("COMMAND_TIMEOUT_DEFAULT", 20))
 
