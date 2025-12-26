@@ -5,6 +5,7 @@
 ### Package Management
 **Always use `uv` instead of `pip` for Python package management:**
 - Install packages: `uv pip install <package>`
+- Run Python scripts: `uv run python3 <script>` (ensures correct environment)
 - Run tools: `uvx <tool>` (e.g., `uvx ruff check src/`)
 - Install from requirements: `uv pip install -r requirements.txt`
 
@@ -89,6 +90,9 @@ The `generated-clients/` directory contains auto-generated client libraries from
 - Fast re-runs: `./scripts/run_tests.sh -r` (reuses running containers)
 - All tests: `./scripts/run_tests.sh -m ''` (includes slow/external site tests)
 - Rebuild: `./scripts/run_tests.sh --build` (force rebuild containers)
+- **Run specific tests by name**: `./scripts/run_tests.sh -r -k "test_name"` (e.g., `-k "test_list_tabs"`)
+- **Run tests from specific file**: `./scripts/run_tests.sh -r -k "test_tabs"` (matches test_tabs.py)
+- **Run specific test class**: `./scripts/run_tests.sh -r -k "TestListTabs"`
 - See `docs/TESTING.md` for detailed testing guide
 - The generated client automatically includes the `/api/v1` prefix
 
