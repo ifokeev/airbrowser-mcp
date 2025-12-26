@@ -669,3 +669,180 @@ class TestFractionalClickOffset:
         assert result["click_point"]["x"] == 600
         # Fallback: click_y = 300 + 50 * 0.5 = 325
         assert result["click_point"]["y"] == 325
+
+
+# ============================================================================
+# Auto-bias logic from src/airbrowser/server/browser/commands/vision.py
+# This logic applies fx=0.25 for wide elements when fx is not explicitly set
+# ============================================================================
+
+def _apply_auto_bias(command: dict, coords: dict) -> tuple[float, float]:
+    """
+    Apply auto-bias for wide elements.
+
+    Returns the fx, fy values to use for click point calculation.
+    If fx/fy are explicitly set in command, uses those.
+    If not set and element is very wide (aspect ratio > 10), applies left-bias (fx=0.25).
+    """
+    fx_explicit = command.get("fx") is not None
+    fy_explicit = command.get("fy") is not None
+    fx = float(command.get("fx", 0.5))
+    fy = float(command.get("fy", 0.5))
+
+    # Clamp to valid range
+    fx = max(0.0, min(1.0, fx))
+    fy = max(0.0, min(1.0, fy))
+
+    if coords.get("success"):
+        width = coords.get("width", 0)
+        height = coords.get("height", 1)
+        aspect_ratio = width / height if height > 0 else 0
+
+        if not fx_explicit:
+            if aspect_ratio > 10:  # Very wide element (e.g., search box)
+                fx = 0.25  # Click at 25% from left to avoid right-side icons
+
+    return fx, fy
+
+
+class TestAutoBiasForWideElements:
+    """Tests for auto-bias logic that adjusts click position for wide elements.
+
+    This prevents clicking on icons at the right side of wide elements like
+    Google's search box (which has camera/voice icons on the right).
+
+    The auto-bias applies fx=0.25 (25% from left) when:
+    - fx is NOT explicitly set by the caller
+    - Element aspect ratio > 10 (very wide element)
+    """
+
+    def test_wide_element_without_explicit_fx_gets_auto_bias(self):
+        """Wide element (aspect ratio > 10) without explicit fx should use fx=0.25."""
+        # Google search box: 1074px wide, 38px tall = aspect ratio 28.3
+        command = {"prompt": "search box"}  # No fx/fy
+        coords = {"success": True, "width": 1074, "height": 38}
+
+        fx, fy = _apply_auto_bias(command, coords)
+
+        assert fx == 0.25, "Wide element should get auto-bias fx=0.25"
+        assert fy == 0.5, "fy should remain at center"
+
+    def test_wide_element_with_explicit_fx_uses_explicit_value(self):
+        """Wide element with explicit fx should use the explicit value, not auto-bias."""
+        command = {"prompt": "search box", "fx": 0.8}  # Explicit fx
+        coords = {"success": True, "width": 1074, "height": 38}
+
+        fx, fy = _apply_auto_bias(command, coords)
+
+        assert fx == 0.8, "Explicit fx should be used, not auto-bias"
+        assert fy == 0.5
+
+    def test_narrow_element_without_explicit_fx_uses_center(self):
+        """Narrow element (aspect ratio <= 10) should use center (fx=0.5)."""
+        # Button: 100px wide, 40px tall = aspect ratio 2.5
+        command = {"prompt": "submit button"}  # No fx/fy
+        coords = {"success": True, "width": 100, "height": 40}
+
+        fx, fy = _apply_auto_bias(command, coords)
+
+        assert fx == 0.5, "Narrow element should use center (fx=0.5)"
+        assert fy == 0.5
+
+    def test_aspect_ratio_exactly_10_uses_center(self):
+        """Element with aspect ratio exactly 10 should use center (threshold is > 10)."""
+        command = {"prompt": "element"}
+        coords = {"success": True, "width": 400, "height": 40}  # ratio = 10.0
+
+        fx, fy = _apply_auto_bias(command, coords)
+
+        assert fx == 0.5, "Aspect ratio exactly 10 should use center"
+
+    def test_aspect_ratio_just_over_10_gets_auto_bias(self):
+        """Element with aspect ratio just over 10 should get auto-bias."""
+        command = {"prompt": "element"}
+        coords = {"success": True, "width": 401, "height": 40}  # ratio = 10.025
+
+        fx, fy = _apply_auto_bias(command, coords)
+
+        assert fx == 0.25, "Aspect ratio > 10 should get auto-bias"
+
+    def test_failed_detection_returns_defaults(self):
+        """Failed detection should return default values."""
+        command = {"prompt": "element"}
+        coords = {"success": False, "error": "Not found"}
+
+        fx, fy = _apply_auto_bias(command, coords)
+
+        assert fx == 0.5, "Failed detection should use default center"
+        assert fy == 0.5
+
+    def test_explicit_fx_zero_is_honored(self):
+        """Explicit fx=0.0 should be honored, not treated as 'not set'."""
+        command = {"prompt": "element", "fx": 0.0}
+        coords = {"success": True, "width": 1074, "height": 38}
+
+        fx, fy = _apply_auto_bias(command, coords)
+
+        assert fx == 0.0, "Explicit fx=0.0 should be honored"
+
+    def test_explicit_fy_is_honored(self):
+        """Explicit fy should be honored."""
+        command = {"prompt": "element", "fy": 0.2}
+        coords = {"success": True, "width": 1074, "height": 38}
+
+        fx, fy = _apply_auto_bias(command, coords)
+
+        assert fx == 0.25, "Auto-bias should still apply to fx"
+        assert fy == 0.2, "Explicit fy should be honored"
+
+    def test_fx_clamped_to_valid_range(self):
+        """fx values outside 0-1 range should be clamped."""
+        command = {"prompt": "element", "fx": 1.5}
+        coords = {"success": True, "width": 100, "height": 40}
+
+        fx, fy = _apply_auto_bias(command, coords)
+
+        assert fx == 1.0, "fx > 1.0 should be clamped to 1.0"
+
+    def test_negative_fx_clamped_to_zero(self):
+        """Negative fx should be clamped to 0."""
+        command = {"prompt": "element", "fx": -0.5}
+        coords = {"success": True, "width": 100, "height": 40}
+
+        fx, fy = _apply_auto_bias(command, coords)
+
+        assert fx == 0.0, "Negative fx should be clamped to 0.0"
+
+    def test_zero_height_element_no_crash(self):
+        """Element with zero height should not cause division by zero."""
+        command = {"prompt": "element"}
+        coords = {"success": True, "width": 100, "height": 0}
+
+        fx, fy = _apply_auto_bias(command, coords)
+
+        # Should not crash, and should use default center
+        assert fx == 0.5
+        assert fy == 0.5
+
+    def test_google_search_box_real_dimensions(self):
+        """Test with actual Google search box dimensions from production logs."""
+        # From actual failed click that hit Google Lens icon
+        command = {"prompt": "the text input area of the search box"}
+        coords = {
+            "success": True,
+            "x": 659,
+            "y": 555,
+            "width": 1074,  # Very wide
+            "height": 38,
+            # Aspect ratio = 1074/38 = 28.3
+        }
+
+        fx, fy = _apply_auto_bias(command, coords)
+
+        assert fx == 0.25, "Google search box should get auto-bias"
+        # With fx=0.25: click_x = 659 + 1074*0.25 = 659 + 268 = 927 (text input area)
+        # With fx=0.5:  click_x = 659 + 1074*0.5 = 659 + 537 = 1196 (Google Lens icon!)
+        expected_click_x_with_auto_bias = 659 + int(1074 * 0.25)
+        expected_click_x_without_auto_bias = 659 + int(1074 * 0.5)
+        assert expected_click_x_with_auto_bias < expected_click_x_without_auto_bias - 200, \
+            "Auto-bias should click significantly left of center"
