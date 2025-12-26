@@ -84,8 +84,16 @@ def create_app():
     # Dashboard route
     @app.route("/dashboard")
     def dashboard():
-        """Serve the browser pool dashboard."""
-        return send_from_directory("static", "dashboard.html")
+        """Serve the browser pool dashboard with BASE_PATH injected."""
+        base_path = os.environ.get("BASE_PATH", "")
+        # Read the dashboard HTML and inject BASE_PATH
+        static_dir = os.path.join(os.path.dirname(__file__), "static")
+        with open(os.path.join(static_dir, "dashboard.html")) as f:
+            html = f.read()
+        # Inject BASE_PATH script before closing </head> tag
+        inject_script = f'<script>window.BASE_PATH = "{base_path}";</script>\n</head>'
+        html = html.replace("</head>", inject_script)
+        return html
 
     # Screenshots route - serve screenshots publicly
     SCREENSHOT_DIR = "/tmp/screenshots"

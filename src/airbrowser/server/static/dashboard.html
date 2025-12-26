@@ -738,12 +738,16 @@
                     <div class="section">
                         <div class="section-title">Links</div>
                         <div class="links">
-                            <a href="/docs/" target="_blank" class="link">
+                            <a id="link-docs" href="/docs/" target="_blank" class="link">
                                 <span>API Documentation</span>
                                 <span class="link-arrow">&rarr;</span>
                             </a>
-                            <a href="/api/v1/swagger.json" target="_blank" class="link">
+                            <a id="link-swagger" href="/api/v1/swagger.json" target="_blank" class="link">
                                 <span>OpenAPI Spec</span>
+                                <span class="link-arrow">&rarr;</span>
+                            </a>
+                            <a id="link-vnc" href="/vnc/" target="_blank" class="link">
+                                <span>VNC Viewer</span>
                                 <span class="link-arrow">&rarr;</span>
                             </a>
                         </div>
@@ -767,6 +771,14 @@
         let poolStatus = null;
         let browsers = {};
         let updateInterval = null;
+
+        // Get base path from injected variable (set by Flask) or default to empty string
+        const BASE_PATH = window.BASE_PATH || '';
+
+        // Helper to build URLs with base path
+        function url(path) {
+            return BASE_PATH + path;
+        }
 
         // Theme toggle
         function toggleTheme() {
@@ -797,7 +809,7 @@
 
         async function updatePoolStatus() {
             try {
-                const response = await fetch('/api/v1/health/');
+                const response = await fetch(url('/api/v1/health/'));
                 const data = await response.json();
 
                 // Health endpoint returns {status, pool: {...}, timestamp}
@@ -829,7 +841,7 @@
 
         async function updateBrowserList() {
             try {
-                const response = await fetch('/api/v1/browser/browsers', {
+                const response = await fetch(url('/api/v1/browser/browsers'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'list' })
@@ -883,7 +895,7 @@
                             ${browser.current_url ? `<div class="browser-url">${browser.current_url}</div>` : ''}
                             <div class="browser-actions">
                                 <button class="btn btn-ghost btn-sm" onclick="navigateBrowser('${browser.id}')">Navigate</button>
-                                <a href="/vnc/" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration: none;">VNC</a>
+                                <a href="${url('/vnc/')}" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration: none;">VNC</a>
                                 <button class="btn btn-danger btn-sm" onclick="closeBrowser('${browser.id}')">Close</button>
                             </div>
                         `;
@@ -923,7 +935,7 @@
                 addLog(`Creating browser${profileName ? ` with profile '${profileName}'` : ''}...`, 'info');
 
                 // Start creation request (don't await yet)
-                const createPromise = fetch('/api/v1/browser/create_browser', {
+                const createPromise = fetch(url('/api/v1/browser/create_browser'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(config)
@@ -954,15 +966,15 @@
         }
 
         async function navigateBrowser(browserId) {
-            const url = prompt('Enter URL:');
-            if (!url) return;
+            const navUrl = prompt('Enter URL:');
+            if (!navUrl) return;
 
             try {
                 addLog(`Navigating ${browserId.substring(0, 8)}...`, 'info');
-                const response = await fetch(`/api/v1/browser/${browserId}/navigate`, {
+                const response = await fetch(url(`/api/v1/browser/${browserId}/navigate`), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url })
+                    body: JSON.stringify({ url: navUrl })
                 });
 
                 const data = await response.json();
@@ -980,7 +992,7 @@
         async function closeBrowser(browserId) {
             try {
                 addLog(`Closing ${browserId.substring(0, 8)}...`, 'warning');
-                const response = await fetch(`/api/v1/browser/${browserId}/close_browser`, { method: 'DELETE' });
+                const response = await fetch(url(`/api/v1/browser/${browserId}/close_browser`), { method: 'DELETE' });
                 const data = await response.json();
                 if (data.success === true) {
                     updateBrowserList();
@@ -997,7 +1009,7 @@
             if (!confirm('Close all browsers?')) return;
             try {
                 addLog('Closing all browsers...', 'warning');
-                const response = await fetch('/api/v1/browser/browsers', {
+                const response = await fetch(url('/api/v1/browser/browsers'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'close_all' })
@@ -1017,7 +1029,7 @@
 
         async function loadProfiles() {
             try {
-                const response = await fetch('/api/v1/profiles/');
+                const response = await fetch(url('/api/v1/profiles/'));
                 const data = await response.json();
 
                 if (data.success === true) {
@@ -1059,7 +1071,7 @@
 
             try {
                 addLog(`Creating profile '${name}'...`, 'info');
-                const response = await fetch('/api/v1/profiles/', {
+                const response = await fetch(url('/api/v1/profiles/'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name })
@@ -1092,7 +1104,15 @@
             }, 2000);
         }
 
+        // Update static links with BASE_PATH
+        function updateStaticLinks() {
+            document.getElementById('link-docs').href = url('/docs/');
+            document.getElementById('link-swagger').href = url('/api/v1/swagger.json');
+            document.getElementById('link-vnc').href = url('/vnc/');
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            updateStaticLinks();
             addLog('Dashboard ready', 'info');
             startUpdates();
         });

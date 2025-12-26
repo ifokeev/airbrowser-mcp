@@ -12,6 +12,7 @@ This document describes all environment variables used by Airbrowser.
 | `COMMAND_TIMEOUT_DEFAULT` | 20 | Default timeout for browser commands (seconds) |
 | `NAVIGATE_TIMEOUT_DEFAULT` | 60 | Default timeout for page navigation (seconds) |
 | `API_BASE_URL` | http://localhost:18080 | Base URL for the API server |
+| `BASE_PATH` | (empty) | URL path prefix for reverse proxy subpath deployment |
 
 ## Core Settings
 
@@ -119,6 +120,17 @@ SCREEN_WIDTH=1366 SCREEN_HEIGHT=768 docker compose up
 
 ```bash
 API_BASE_URL=https://api.example.com docker compose up
+```
+
+### `BASE_PATH`
+- **Default:** (empty string)
+- **Description:** URL path prefix for deploying behind a reverse proxy with a subpath.
+- **Usage:** Set when hosting at a subpath like `/airbrowser` instead of root.
+- **Affects:** Dashboard API calls and static links.
+
+```bash
+# Deploy at https://example.com/airbrowser/
+BASE_PATH=/airbrowser docker compose up
 ```
 
 ## Network Ports
