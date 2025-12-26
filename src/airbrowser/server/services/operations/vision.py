@@ -56,6 +56,9 @@ class VisionOperations:
                         }
                         if coord_data.get("x") is not None
                         else None,
+                        # Debug info for coordinate transformation
+                        "image_size": coord_data.get("image_size"),
+                        "transform_info": coord_data.get("transform_info"),
                     },
                     message=result.message,
                 )
