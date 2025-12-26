@@ -128,7 +128,7 @@ if [[ -n "$SCREEN_WIDTH" && -n "$SCREEN_HEIGHT" ]]; then
   export SCREEN_RESOLUTION="${SCREEN_WIDTH}x${SCREEN_HEIGHT}x${SCREEN_DEPTH}"
 fi
 
-export SCREEN_RESOLUTION=${SCREEN_RESOLUTION:-1920x1080x24}
+export SCREEN_RESOLUTION=${SCREEN_RESOLUTION:-1600x900x24}
 export SCREEN_DPI=${SCREEN_DPI:-96}
 echo "🚀 Starting Xvfb on display $DISPLAY with resolution $SCREEN_RESOLUTION (DPI: $SCREEN_DPI)..."
 Xvfb $DISPLAY -screen 0 $SCREEN_RESOLUTION -dpi $SCREEN_DPI -ac +extension GLX +render -noreset -nolisten tcp &

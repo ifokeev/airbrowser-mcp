@@ -22,7 +22,7 @@ def _get_default_window_size():
         pass
 
     # Fallback to SCREEN_RESOLUTION (WIDTHxHEIGHTxDEPTH)
-    resolution = os.environ.get("SCREEN_RESOLUTION", "1920x1080x24")
+    resolution = os.environ.get("SCREEN_RESOLUTION", "1600x900x24")
     try:
         parts = resolution.split("x")
         if len(parts) >= 2:
@@ -32,7 +32,7 @@ def _get_default_window_size():
             return (width, adjusted_height)
     except (ValueError, IndexError):
         pass
-    return (1920, 980)
+    return (1600, 800)
 
 
 class BrowserStatus(Enum):
