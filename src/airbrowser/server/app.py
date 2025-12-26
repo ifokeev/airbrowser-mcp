@@ -28,13 +28,20 @@ def create_app():
     app = Flask(__name__, static_folder="static")
     CORS(app)
 
+    # Set APPLICATION_ROOT for subpath routing (used by url_for)
+    base_path = os.environ.get("BASE_PATH", "")
+    if base_path:
+        app.config["APPLICATION_ROOT"] = base_path
+
     # Initialize API with Swagger documentation
+    # Disable built-in docs when using BASE_PATH (we serve custom docs)
+    doc_path = False if base_path else "/docs/"
     api = Api(
         app,
         version="1.0",
         title="Airbrowser API",
         description="Undetectable Chrome-in-Docker for developers and agents (REST + MCP)",
-        doc="/docs/",
+        doc=doc_path,
         prefix="/api/v1",
     )
 
@@ -94,6 +101,42 @@ def create_app():
         inject_script = f'<script>window.BASE_PATH = "{base_path}";</script>\n</head>'
         html = html.replace("</head>", inject_script)
         return html
+
+    # Custom Swagger UI docs route with BASE_PATH support
+    @app.route("/docs/")
+    @app.route("/docs")
+    def custom_docs():
+        """Serve Swagger UI with BASE_PATH for subpath routing."""
+        base_path = os.environ.get("BASE_PATH", "")
+        swagger_ui_html = f"""<!DOCTYPE html>
+<html>
+<head>
+    <title>Airbrowser API - Swagger UI</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="{base_path}/swaggerui/swagger-ui.css">
+    <link rel="icon" type="image/png" href="{base_path}/swaggerui/favicon-32x32.png" sizes="32x32"/>
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <script src="{base_path}/swaggerui/swagger-ui-bundle.js"></script>
+    <script src="{base_path}/swaggerui/swagger-ui-standalone-preset.js"></script>
+    <script>
+        window.onload = function() {{
+            SwaggerUIBundle({{
+                url: "{base_path}/api/v1/swagger.json",
+                dom_id: '#swagger-ui',
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                layout: "StandaloneLayout"
+            }});
+        }};
+    </script>
+</body>
+</html>"""
+        return swagger_ui_html
 
     # Screenshots route - serve screenshots publicly
     SCREENSHOT_DIR = "/tmp/screenshots"

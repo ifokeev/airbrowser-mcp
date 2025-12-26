@@ -780,6 +780,20 @@
             return BASE_PATH + path;
         }
 
+        // Helper to build VNC URL with correct WebSocket path
+        function getVncUrl() {
+            const params = new URLSearchParams({
+                autoconnect: 'true',
+                resize: 'scale',
+                reconnect: 'true',
+                reconnect_delay: '2'
+            });
+            if (BASE_PATH) {
+                params.set('path', BASE_PATH + '/websockify');
+            }
+            return url('/vnc/vnc.html') + '?' + params.toString();
+        }
+
         // Theme toggle
         function toggleTheme() {
             const html = document.documentElement;
@@ -895,7 +909,7 @@
                             ${browser.current_url ? `<div class="browser-url">${browser.current_url}</div>` : ''}
                             <div class="browser-actions">
                                 <button class="btn btn-ghost btn-sm" onclick="navigateBrowser('${browser.id}')">Navigate</button>
-                                <a href="${url('/vnc/')}" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration: none;">VNC</a>
+                                <a href="${getVncUrl()}" target="_blank" class="btn btn-ghost btn-sm" style="text-decoration: none;">VNC</a>
                                 <button class="btn btn-danger btn-sm" onclick="closeBrowser('${browser.id}')">Close</button>
                             </div>
                         `;
@@ -1108,7 +1122,18 @@
         function updateStaticLinks() {
             document.getElementById('link-docs').href = url('/docs/');
             document.getElementById('link-swagger').href = url('/api/v1/swagger.json');
-            document.getElementById('link-vnc').href = url('/vnc/');
+            // VNC needs the websocket path as a query parameter
+            const vncParams = new URLSearchParams({
+                autoconnect: 'true',
+                resize: 'scale',
+                reconnect: 'true',
+                reconnect_delay: '2'
+            });
+            // Only add path param if we have a BASE_PATH (for subpath routing)
+            if (BASE_PATH) {
+                vncParams.set('path', BASE_PATH + '/websockify');
+            }
+            document.getElementById('link-vnc').href = url('/vnc/vnc.html') + '?' + vncParams.toString();
         }
 
         document.addEventListener('DOMContentLoaded', () => {
