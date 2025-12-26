@@ -639,10 +639,17 @@ function escapeHtml(text) {
 }
 
 function formatDescription(desc) {
+    // First escape HTML to prevent XSS and broken rendering
+    const escaped = desc
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    // Then convert markdown-style formatting
     // Convert **text** to <strong>text</strong>
     // Convert `code` to <code>code</code>
     // Convert newlines to <br>
-    return desc
+    return escaped
         .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
         .replace(/`([^`]+)`/g, '<code>$1</code>')
         .replace(/\n/g, '<br>');
