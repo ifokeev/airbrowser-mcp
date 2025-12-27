@@ -18,7 +18,7 @@ import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
 
@@ -27,7 +27,8 @@ class BrowsersRequest(BaseModel):
     BrowsersRequest
     """ # noqa: E501
     action: StrictStr = Field(description="action")
-    __properties: ClassVar[List[str]] = ["action"]
+    browser_id: Optional[StrictStr] = Field(default=None, description="browser_id")
+    __properties: ClassVar[List[str]] = ["action", "browser_id"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -80,7 +81,8 @@ class BrowsersRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "action": obj.get("action")
+            "action": obj.get("action"),
+            "browser_id": obj.get("browser_id")
         })
         return _obj
 

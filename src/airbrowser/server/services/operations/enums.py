@@ -53,6 +53,9 @@ class BrowsersAction(str, Enum):
     LIST = "list"
     INFO = "info"
     CLOSE_ALL = "close_all"
+    KILL = "kill"  # Save state before terminating (can be restored)
+    KILL_ALL = "kill_all"  # Kill all browsers (save state, can be restored)
+    RESTORE = "restore"  # Restore killed browsers from saved state
 
 
 class LogAction(str, Enum):

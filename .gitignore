@@ -93,6 +93,7 @@ ENV/
 env.bak/
 venv.bak/
 screenshots/
+state/
 SeleniumBase/
 undetected-testing/
 .venv/

@@ -1,5 +1,6 @@
 """Browser lifecycle operations (create, close, list)."""
 
+import logging
 from typing import Any
 
 from ...models import BrowserConfig, get_window_size_from_env
@@ -7,6 +8,8 @@ from ..browser_pool import BrowserPoolAdapter
 from .enums import BrowsersAction
 from .response import error as _error
 from .response import success as _success
+
+logger = logging.getLogger(__name__)
 
 
 class LifecycleOperations:
@@ -114,8 +117,53 @@ class LifecycleOperations:
         except Exception as e:
             return _error(f"Failed to close all browsers: {str(e)}")
 
+    def kill_browser(self, browser_id: str) -> dict[str, Any]:
+        """Kill a browser - saves state before terminating (can be restored later)."""
+        try:
+            result = self.browser_pool.kill_browser(browser_id)
+            if result.get("status") == "success":
+                return _success(
+                    message=result.get("message", f"Browser {browser_id} killed"),
+                    data=result.get("data", {}),
+                )
+            else:
+                return _error(result.get("message", f"Failed to kill browser {browser_id}"))
+
+        except Exception as e:
+            return _error(f"Failed to kill browser: {str(e)}")
+
+    def kill_all_browsers(self) -> dict[str, Any]:
+        """Kill all browsers - saves state before terminating (can be restored later)."""
+        try:
+            result = self.browser_pool.kill_all_browsers()
+            if result.get("status") == "success":
+                return _success(
+                    message=result.get("message", "Killed all browsers"),
+                    data=result.get("data", {}),
+                )
+            else:
+                return _error(result.get("message", "Failed to kill all browsers"))
+
+        except Exception as e:
+            return _error(f"Failed to kill all browsers: {str(e)}")
+
+    def restore_browsers(self) -> dict[str, Any]:
+        """Restore killed browsers from saved state."""
+        try:
+            result = self.browser_pool.restore_browsers()
+            if result.get("status") == "success":
+                return _success(
+                    message=result.get("message", "Restored browsers"),
+                    data=result.get("data", {}),
+                )
+            else:
+                return _error(result.get("message", "Failed to restore browsers"))
+
+        except Exception as e:
+            return _error(f"Failed to restore browsers: {str(e)}")
+
     def browsers(self, action: BrowsersAction, browser_id: str | None = None) -> dict[str, Any]:
-        """Admin browser operations: list, info, or close_all."""
+        """Admin browser operations: list, info, close_all, kill, kill_all, restore."""
         if action == BrowsersAction.LIST:
             return self.list_active_browsers()
         elif action == BrowsersAction.INFO:
@@ -124,4 +172,12 @@ class LifecycleOperations:
             return self.get_browser_info(browser_id)
         elif action == BrowsersAction.CLOSE_ALL:
             return self.close_all_browsers()
+        elif action == BrowsersAction.KILL:
+            if not browser_id:
+                return _error("browser_id required for kill")
+            return self.kill_browser(browser_id)
+        elif action == BrowsersAction.KILL_ALL:
+            return self.kill_all_browsers()
+        elif action == BrowsersAction.RESTORE:
+            return self.restore_browsers()
         return _error(f"Invalid action: {action}")

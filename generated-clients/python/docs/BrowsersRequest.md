@@ -6,6 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **action** | **str** | action | 
+**browser_id** | **str** | browser_id | [optional] 
 
 ## Example
 

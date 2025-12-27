@@ -89,7 +89,7 @@ RUN mkdir -p /opt \
     && pip install --no-cache-dir websockify
 
 # Create directories and user (stable - cache this)
-RUN mkdir -p /app/{browser-profiles,screenshots,downloads,certs,src} \
+RUN mkdir -p /app/{browser-profiles,screenshots,downloads,certs,src,state} \
     /var/log/supervisor /var/run /opt/vnc \
     /home/browseruser/.fluxbox /home/browseruser/.cache/selenium \
     /tmp/browser-queue /tmp/browser-status /tmp/browser-responses \

@@ -102,12 +102,20 @@ def _get_path_name(method_name: str) -> str:
     return PATH_OVERRIDES.get(method_name, method_name)
 
 
-def _generate_request_schema(api, method_name: str, sig: inspect.Signature, hints: dict):
-    """Generate Flask-RESTX request model from method signature."""
+def _generate_request_schema(api, method_name: str, sig: inspect.Signature, hints: dict, has_browser_id: bool = False):
+    """Generate Flask-RESTX request model from method signature.
+
+    Args:
+        has_browser_id: If True, browser_id comes from URL path and should be skipped.
+                        If False, browser_id should be included in the request body.
+    """
     schema_fields = {}
 
     for param_name, param in sig.parameters.items():
-        if param_name in ("self", "browser_id"):
+        if param_name == "self":
+            continue
+        # Only skip browser_id if it comes from URL path (is the first param)
+        if param_name == "browser_id" and has_browser_id:
             continue
 
         annotation = hints.get(param_name, param.annotation)
@@ -257,7 +265,7 @@ def generate_browser_routes(api, browser_ops, existing_schemas: dict = None) -> 
             path = f"/{path_name}"
 
         # Generate request schema
-        request_schema = _generate_request_schema(api, method_name, sig, hints)
+        request_schema = _generate_request_schema(api, method_name, sig, hints, has_browser_id)
 
         # Create resource class
         resource_class = _create_resource_class(

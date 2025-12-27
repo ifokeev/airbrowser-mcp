@@ -6,6 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **action** | **string** | action | [default to undefined]
+**browser_id** | **string** | browser_id | [optional] [default to undefined]
 
 ## Example
 
@@ -14,6 +15,7 @@ import { BrowsersRequest } from 'airbrowser-client';
 
 const instance: BrowsersRequest = {
     action,
+    browser_id,
 };
 ```
 

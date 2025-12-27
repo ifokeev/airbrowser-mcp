@@ -128,6 +128,21 @@ class BrowserIPCClient:
         response = self.execute_command(browser_id, "close")
         return response.get("status") == "success"
 
+    def kill_browser(self, browser_id: str) -> dict[str, Any]:
+        """Kill a browser - saves state before terminating (can be restored later)."""
+        request = {"type": "kill_browser", "browser_id": browser_id}
+        return self._send_request(request, timeout=30)
+
+    def kill_all(self) -> dict[str, Any]:
+        """Kill all browsers - saves state before terminating (can be restored later)."""
+        request = {"type": "kill_all"}
+        return self._send_request(request, timeout=60)
+
+    def restore(self) -> dict[str, Any]:
+        """Restore killed browsers from saved state."""
+        request = {"type": "restore"}
+        return self._send_request(request, timeout=120)  # Longer timeout for restoring multiple browsers
+
     def get_status(self) -> dict[str, Any]:
         """Get service status"""
         request = {"type": "status"}

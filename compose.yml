@@ -26,6 +26,7 @@ services:
       - browser-profiles:/app/browser-profiles
       - screenshots:/app/screenshots
       - downloads:/app/downloads
+      - session-state:/app/state
     tmpfs:
       - /tmp:noexec,nosuid,size=500m
       - /dev/shm:rw,nosuid,nodev,exec,size=4g
@@ -55,3 +56,4 @@ volumes:
   browser-profiles:
   screenshots:
   downloads:
+  session-state:

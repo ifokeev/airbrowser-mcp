@@ -42,6 +42,10 @@ export interface BrowsersRequest {
      * action
      */
     'action': string;
+    /**
+     * browser_id
+     */
+    'browser_id'?: string;
 }
 export interface ClickRequest {
     /**
@@ -859,7 +863,7 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         Use fx=0.2 for wide elements with icons on the right (like Google search).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
+         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
          * @summary Detect element coordinates using vision
          * @param {string} browserId 
          * @param {DetectCoordinatesRequest} payload 
@@ -2071,7 +2075,7 @@ export const BrowserApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         Use fx=0.2 for wide elements with icons on the right (like Google search).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
+         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
          * @summary Detect element coordinates using vision
          * @param {string} browserId 
          * @param {DetectCoordinatesRequest} payload 
@@ -2537,7 +2541,7 @@ export const BrowserApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.createBrowser(payload, options).then((request) => request(axios, basePath));
         },
         /**
-         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         Use fx=0.2 for wide elements with icons on the right (like Google search).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
+         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
          * @summary Detect element coordinates using vision
          * @param {string} browserId 
          * @param {DetectCoordinatesRequest} payload 
@@ -2923,7 +2927,7 @@ export class BrowserApi extends BaseAPI {
     }
 
     /**
-     * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         Use fx=0.2 for wide elements with icons on the right (like Google search).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
+     * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
      * @summary Detect element coordinates using vision
      * @param {string} browserId 
      * @param {DetectCoordinatesRequest} payload 

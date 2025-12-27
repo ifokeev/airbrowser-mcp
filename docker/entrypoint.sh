@@ -24,6 +24,7 @@ mkdir -p /app/browser-profiles 2>/dev/null || true
 mkdir -p /app/screenshots 2>/dev/null || true
 mkdir -p /app/downloads 2>/dev/null || true
 mkdir -p /app/certs 2>/dev/null || true
+mkdir -p /app/state 2>/dev/null || true
 mkdir -p /tmp/.X11-unix 2>/dev/null || true
 mkdir -p /home/browseruser/.fluxbox 2>/dev/null || true
 mkdir -p /home/browseruser/.local/share/applications 2>/dev/null || true
@@ -33,7 +34,7 @@ chmod 1777 /tmp/.X11-unix 2>/dev/null || true
 chmod 777 /tmp 2>/dev/null || true
 
 # Ensure browseruser owns the app directories
-chown -R browseruser:browseruser /app/browser-profiles /app/screenshots /app/downloads /app/certs 2>/dev/null || true
+chown -R browseruser:browseruser /app/browser-profiles /app/screenshots /app/downloads /app/certs /app/state 2>/dev/null || true
 chown -R browseruser:browseruser /home/browseruser 2>/dev/null || true
 
 # Create mimeapps.list file if it doesn't exist

@@ -362,7 +362,7 @@ No authorization required
 # **detectCoordinates**
 > GenericResponse detectCoordinates(payload)
 
-Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         Use fx=0.2 for wide elements with icons on the right (like Google search).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom)
+Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
 
 ### Example
 

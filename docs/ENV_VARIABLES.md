@@ -13,6 +13,7 @@ This document describes all environment variables used by Airbrowser.
 | `NAVIGATE_TIMEOUT_DEFAULT` | 60 | Default timeout for page navigation (seconds) |
 | `API_BASE_URL` | http://localhost:18080 | Base URL for the API server |
 | `BASE_PATH` | (empty) | URL path prefix for reverse proxy subpath deployment |
+| `ENABLE_SESSION_RESTORE` | true | Restore browsers after container restart |
 
 ## Core Settings
 
@@ -165,6 +166,10 @@ BASE_PATH=/airbrowser docker compose up
 - **Default:** /tmp/screenshots
 - **Description:** Directory for screenshot storage.
 
+### `STATE_DIR`
+- **Default:** /app/state
+- **Description:** Directory for session state storage (used by session restore).
+
 ## Feature Flags
 
 ### `ENABLE_MCP`
@@ -178,6 +183,23 @@ ENABLE_MCP=false docker compose up  # Disable MCP
 ### `DISABLE_NGINX`
 - **Default:** false
 - **Description:** Disable nginx proxy (use direct ports instead).
+
+### `ENABLE_SESSION_RESTORE`
+- **Default:** true
+- **Description:** Enable session restore to preserve browser state across container restarts.
+- **Preserves:** Browser configurations, all open tabs and their URLs, active tab.
+- **Does NOT preserve:** In-memory JavaScript state, WebSocket connections, form data (except via profiles).
+- **Requires:** The `session-state` volume to be mounted.
+
+```bash
+# Disable session restore (fresh start each time)
+ENABLE_SESSION_RESTORE=false docker compose up
+```
+
+**How it works:**
+1. On shutdown (SIGTERM): Saves all browser configs and tab URLs to `/app/state/browsers.json`
+2. On startup: Recreates browsers and navigates tabs to saved URLs
+3. State file is cleared after successful restore
 
 ## noVNC Settings
 
@@ -208,11 +230,12 @@ Each compose file sets appropriate defaults for its use case:
 
 | Variable | compose.yml | compose.local.yml | compose.test.yml |
 |----------|-------------|-------------------|------------------|
-| `MAX_BROWSERS` | 10 | 5 | 10 |
-| `LOG_LEVEL` | INFO | DEBUG | INFO |
-| `COMMAND_TIMEOUT_DEFAULT` | (default) | 90 | 90 |
-| `SCREEN_WIDTH` | (default) | 1366 | 1366 |
-| `SCREEN_HEIGHT` | (default) | 768 | 768 |
+| `MAX_BROWSERS` | 10 | 10 | 10 |
+| `LOG_LEVEL` | INFO | INFO | INFO |
+| `COMMAND_TIMEOUT_DEFAULT` | (default) | (default) | 90 |
+| `SCREEN_WIDTH` | (default) | (default) | 1366 |
+| `SCREEN_HEIGHT` | (default) | (default) | 768 |
+| `ENABLE_SESSION_RESTORE` | true | true | false |
 
 ## Example .env File
 

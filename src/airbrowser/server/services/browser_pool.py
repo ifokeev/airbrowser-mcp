@@ -593,6 +593,48 @@ class BrowserPoolAdapter:
         self.browser_configs.clear()
         self.active_profiles.clear()
 
+    def kill_browser(self, browser_id: str) -> dict[str, Any]:
+        """Kill a browser - saves state before terminating (can be restored later)."""
+        if browser_id not in self.browser_instances:
+            return {"status": "error", "message": f"Browser {browser_id} not found"}
+
+        # Release profile lock
+        for profile_name, bid in list(self.active_profiles.items()):
+            if bid == browser_id:
+                del self.active_profiles[profile_name]
+                logger.info(f"Released profile lock for '{profile_name}'")
+                break
+
+        result = self.client.kill_browser(browser_id)
+        if result.get("status") == "success":
+            del self.browser_instances[browser_id]
+            del self.browser_configs[browser_id]
+        return result
+
+    def kill_all_browsers(self) -> dict[str, Any]:
+        """Kill all browsers - saves state before terminating (can be restored later)."""
+        result = self.client.kill_all()
+        if result.get("status") == "success":
+            self.browser_instances.clear()
+            self.browser_configs.clear()
+            self.active_profiles.clear()
+        return result
+
+    def restore_browsers(self) -> dict[str, Any]:
+        """Restore killed browsers from saved state."""
+        result = self.client.restore()
+        # Refresh browser list after restore
+        if result.get("status") == "success":
+            # Re-fetch browser instances from service
+            service_status = self.client.get_status()
+            browsers = service_status.get("browsers", {})
+            for bid, info in browsers.items():
+                if bid not in self.browser_instances:
+                    config = BrowserConfig()  # Default config
+                    self.browser_instances[bid] = BrowserInstance(bid, config, info.get("status", "ready"))
+                    self.browser_configs[bid] = config
+        return result
+
     def get_status(self) -> dict[str, Any]:
         """Get pool status"""
         service_status = self.client.get_status()

@@ -16,6 +16,8 @@ services:
       # Test resolution (overrides default 1920x1080)
       - SCREEN_WIDTH=1366
       - SCREEN_HEIGHT=768
+      # Disable session restore for tests (fresh start each time)
+      - ENABLE_SESSION_RESTORE=false
     tmpfs:
       - /tmp:noexec,nosuid,size=500m
       - /dev/shm:rw,nosuid,nodev,exec,size=4g

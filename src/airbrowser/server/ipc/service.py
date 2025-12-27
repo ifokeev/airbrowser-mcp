@@ -4,6 +4,7 @@
 import json
 import logging
 import os
+import signal
 import sys
 import threading
 import time
@@ -11,13 +12,22 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-# Add src to path
+# Add src to path (needed for StateManager import)
 sys.path.insert(0, "/app/src")
+
+from airbrowser.server.services.state_manager import StateManager
 
 # Set display before importing SeleniumBase
 os.environ["DISPLAY"] = ":99"
 
-# Import SeleniumBase at module level
+
+def _env_truthy(name: str, default: bool = True) -> bool:
+    """Check if environment variable is truthy."""
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "y", "on"}
+
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
@@ -32,8 +42,9 @@ RESPONSE_DIR = Path("/tmp/browser-responses")
 class BrowserInstance:
     """Manages a single browser instance"""
 
-    def __init__(self, browser_id: str):
+    def __init__(self, browser_id: str, config: dict | None = None):
         self.browser_id = browser_id
+        self.config = config or {}  # Store config for session restore
         self.process = None
         self.launcher_pid = None
         self.session_id = None
@@ -251,6 +262,11 @@ class BrowserService:
         # Clean up old files
         self._cleanup_old_files()
 
+        # Session restore on startup
+        self.session_restore_enabled = _env_truthy("ENABLE_SESSION_RESTORE", default=True)
+        if self.session_restore_enabled:
+            self._restore_state()
+
         logger.info(f"Browser service started with max_browsers={max_browsers}")
 
     def _cleanup_old_files(self):
@@ -263,6 +279,157 @@ class BrowserService:
                         file_path.unlink()
                 except:
                     pass
+
+    def _restore_state(self):
+        """Restore browsers from saved state on startup."""
+        browsers_state = StateManager.load_state()
+        if not browsers_state:
+            return
+
+        logger.info(f"Restoring {len(browsers_state)} browser(s) from saved state...")
+        restored_count = 0
+
+        for browser_state in browsers_state:
+            try:
+                browser_id = browser_state.get("browser_id", str(uuid.uuid4()))
+                config = browser_state.get("config", {})
+                tabs = browser_state.get("tabs", [])
+
+                # Check if we're at max capacity
+                if len(self.browsers) >= self.max_browsers:
+                    logger.warning(f"Max browsers reached, skipping restore of {browser_id}")
+                    break
+
+                # Create browser instance
+                browser = BrowserInstance(browser_id, config)
+                result = browser.init_browser(config)
+
+                if result["status"] != "success":
+                    logger.warning(f"Failed to restore browser {browser_id}: {result.get('message')}")
+                    continue
+
+                self.browsers[browser_id] = browser
+
+                # Restore tabs
+                if tabs:
+                    self._restore_tabs(browser, tabs)
+
+                restored_count += 1
+                logger.info(f"Restored browser {browser_id} with {len(tabs)} tab(s)")
+
+            except Exception as e:
+                logger.error(f"Error restoring browser: {e}")
+                continue
+
+        # Clear state file after restore attempt
+        StateManager.clear_state()
+        logger.info(f"Session restore complete: {restored_count}/{len(browsers_state)} browser(s) restored")
+
+    def _restore_tabs(self, browser: "BrowserInstance", tabs: list[dict]):
+        """Restore tabs for a browser."""
+        if not tabs:
+            return
+
+        active_tab_index = 0
+
+        for i, tab in enumerate(tabs):
+            url = tab.get("url", "")
+            is_active = tab.get("active", False)
+
+            if is_active:
+                active_tab_index = i
+
+            # Skip non-restorable URLs
+            if not StateManager.is_restorable_url(url):
+                continue
+
+            try:
+                if i == 0:
+                    # First tab - navigate existing tab
+                    browser.execute_command({"type": "navigate", "url": url}, timeout=30)
+                else:
+                    # Additional tabs - open new tab with URL
+                    browser.execute_command({"type": "new_tab", "url": url}, timeout=30)
+            except Exception as e:
+                logger.warning(f"Failed to restore tab {i} with URL {url}: {e}")
+
+        # Switch to the previously active tab
+        if active_tab_index > 0:
+            try:
+                browser.execute_command({"type": "switch_tab", "index": active_tab_index}, timeout=5)
+            except Exception as e:
+                logger.warning(f"Failed to switch to active tab {active_tab_index}: {e}")
+
+    def _update_browser_state(self, browser_id: str):
+        """Update saved state for a single browser (called after navigate, new tab, etc.)."""
+        if not self.session_restore_enabled:
+            return
+
+        state = self._get_browser_state_for_save(browser_id)
+        if not state:
+            return
+
+        # Load existing state and update entry for this browser
+        existing = StateManager.load_state() or []
+        existing = [b for b in existing if b.get("browser_id") != browser_id]
+        existing.append(state)
+        StateManager.save_state(existing)
+        logger.debug(f"Updated saved state for browser {browser_id}")
+
+    def _save_state(self):
+        """Save browser state before shutdown."""
+        if not self.browsers:
+            logger.info("No browsers to save")
+            return
+
+        logger.info(f"Saving state for {len(self.browsers)} browser(s)...")
+        browsers_state = []
+
+        for browser_id, browser in self.browsers.items():
+            if browser.status != "ready":
+                logger.debug(f"Skipping browser {browser_id} with status {browser.status}")
+                continue
+
+            try:
+                # Get all tabs (use longer timeout during shutdown)
+                result = browser.execute_command({"type": "list_tabs"}, timeout=10)
+                tabs = []
+
+                if result.get("status") == "success":
+                    # Response may have tabs directly or in data
+                    tab_list = result.get("tabs", [])
+                    if not tab_list and result.get("data"):
+                        tab_list = result["data"].get("tabs", [])
+
+                    for tab in tab_list:
+                        url = tab.get("url", "")
+                        if StateManager.is_restorable_url(url):
+                            tabs.append(
+                                {
+                                    "url": url,
+                                    "active": tab.get("is_active", False),
+                                }
+                            )
+                    logger.info(f"Browser {browser_id}: found {len(tabs)} restorable tab(s)")
+                else:
+                    logger.warning(f"Failed to get tabs for {browser_id}: {result.get('message', 'unknown error')}")
+
+                browser_state = {
+                    "browser_id": browser_id,
+                    "config": browser.config,
+                    "tabs": tabs,
+                    "created_at": browser.created_at,
+                }
+                browsers_state.append(browser_state)
+
+            except Exception as e:
+                logger.warning(f"Failed to get state for browser {browser_id}: {e}")
+                continue
+
+        if browsers_state:
+            StateManager.save_state(browsers_state)
+        else:
+            logger.info("No browser state to save")
 
     def _write_response(self, request_id: str, response: dict[str, Any]):
         """Write response to file"""
@@ -296,8 +463,8 @@ class BrowserService:
                 )
                 return
 
-        # Create browser instance
-        browser = BrowserInstance(browser_id)
+        # Create browser instance (store config for session restore)
+        browser = BrowserInstance(browser_id, config)
         result = browser.init_browser(config)
 
         if result["status"] == "success":
@@ -349,15 +516,24 @@ class BrowserService:
         default_timeout = self.navigate_timeout_default if command.get("type") == "navigate" else non_nav_default
         timeout = command.pop("timeout", default_timeout)
 
+        # Commands that should trigger state save (URL/tab changes)
+        STATE_SAVE_COMMANDS = {"navigate", "new_tab", "close_tab"}
+
         # Worker to execute the command and write the response without blocking main loop
         def worker(req_id: str, bid: str, cmd: dict[str, Any], tout: int):
             try:
                 res = browser.execute_command(cmd, timeout=tout)
-                if cmd.get("type") == "close" and res.get("status") == "success":
+                cmd_type = cmd.get("type")
+
+                if cmd_type == "close" and res.get("status") == "success":
                     try:
                         del self.browsers[bid]
                     except Exception:
                         pass
+                elif cmd_type in STATE_SAVE_COMMANDS and res.get("status") == "success":
+                    # Save state after URL/tab changes
+                    self._update_browser_state(bid)
+
                 self._write_response(req_id, res)
             except Exception as e:
                 self._write_response(req_id, {"status": "error", "message": str(e)})
@@ -387,6 +563,195 @@ class BrowserService:
 
         self._write_response(request_id, status)
 
+    def _get_browser_state_for_save(self, browser_id: str) -> dict[str, Any] | None:
+        """Get browser state for saving (used by kill operations)."""
+        browser = self.browsers.get(browser_id)
+        if not browser or browser.status != "ready":
+            return None
+
+        try:
+            result = browser.execute_command({"type": "list_tabs"}, timeout=10)
+            tabs = []
+
+            if result.get("status") == "success":
+                tab_list = result.get("tabs", [])
+                if not tab_list and result.get("data"):
+                    tab_list = result["data"].get("tabs", [])
+
+                for tab in tab_list:
+                    url = tab.get("url", "")
+                    if StateManager.is_restorable_url(url):
+                        tabs.append(
+                            {
+                                "url": url,
+                                "active": tab.get("is_active", False),
+                            }
+                        )
+
+            return {
+                "browser_id": browser_id,
+                "config": browser.config,
+                "tabs": tabs,
+                "created_at": browser.created_at,
+            }
+        except Exception as e:
+            logger.warning(f"Failed to get state for browser {browser_id}: {e}")
+            return None
+
+    def _process_kill_browser(self, request: dict[str, Any]):
+        """Process kill browser request - saves state before closing."""
+        request_id = request["request_id"]
+        browser_id = request.get("browser_id")
+
+        if not browser_id or browser_id not in self.browsers:
+            self._write_response(
+                request_id,
+                {
+                    "status": "error",
+                    "message": f"Browser {browser_id} not found",
+                },
+            )
+            return
+
+        # Get browser state before killing
+        state = self._get_browser_state_for_save(browser_id)
+        tabs_saved = 0
+
+        if state:
+            # Load existing saved state and append
+            existing = StateManager.load_state() or []
+            existing = [b for b in existing if b.get("browser_id") != browser_id]
+            existing.append(state)
+            StateManager.save_state(existing)
+            tabs_saved = len(state.get("tabs", []))
+
+        # Close the browser
+        browser = self.browsers.pop(browser_id)
+        browser.close()
+
+        self._write_response(
+            request_id,
+            {
+                "status": "success",
+                "message": f"Browser {browser_id} killed (state saved for restore)",
+                "data": {"browser_id": browser_id, "tabs_saved": tabs_saved},
+            },
+        )
+
+    def _kill_all_impl(self) -> int:
+        """Kill all browsers - saves state and closes them. Returns count of killed browsers."""
+        if not self.browsers:
+            return 0
+
+        # Collect state for all browsers
+        states = []
+        for browser_id in list(self.browsers.keys()):
+            state = self._get_browser_state_for_save(browser_id)
+            if state:
+                states.append(state)
+
+        # Save all states
+        if states:
+            StateManager.save_state(states)
+
+        # Close all browsers
+        killed = len(self.browsers)
+        for browser in self.browsers.values():
+            browser.close()
+        self.browsers.clear()
+
+        return killed
+
+    def _process_kill_all(self, request: dict[str, Any]):
+        """Process kill all browsers request - saves state before closing."""
+        request_id = request["request_id"]
+
+        killed = self._kill_all_impl()
+
+        self._write_response(
+            request_id,
+            {
+                "status": "success",
+                "message": f"Killed {killed} browser(s) (state saved for restore)" if killed else "No browsers to kill",
+                "data": {"killed": killed},
+            },
+        )
+
+    def _process_restore(self, request: dict[str, Any]):
+        """Process restore browsers request - restores from saved state."""
+        request_id = request["request_id"]
+
+        states = StateManager.load_state()
+        if not states:
+            self._write_response(
+                request_id,
+                {
+                    "status": "success",
+                    "message": "No browsers to restore",
+                    "data": {"restored": 0},
+                },
+            )
+            return
+
+        restored = []
+        failed = []
+
+        for state in states:
+            try:
+                old_id = state.get("browser_id", "unknown")
+                config = state.get("config", {})
+                tabs = state.get("tabs", [])
+
+                # Check if we're at max capacity
+                if len(self.browsers) >= self.max_browsers:
+                    logger.warning(f"Max browsers reached, skipping restore of {old_id}")
+                    failed.append(old_id)
+                    continue
+
+                # Create new browser
+                browser_id = str(uuid.uuid4())
+                browser = BrowserInstance(browser_id, config)
+                result = browser.init_browser(config)
+
+                if result["status"] != "success":
+                    logger.warning(f"Failed to restore browser {old_id}: {result.get('message')}")
+                    failed.append(old_id)
+                    continue
+
+                self.browsers[browser_id] = browser
+
+                # Restore tabs
+                if tabs:
+                    self._restore_tabs(browser, tabs)
+
+                restored.append(
+                    {
+                        "old_id": old_id,
+                        "new_id": browser_id,
+                        "tabs": len(tabs),
+                    }
+                )
+
+            except Exception as e:
+                logger.error(f"Error restoring browser: {e}")
+                failed.append(state.get("browser_id", "unknown"))
+
+        # Clear state file after restore
+        StateManager.clear_state()
+
+        self._write_response(
+            request_id,
+            {
+                "status": "success",
+                "message": f"Restored {len(restored)} browser(s)",
+                "data": {
+                    "restored": len(restored),
+                    "failed": len(failed),
+                    "browsers": restored,
+                },
+            },
+        )
+
     def process_request_file(self, request_file: Path):
         """Process a single request file"""
         try:
@@ -403,6 +768,12 @@ class BrowserService:
                 self._process_browser_command(request)
             elif request_type == "status":
                 self._process_status_request(request)
+            elif request_type == "kill_browser":
+                self._process_kill_browser(request)
+            elif request_type == "kill_all":
+                self._process_kill_all(request)
+            elif request_type == "restore":
+                self._process_restore(request)
             else:
                 logger.warning(f"Unknown request type: {request_type}")
 
@@ -419,6 +790,15 @@ class BrowserService:
     def run(self):
         """Main service loop"""
         logger.info("Browser service running, monitoring queue directory...")
+
+        # Register signal handlers for graceful shutdown
+        def signal_handler(signum, frame):
+            sig_name = signal.Signals(signum).name
+            logger.info(f"Received {sig_name}, shutting down gracefully...")
+            self.running = False
+
+        signal.signal(signal.SIGTERM, signal_handler)
+        signal.signal(signal.SIGINT, signal_handler)
 
         while self.running:
             try:
@@ -442,11 +822,19 @@ class BrowserService:
         self.cleanup()
 
     def cleanup(self):
-        """Clean up all browsers"""
+        """Clean up all browsers, saving state first if enabled."""
         logger.info("Cleaning up browsers...")
-        for browser in self.browsers.values():
-            browser.close()
-        self.browsers.clear()
+
+        if self.session_restore_enabled:
+            # Use kill_all to save state and close browsers
+            killed = self._kill_all_impl()
+            logger.info(f"Killed {killed} browser(s) with state saved")
+        else:
+            # Just close without saving state
+            for browser in self.browsers.values():
+                browser.close()
+            self.browsers.clear()
+
         logger.info("Browser service stopped")
 
 

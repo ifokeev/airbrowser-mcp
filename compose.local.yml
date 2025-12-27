@@ -30,6 +30,7 @@ services:
       - ./src:/app/src            # Hot reload - code changes restart services
       - ./docker:/app/docker      # Supervisord configs
       - ./screenshots:/app/screenshots
+      - ./state:/app/state        # Session restore state
       - browser-profiles:/app/browser-profiles
       - downloads:/app/downloads
     tmpfs:
