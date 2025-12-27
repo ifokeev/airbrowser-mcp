@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/ifokeev/airbrowser-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/ifokeev/airbrowser-mcp/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/License-Fair%20Source-blue.svg)](LICENSE)
+[![Discord](https://img.shields.io/badge/Discord-Join%20us-5865F2?logo=discord&logoColor=white)](https://discord.gg/dP9PbTPHcN)
 
 **AI Remote Browser** — Undetectable Chrome runtime for AI agents. REST API + MCP server + VNC debugging.
 
