@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.6.0...v1.7.0) (2025-12-27)
+
+
+### Features
+
+* **session:** add kill/restore browser state functionality ([c2c2156](https://github.com/ifokeev/airbrowser-mcp/commit/c2c215677ce0e33b5ee3f1a684d36b2a68fde2ff))
+
 ## [1.6.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.5.2...v1.6.0) (2025-12-26)
 
 
