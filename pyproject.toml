@@ -1,6 +1,6 @@
 [project]
 name = "airbrowser-mcp"
-version = "1.6.0"
+version = "1.7.0"
 description = "AI Remote Browser - Undetectable Chrome runtime for AI agents with REST API and MCP"
 requires-python = ">=3.10"
 
