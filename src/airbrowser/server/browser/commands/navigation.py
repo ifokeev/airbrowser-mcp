@@ -3,7 +3,23 @@
 import logging
 import time
 
+from ..utils import drain_driver_logs
+from .debug import PERFORMANCE_LOG_BUFFER
+
 logger = logging.getLogger(__name__)
+
+
+def _capture_performance_logs(driver):
+    """Capture performance logs into buffer after navigation/actions."""
+    try:
+        logs = drain_driver_logs(driver, "performance")
+        if isinstance(logs, list) and logs:
+            PERFORMANCE_LOG_BUFFER.extend(logs)
+            logger.info(f"Captured {len(logs)} performance log entries (buffer now has {len(PERFORMANCE_LOG_BUFFER)})")
+        else:
+            logger.debug("No performance logs available to capture")
+    except Exception as e:
+        logger.warning(f"Failed to capture performance logs: {e}")
 
 
 def handle_navigate(driver, command: dict) -> dict:
@@ -15,6 +31,7 @@ def handle_navigate(driver, command: dict) -> dict:
     try:
         driver.uc_open(url)
         time.sleep(0.6)
+        _capture_performance_logs(driver)
         return {
             "status": "success",
             "current_url": driver.current_url,
@@ -27,6 +44,7 @@ def handle_navigate(driver, command: dict) -> dict:
             time.sleep(0.8)
             driver.uc_open(url)
             time.sleep(1.0)
+            _capture_performance_logs(driver)
             return {
                 "status": "success",
                 "current_url": driver.current_url,
@@ -99,16 +117,19 @@ def handle_get_url(driver, command: dict) -> dict:
 def handle_go_back(driver, command: dict) -> dict:
     """Navigate back in history."""
     driver.back()
+    _capture_performance_logs(driver)
     return {"status": "success", "current_url": driver.current_url}
 
 
 def handle_go_forward(driver, command: dict) -> dict:
     """Navigate forward in history."""
     driver.forward()
+    _capture_performance_logs(driver)
     return {"status": "success", "current_url": driver.current_url}
 
 
 def handle_refresh(driver, command: dict) -> dict:
     """Refresh the current page."""
     driver.refresh()
+    _capture_performance_logs(driver)
     return {"status": "success", "current_url": driver.current_url}

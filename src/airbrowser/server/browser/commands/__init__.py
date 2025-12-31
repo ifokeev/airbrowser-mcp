@@ -73,6 +73,11 @@ COMMAND_HANDLERS = {
     "get_performance_logs": debug.handle_get_performance_logs,
     "clear_performance_logs": debug.handle_clear_performance_logs,
     "get_cdp_endpoint": debug.handle_get_cdp_endpoint,
+    # CDP Network logging
+    "enable_network_logging": debug.handle_enable_network_logging,
+    "disable_network_logging": debug.handle_disable_network_logging,
+    "get_network_logs": debug.handle_get_network_logs,
+    "clear_network_logs": debug.handle_clear_network_logs,
     # Vision
     "detect_coordinates": vision.handle_detect_coordinates,
     "what_is_visible": vision.handle_what_is_visible,

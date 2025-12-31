@@ -1,6 +1,5 @@
 """Debug operations (console logs, network requests)."""
 
-import json
 from typing import Any
 
 from ...models import BrowserAction
@@ -49,56 +48,58 @@ class DebugOperations:
         except Exception as e:
             return _error(f"clear_console_logs failed: {str(e)}")
 
-    def get_network_logs(self, browser_id: str, limit: int = 500) -> dict[str, Any]:
-        """
-        List recent network-related events from Chrome performance logs (best-effort).
-        Returned items are parsed CDP events when available.
+    def enable_network_logging(self, browser_id: str) -> dict[str, Any]:
+        """Enable CDP Network logging to capture network events.
+
+        Must be called before navigating to capture network traffic.
+        Events are buffered and can be retrieved with get action.
         """
         try:
-            action = BrowserAction(action="get_performance_logs", options={"limit": limit})
+            action = BrowserAction(action="enable_network_logging")
             result = self.browser_pool.execute_action(browser_id, action)
 
-            raw_logs = None
-            events = []
+            if result.success:
+                return _success(data=result.data, message=result.message or "Network logging enabled")
+            return _error(result.message)
 
-            if result.success and isinstance(result.data, dict):
-                raw_logs = result.data.get("logs") or []
-                for entry in raw_logs:
-                    if not isinstance(entry, dict):
-                        continue
-                    message_text = entry.get("message")
-                    if not message_text or not isinstance(message_text, str):
-                        continue
-                    try:
-                        parsed = json.loads(message_text)
-                    except Exception:
-                        continue
-                    inner = parsed.get("message") if isinstance(parsed, dict) else None
-                    if not isinstance(inner, dict):
-                        continue
-                    method = inner.get("method")
-                    if isinstance(method, str) and method.startswith("Network."):
-                        events.append(inner)
+        except Exception as e:
+            return _error(f"enable_network_logging failed: {str(e)}")
+
+    def disable_network_logging(self, browser_id: str) -> dict[str, Any]:
+        """Disable CDP Network logging."""
+        try:
+            action = BrowserAction(action="disable_network_logging")
+            result = self.browser_pool.execute_action(browser_id, action)
+
+            if result.success:
+                return _success(data=result.data, message=result.message or "Network logging disabled")
+            return _error(result.message)
+
+        except Exception as e:
+            return _error(f"disable_network_logging failed: {str(e)}")
+
+    def get_network_logs(self, browser_id: str, limit: int = 500) -> dict[str, Any]:
+        """Get buffered CDP Network events.
+
+        Network logging must be enabled first with the enable action.
+        Returns captured Network.* CDP events.
+        """
+        try:
+            action = BrowserAction(action="get_network_logs", options={"limit": limit})
+            result = self.browser_pool.execute_action(browser_id, action)
 
             if not result.success:
                 return _error(result.message)
 
-            return _success(
-                data={
-                    "events": events,
-                    "raw_logs": raw_logs,
-                    **(result.data or {}),
-                },
-                message=result.message,
-            )
+            return _success(data=result.data, message="Network logs retrieved")
 
         except Exception as e:
             return _error(f"get_network_logs failed: {str(e)}")
 
     def clear_network_logs(self, browser_id: str) -> dict[str, Any]:
-        """Clear buffered performance/network logs (best-effort)."""
+        """Clear buffered CDP Network events."""
         try:
-            action = BrowserAction(action="clear_performance_logs")
+            action = BrowserAction(action="clear_network_logs")
             result = self.browser_pool.execute_action(browser_id, action)
 
             if result.success:
@@ -130,13 +131,17 @@ class DebugOperations:
 
         Args:
             browser_id: The browser instance ID
-            action: LogAction enum (GET or CLEAR)
+            action: LogAction enum (GET, CLEAR, ENABLE, or DISABLE)
             limit: Maximum logs to return (for GET action)
         """
         if action == LogAction.GET:
             return self.get_network_logs(browser_id, limit)
         elif action == LogAction.CLEAR:
             return self.clear_network_logs(browser_id)
+        elif action == LogAction.ENABLE:
+            return self.enable_network_logging(browser_id)
+        elif action == LogAction.DISABLE:
+            return self.disable_network_logging(browser_id)
         else:
             return _error(f"Invalid action: {action}")
 

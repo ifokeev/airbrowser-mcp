@@ -63,6 +63,8 @@ class LogAction(str, Enum):
 
     GET = "get"
     CLEAR = "clear"
+    ENABLE = "enable"
+    DISABLE = "disable"
 
 
 class TabAction(str, Enum):

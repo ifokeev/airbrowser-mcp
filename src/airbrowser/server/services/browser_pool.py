@@ -271,6 +271,37 @@ class BrowserPoolAdapter:
                     timeout=action.timeout,
                 )
 
+            # CDP Network logging
+            elif action.action == "enable_network_logging":
+                response = self.client.execute_command(
+                    browser_id,
+                    "enable_network_logging",
+                    timeout=action.timeout,
+                )
+
+            elif action.action == "disable_network_logging":
+                response = self.client.execute_command(
+                    browser_id,
+                    "disable_network_logging",
+                    timeout=action.timeout,
+                )
+
+            elif action.action == "get_network_logs":
+                limit = action.options.get("limit", 500) if action.options else 500
+                response = self.client.execute_command(
+                    browser_id,
+                    "get_network_logs",
+                    limit=limit,
+                    timeout=action.timeout,
+                )
+
+            elif action.action == "clear_network_logs":
+                response = self.client.execute_command(
+                    browser_id,
+                    "clear_network_logs",
+                    timeout=action.timeout,
+                )
+
             elif action.action == "click_if_visible":
                 response = self.client.execute_command(browser_id, "click_if_visible", selector=action.selector)
 
