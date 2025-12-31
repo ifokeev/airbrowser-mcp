@@ -619,17 +619,18 @@ class BrowserPoolAdapter:
             browser_list.append(instance.to_info())
         return browser_list
 
-    def close_all_browsers(self):
-        """Close all browsers"""
-        # Close each browser individually via IPC
-        for browser_id in list(self.browser_instances.keys()):
-            try:
-                self.client.close_browser(browser_id)
-            except:
-                pass
+    def close_all_browsers(self) -> dict[str, Any]:
+        """Close all browsers gracefully and clear saved state.
+
+        Unlike kill_all_browsers, this clears the state so browsers
+        won't be restored on service restart.
+        """
+        result = self.client.close_all()
+        # Clear local tracking regardless of IPC result
         self.browser_instances.clear()
         self.browser_configs.clear()
         self.active_profiles.clear()
+        return result
 
     def kill_browser(self, browser_id: str) -> dict[str, Any]:
         """Kill a browser - saves state before terminating (can be restored later)."""

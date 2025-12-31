@@ -677,6 +677,31 @@ class BrowserService:
             },
         )
 
+    def _process_close_all(self, request: dict[str, Any]):
+        """Process close all browsers request - closes gracefully and clears state."""
+        request_id = request["request_id"]
+
+        # Close all browsers without saving state
+        closed = len(self.browsers)
+        for browser in self.browsers.values():
+            try:
+                browser.close()
+            except Exception as e:
+                logger.warning(f"Error closing browser: {e}")
+        self.browsers.clear()
+
+        # Clear saved state so browsers don't restore on restart
+        StateManager.save_state([])
+
+        self._write_response(
+            request_id,
+            {
+                "status": "success",
+                "message": f"Closed {closed} browser(s) (state cleared)" if closed else "No browsers to close",
+                "data": {"closed": closed},
+            },
+        )
+
     def _process_restore(self, request: dict[str, Any]):
         """Process restore browsers request - restores from saved state."""
         request_id = request["request_id"]
@@ -772,6 +797,8 @@ class BrowserService:
                 self._process_kill_browser(request)
             elif request_type == "kill_all":
                 self._process_kill_all(request)
+            elif request_type == "close_all":
+                self._process_close_all(request)
             elif request_type == "restore":
                 self._process_restore(request)
             else:

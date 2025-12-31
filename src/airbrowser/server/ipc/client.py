@@ -138,6 +138,11 @@ class BrowserIPCClient:
         request = {"type": "kill_all"}
         return self._send_request(request, timeout=60)
 
+    def close_all(self) -> dict[str, Any]:
+        """Close all browsers gracefully and clear saved state (cannot be restored)."""
+        request = {"type": "close_all"}
+        return self._send_request(request, timeout=60)
+
     def restore(self) -> dict[str, Any]:
         """Restore killed browsers from saved state."""
         request = {"type": "restore"}
