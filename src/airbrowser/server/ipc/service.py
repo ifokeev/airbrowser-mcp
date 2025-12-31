@@ -376,6 +376,21 @@ class BrowserService:
         StateManager.save_state(existing)
         logger.debug(f"Updated saved state for browser {browser_id}")
 
+    def _remove_browser_state(self, browser_id: str):
+        """Remove a browser from saved state (called when browser is closed)."""
+        if not self.session_restore_enabled:
+            return
+
+        existing = StateManager.load_state() or []
+        updated = [b for b in existing if b.get("browser_id") != browser_id]
+        if len(updated) != len(existing):
+            if updated:
+                StateManager.save_state(updated)
+            else:
+                # Empty list - clear the state file entirely
+                StateManager.clear_state()
+            logger.info(f"Removed browser {browser_id} from saved state")
+
     def _save_state(self):
         """Save browser state before shutdown."""
         if not self.browsers:
@@ -526,10 +541,16 @@ class BrowserService:
                 cmd_type = cmd.get("type")
 
                 if cmd_type == "close" and res.get("status") == "success":
+                    # Remove from browsers dict
                     try:
                         del self.browsers[bid]
-                    except Exception:
+                    except KeyError:
                         pass
+                    # Always remove from saved state so browser won't be restored
+                    try:
+                        self._remove_browser_state(bid)
+                    except Exception as e:
+                        logger.warning(f"Failed to remove browser state: {e}")
                 elif cmd_type in STATE_SAVE_COMMANDS and res.get("status") == "success":
                     # Save state after URL/tab changes
                     self._update_browser_state(bid)
