@@ -86,6 +86,8 @@ def create_browser(config: dict):
             "log_cdp": False,
             "uc_cdp": True,
             "proxy": proxy.replace("http://", "") if proxy else None,
+            # Allow CDP WebSocket connections from any origin (required for CDP proxy)
+            "chromium_arg": "--remote-allow-origins=*",
         }
 
         # Set user_data_dir for persistent profile

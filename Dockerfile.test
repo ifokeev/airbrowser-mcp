@@ -29,7 +29,8 @@ RUN for i in 1 2 3; do \
         pydantic>=2.0.0 \
         urllib3>=2.0.0 \
         lazy-imports>=0.3.0 \
-        python-dateutil>=2.8.0 && \
+        python-dateutil>=2.8.0 \
+        websocket-client>=1.6.0 && \
       exit 0 || { \
         echo "uv attempt $i failed, retrying in 15s..."; \
         sleep 15; \
@@ -46,7 +47,8 @@ RUN for i in 1 2 3; do \
       pydantic>=2.0.0 \
       urllib3>=2.0.0 \
       lazy-imports>=0.3.0 \
-      python-dateutil>=2.8.0
+      python-dateutil>=2.8.0 \
+      websocket-client>=1.6.0
 ENV PATH="/root/.local/bin:$PATH"
 
 # Add paths for imports

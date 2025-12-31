@@ -264,6 +264,13 @@ class BrowserPoolAdapter:
                     timeout=action.timeout,
                 )
 
+            elif action.action == "get_cdp_endpoint":
+                response = self.client.execute_command(
+                    browser_id,
+                    "get_cdp_endpoint",
+                    timeout=action.timeout,
+                )
+
             elif action.action == "click_if_visible":
                 response = self.client.execute_command(browser_id, "click_if_visible", selector=action.selector)
 

@@ -2,6 +2,8 @@
 flask>=2.3.0
 flask-cors>=4.0.0
 flask-restx>=1.2.0
+flask-sock>=0.7.0
+websocket-client>=1.6.0
 seleniumbase>=4.41.2
 requests>=2.31.0
 pydantic>=2.0.0

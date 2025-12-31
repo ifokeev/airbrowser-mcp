@@ -15,6 +15,7 @@ Method | HTTP request | Description
 [**emulate**](BrowserApi.md#emulate) | **POST** /browser/{browser_id}/emulate | Emulation: set, clear, list_devices
 [**execute_script**](BrowserApi.md#execute_script) | **POST** /browser/{browser_id}/execute_script | Execute JavaScript
 [**fill_form**](BrowserApi.md#fill_form) | **POST** /browser/{browser_id}/fill_form | Fill multiple form fields
+[**get_cdp_endpoint**](BrowserApi.md#get_cdp_endpoint) | **GET** /browser/{browser_id}/get_cdp_endpoint | Get Chrome DevTools Protocol WebSocket URL for direct CDP access
 [**get_content**](BrowserApi.md#get_content) | **GET** /browser/{browser_id}/get_content | Get page HTML
 [**get_element_data**](BrowserApi.md#get_element_data) | **GET** /browser/{browser_id}/get_element_data | Get element text, attribute, or property
 [**get_url**](BrowserApi.md#get_url) | **GET** /browser/{browser_id}/get_url | Get current URL
@@ -794,6 +795,81 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **get_cdp_endpoint**
+> GenericResponse get_cdp_endpoint(browser_id)
+
+Get Chrome DevTools Protocol WebSocket URL for direct CDP access
+
+Returns the WebSocket URL that external tools (Playwright, Puppeteer, etc.)
+can use to connect directly to Chrome's DevTools Protocol for advanced
+automation like network interception, performance profiling, or custom CDP commands.
+
+The returned URL format: ws://host:port/devtools/browser/{guid}
+
+Note: The URL uses the container's internal address. For external access,
+ensure the CDP port is exposed and use the appropriate host address.
+
+### Example
+
+
+```python
+import airbrowser_client
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to /api/v1
+# See configuration.py for a list of all supported configuration parameters.
+configuration = airbrowser_client.Configuration(
+    host = "/api/v1"
+)
+
+
+# Enter a context with an instance of the API client
+with airbrowser_client.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = airbrowser_client.BrowserApi(api_client)
+    browser_id = 'browser_id_example' # str | 
+
+    try:
+        # Get Chrome DevTools Protocol WebSocket URL for direct CDP access
+        api_response = api_instance.get_cdp_endpoint(browser_id)
+        print("The response of BrowserApi->get_cdp_endpoint:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling BrowserApi->get_cdp_endpoint: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **browser_id** | **str**|  | 
+
+### Return type
+
+[**GenericResponse**](GenericResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
  - **Accept**: application/json
 
 ### HTTP response details

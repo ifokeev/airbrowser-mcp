@@ -72,6 +72,7 @@ COMMAND_HANDLERS = {
     "clear_console_logs": debug.handle_clear_console_logs,
     "get_performance_logs": debug.handle_get_performance_logs,
     "clear_performance_logs": debug.handle_clear_performance_logs,
+    "get_cdp_endpoint": debug.handle_get_cdp_endpoint,
     # Vision
     "detect_coordinates": vision.handle_detect_coordinates,
     "what_is_visible": vision.handle_what_is_visible,

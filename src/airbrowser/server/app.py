@@ -88,6 +88,11 @@ def create_app():
     api.add_namespace(health_ns, path="/health")
     api.add_namespace(profiles_ns, path="/profiles")
 
+    # CDP WebSocket proxy for external CDP access
+    from .routes.cdp_proxy import init_cdp_proxy
+
+    init_cdp_proxy(app)
+
     # Dashboard route
     @app.route("/dashboard")
     def dashboard():

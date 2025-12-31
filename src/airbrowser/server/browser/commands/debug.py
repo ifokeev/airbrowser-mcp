@@ -61,3 +61,60 @@ def handle_clear_performance_logs(driver, command: dict) -> dict:
         return {"status": "success", "message": "Performance log buffer cleared"}
     except Exception as e:
         return {"status": "error", "message": f"Failed to clear performance logs: {str(e)}"}
+
+
+def handle_get_cdp_endpoint(driver, command: dict) -> dict:
+    """Get CDP WebSocket endpoint URL for direct Chrome DevTools Protocol access."""
+    import requests
+
+    from ..utils import get_webdriver
+
+    try:
+        wd = get_webdriver(driver)
+        caps = wd.capabilities
+
+        # Get debugger address from Chrome capabilities
+        debugger_address = caps.get("goog:chromeOptions", {}).get("debuggerAddress")
+
+        if not debugger_address:
+            # Try alternate: extract from se:cdp capability
+            se_cdp = caps.get("se:cdp", "")
+            if se_cdp:
+                # Format: ws://127.0.0.1:PORT/devtools/...
+                debugger_address = se_cdp.replace("ws://", "").split("/devtools")[0]
+
+        if not debugger_address:
+            return {
+                "status": "error",
+                "message": "Could not determine CDP debugger address from browser capabilities",
+            }
+
+        # Query Chrome's /json/version endpoint to get WebSocket URL
+        json_url = f"http://{debugger_address}/json/version"
+        response = requests.get(json_url, timeout=5)
+        response.raise_for_status()
+        version_info = response.json()
+
+        ws_url = version_info.get("webSocketDebuggerUrl")
+        if not ws_url:
+            return {
+                "status": "error",
+                "message": "webSocketDebuggerUrl not found in Chrome /json/version response",
+            }
+
+        return {
+            "status": "success",
+            "data": {
+                "websocket_url": ws_url,
+                "debugger_address": debugger_address,
+                "browser_version": version_info.get("Browser"),
+                "protocol_version": version_info.get("Protocol-Version"),
+                "v8_version": version_info.get("V8-Version"),
+                "webkit_version": version_info.get("WebKit-Version"),
+            },
+        }
+
+    except requests.RequestException as e:
+        return {"status": "error", "message": f"Failed to query CDP endpoint: {str(e)}"}
+    except Exception as e:
+        return {"status": "error", "message": f"Failed to get CDP endpoint: {str(e)}"}

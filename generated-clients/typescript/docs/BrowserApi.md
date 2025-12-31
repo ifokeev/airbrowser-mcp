@@ -15,6 +15,7 @@ All URIs are relative to */api/v1*
 |[**emulate**](#emulate) | **POST** /browser/{browser_id}/emulate | Emulation: set, clear, list_devices|
 |[**executeScript**](#executescript) | **POST** /browser/{browser_id}/execute_script | Execute JavaScript|
 |[**fillForm**](#fillform) | **POST** /browser/{browser_id}/fill_form | Fill multiple form fields|
+|[**getCdpEndpoint**](#getcdpendpoint) | **GET** /browser/{browser_id}/get_cdp_endpoint | Get Chrome DevTools Protocol WebSocket URL for direct CDP access|
 |[**getContent**](#getcontent) | **GET** /browser/{browser_id}/get_content | Get page HTML|
 |[**getElementData**](#getelementdata) | **GET** /browser/{browser_id}/get_element_data | Get element text, attribute, or property|
 |[**getUrl**](#geturl) | **GET** /browser/{browser_id}/get_url | Get current URL|
@@ -620,6 +621,57 @@ No authorization required
 ### HTTP request headers
 
  - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **getCdpEndpoint**
+> GenericResponse getCdpEndpoint()
+
+Returns the WebSocket URL that external tools (Playwright, Puppeteer, etc.) can use to connect directly to Chrome\'s DevTools Protocol for advanced automation like network interception, performance profiling, or custom CDP commands.  The returned URL format: ws://host:port/devtools/browser/{guid}  Note: The URL uses the container\'s internal address. For external access, ensure the CDP port is exposed and use the appropriate host address.
+
+### Example
+
+```typescript
+import {
+    BrowserApi,
+    Configuration
+} from 'airbrowser-client';
+
+const configuration = new Configuration();
+const apiInstance = new BrowserApi(configuration);
+
+let browserId: string; // (default to undefined)
+
+const { status, data } = await apiInstance.getCdpEndpoint(
+    browserId
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **browserId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**GenericResponse**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
  - **Accept**: application/json
 
 

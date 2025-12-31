@@ -96,6 +96,7 @@ Class | Method | HTTP request | Description
 *BrowserApi* | [**emulate**](docs/BrowserApi.md#emulate) | **POST** /browser/{browser_id}/emulate | Emulation: set, clear, list_devices
 *BrowserApi* | [**execute_script**](docs/BrowserApi.md#execute_script) | **POST** /browser/{browser_id}/execute_script | Execute JavaScript
 *BrowserApi* | [**fill_form**](docs/BrowserApi.md#fill_form) | **POST** /browser/{browser_id}/fill_form | Fill multiple form fields
+*BrowserApi* | [**get_cdp_endpoint**](docs/BrowserApi.md#get_cdp_endpoint) | **GET** /browser/{browser_id}/get_cdp_endpoint | Get Chrome DevTools Protocol WebSocket URL for direct CDP access
 *BrowserApi* | [**get_content**](docs/BrowserApi.md#get_content) | **GET** /browser/{browser_id}/get_content | Get page HTML
 *BrowserApi* | [**get_element_data**](docs/BrowserApi.md#get_element_data) | **GET** /browser/{browser_id}/get_element_data | Get element text, attribute, or property
 *BrowserApi* | [**get_url**](docs/BrowserApi.md#get_url) | **GET** /browser/{browser_id}/get_url | Get current URL

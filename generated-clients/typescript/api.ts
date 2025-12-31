@@ -1063,6 +1063,40 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * Returns the WebSocket URL that external tools (Playwright, Puppeteer, etc.) can use to connect directly to Chrome\'s DevTools Protocol for advanced automation like network interception, performance profiling, or custom CDP commands.  The returned URL format: ws://host:port/devtools/browser/{guid}  Note: The URL uses the container\'s internal address. For external access, ensure the CDP port is exposed and use the appropriate host address.
+         * @summary Get Chrome DevTools Protocol WebSocket URL for direct CDP access
+         * @param {string} browserId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCdpEndpoint: async (browserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'browserId' is not null or undefined
+            assertParamExists('getCdpEndpoint', 'browserId', browserId)
+            const localVarPath = `/browser/{browser_id}/get_cdp_endpoint`
+                .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 
          * @summary Get page HTML
          * @param {string} browserId 
@@ -2145,6 +2179,19 @@ export const BrowserApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * Returns the WebSocket URL that external tools (Playwright, Puppeteer, etc.) can use to connect directly to Chrome\'s DevTools Protocol for advanced automation like network interception, performance profiling, or custom CDP commands.  The returned URL format: ws://host:port/devtools/browser/{guid}  Note: The URL uses the container\'s internal address. For external access, ensure the CDP port is exposed and use the appropriate host address.
+         * @summary Get Chrome DevTools Protocol WebSocket URL for direct CDP access
+         * @param {string} browserId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getCdpEndpoint(browserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getCdpEndpoint(browserId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['BrowserApi.getCdpEndpoint']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * 
          * @summary Get page HTML
          * @param {string} browserId 
@@ -2596,6 +2643,16 @@ export const BrowserApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.fillForm(browserId, payload, options).then((request) => request(axios, basePath));
         },
         /**
+         * Returns the WebSocket URL that external tools (Playwright, Puppeteer, etc.) can use to connect directly to Chrome\'s DevTools Protocol for advanced automation like network interception, performance profiling, or custom CDP commands.  The returned URL format: ws://host:port/devtools/browser/{guid}  Note: The URL uses the container\'s internal address. For external access, ensure the CDP port is exposed and use the appropriate host address.
+         * @summary Get Chrome DevTools Protocol WebSocket URL for direct CDP access
+         * @param {string} browserId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getCdpEndpoint(browserId: string, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
+            return localVarFp.getCdpEndpoint(browserId, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 
          * @summary Get page HTML
          * @param {string} browserId 
@@ -2984,6 +3041,17 @@ export class BrowserApi extends BaseAPI {
      */
     public fillForm(browserId: string, payload: FillFormRequest, options?: RawAxiosRequestConfig) {
         return BrowserApiFp(this.configuration).fillForm(browserId, payload, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Returns the WebSocket URL that external tools (Playwright, Puppeteer, etc.) can use to connect directly to Chrome\'s DevTools Protocol for advanced automation like network interception, performance profiling, or custom CDP commands.  The returned URL format: ws://host:port/devtools/browser/{guid}  Note: The URL uses the container\'s internal address. For external access, ensure the CDP port is exposed and use the appropriate host address.
+     * @summary Get Chrome DevTools Protocol WebSocket URL for direct CDP access
+     * @param {string} browserId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public getCdpEndpoint(browserId: string, options?: RawAxiosRequestConfig) {
+        return BrowserApiFp(this.configuration).getCdpEndpoint(browserId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -139,3 +139,41 @@ class DebugOperations:
             return self.clear_network_logs(browser_id)
         else:
             return _error(f"Invalid action: {action}")
+
+    def get_cdp_endpoint(self, browser_id: str) -> dict[str, Any]:
+        """Get Chrome DevTools Protocol WebSocket endpoint URL.
+
+        Returns both internal and external WebSocket URLs:
+        - websocket_url: Direct internal connection (ws://127.0.0.1:PORT/devtools/...)
+        - external_url: Proxied via nginx (ws://host:18080/browser/{browser_id}/cdp)
+
+        Args:
+            browser_id: The browser instance ID
+
+        Returns:
+            dict with websocket_url, external_url, debugger_address, browser version info
+        """
+        import os
+
+        try:
+            action = BrowserAction(action="get_cdp_endpoint")
+            result = self.browser_pool.execute_action(browser_id, action)
+
+            if not result.success:
+                return _error(result.message)
+
+            # Extract the inner data from IPC response
+            cdp_data = result.data.get("data", {}) if isinstance(result.data, dict) else {}
+
+            # Add external URL for proxied access via nginx
+            # API_BASE_URL defaults to http://localhost:18080 (nginx gateway)
+            api_base = os.environ.get("API_BASE_URL", "http://localhost:18080")
+            base_path = os.environ.get("BASE_PATH", "")
+            # Convert http:// to ws:// and https:// to wss://
+            ws_base = api_base.replace("http://", "ws://").replace("https://", "wss://")
+            cdp_data["external_url"] = f"{ws_base}{base_path}/browser/{browser_id}/cdp"
+
+            return _success(data=cdp_data, message="CDP endpoint retrieved successfully")
+
+        except Exception as e:
+            return _error(f"get_cdp_endpoint failed: {str(e)}")

@@ -265,6 +265,20 @@ class BrowserOperations:
         """Network logs: get or clear."""
         return self._debug.network_logs(browser_id, action, limit)
 
+    def get_cdp_endpoint(self, browser_id: str) -> dict[str, Any]:
+        """Get Chrome DevTools Protocol WebSocket URL for direct CDP access.
+
+        Returns the WebSocket URL that external tools (Playwright, Puppeteer, etc.)
+        can use to connect directly to Chrome's DevTools Protocol for advanced
+        automation like network interception, performance profiling, or custom CDP commands.
+
+        The returned URL format: ws://host:port/devtools/browser/{guid}
+
+        Note: The URL uses the container's internal address. For external access,
+        ensure the CDP port is exposed and use the appropriate host address.
+        """
+        return self._debug.get_cdp_endpoint(browser_id)
+
     # ==================== Tabs/Dialogs ====================
 
     def tabs(

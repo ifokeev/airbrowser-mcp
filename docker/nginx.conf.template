@@ -116,7 +116,23 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
         }
-        
+
+        # CDP WebSocket proxy (must be before general /browser/ location)
+        location ~ ^/browser/([a-f0-9-]+)/cdp(/.*)?$ {
+            proxy_pass http://127.0.0.1:8000/browser/$1/cdp$2;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_read_timeout 3600s;
+            proxy_connect_timeout 75s;
+            proxy_buffering off;
+            proxy_cache off;
+        }
+
         # Browser endpoints
         location /browser/ {
             proxy_pass http://127.0.0.1:8000/api/v1/browser/;
@@ -126,7 +142,7 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_read_timeout 300s;
         }
-        
+
         # MCP status comes from Flask app (port 8000)
         location = /mcp/status {
             proxy_pass http://127.0.0.1:8000/mcp/status;
