@@ -8,6 +8,12 @@
 
 ## Quick Start
 
+### Cloud Hosted (no setup)
+
+Use the managed cloud version - no installation required:
+
+**[https://airbrowser.dev](https://airbrowser.dev)**
+
 ### Docker (one-liner)
 
 ```bash
