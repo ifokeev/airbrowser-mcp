@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/ifokeev/airbrowser-mcp/compare/v1.8.0...v1.8.1) (2026-01-01)
+
+
+### Bug Fixes
+
+* **api:** expose enum values in Swagger documentation ([c6722c2](https://github.com/ifokeev/airbrowser-mcp/commit/c6722c2bbb1f27717fef95fad3c72154f7f7206e))
+
 ## [1.8.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.7.0...v1.8.0) (2026-01-01)
 
 
