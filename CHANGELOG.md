@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.8.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.7.0...v1.8.0) (2026-01-01)
+
+
+### Features
+
+* **cdp:** add WebSocket proxy for external CDP access ([a7bbb80](https://github.com/ifokeev/airbrowser-mcp/commit/a7bbb808d866dbf3d1070afdd20571df2af27c8a))
+* **network:** add CDP-based network logging ([dfe35c0](https://github.com/ifokeev/airbrowser-mcp/commit/dfe35c0d388a76fa18d4256417c7880af0d6bdee))
+
+
+### Bug Fixes
+
+* **ipc:** close_all and kill_all now properly terminate Chrome processes ([57ccb53](https://github.com/ifokeev/airbrowser-mcp/commit/57ccb5315f83eec6ec487910670443ad496bb370))
+* **pool:** close_all now clears saved state ([08272ad](https://github.com/ifokeev/airbrowser-mcp/commit/08272adad3f3fcda6afeb99ce2662b14f7927d77))
+* **session:** close_browser now removes browser from saved state ([08abb1e](https://github.com/ifokeev/airbrowser-mcp/commit/08abb1e8c615b01820e416a2b0b3c769657e3aba))
+
 ## [1.7.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.6.0...v1.7.0) (2025-12-27)
 
 
