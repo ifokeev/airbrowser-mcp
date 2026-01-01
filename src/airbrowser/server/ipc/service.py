@@ -51,6 +51,19 @@ class BrowserInstance:
         self.status = "creating"
         self.created_at = time.time()
 
+    def terminate(self):
+        """Forcefully terminate the browser process."""
+        if self.process is not None:
+            try:
+                self.process.terminate()
+                try:
+                    self.process.wait(timeout=3)
+                except Exception:
+                    self.process.kill()
+            except Exception as e:
+                logger.warning(f"Error terminating browser {self.browser_id}: {e}")
+        self.status = "closed"
+
     def init_browser(self, config: dict[str, Any]) -> dict[str, Any]:
         """Initialize browser using subprocess"""
         logger.info(f"Initializing browser {self.browser_id} with config: {config}")
@@ -646,9 +659,13 @@ class BrowserService:
             StateManager.save_state(existing)
             tabs_saved = len(state.get("tabs", []))
 
-        # Close the browser
+        # Close the browser cleanly (sends close command to launcher)
         browser = self.browsers.pop(browser_id)
-        browser.close()
+        try:
+            browser.execute_command({"type": "close"}, timeout=5)
+        except Exception as e:
+            logger.warning(f"Close command failed for {browser_id}, forcing terminate: {e}")
+            browser.terminate()
 
         self._write_response(
             request_id,
@@ -675,10 +692,15 @@ class BrowserService:
         if states:
             StateManager.save_state(states)
 
-        # Close all browsers
+        # Close all browsers by sending close command (cleanly shuts down Chrome)
+        # then terminate as fallback
         killed = len(self.browsers)
-        for browser in self.browsers.values():
-            browser.close()
+        for browser_id, browser in list(self.browsers.items()):
+            try:
+                browser.execute_command({"type": "close"}, timeout=5)
+            except Exception as e:
+                logger.warning(f"Close command failed for {browser_id}, forcing terminate: {e}")
+                browser.terminate()
         self.browsers.clear()
 
         return killed
@@ -702,17 +724,21 @@ class BrowserService:
         """Process close all browsers request - closes gracefully and clears state."""
         request_id = request["request_id"]
 
-        # Close all browsers without saving state
-        closed = len(self.browsers)
-        for browser in self.browsers.values():
+        # Close all browsers by sending close command to each
+        closed = 0
+        for browser_id, browser in list(self.browsers.items()):
             try:
-                browser.close()
+                result = browser.execute_command({"type": "close"}, timeout=10)
+                if result.get("status") == "success":
+                    closed += 1
+                else:
+                    logger.warning(f"Failed to close browser {browser_id}: {result.get('message')}")
             except Exception as e:
-                logger.warning(f"Error closing browser: {e}")
+                logger.warning(f"Error closing browser {browser_id}: {e}")
         self.browsers.clear()
 
         # Clear saved state so browsers don't restore on restart
-        StateManager.save_state([])
+        StateManager.clear_state()
 
         self._write_response(
             request_id,
@@ -878,9 +904,9 @@ class BrowserService:
             killed = self._kill_all_impl()
             logger.info(f"Killed {killed} browser(s) with state saved")
         else:
-            # Just close without saving state
+            # Just terminate without saving state
             for browser in self.browsers.values():
-                browser.close()
+                browser.terminate()
             self.browsers.clear()
 
         logger.info("Browser service stopped")
