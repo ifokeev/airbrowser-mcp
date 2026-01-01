@@ -34,6 +34,7 @@ PATH_OVERRIDES = {
 def _get_field_for_type(annotation: Any, param_name: str) -> fields.Raw:
     """Convert Python type annotation to Flask-RESTX field."""
     import types
+    from enum import Enum
     from typing import get_args
 
     origin = get_origin(annotation)
@@ -51,6 +52,11 @@ def _get_field_for_type(annotation: Any, param_name: str) -> fields.Raw:
     # Handle Optional types (Union[X, None])
     if origin is type(None):
         return fields.String(description=param_name)
+
+    # Check for Enum types - extract enum values for swagger
+    if isinstance(annotation, type) and issubclass(annotation, Enum):
+        enum_values = [e.value for e in annotation]
+        return fields.String(description=param_name, enum=enum_values)
 
     # Basic types
     if annotation is str:
@@ -78,7 +84,7 @@ def _get_field_for_type(annotation: Any, param_name: str) -> fields.Raw:
     elif origin is dict or annotation is dict:
         return fields.Raw(description=param_name)
     else:
-        # For enums and complex types, use String
+        # For complex types, use String
         return fields.String(description=param_name)
 
 
