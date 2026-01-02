@@ -312,3 +312,33 @@ def handle_clear_network_logs(driver, command: dict) -> dict:
         return {"status": "success", "message": f"Cleared {count} network events"}
     except Exception as e:
         return {"status": "error", "message": f"Failed to clear network logs: {str(e)}"}
+
+
+def handle_execute_cdp(driver, command: dict) -> dict:
+    """Execute a Chrome DevTools Protocol command.
+
+    This allows direct access to CDP methods like:
+    - Network.getAllCookies - Get all cookies including HttpOnly
+    - Network.setCookie - Set a cookie
+    - Page.captureScreenshot - Capture screenshot with options
+    - Runtime.evaluate - Execute JavaScript in page context
+    - DOM.getDocument - Get DOM tree
+    - And many more: https://chromedevtools.github.io/devtools-protocol/
+
+    Args:
+        command: dict with:
+            - method: CDP method name (e.g., "Network.getAllCookies")
+            - params: Optional dict of parameters for the CDP method
+    """
+    method = command.get("method")
+    params = command.get("params", {})
+
+    if not method:
+        return {"status": "error", "message": "CDP method name is required"}
+
+    try:
+        wd = get_webdriver(driver)
+        result = wd.execute_cdp_cmd(method, params)
+        return {"status": "success", "result": result}
+    except Exception as e:
+        return {"status": "error", "message": f"CDP command failed: {str(e)}"}

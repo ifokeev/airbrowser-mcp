@@ -100,3 +100,12 @@ class PerformanceAction(str, Enum):
     STOP_TRACE = "stop_trace"
     METRICS = "metrics"
     ANALYZE = "analyze"
+
+
+class CookieAction(str, Enum):
+    """Actions for cookie management."""
+
+    GET = "get"
+    SET = "set"
+    DELETE = "delete"
+    CLEAR = "clear"

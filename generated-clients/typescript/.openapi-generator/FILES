@@ -11,12 +11,14 @@ docs/BrowserApi.md
 docs/BrowsersRequest.md
 docs/ClickRequest.md
 docs/ConsoleLogsRequest.md
+docs/CookiesRequest.md
 docs/CreateBrowserRequest.md
 docs/CreateProfileRequest.md
 docs/DetectCoordinatesRequest.md
 docs/DialogRequest.md
 docs/EmulateRequest.md
 docs/ErrorResponse.md
+docs/ExecuteCdpRequest.md
 docs/ExecuteScriptRequest.md
 docs/FillFormRequest.md
 docs/GenericResponse.md

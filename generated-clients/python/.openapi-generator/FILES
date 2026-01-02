@@ -18,12 +18,14 @@ airbrowser_client/models/base_response.py
 airbrowser_client/models/browsers_request.py
 airbrowser_client/models/click_request.py
 airbrowser_client/models/console_logs_request.py
+airbrowser_client/models/cookies_request.py
 airbrowser_client/models/create_browser_request.py
 airbrowser_client/models/create_profile_request.py
 airbrowser_client/models/detect_coordinates_request.py
 airbrowser_client/models/dialog_request.py
 airbrowser_client/models/emulate_request.py
 airbrowser_client/models/error_response.py
+airbrowser_client/models/execute_cdp_request.py
 airbrowser_client/models/execute_script_request.py
 airbrowser_client/models/fill_form_request.py
 airbrowser_client/models/generic_response.py
@@ -61,12 +63,14 @@ docs/BrowserApi.md
 docs/BrowsersRequest.md
 docs/ClickRequest.md
 docs/ConsoleLogsRequest.md
+docs/CookiesRequest.md
 docs/CreateBrowserRequest.md
 docs/CreateProfileRequest.md
 docs/DetectCoordinatesRequest.md
 docs/DialogRequest.md
 docs/EmulateRequest.md
 docs/ErrorResponse.md
+docs/ExecuteCdpRequest.md
 docs/ExecuteScriptRequest.md
 docs/FillFormRequest.md
 docs/GenericResponse.md
@@ -107,4 +111,6 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
+test/test_cookies_request.py
+test/test_execute_cdp_request.py
 tox.ini

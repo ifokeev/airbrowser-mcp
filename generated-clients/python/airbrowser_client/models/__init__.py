@@ -19,12 +19,14 @@ if __import__("typing").TYPE_CHECKING:
     from airbrowser_client.models.browsers_request import BrowsersRequest
     from airbrowser_client.models.click_request import ClickRequest
     from airbrowser_client.models.console_logs_request import ConsoleLogsRequest
+    from airbrowser_client.models.cookies_request import CookiesRequest
     from airbrowser_client.models.create_browser_request import CreateBrowserRequest
     from airbrowser_client.models.create_profile_request import CreateProfileRequest
     from airbrowser_client.models.detect_coordinates_request import DetectCoordinatesRequest
     from airbrowser_client.models.dialog_request import DialogRequest
     from airbrowser_client.models.emulate_request import EmulateRequest
     from airbrowser_client.models.error_response import ErrorResponse
+    from airbrowser_client.models.execute_cdp_request import ExecuteCdpRequest
     from airbrowser_client.models.execute_script_request import ExecuteScriptRequest
     from airbrowser_client.models.fill_form_request import FillFormRequest
     from airbrowser_client.models.generic_response import GenericResponse
@@ -67,12 +69,14 @@ from airbrowser_client.models.base_response import BaseResponse
 from airbrowser_client.models.browsers_request import BrowsersRequest
 from airbrowser_client.models.click_request import ClickRequest
 from airbrowser_client.models.console_logs_request import ConsoleLogsRequest
+from airbrowser_client.models.cookies_request import CookiesRequest
 from airbrowser_client.models.create_browser_request import CreateBrowserRequest
 from airbrowser_client.models.create_profile_request import CreateProfileRequest
 from airbrowser_client.models.detect_coordinates_request import DetectCoordinatesRequest
 from airbrowser_client.models.dialog_request import DialogRequest
 from airbrowser_client.models.emulate_request import EmulateRequest
 from airbrowser_client.models.error_response import ErrorResponse
+from airbrowser_client.models.execute_cdp_request import ExecuteCdpRequest
 from airbrowser_client.models.execute_script_request import ExecuteScriptRequest
 from airbrowser_client.models.fill_form_request import FillFormRequest
 from airbrowser_client.models.generic_response import GenericResponse

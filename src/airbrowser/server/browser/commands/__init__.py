@@ -66,6 +66,7 @@ COMMAND_HANDLERS = {
     # Cookies
     "get_cookies": cookies.handle_get_cookies,
     "set_cookie": cookies.handle_set_cookie,
+    "delete_cookie": cookies.handle_delete_cookie,
     "delete_cookies": cookies.handle_delete_cookies,
     # Debug/logging
     "get_console_logs": debug.handle_get_console_logs,
@@ -78,6 +79,8 @@ COMMAND_HANDLERS = {
     "disable_network_logging": debug.handle_disable_network_logging,
     "get_network_logs": debug.handle_get_network_logs,
     "clear_network_logs": debug.handle_clear_network_logs,
+    # CDP command execution
+    "execute_cdp": debug.handle_execute_cdp,
     # Vision
     "detect_coordinates": vision.handle_detect_coordinates,
     "what_is_visible": vision.handle_what_is_visible,

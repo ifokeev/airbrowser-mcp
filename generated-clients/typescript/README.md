@@ -56,10 +56,12 @@ Class | Method | HTTP request | Description
 *BrowserApi* | [**click**](docs/BrowserApi.md#click) | **POST** /browser/{browser_id}/click | Click element
 *BrowserApi* | [**closeBrowser**](docs/BrowserApi.md#closebrowser) | **DELETE** /browser/{browser_id}/close_browser | Close browser instance
 *BrowserApi* | [**consoleLogs**](docs/BrowserApi.md#consolelogs) | **POST** /browser/{browser_id}/console_logs | Console logs: get or clear
+*BrowserApi* | [**cookies**](docs/BrowserApi.md#cookies) | **POST** /browser/{browser_id}/cookies | Manage browser cookies
 *BrowserApi* | [**createBrowser**](docs/BrowserApi.md#createbrowser) | **POST** /browser/create_browser | Create browser instance with optional persistent profile
 *BrowserApi* | [**detectCoordinates**](docs/BrowserApi.md#detectcoordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using vision
 *BrowserApi* | [**dialog**](docs/BrowserApi.md#dialog) | **POST** /browser/{browser_id}/dialog | Dialogs: get, accept, dismiss
 *BrowserApi* | [**emulate**](docs/BrowserApi.md#emulate) | **POST** /browser/{browser_id}/emulate | Emulation: set, clear, list_devices
+*BrowserApi* | [**executeCdp**](docs/BrowserApi.md#executecdp) | **POST** /browser/{browser_id}/execute_cdp | Execute a Chrome DevTools Protocol command
 *BrowserApi* | [**executeScript**](docs/BrowserApi.md#executescript) | **POST** /browser/{browser_id}/execute_script | Execute JavaScript
 *BrowserApi* | [**fillForm**](docs/BrowserApi.md#fillform) | **POST** /browser/{browser_id}/fill_form | Fill multiple form fields
 *BrowserApi* | [**getCdpEndpoint**](docs/BrowserApi.md#getcdpendpoint) | **GET** /browser/{browser_id}/get_cdp_endpoint | Get Chrome DevTools Protocol WebSocket URL for direct CDP access
@@ -102,12 +104,14 @@ Class | Method | HTTP request | Description
  - [BrowsersRequest](docs/BrowsersRequest.md)
  - [ClickRequest](docs/ClickRequest.md)
  - [ConsoleLogsRequest](docs/ConsoleLogsRequest.md)
+ - [CookiesRequest](docs/CookiesRequest.md)
  - [CreateBrowserRequest](docs/CreateBrowserRequest.md)
  - [CreateProfileRequest](docs/CreateProfileRequest.md)
  - [DetectCoordinatesRequest](docs/DetectCoordinatesRequest.md)
  - [DialogRequest](docs/DialogRequest.md)
  - [EmulateRequest](docs/EmulateRequest.md)
  - [ErrorResponse](docs/ErrorResponse.md)
+ - [ExecuteCdpRequest](docs/ExecuteCdpRequest.md)
  - [ExecuteScriptRequest](docs/ExecuteScriptRequest.md)
  - [FillFormRequest](docs/FillFormRequest.md)
  - [GenericResponse](docs/GenericResponse.md)

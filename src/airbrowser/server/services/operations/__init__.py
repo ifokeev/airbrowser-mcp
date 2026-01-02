@@ -6,6 +6,7 @@ from .elements import ElementOperations
 from .emulation import EmulationOperations
 from .enums import (
     BrowsersAction,
+    CookieAction,
     DialogAction,
     ElementCheck,
     ElementDataType,
@@ -43,6 +44,7 @@ __all__ = [
     "PerformanceOperations",
     # Enums
     "BrowsersAction",
+    "CookieAction",
     "DialogAction",
     "ElementCheck",
     "ElementDataType",

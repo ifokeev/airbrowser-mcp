@@ -12,7 +12,12 @@ import os
 import re
 
 import pytest
-from airbrowser_client.models import CreateBrowserRequest
+from airbrowser_client.models import (
+    CookiesRequest,
+    CreateBrowserRequest,
+    ExecuteCdpRequest,
+    NavigateBrowserRequest,
+)
 
 # WebSocket client for testing proxy
 try:
@@ -280,3 +285,100 @@ class TestCdpWebSocketProxy:
             # Should fail to connect or get error on handshake
             ws = websocket.create_connection(invalid_url, timeout=5)
             ws.close()
+
+
+@pytest.mark.browser
+class TestExecuteCdp:
+    """Test execute_cdp endpoint for direct CDP command execution via REST API."""
+
+    def test_execute_cdp_get_cookies(self, browser_client, browser_id):
+        """Test executing Network.getAllCookies CDP command."""
+        result = browser_client.execute_cdp(browser_id, payload=ExecuteCdpRequest(method="Network.getAllCookies"))
+        assert result.success
+        # CDP response is returned directly in data
+        assert "cookies" in result.data
+
+    def test_execute_cdp_get_version(self, browser_client, browser_id):
+        """Test executing Browser.getVersion CDP command."""
+        result = browser_client.execute_cdp(browser_id, payload=ExecuteCdpRequest(method="Browser.getVersion"))
+        assert result.success
+        # CDP response is returned directly in data
+        assert "product" in result.data
+        assert "Chrome" in result.data["product"]
+
+    def test_execute_cdp_set_cookie(self, browser_client, browser_id):
+        """Test setting a cookie via CDP directly."""
+        # Navigate first
+        browser_client.navigate_browser(
+            browser_id, payload=NavigateBrowserRequest(url="https://example.com", timeout=30)
+        )
+
+        # Set cookie via CDP
+        result = browser_client.execute_cdp(
+            browser_id,
+            payload=ExecuteCdpRequest(
+                method="Network.setCookie",
+                params={
+                    "name": "cdp_cookie",
+                    "value": "cdp_value",
+                    "domain": "example.com",
+                    "path": "/",
+                },
+            ),
+        )
+        assert result.success
+
+        # Verify cookie was set
+        get_result = browser_client.execute_cdp(browser_id, payload=ExecuteCdpRequest(method="Network.getAllCookies"))
+        cookies = get_result.data["cookies"]
+        assert any(c.get("name") == "cdp_cookie" for c in cookies)
+
+    def test_execute_cdp_invalid_method(self, browser_client, browser_id):
+        """Test executing an invalid CDP command."""
+        result = browser_client.execute_cdp(browser_id, payload=ExecuteCdpRequest(method="Invalid.nonExistentMethod"))
+        # Should fail gracefully
+        assert not result.success or "error" in str(result.data).lower()
+
+    def test_execute_cdp_page_info(self, browser_client, browser_id):
+        """Test getting page information via CDP."""
+        browser_client.navigate_browser(
+            browser_id, payload=NavigateBrowserRequest(url="https://example.com", timeout=30)
+        )
+
+        # Get targets (pages)
+        result = browser_client.execute_cdp(browser_id, payload=ExecuteCdpRequest(method="Target.getTargets"))
+        assert result.success
+        assert "targetInfos" in result.data
+
+
+@pytest.mark.browser
+class TestCookiesCdpIntegration:
+    """Integration tests combining cookies endpoint and CDP."""
+
+    def test_cookies_match_cdp(self, browser_client, browser_id):
+        """Test that cookies endpoint and CDP return same cookies."""
+        # Set a cookie via the cookies endpoint
+        browser_client.navigate_browser(
+            browser_id, payload=NavigateBrowserRequest(url="https://example.com", timeout=30)
+        )
+        browser_client.cookies(
+            browser_id,
+            payload=CookiesRequest(
+                action="set", cookie={"name": "sync_test", "value": "sync_value", "domain": "example.com"}
+            ),
+        )
+
+        # Get via cookies endpoint
+        cookies_result = browser_client.cookies(browser_id, payload=CookiesRequest(action="get"))
+        cookies_via_endpoint = cookies_result.data.get("cookies", cookies_result.data)
+
+        # Get via CDP
+        cdp_result = browser_client.execute_cdp(browser_id, payload=ExecuteCdpRequest(method="Network.getAllCookies"))
+        cookies_via_cdp = cdp_result.data["cookies"]
+
+        # Both should have the test cookie
+        endpoint_names = {c.get("name") for c in cookies_via_endpoint}
+        cdp_names = {c.get("name") for c in cookies_via_cdp}
+
+        assert "sync_test" in endpoint_names
+        assert "sync_test" in cdp_names

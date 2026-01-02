@@ -8,6 +8,7 @@ from typing import Any
 from .browser_pool import BrowserPoolAdapter
 from .operations import (
     BrowsersAction,
+    CookieAction,
     DebugOperations,
     DialogAction,
     DialogOperations,
@@ -255,6 +256,57 @@ class BrowserOperations:
         """DOM or accessibility snapshot."""
         return self._page.snapshot(browser_id, snapshot_type)
 
+    def cookies(
+        self,
+        browser_id: str,
+        action: CookieAction,
+        cookie: dict | None = None,
+        name: str | None = None,
+        domain: str | None = None,
+    ) -> dict[str, Any]:
+        """Manage browser cookies.
+
+        Actions:
+        - get: Get all cookies (including HttpOnly via CDP)
+        - set: Set a cookie (requires cookie dict with name, value, domain, etc.)
+        - delete: Delete specific cookie by name (and optionally domain)
+        - clear: Delete all cookies
+
+        Examples:
+        - Get all: action="get"
+        - Set: action="set", cookie={"name": "session", "value": "abc", "domain": ".example.com"}
+        - Delete one: action="delete", name="session", domain=".example.com"
+        - Clear all: action="clear"
+        """
+        from ..models import BrowserAction
+        from .operations.response import error as _error
+        from .operations.response import success as _success
+
+        try:
+            if action == CookieAction.GET:
+                browser_action = BrowserAction(action="get_cookies")
+            elif action == CookieAction.SET:
+                if not cookie:
+                    return _error("Cookie dict is required for set action")
+                browser_action = BrowserAction(action="set_cookie", options={"cookie": cookie})
+            elif action == CookieAction.DELETE:
+                if not name:
+                    return _error("Cookie name is required for delete action")
+                browser_action = BrowserAction(action="delete_cookie", options={"name": name, "domain": domain})
+            elif action == CookieAction.CLEAR:
+                browser_action = BrowserAction(action="delete_cookies")
+            else:
+                return _error(f"Unknown cookie action: {action}")
+
+            result = self.browser_pool.execute_action(browser_id, browser_action)
+            if not result.success:
+                return _error(result.message)
+
+            return _success(data=result.data, message=result.message or f"Cookie {action.value} successful")
+
+        except Exception as e:
+            return _error(f"cookies failed: {str(e)}")
+
     # ==================== Debug ====================
 
     def console_logs(self, browser_id: str, action: LogAction, limit: int = 200) -> dict[str, Any]:
@@ -278,6 +330,20 @@ class BrowserOperations:
         ensure the CDP port is exposed and use the appropriate host address.
         """
         return self._debug.get_cdp_endpoint(browser_id)
+
+    def execute_cdp(self, browser_id: str, method: str, params: dict | None = None) -> dict[str, Any]:
+        """Execute a Chrome DevTools Protocol command.
+
+        Provides direct access to CDP methods for advanced browser control.
+
+        Common use cases:
+        - Get all cookies: method="Network.getAllCookies"
+        - Set cookie: method="Network.setCookie", params={"name": "...", "value": "...", "domain": "..."}
+        - Delete cookies: method="Network.deleteCookies", params={"name": "...", "domain": "..."}
+
+        Full CDP reference: https://chromedevtools.github.io/devtools-protocol/
+        """
+        return self._debug.execute_cdp(browser_id, method, params)
 
     # ==================== Tabs/Dialogs ====================
 

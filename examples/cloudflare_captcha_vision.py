@@ -100,6 +100,31 @@ def main():
                 print("ERROR: Could not extract coordinates from detection result")
                 return
 
+            # Check if element is below viewport and scroll if needed
+            # Default viewport height is around 768, scroll if y is too high
+            viewport_height = 700  # Conservative estimate
+            if y > viewport_height:
+                scroll_amount = int(y - viewport_height / 2)  # Scroll to center the element
+                print(f"\nElement is below viewport (y={y}), scrolling down by {scroll_amount}px...")
+                api.scroll(
+                    browser_id=browser_id,
+                    payload={"delta_y": scroll_amount, "behavior": "smooth"},
+                )
+                time.sleep(1)  # Wait for scroll animation
+
+                # Re-detect after scrolling since coordinates have changed
+                print("Re-detecting captcha position after scroll...")
+                detect_result = api.detect_coordinates(
+                    browser_id=browser_id,
+                    payload={"prompt": "the 'Verify you are human' checkbox"},
+                )
+                if detect_result.success:
+                    data = detect_result.data or {}
+                    click_point = data.get("click_point", {})
+                    x = click_point.get("x")
+                    y = click_point.get("y")
+                    print(f"New coordinates after scroll: ({x}, {y})")
+
             # Step 2: Click on the captcha using gui_click (human-like movement)
             print("\n" + "-" * 40)
             print("STEP 2: Clicking captcha with gui_click (human-like)...")

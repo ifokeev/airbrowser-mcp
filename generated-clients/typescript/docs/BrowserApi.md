@@ -9,10 +9,12 @@ All URIs are relative to */api/v1*
 |[**click**](#click) | **POST** /browser/{browser_id}/click | Click element|
 |[**closeBrowser**](#closebrowser) | **DELETE** /browser/{browser_id}/close_browser | Close browser instance|
 |[**consoleLogs**](#consolelogs) | **POST** /browser/{browser_id}/console_logs | Console logs: get or clear|
+|[**cookies**](#cookies) | **POST** /browser/{browser_id}/cookies | Manage browser cookies|
 |[**createBrowser**](#createbrowser) | **POST** /browser/create_browser | Create browser instance with optional persistent profile|
 |[**detectCoordinates**](#detectcoordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using vision|
 |[**dialog**](#dialog) | **POST** /browser/{browser_id}/dialog | Dialogs: get, accept, dismiss|
 |[**emulate**](#emulate) | **POST** /browser/{browser_id}/emulate | Emulation: set, clear, list_devices|
+|[**executeCdp**](#executecdp) | **POST** /browser/{browser_id}/execute_cdp | Execute a Chrome DevTools Protocol command|
 |[**executeScript**](#executescript) | **POST** /browser/{browser_id}/execute_script | Execute JavaScript|
 |[**fillForm**](#fillform) | **POST** /browser/{browser_id}/fill_form | Fill multiple form fields|
 |[**getCdpEndpoint**](#getcdpendpoint) | **GET** /browser/{browser_id}/get_cdp_endpoint | Get Chrome DevTools Protocol WebSocket URL for direct CDP access|
@@ -309,6 +311,61 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **cookies**
+> GenericResponse cookies(payload)
+
+Actions: - get: Get all cookies (including HttpOnly via CDP) - set: Set a cookie (requires cookie dict with name, value, domain, etc.) - delete: Delete specific cookie by name (and optionally domain) - clear: Delete all cookies  Examples: - Get all: action=\"get\" - Set: action=\"set\", cookie={\"name\": \"session\", \"value\": \"abc\", \"domain\": \".example.com\"} - Delete one: action=\"delete\", name=\"session\", domain=\".example.com\" - Clear all: action=\"clear\"
+
+### Example
+
+```typescript
+import {
+    BrowserApi,
+    Configuration,
+    CookiesRequest
+} from 'airbrowser-client';
+
+const configuration = new Configuration();
+const apiInstance = new BrowserApi(configuration);
+
+let browserId: string; // (default to undefined)
+let payload: CookiesRequest; //
+
+const { status, data } = await apiInstance.cookies(
+    browserId,
+    payload
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **payload** | **CookiesRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**GenericResponse**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **createBrowser**
 > GenericResponse createBrowser(payload)
 
@@ -499,6 +556,61 @@ const { status, data } = await apiInstance.emulate(
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
 | **payload** | **EmulateRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**GenericResponse**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **executeCdp**
+> GenericResponse executeCdp(payload)
+
+Provides direct access to CDP methods for advanced browser control.  Common use cases: - Get all cookies: method=\"Network.getAllCookies\" - Set cookie: method=\"Network.setCookie\", params={\"name\": \"...\", \"value\": \"...\", \"domain\": \"...\"} - Delete cookies: method=\"Network.deleteCookies\", params={\"name\": \"...\", \"domain\": \"...\"}  Full CDP reference: https://chromedevtools.github.io/devtools-protocol/
+
+### Example
+
+```typescript
+import {
+    BrowserApi,
+    Configuration,
+    ExecuteCdpRequest
+} from 'airbrowser-client';
+
+const configuration = new Configuration();
+const apiInstance = new BrowserApi(configuration);
+
+let browserId: string; // (default to undefined)
+let payload: ExecuteCdpRequest; //
+
+const { status, data } = await apiInstance.executeCdp(
+    browserId,
+    payload
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **payload** | **ExecuteCdpRequest**|  | |
 | **browserId** | [**string**] |  | defaults to undefined|
 
 

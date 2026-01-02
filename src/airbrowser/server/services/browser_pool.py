@@ -561,6 +561,28 @@ class BrowserPoolAdapter:
                     by=getattr(action, "by", "css"),
                 )
 
+            # Cookies
+            elif action.action == "get_cookies":
+                response = self.client.execute_command(browser_id, "get_cookies")
+
+            elif action.action == "set_cookie":
+                cookie = action.options.get("cookie") if action.options else None
+                response = self.client.execute_command(browser_id, "set_cookie", cookie=cookie)
+
+            elif action.action == "delete_cookie":
+                name = action.options.get("name") if action.options else None
+                domain = action.options.get("domain") if action.options else None
+                response = self.client.execute_command(browser_id, "delete_cookie", name=name, domain=domain)
+
+            elif action.action == "delete_cookies":
+                response = self.client.execute_command(browser_id, "delete_cookies")
+
+            # CDP
+            elif action.action == "execute_cdp":
+                method = action.options.get("method") if action.options else None
+                params = action.options.get("params", {}) if action.options else {}
+                response = self.client.execute_command(browser_id, "execute_cdp", method=method, params=params)
+
             else:
                 response = {"status": "error", "message": f"Unknown action: {action.action}"}
 

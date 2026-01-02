@@ -9,10 +9,12 @@ Method | HTTP request | Description
 [**click**](BrowserApi.md#click) | **POST** /browser/{browser_id}/click | Click element
 [**close_browser**](BrowserApi.md#close_browser) | **DELETE** /browser/{browser_id}/close_browser | Close browser instance
 [**console_logs**](BrowserApi.md#console_logs) | **POST** /browser/{browser_id}/console_logs | Console logs: get or clear
+[**cookies**](BrowserApi.md#cookies) | **POST** /browser/{browser_id}/cookies | Manage browser cookies
 [**create_browser**](BrowserApi.md#create_browser) | **POST** /browser/create_browser | Create browser instance with optional persistent profile
 [**detect_coordinates**](BrowserApi.md#detect_coordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using vision
 [**dialog**](BrowserApi.md#dialog) | **POST** /browser/{browser_id}/dialog | Dialogs: get, accept, dismiss
 [**emulate**](BrowserApi.md#emulate) | **POST** /browser/{browser_id}/emulate | Emulation: set, clear, list_devices
+[**execute_cdp**](BrowserApi.md#execute_cdp) | **POST** /browser/{browser_id}/execute_cdp | Execute a Chrome DevTools Protocol command
 [**execute_script**](BrowserApi.md#execute_script) | **POST** /browser/{browser_id}/execute_script | Execute JavaScript
 [**fill_form**](BrowserApi.md#fill_form) | **POST** /browser/{browser_id}/fill_form | Fill multiple form fields
 [**get_cdp_endpoint**](BrowserApi.md#get_cdp_endpoint) | **GET** /browser/{browser_id}/get_cdp_endpoint | Get Chrome DevTools Protocol WebSocket URL for direct CDP access
@@ -386,6 +388,87 @@ No authorization required
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
+# **cookies**
+> GenericResponse cookies(browser_id, payload)
+
+Manage browser cookies
+
+Actions:
+- get: Get all cookies (including HttpOnly via CDP)
+- set: Set a cookie (requires cookie dict with name, value, domain, etc.)
+- delete: Delete specific cookie by name (and optionally domain)
+- clear: Delete all cookies
+
+Examples:
+- Get all: action="get"
+- Set: action="set", cookie={"name": "session", "value": "abc", "domain": ".example.com"}
+- Delete one: action="delete", name="session", domain=".example.com"
+- Clear all: action="clear"
+
+### Example
+
+
+```python
+import airbrowser_client
+from airbrowser_client.models.cookies_request import CookiesRequest
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to /api/v1
+# See configuration.py for a list of all supported configuration parameters.
+configuration = airbrowser_client.Configuration(
+    host = "/api/v1"
+)
+
+
+# Enter a context with an instance of the API client
+with airbrowser_client.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = airbrowser_client.BrowserApi(api_client)
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.CookiesRequest() # CookiesRequest | 
+
+    try:
+        # Manage browser cookies
+        api_response = api_instance.cookies(browser_id, payload)
+        print("The response of BrowserApi->cookies:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling BrowserApi->cookies: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **browser_id** | **str**|  | 
+ **payload** | [**CookiesRequest**](CookiesRequest.md)|  | 
+
+### Return type
+
+[**GenericResponse**](GenericResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
 # **create_browser**
 > GenericResponse create_browser(payload)
 
@@ -645,6 +728,84 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **browser_id** | **str**|  | 
  **payload** | [**EmulateRequest**](EmulateRequest.md)|  | 
+
+### Return type
+
+[**GenericResponse**](GenericResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **execute_cdp**
+> GenericResponse execute_cdp(browser_id, payload)
+
+Execute a Chrome DevTools Protocol command
+
+Provides direct access to CDP methods for advanced browser control.
+
+Common use cases:
+- Get all cookies: method="Network.getAllCookies"
+- Set cookie: method="Network.setCookie", params={"name": "...", "value": "...", "domain": "..."}
+- Delete cookies: method="Network.deleteCookies", params={"name": "...", "domain": "..."}
+
+Full CDP reference: https://chromedevtools.github.io/devtools-protocol/
+
+### Example
+
+
+```python
+import airbrowser_client
+from airbrowser_client.models.execute_cdp_request import ExecuteCdpRequest
+from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to /api/v1
+# See configuration.py for a list of all supported configuration parameters.
+configuration = airbrowser_client.Configuration(
+    host = "/api/v1"
+)
+
+
+# Enter a context with an instance of the API client
+with airbrowser_client.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = airbrowser_client.BrowserApi(api_client)
+    browser_id = 'browser_id_example' # str | 
+    payload = airbrowser_client.ExecuteCdpRequest() # ExecuteCdpRequest | 
+
+    try:
+        # Execute a Chrome DevTools Protocol command
+        api_response = api_instance.execute_cdp(browser_id, payload)
+        print("The response of BrowserApi->execute_cdp:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling BrowserApi->execute_cdp: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **browser_id** | **str**|  | 
+ **payload** | [**ExecuteCdpRequest**](ExecuteCdpRequest.md)|  | 
 
 ### Return type
 

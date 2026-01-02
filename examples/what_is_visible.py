@@ -69,10 +69,12 @@ def main():
                 return
 
             print(f"Page analysis completed in {analysis_time:.2f}s")
-            print(f"Model used: {analysis_result.model or 'Unknown'}")
+            # Access data from the response
+            data = analysis_result.data or {}
+            print(f"Model used: {data.get('model', 'Unknown')}")
 
             # Display the analysis
-            analysis = analysis_result.analysis or ""
+            analysis = data.get("analysis", "")
             if analysis:
                 print("\n" + "=" * 60)
                 print("COMPREHENSIVE PAGE ANALYSIS:")

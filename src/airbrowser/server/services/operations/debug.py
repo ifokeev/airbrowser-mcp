@@ -182,3 +182,42 @@ class DebugOperations:
 
         except Exception as e:
             return _error(f"get_cdp_endpoint failed: {str(e)}")
+
+    def execute_cdp(self, browser_id: str, method: str, params: dict | None = None) -> dict:
+        """Execute a Chrome DevTools Protocol command.
+
+        Provides direct access to CDP methods for advanced browser control:
+        - Network.getAllCookies - Get all cookies including HttpOnly
+        - Network.setCookie - Set a cookie with full control
+        - Network.deleteCookies - Delete specific cookies
+        - Page.captureScreenshot - Screenshot with format/quality options
+        - Runtime.evaluate - Execute JavaScript in page context
+        - DOM.getDocument - Get the DOM tree
+        - Emulation.setDeviceMetricsOverride - Device emulation
+
+        Full CDP reference: https://chromedevtools.github.io/devtools-protocol/
+
+        Args:
+            browser_id: The browser instance ID
+            method: CDP method name (e.g., "Network.getAllCookies")
+            params: Optional parameters for the CDP method
+
+        Returns:
+            dict with the CDP command result
+        """
+        try:
+            action = BrowserAction(
+                action="execute_cdp",
+                options={"method": method, "params": params or {}},
+            )
+            result = self.browser_pool.execute_action(browser_id, action)
+
+            if not result.success:
+                return _error(result.message)
+
+            # The result from CDP is in result.data["result"]
+            cdp_result = result.data.get("result", {}) if isinstance(result.data, dict) else {}
+            return _success(data=cdp_result, message=f"CDP {method} executed successfully")
+
+        except Exception as e:
+            return _error(f"execute_cdp failed: {str(e)}")
