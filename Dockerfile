@@ -109,7 +109,7 @@ RUN chmod +x /entrypoint.sh
 
 # Copy application code LAST (changes frequently)
 COPY src/ ./src/
-COPY setup.py README.md ./
+COPY setup.py README.md pyproject.toml ./
 ENV PYTHONPATH="/app/src"
 
 EXPOSE 8000 3000 5900 6080

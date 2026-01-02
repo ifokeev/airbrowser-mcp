@@ -1,12 +1,10 @@
 """Health check routes for Airbrowser API."""
 
-import time
-
 from flask_restx import Namespace, Resource
 from werkzeug.exceptions import HTTPException
 
 
-def create_health_namespace(api, browser_pool, schemas):
+def create_health_namespace(api, browser_ops, schemas):
     """Create and configure the health namespace."""
 
     health_ns = Namespace("health", description="Health and monitoring")
@@ -18,19 +16,18 @@ def create_health_namespace(api, browser_pool, schemas):
         def get(self):
             """Check the health status of the browser pool."""
             try:
-                pool_status = browser_pool.get_status()
-                if isinstance(pool_status, dict):
-                    is_healthy = pool_status.get("healthy", False)
-                    status_dict = pool_status
+                result = browser_ops.health_check()
+                if result.get("success"):
+                    data = result.get("data", {})
+                    return {
+                        "status": data.get("status", "unknown"),
+                        "version": data.get("version", "0.0.0"),
+                        "vision_enabled": data.get("vision_enabled", False),
+                        "pool": data.get("pool_metrics", {}),
+                        "timestamp": data.get("timestamp", 0),
+                    }
                 else:
-                    is_healthy = pool_status.healthy
-                    status_dict = pool_status.to_dict()
-
-                return {
-                    "status": "healthy" if is_healthy else "degraded",
-                    "pool": status_dict,
-                    "timestamp": time.time(),
-                }
+                    api.abort(500, result.get("error", "Health check failed"))
             except HTTPException:
                 raise
             except Exception as e:
@@ -41,22 +38,17 @@ def create_health_namespace(api, browser_pool, schemas):
         @health_ns.doc("prometheus_metrics")
         def get(self):
             """Get Prometheus-style metrics for monitoring."""
-            pool_status = browser_pool.get_status()
+            result = browser_ops.get_pool_status()
+            if not result.get("success"):
+                return "# Error getting pool status\n", 500, {"Content-Type": "text/plain"}
 
-            if isinstance(pool_status, dict):
-                total = pool_status.get("total_browsers", 0)
-                active = pool_status.get("active_browsers", 0)
-                available = pool_status.get("available_browsers", 0)
-                memory = pool_status.get("memory_usage_mb", 0)
-                cpu = pool_status.get("cpu_usage_percent", 0)
-                uptime = pool_status.get("uptime_seconds", 0)
-            else:
-                total = pool_status.total_browsers
-                active = pool_status.active_browsers
-                available = pool_status.available_browsers
-                memory = pool_status.memory_usage_mb
-                cpu = pool_status.cpu_usage_percent
-                uptime = pool_status.uptime_seconds
+            data = result.get("data", {})
+            total = data.get("total_browsers", 0)
+            active = data.get("active_browsers", 0)
+            available = data.get("available_browsers", 0)
+            memory = data.get("memory_usage_mb", 0)
+            cpu = data.get("cpu_usage_percent", 0)
+            uptime = data.get("uptime_seconds", 0)
 
             metrics = f"""# HELP browser_pool_total_browsers Total number of browsers
 # TYPE browser_pool_total_browsers gauge

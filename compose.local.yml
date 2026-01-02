@@ -31,6 +31,7 @@ services:
       - ./docker:/app/docker      # Supervisord configs
       - ./screenshots:/app/screenshots
       - ./state:/app/state        # Session restore state
+      - ./pyproject.toml:/app/pyproject.toml:ro  # Version info
       - browser-profiles:/app/browser-profiles
       - downloads:/app/downloads
     tmpfs:

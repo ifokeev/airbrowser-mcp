@@ -34,6 +34,8 @@ def register_response_schemas(api):
         "HealthStatus",
         {
             "status": fields.String(description="Health status"),
+            "version": fields.String(description="Server version"),
+            "vision_enabled": fields.Boolean(description="Whether AI vision tools are available"),
             "pool": fields.Raw(description="Pool status information"),
             "timestamp": fields.Float(description="Unix timestamp"),
         },

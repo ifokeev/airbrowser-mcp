@@ -80,7 +80,7 @@ def create_app():
     # Auto-generated routes for all browser operations (from BrowserOperations class)
     browser_ns = generate_browser_routes(api, browser_ops, app.schemas)
     pool_ns = create_pool_namespace(api, browser_pool, app.schemas)
-    health_ns = create_health_namespace(api, browser_pool, app.schemas)
+    health_ns = create_health_namespace(api, browser_ops, app.schemas)
     profiles_ns = create_profile_namespace(api, browser_pool, app.schemas)
 
     api.add_namespace(browser_ns, path="/browser")

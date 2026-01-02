@@ -1,7 +1,10 @@
 """Pool management operations (status, health check)."""
 
+import os
 import time
 from typing import Any
+
+from airbrowser import __version__
 
 from ..browser_pool import BrowserPoolAdapter
 from .response import error as _error
@@ -59,12 +62,14 @@ class PoolOperations:
             data = {
                 "status": "healthy" if is_healthy else "degraded",
                 "server": "Airbrowser",
-                "version": "1.0.0",
+                "version": __version__,
+                "vision_enabled": bool(os.getenv("OPENROUTER_API_KEY")),
                 "pool_metrics": {
                     "active_browsers": active,
                     "total_browsers": total,
                     "max_browsers": self.browser_pool.max_browsers,
                 },
+                "timestamp": time.time(),
             }
 
             if start_time:
