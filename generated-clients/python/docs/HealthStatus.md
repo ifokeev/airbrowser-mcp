@@ -6,6 +6,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **status** | **str** | Health status | [optional] 
+**version** | **str** | Server version | [optional] 
+**vision_enabled** | **bool** | Whether AI vision tools are available | [optional] 
 **pool** | **object** | Pool status information | [optional] 
 **timestamp** | **float** | Unix timestamp | [optional] 
 

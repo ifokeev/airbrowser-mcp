@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -29,6 +29,13 @@ class NetworkLogsRequest(BaseModel):
     action: StrictStr = Field(description="action")
     limit: Optional[StrictInt] = Field(default=None, description="limit")
     __properties: ClassVar[List[str]] = ["action", "limit"]
+
+    @field_validator('action')
+    def action_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['get', 'clear', 'enable', 'disable']):
+            raise ValueError("must be one of enum values ('get', 'clear', 'enable', 'disable')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

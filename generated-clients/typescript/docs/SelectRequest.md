@@ -6,7 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **selector** | **string** | selector | [default to undefined]
-**action** | **string** | action | [optional] [default to 'select']
+**action** | **string** | action | [optional] [default to ActionEnum_Select]
 **value** | **string** | value | [optional] [default to undefined]
 **text** | **string** | text | [optional] [default to undefined]
 **index** | **number** | index | [optional] [default to undefined]

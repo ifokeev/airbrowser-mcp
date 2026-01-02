@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -29,6 +29,13 @@ class BrowsersRequest(BaseModel):
     action: StrictStr = Field(description="action")
     browser_id: Optional[StrictStr] = Field(default=None, description="browser_id")
     __properties: ClassVar[List[str]] = ["action", "browser_id"]
+
+    @field_validator('action')
+    def action_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['list', 'info', 'close_all', 'kill', 'kill_all', 'restore']):
+            raise ValueError("must be one of enum values ('list', 'info', 'close_all', 'kill', 'kill_all', 'restore')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

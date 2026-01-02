@@ -6,6 +6,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **status** | **string** | Health status | [optional] [default to undefined]
+**version** | **string** | Server version | [optional] [default to undefined]
+**vision_enabled** | **boolean** | Whether AI vision tools are available | [optional] [default to undefined]
 **pool** | **object** | Pool status information | [optional] [default to undefined]
 **timestamp** | **number** | Unix timestamp | [optional] [default to undefined]
 
@@ -16,6 +18,8 @@ import { HealthStatus } from 'airbrowser-client';
 
 const instance: HealthStatus = {
     status,
+    version,
+    vision_enabled,
     pool,
     timestamp,
 };

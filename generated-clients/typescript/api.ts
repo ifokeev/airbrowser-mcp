@@ -41,12 +41,24 @@ export interface BrowsersRequest {
     /**
      * action
      */
-    'action': string;
+    'action': BrowsersRequestActionEnum;
     /**
      * browser_id
      */
     'browser_id'?: string;
 }
+
+export const BrowsersRequestActionEnum = {
+    List: 'list',
+    Info: 'info',
+    CloseAll: 'close_all',
+    Kill: 'kill',
+    KillAll: 'kill_all',
+    Restore: 'restore'
+} as const;
+
+export type BrowsersRequestActionEnum = typeof BrowsersRequestActionEnum[keyof typeof BrowsersRequestActionEnum];
+
 export interface ClickRequest {
     /**
      * selector
@@ -69,12 +81,22 @@ export interface ConsoleLogsRequest {
     /**
      * action
      */
-    'action': string;
+    'action': ConsoleLogsRequestActionEnum;
     /**
      * limit
      */
     'limit'?: number;
 }
+
+export const ConsoleLogsRequestActionEnum = {
+    Get: 'get',
+    Clear: 'clear',
+    Enable: 'enable',
+    Disable: 'disable'
+} as const;
+
+export type ConsoleLogsRequestActionEnum = typeof ConsoleLogsRequestActionEnum[keyof typeof ConsoleLogsRequestActionEnum];
+
 export interface CreateBrowserRequest {
     /**
      * uc
@@ -141,17 +163,26 @@ export interface DialogRequest {
     /**
      * action
      */
-    'action': string;
+    'action': DialogRequestActionEnum;
     /**
      * text
      */
     'text'?: string;
 }
+
+export const DialogRequestActionEnum = {
+    Get: 'get',
+    Accept: 'accept',
+    Dismiss: 'dismiss'
+} as const;
+
+export type DialogRequestActionEnum = typeof DialogRequestActionEnum[keyof typeof DialogRequestActionEnum];
+
 export interface EmulateRequest {
     /**
      * action
      */
-    'action'?: string;
+    'action'?: EmulateRequestActionEnum;
     /**
      * device
      */
@@ -177,6 +208,15 @@ export interface EmulateRequest {
      */
     'user_agent'?: string;
 }
+
+export const EmulateRequestActionEnum = {
+    Set: 'set',
+    Clear: 'clear',
+    ListDevices: 'list_devices'
+} as const;
+
+export type EmulateRequestActionEnum = typeof EmulateRequestActionEnum[keyof typeof EmulateRequestActionEnum];
+
 export interface ErrorResponse {
     /**
      * Operation success (false)
@@ -303,6 +343,14 @@ export interface HealthStatus {
      */
     'status'?: string;
     /**
+     * Server version
+     */
+    'version'?: string;
+    /**
+     * Whether AI vision tools are available
+     */
+    'vision_enabled'?: boolean;
+    /**
      * Pool status information
      */
     'pool'?: object;
@@ -315,13 +363,22 @@ export interface HistoryRequest {
     /**
      * action
      */
-    'action': string;
+    'action': HistoryRequestActionEnum;
 }
+
+export const HistoryRequestActionEnum = {
+    Back: 'back',
+    Forward: 'forward',
+    Refresh: 'refresh'
+} as const;
+
+export type HistoryRequestActionEnum = typeof HistoryRequestActionEnum[keyof typeof HistoryRequestActionEnum];
+
 export interface MouseRequest {
     /**
      * action
      */
-    'action': string;
+    'action': MouseRequestActionEnum;
     /**
      * selector
      */
@@ -339,6 +396,14 @@ export interface MouseRequest {
      */
     'by'?: string;
 }
+
+export const MouseRequestActionEnum = {
+    Hover: 'hover',
+    Drag: 'drag'
+} as const;
+
+export type MouseRequestActionEnum = typeof MouseRequestActionEnum[keyof typeof MouseRequestActionEnum];
+
 export interface NavigateBrowserRequest {
     /**
      * url
@@ -353,22 +418,42 @@ export interface NetworkLogsRequest {
     /**
      * action
      */
-    'action': string;
+    'action': NetworkLogsRequestActionEnum;
     /**
      * limit
      */
     'limit'?: number;
 }
+
+export const NetworkLogsRequestActionEnum = {
+    Get: 'get',
+    Clear: 'clear',
+    Enable: 'enable',
+    Disable: 'disable'
+} as const;
+
+export type NetworkLogsRequestActionEnum = typeof NetworkLogsRequestActionEnum[keyof typeof NetworkLogsRequestActionEnum];
+
 export interface PerformanceRequest {
     /**
      * action
      */
-    'action': string;
+    'action': PerformanceRequestActionEnum;
     /**
      * categories
      */
     'categories'?: string;
 }
+
+export const PerformanceRequestActionEnum = {
+    StartTrace: 'start_trace',
+    StopTrace: 'stop_trace',
+    Metrics: 'metrics',
+    Analyze: 'analyze'
+} as const;
+
+export type PerformanceRequestActionEnum = typeof PerformanceRequestActionEnum[keyof typeof PerformanceRequestActionEnum];
+
 export interface PoolScaled {
     /**
      * Operation success
@@ -519,7 +604,7 @@ export interface SelectRequest {
     /**
      * action
      */
-    'action'?: string;
+    'action'?: SelectRequestActionEnum;
     /**
      * value
      */
@@ -537,6 +622,14 @@ export interface SelectRequest {
      */
     'by'?: string;
 }
+
+export const SelectRequestActionEnum = {
+    Select: 'select',
+    Options: 'options'
+} as const;
+
+export type SelectRequestActionEnum = typeof SelectRequestActionEnum[keyof typeof SelectRequestActionEnum];
+
 export interface SnapshotRequest {
     /**
      * snapshot_type
@@ -547,7 +640,7 @@ export interface TabsRequest {
     /**
      * action
      */
-    'action': string;
+    'action': TabsRequestActionEnum;
     /**
      * url
      */
@@ -561,6 +654,17 @@ export interface TabsRequest {
      */
     'handle'?: string;
 }
+
+export const TabsRequestActionEnum = {
+    List: 'list',
+    New: 'new',
+    Switch: 'switch',
+    Close: 'close',
+    Current: 'current'
+} as const;
+
+export type TabsRequestActionEnum = typeof TabsRequestActionEnum[keyof typeof TabsRequestActionEnum];
+
 export interface TakeScreenshotRequest {
     /**
      * full_page
@@ -607,7 +711,7 @@ export interface WaitElementRequest {
     /**
      * until
      */
-    'until': string;
+    'until': WaitElementRequestUntilEnum;
     /**
      * timeout
      */
@@ -617,6 +721,14 @@ export interface WaitElementRequest {
      */
     'by'?: string;
 }
+
+export const WaitElementRequestUntilEnum = {
+    Visible: 'visible',
+    Hidden: 'hidden'
+} as const;
+
+export type WaitElementRequestUntilEnum = typeof WaitElementRequestUntilEnum[keyof typeof WaitElementRequestUntilEnum];
+
 
 /**
  * BrowserApi - axios parameter creator

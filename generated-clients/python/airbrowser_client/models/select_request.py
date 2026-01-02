@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -33,6 +33,16 @@ class SelectRequest(BaseModel):
     index: Optional[StrictInt] = Field(default=None, description="index")
     by: Optional[StrictStr] = Field(default='css', description="by")
     __properties: ClassVar[List[str]] = ["selector", "action", "value", "text", "index", "by"]
+
+    @field_validator('action')
+    def action_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['select', 'options']):
+            raise ValueError("must be one of enum values ('select', 'options')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

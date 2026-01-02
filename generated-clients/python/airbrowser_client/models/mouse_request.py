@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -32,6 +32,13 @@ class MouseRequest(BaseModel):
     target: Optional[StrictStr] = Field(default=None, description="target")
     by: Optional[StrictStr] = Field(default='css', description="by")
     __properties: ClassVar[List[str]] = ["action", "selector", "source", "target", "by"]
+
+    @field_validator('action')
+    def action_validate_enum(cls, value):
+        """Validates the enum"""
+        if value not in set(['hover', 'drag']):
+            raise ValueError("must be one of enum values ('hover', 'drag')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

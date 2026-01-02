@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
@@ -34,6 +34,16 @@ class EmulateRequest(BaseModel):
     mobile: Optional[StrictBool] = Field(default=None, description="mobile")
     user_agent: Optional[StrictStr] = Field(default=None, description="user_agent")
     __properties: ClassVar[List[str]] = ["action", "device", "width", "height", "device_scale_factor", "mobile", "user_agent"]
+
+    @field_validator('action')
+    def action_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['set', 'clear', 'list_devices']):
+            raise ValueError("must be one of enum values ('set', 'clear', 'list_devices')")
+        return value
 
     model_config = ConfigDict(
         populate_by_name=True,

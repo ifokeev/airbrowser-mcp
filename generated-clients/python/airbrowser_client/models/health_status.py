@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
@@ -27,9 +27,11 @@ class HealthStatus(BaseModel):
     HealthStatus
     """ # noqa: E501
     status: Optional[StrictStr] = Field(default=None, description="Health status")
+    version: Optional[StrictStr] = Field(default=None, description="Server version")
+    vision_enabled: Optional[StrictBool] = Field(default=None, description="Whether AI vision tools are available")
     pool: Optional[Dict[str, Any]] = Field(default=None, description="Pool status information")
     timestamp: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Unix timestamp")
-    __properties: ClassVar[List[str]] = ["status", "pool", "timestamp"]
+    __properties: ClassVar[List[str]] = ["status", "version", "vision_enabled", "pool", "timestamp"]
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -83,6 +85,8 @@ class HealthStatus(BaseModel):
 
         _obj = cls.model_validate({
             "status": obj.get("status"),
+            "version": obj.get("version"),
+            "vision_enabled": obj.get("vision_enabled"),
             "pool": obj.get("pool"),
             "timestamp": obj.get("timestamp")
         })

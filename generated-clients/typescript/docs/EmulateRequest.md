@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **string** | action | [optional] [default to 'set']
+**action** | **string** | action | [optional] [default to ActionEnum_Set]
 **device** | **string** | device | [optional] [default to undefined]
 **width** | **number** | width | [optional] [default to undefined]
 **height** | **number** | height | [optional] [default to undefined]
