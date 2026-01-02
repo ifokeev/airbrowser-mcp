@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.9.0...v1.10.0) (2026-01-02)
+
+
+### Features
+
+* **api:** add cookies and execute_cdp endpoints ([8b8bb90](https://github.com/ifokeev/airbrowser-mcp/commit/8b8bb909556f47c63bf832b88ccd2a4e81112ded))
+
 ## [1.9.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.8.1...v1.9.0) (2026-01-02)
 
 
