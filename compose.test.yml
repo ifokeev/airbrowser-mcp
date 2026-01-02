@@ -18,6 +18,8 @@ services:
       - SCREEN_HEIGHT=768
       # Disable session restore for tests (fresh start each time)
       - ENABLE_SESSION_RESTORE=false
+      # AI Vision (optional - enables vision tests when set)
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
     tmpfs:
       - /tmp:noexec,nosuid,size=500m
       - /dev/shm:rw,nosuid,nodev,exec,size=4g
