@@ -9,7 +9,7 @@ Practical examples showing common Airbrowser workflows.
 docker compose up --build
 
 # Install the Python client
-pip install -e generated-clients/python
+uv pip install -e generated-clients/python
 ```
 
 ## Examples
@@ -22,24 +22,40 @@ pip install -e generated-clients/python
 | [`parallel_browsers.py`](parallel_browsers.py) | Run multiple browsers concurrently |
 | [`proxy_rotation.py`](proxy_rotation.py) | Different proxy per browser instance |
 | [`what_is_visible.py`](what_is_visible.py) | AI vision analysis of page content |
+| [`cloudflare_captcha_vision.py`](cloudflare_captcha_vision.py) | AI vision to detect and click captcha (requires OPENROUTER_API_KEY) |
 
 ## Running Examples
 
 ```bash
 # Basic navigation
-python examples/basic_navigation.py
+uv run python examples/basic_navigation.py
 
 # Form automation
-python examples/form_automation.py
+uv run python examples/form_automation.py
 
-# MCP agent (requires: pip install fastmcp)
-python examples/mcp_agent_example.py
+# MCP agent (requires: uv pip install fastmcp)
+uv run python examples/mcp_agent_example.py
 
 # Parallel browsers
-python examples/parallel_browsers.py
+uv run python examples/parallel_browsers.py
 
 # Proxy rotation (edit PROXIES list first)
-python examples/proxy_rotation.py
+uv run python examples/proxy_rotation.py
+```
+
+### AI Vision Examples
+
+These examples require `OPENROUTER_API_KEY` to be set in the container:
+
+```bash
+# Start with vision enabled
+OPENROUTER_API_KEY=sk-or-... docker compose up
+
+# AI vision analysis
+uv run python examples/what_is_visible.py
+
+# Cloudflare captcha detection and click
+uv run python examples/cloudflare_captcha_vision.py
 ```
 
 ## API Reference

@@ -100,3 +100,17 @@ class TestExampleFiles:
 
         assert result.returncode == 0, f"Example failed:\nstdout: {result.stdout}\nstderr: {result.stderr}"
         assert "AI Vision Analysis Example" in result.stdout
+
+    @pytest.mark.skipif(
+        not os.environ.get("OPENROUTER_API_KEY"), reason="Requires OPENROUTER_API_KEY environment variable"
+    )
+    def test_cloudflare_captcha_vision(self):
+        """Test examples/cloudflare_captcha_vision.py runs without error."""
+        result = run_example("cloudflare_captcha_vision.py", timeout=120)
+
+        assert result.returncode == 0, f"Example failed:\nstdout: {result.stdout}\nstderr: {result.stderr}"
+        assert "Cloudflare Captcha - AI Vision Click Example" in result.stdout
+        assert "Vision tools enabled" in result.stdout
+        assert "Captcha checkbox detected!" in result.stdout
+        assert "Click successful" in result.stdout
+        assert "EXAMPLE COMPLETE" in result.stdout
