@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.9.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.8.1...v1.9.0) (2026-01-02)
+
+
+### Features
+
+* **api:** add version and vision_enabled to health endpoint ([e2cb276](https://github.com/ifokeev/airbrowser-mcp/commit/e2cb27644e3c173ab4e2d19472376824c59e9f85))
+* **examples:** add cloudflare captcha AI vision example ([c3c8315](https://github.com/ifokeev/airbrowser-mcp/commit/c3c8315fbe368ebec10a537c7f93bf9584d3677a))
+
+
+### Bug Fixes
+
+* **tests:** check vision_enabled from server instead of local env ([f769439](https://github.com/ifokeev/airbrowser-mcp/commit/f7694399110bdb27ada21cb9b81f97eac386d2dc))
+
 ## [1.8.1](https://github.com/ifokeev/airbrowser-mcp/compare/v1.8.0...v1.8.1) (2026-01-01)
 
 
