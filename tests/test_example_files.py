@@ -91,22 +91,24 @@ class TestExampleFiles:
         assert "RESULTS SUMMARY" in result.stdout
         assert "Completed:" in result.stdout
 
-    @pytest.mark.skipif(
-        not os.environ.get("OPENROUTER_API_KEY"), reason="Requires OPENROUTER_API_KEY environment variable"
-    )
     def test_what_is_visible(self):
         """Test examples/what_is_visible.py runs without error."""
         result = run_example("what_is_visible.py", timeout=120)
 
+        # Check if vision is disabled on server (graceful skip)
+        if "Vision tools are not available" in result.stdout:
+            pytest.skip("Vision not enabled on server (OPENROUTER_API_KEY not set)")
+
         assert result.returncode == 0, f"Example failed:\nstdout: {result.stdout}\nstderr: {result.stderr}"
         assert "AI Vision Analysis Example" in result.stdout
 
-    @pytest.mark.skipif(
-        not os.environ.get("OPENROUTER_API_KEY"), reason="Requires OPENROUTER_API_KEY environment variable"
-    )
     def test_cloudflare_captcha_vision(self):
         """Test examples/cloudflare_captcha_vision.py runs without error."""
         result = run_example("cloudflare_captcha_vision.py", timeout=120)
+
+        # Check if vision is disabled on server (graceful skip)
+        if "Vision tools are not available" in result.stdout:
+            pytest.skip("Vision not enabled on server (OPENROUTER_API_KEY not set)")
 
         assert result.returncode == 0, f"Example failed:\nstdout: {result.stdout}\nstderr: {result.stderr}"
         assert "Cloudflare Captcha - AI Vision Click Example" in result.stdout

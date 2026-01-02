@@ -13,7 +13,7 @@ import os
 import time
 
 from airbrowser_client import ApiClient, Configuration
-from airbrowser_client.api import BrowserApi
+from airbrowser_client.api import BrowserApi, HealthApi
 
 API_BASE = os.environ.get("API_BASE_URL", "http://localhost:18080/api/v1")
 
@@ -26,6 +26,17 @@ def main():
     config = Configuration(host=API_BASE)
 
     with ApiClient(config) as client:
+        # Check if vision is enabled
+        health_api = HealthApi(client)
+        health = health_api.health_check()
+        vision_enabled = getattr(health, "vision_enabled", False)
+        if not vision_enabled:
+            print("\nERROR: Vision tools are not available!")
+            print("Start the container with: OPENROUTER_API_KEY=sk-or-... docker compose up")
+            return
+
+        print("\n✓ Vision tools enabled")
+
         api = BrowserApi(client)
 
         # Create browser
