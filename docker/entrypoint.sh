@@ -179,7 +179,7 @@ if [ "$FLUXBOX_WORKSPACES" = "1" ]; then
   fi
 fi
 
-fluxbox -display $DISPLAY &
+fluxbox -display $DISPLAY 2>/dev/null &
 FLUXBOX_PID=$!
 
 # Wait for window manager

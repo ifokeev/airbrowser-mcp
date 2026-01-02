@@ -39,9 +39,9 @@ log_file = log_dir / f"browser_{browser_id}_{datetime.now().strftime('%Y%m%d_%H%
 file_handler = logging.FileHandler(log_file)
 file_handler.setLevel(logging.DEBUG)
 
-# Console handler for Docker logs (stdout)
-console_handler = logging.StreamHandler(sys.stdout)
-console_handler.setLevel(logging.INFO)
+# Console handler for Docker logs (stderr - captured by docker from subprocesses)
+console_handler = logging.StreamHandler(sys.stderr)
+console_handler.setLevel(logging.DEBUG)  # Show all logs in docker compose logs
 
 # Formatter
 formatter = logging.Formatter(
@@ -66,76 +66,69 @@ from airbrowser.server.browser.utils import kill_child_processes
 
 def create_browser(config: dict):
     """Create and configure a SeleniumBase UC browser instance."""
-    # Temporarily redirect stdout/stderr during initialization
-    old_stdout = sys.stdout
-    old_stderr = sys.stderr
-    sys.stdout = open(os.devnull, "w")
-    sys.stderr = open(os.devnull, "w")
+    from seleniumbase import Driver
+
+    proxy = config.get("proxy")
+    user_agent = config.get("user_agent")
+    profile_name = config.get("profile_name")
+
+    # UC (undetected chrome) + CDP mode are always enabled
+    opts = {
+        "browser": "chrome",
+        "uc": True,
+        "log_cdp": False,
+        "uc_cdp": True,
+        "proxy": proxy.replace("http://", "") if proxy else None,
+        # Allow CDP WebSocket connections from any origin (required for CDP proxy)
+        "chromium_arg": "--remote-allow-origins=*",
+    }
+
+    # Set user_data_dir for persistent profile
+    if profile_name:
+        profiles_dir = os.environ.get("PROFILES_DIR", "/app/browser-profiles")
+        user_data_dir = f"{profiles_dir}/{profile_name}"
+        Path(user_data_dir).mkdir(parents=True, exist_ok=True)
+        opts["user_data_dir"] = user_data_dir
+        logger.info(f"Using profile '{profile_name}' at {user_data_dir}")
+
+    if user_agent:
+        opts["user_agent"] = user_agent
+    if config.get("disable_images"):
+        opts["block_images"] = True
+    if config.get("disable_gpu"):
+        opts["disable_gpu"] = True
+
+    logger.info(f"Creating browser with options: {opts}")
 
     try:
-        from seleniumbase import Driver
-
-        proxy = config.get("proxy")
-        user_agent = config.get("user_agent")
-        profile_name = config.get("profile_name")
-
-        # UC (undetected chrome) + CDP mode are always enabled
-        opts = {
-            "browser": "chrome",
-            "uc": True,
-            "log_cdp": False,
-            "uc_cdp": True,
-            "proxy": proxy.replace("http://", "") if proxy else None,
-            # Allow CDP WebSocket connections from any origin (required for CDP proxy)
-            "chromium_arg": "--remote-allow-origins=*",
-        }
-
-        # Set user_data_dir for persistent profile
-        if profile_name:
-            profiles_dir = os.environ.get("PROFILES_DIR", "/app/browser-profiles")
-            user_data_dir = f"{profiles_dir}/{profile_name}"
-            Path(user_data_dir).mkdir(parents=True, exist_ok=True)
-            opts["user_data_dir"] = user_data_dir
-            logger.info(f"Using profile '{profile_name}' at {user_data_dir}")
-
-        if user_agent:
-            opts["user_agent"] = user_agent
-        if config.get("disable_images"):
-            opts["block_images"] = True
-        if config.get("disable_gpu"):
-            opts["disable_gpu"] = True
-
-        logger.info(f"Creating browser with options: {opts}")
         driver = Driver(**opts)
-        logger.info(f"Browser created successfully, session_id: {getattr(driver, 'session_id', 'unknown')}")
+    except Exception as e:
+        logger.error(f"Failed to create Driver: {e}")
+        raise
 
-        # Set window position and size
-        try:
-            driver.set_window_position(0, 0)
-            window_size = config.get("window_size")
-            if window_size:
-                # Use specified size
-                if isinstance(window_size, list | tuple) and len(window_size) >= 2:
-                    width, height = int(window_size[0]), int(window_size[1])
-                elif isinstance(window_size, str) and "," in window_size:
-                    width, height = map(int, window_size.split(","))
-                else:
-                    width, height = None, None
-                if width and height:
-                    driver.set_window_size(width, height)
+    logger.info(f"Browser created successfully, session_id: {getattr(driver, 'session_id', 'unknown')}")
+
+    # Set window position and size
+    try:
+        driver.set_window_position(0, 0)
+        window_size = config.get("window_size")
+        if window_size:
+            # Use specified size
+            if isinstance(window_size, list | tuple) and len(window_size) >= 2:
+                width, height = int(window_size[0]), int(window_size[1])
+            elif isinstance(window_size, str) and "," in window_size:
+                width, height = map(int, window_size.split(","))
             else:
-                # No size specified - maximize
-                driver.maximize_window()
-        except Exception as e:
-            logger.warning(f"Could not set window size: {e}")
+                width, height = None, None
+            if width and height:
+                driver.set_window_size(width, height)
+        else:
+            # No size specified - maximize
+            driver.maximize_window()
+    except Exception as e:
+        logger.warning(f"Could not set window size: {e}")
 
-        return driver
-
-    finally:
-        sys.stdout.close()
-        sys.stderr.close()
-        sys.stdout = old_stdout
-        sys.stderr = old_stderr
+    return driver
 
 
 def run_command_loop(driver, browser_id: str, status_file: Path, cmd_dir: Path, resp_dir: Path):

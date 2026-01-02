@@ -231,13 +231,19 @@ def main():
     print("Swagger UI available at: http://localhost:8000/docs/")
 
     # Start MCP server if enabled
-    if mcp_integration:
+    # Only start in the reloader child process (WERKZEUG_RUN_MAIN=true) or when not using reloader
+    # This prevents the MCP server from starting twice in debug mode
+    is_reloader_child = os.environ.get("WERKZEUG_RUN_MAIN") == "true"
+    debug_mode = _env_truthy("DEBUG", False)
+    should_start_mcp = not debug_mode or is_reloader_child
+
+    if mcp_integration and should_start_mcp:
         run_mcp_server_thread(mcp_integration)
-    else:
+    elif not mcp_integration:
         print("MCP server is disabled. Set ENABLE_MCP=true to enable.")
 
     # Run Flask app
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8000)), debug=_env_truthy("DEBUG", False), threaded=True)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8000)), debug=debug_mode, threaded=True)
 
 
 if __name__ == "__main__":

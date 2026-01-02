@@ -81,11 +81,12 @@ class BrowserInstance:
             # Launch browser in separate process with full command support
             cmd = ["python3", "/app/src/airbrowser/server/browser/launcher.py", self.browser_id, json.dumps(config)]
 
-            # Start process without waiting
+            # Start process - inherit stderr so launcher logs appear in docker compose logs
+            # We can still get error info from the status file if browser creation fails
             process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.DEVNULL,
-                stderr=subprocess.PIPE,
+                stderr=None,  # Inherit stderr so logs go to docker compose logs
                 env={**os.environ, "DISPLAY": ":99", "HOME": "/home/browseruser", "PYTHONPATH": "/app/src"},
             )
 
@@ -100,9 +101,21 @@ class BrowserInstance:
             while time.time() - start_time < timeout:
                 # Check if process died
                 if process.poll() is not None:
-                    stderr = process.stderr.read().decode() if process.stderr else ""
                     self.status = "error"
-                    error_msg = f"Browser process exited with code {process.returncode}. Stderr: {stderr}"
+                    # Read error details from status file if available
+                    error_details = ""
+                    if status_file.exists():
+                        try:
+                            with open(status_file) as f:
+                                status_data = json.load(f)
+                            error_details = status_data.get("error", "")
+                            if status_data.get("traceback"):
+                                error_details += f"\n{status_data['traceback']}"
+                        except Exception:
+                            pass
+                    error_msg = f"Browser process exited with code {process.returncode}"
+                    if error_details:
+                        error_msg += f". Error: {error_details}"
                     logger.error(f"Browser {self.browser_id} process died: {error_msg}")
                     return {"status": "error", "message": error_msg}
 
@@ -129,26 +142,19 @@ class BrowserInstance:
 
                 time.sleep(0.5)
 
-            # Timeout - kill the process and capture stderr
+            # Timeout - kill the process
             if process.poll() is None:
                 process.terminate()
                 time.sleep(1)
                 if process.poll() is None:
                     process.kill()
 
-                # Try to read any stderr
-                stderr = ""
-                try:
-                    stderr = process.stderr.read().decode() if process.stderr else ""
-                except:
-                    pass
-
-                logger.error(f"Browser {self.browser_id} creation timed out. Stderr: {stderr}")
+                logger.error(f"Browser {self.browser_id} creation timed out")
 
             self.status = "error"
             return {
                 "status": "error",
-                "message": f"Browser creation timed out. Last stderr: {stderr if stderr else 'No stderr captured'}",
+                "message": "Browser creation timed out",
             }
         except Exception as e:
             self.status = "error"
