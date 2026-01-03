@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.11.0...v1.12.0) (2026-01-03)
+
+
+### Features
+
+* **api:** expose cpu and memory metrics ([e4d3b0d](https://github.com/ifokeev/airbrowser-mcp/commit/e4d3b0d01f42c29e222009d95e53bc1bd71d9c21))
+
 ## [1.11.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.10.2...v1.11.0) (2026-01-03)
 
 
