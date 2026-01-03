@@ -342,3 +342,30 @@ jobs:
       - name: Cleanup
         if: always()
         run: docker compose down
+
+  notify-discord:
+    needs:
+      - build
+      - test-linux
+      - test-mac
+      - test-windows
+      - publish-pypi
+      - publish-npm
+    runs-on: ubuntu-latest
+    if: ${{ success() }}
+    steps:
+      - name: Post release update to Discord
+        env:
+          DISCORD_RELEASE_WEBHOOK: ${{ secrets.DISCORD_RELEASE_WEBHOOK }}
+          VERSION: ${{ needs.build.outputs.version }}
+          REPO: ${{ github.repository }}
+        run: |
+          release_url="https://github.com/${REPO}/releases/tag/v${VERSION}"
+          changelog_url="https://github.com/${REPO}/blob/master/CHANGELOG.md"
+          payload=$(cat <<EOF
+          {
+            "content": "New release **v${VERSION}** is live: ${release_url}\nChangelog: ${changelog_url}"
+          }
+          EOF
+          )
+          curl -sS -X POST -H "Content-Type: application/json" -d "${payload}" "${DISCORD_RELEASE_WEBHOOK}"
