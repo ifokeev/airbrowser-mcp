@@ -48,6 +48,12 @@ When running commands with verbose output (tests, builds, logs):
 - Example: `./scripts/run_tests.sh 2>&1 | tail -10`
 - Never stream full test logs, build logs, or large file contents
 
+### File Size Limits
+**⚠️ Keep files under 1000 lines.** Prefer creating multiple smaller files over one large "god object" file.
+- If a file approaches 1000 lines, refactor into logical modules
+- Split by responsibility: separate concerns into different files
+- Better: 5 files at 200 lines each than 1 file at 1000 lines
+
 ### AGENTS.md
 **AGENTS.md is for OpenAI Codex CLI, not project documentation.** Do not reference it as documentation in README or other files.
 
