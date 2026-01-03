@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.10.1](https://github.com/ifokeev/airbrowser-mcp/compare/v1.10.0...v1.10.1) (2026-01-03)
+
+
+### Bug Fixes
+
+* **logging:** make browser launcher logs visible in docker compose logs ([67134ae](https://github.com/ifokeev/airbrowser-mcp/commit/67134ae26587417505f31eefaee13cef6db65ca5))
+* **proxy:** implement CDP-based proxy authentication ([823c054](https://github.com/ifokeev/airbrowser-mcp/commit/823c054eb158235747d90bbbd8bf5a500aebd6cf))
+
 ## [1.10.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.9.0...v1.10.0) (2026-01-02)
 
 
