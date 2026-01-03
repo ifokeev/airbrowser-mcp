@@ -64,13 +64,23 @@ class TestExampleFiles:
         assert "Screenshot saved: None" not in result.stdout, "screenshot_url should not be None"
         assert "Page title: None" not in result.stdout, "title should not be None"
 
+    @pytest.mark.skipif(
+        not os.environ.get("TEST_PROXY"),
+        reason="TEST_PROXY env var not set - skipping proxy test",
+    )
     def test_proxy_rotation(self):
-        """Test examples/proxy_rotation.py runs without error."""
-        result = run_example("proxy_rotation.py")
+        """Test proxy rotation with a real proxy verifies IP changes.
+
+        Set TEST_PROXY env var to run: TEST_PROXY=http://user:pass@host:port
+        """
+        result = run_example("proxy_rotation.py", timeout=120)
 
         assert result.returncode == 0, f"Example failed:\nstdout: {result.stdout}\nstderr: {result.stderr}"
         assert "Proxy Rotation Example" in result.stdout
-        assert "Detected IP:" in result.stdout
+        assert "Unique IPs detected: 2" in result.stdout, (
+            "Proxy should show different IP than direct connection.\n" f"stdout: {result.stdout}"
+        )
+        assert "Proxy rotation is working correctly!" in result.stdout
 
     def test_form_automation(self):
         """Test examples/form_automation.py runs without error."""

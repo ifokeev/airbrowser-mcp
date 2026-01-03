@@ -87,6 +87,7 @@ jobs:
       - name: Run integration tests
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          TEST_PROXY: ${{ secrets.TEST_PROXY }}
         run: |
           chmod +x ./scripts/run_tests.sh
           ./scripts/run_tests.sh 2>&1 | tail -50

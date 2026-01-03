@@ -7,6 +7,7 @@ useful for avoiding rate limits and IP blocks during automation.
 """
 
 import os
+import sys
 import time
 
 from airbrowser_client import ApiClient, Configuration
@@ -15,14 +16,23 @@ from airbrowser_client.api import BrowserApi
 # Configuration - use env var for Docker/CI, default for local dev
 API_BASE = os.environ.get("API_BASE_URL", "http://localhost:18080/api/v1")
 
-# Example proxy list (replace with your actual proxies)
-# Supports: http://, https://, socks5://
-# With auth: http://user:pass@host:port
+# Get proxy from environment variable
+# Set TEST_PROXY env var: http://user:pass@host:port
+TEST_PROXY = os.environ.get("TEST_PROXY")
+
+if not TEST_PROXY:
+    print("ERROR: TEST_PROXY environment variable is required")
+    print("Usage: TEST_PROXY=http://user:pass@host:port python proxy_rotation.py")
+    print("\nSupported formats:")
+    print("  - http://user:pass@host:port")
+    print("  - socks5://user:pass@host:port")
+    print("  - http://host:port (no auth)")
+    sys.exit(1)
+
+# Compare direct connection vs proxy to verify IP changes
 PROXIES = [
-    # "http://user:pass@proxy1.example.com:8080",
-    # "socks5://user:pass@proxy2.example.com:1080",
-    # "http://proxy3.example.com:3128",
-    None,  # No proxy (direct connection) - for testing
+    None,  # Direct connection first (to get baseline IP)
+    TEST_PROXY,  # Then proxy (should show different IP)
 ]
 
 
@@ -103,10 +113,11 @@ def main():
     print("=" * 60)
 
     for r in results:
+        proxy_str = r["proxy"] or "direct"
         if r["success"]:
-            print(f"[OK]     {r['proxy']:40} -> IP: {r['ip']}")
+            print(f"[OK]     {proxy_str:40} -> IP: {r['ip']}")
         else:
-            print(f"[FAILED] {r['proxy']:40} -> {r.get('error', 'unknown')}")
+            print(f"[FAILED] {proxy_str:40} -> {r.get('error', 'unknown')}")
 
     # Check for unique IPs
     unique_ips = {r["ip"] for r in results if r.get("success")}
@@ -129,11 +140,8 @@ PROXY CONFIGURATION TIPS
    - SOCKS5: socks5://host:port
    - With auth: http://user:pass@host:port
 
-2. Recommended proxy providers for web automation:
-   - Bright Data (brightdata.com) - residential proxies
-   - Oxylabs (oxylabs.io) - datacenter & residential
-   - SmartProxy (smartproxy.com) - rotating residential
-   - IPRoyal (iproyal.com) - budget option
+2. Recommended proxy provider:
+   - DataImpulse (https://dataimpulse.com/?aff=250254) - affordable residential proxies
 
 3. Best practices:
    - Use residential proxies for anti-bot protected sites

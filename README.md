@@ -63,7 +63,7 @@ Open **http://localhost:18080** - all services available:
 - 100+ concurrent browsers
 - Persistent profiles & cookies
 - Tab management
-- Proxy per browser
+- Proxy per browser ([DataImpulse](https://dataimpulse.com/?aff=250254) recommended)
 - MCP for AI agents
 - AI vision tools (optional)
 
