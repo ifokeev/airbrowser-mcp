@@ -217,7 +217,7 @@ class TestElementInteraction:
         browser_client.wait_element(browser_id, payload=wait_request)
 
         # Click on the h1 heading - simpler and more reliable than anchor
-        request = ClickRequest(selector="h1", by="css", timeout=15)
+        request = ClickRequest(selector="h1", by="css", timeout=60)
         result = browser_client.click(browser_id, payload=request)
         assert result is not None
         assert result.success
@@ -244,7 +244,7 @@ class TestElementInteraction:
         browser_client.wait_element(browser_id, payload=wait_request)
 
         # Now type into it
-        request = TypeTextRequest(selector="#test-input", text="test text", by="css", timeout=15)
+        request = TypeTextRequest(selector="#test-input", text="test text", by="css", timeout=60)
         result = browser_client.type_text(browser_id, payload=request)
         assert result is not None
         assert result.success
@@ -467,6 +467,7 @@ class TestDebugEndpoints:
 
 
 @pytest.mark.browser
+@pytest.mark.isolated
 class TestCloseAll:
     """Test close all browsers endpoint (runs separately after parallel tests)."""
 

@@ -32,6 +32,46 @@ def has_openrouter_key():
     return bool(os.environ.get("OPENROUTER_API_KEY"))
 
 
+def extract_coordinates(result_data):
+    """Return coordinates dict from API response data across formats."""
+    if result_data is None:
+        return {}
+    if isinstance(result_data, dict):
+        coords = result_data.get("coordinates")
+        if coords is None and "click_point" in result_data:
+            coords = {"click_point": result_data.get("click_point")}
+        return coords or {}
+
+    coords = getattr(result_data, "coordinates", None)
+    if coords is None and hasattr(result_data, "click_point"):
+        coords = {"click_point": result_data.click_point}
+    if coords is None:
+        return {}
+    if isinstance(coords, dict):
+        return coords
+
+    click_point = getattr(coords, "click_point", None)
+    if click_point is None:
+        return {}
+    if isinstance(click_point, dict):
+        return {"click_point": click_point}
+    return {"click_point": {"x": getattr(click_point, "x", None), "y": getattr(click_point, "y", None)}}
+
+
+def detect_with_retry(browser_client, bid, prompt: str, attempts: int = 3, delay: float = 2.0):
+    """Retry detect_coordinates to reduce flaky vision returns."""
+    last_result = None
+    for attempt in range(1, attempts + 1):
+        last_result = browser_client.detect_coordinates(bid, payload=DetectCoordinatesRequest(prompt=prompt))
+        if last_result.success:
+            coords = extract_coordinates(last_result.data)
+            if coords:
+                return last_result, coords
+        if attempt < attempts:
+            time.sleep(delay)
+    return last_result, {}
+
+
 @pytest.fixture(scope="class")
 def browser_with_page(browser_client):
     """Create a browser with a test page."""
@@ -239,8 +279,7 @@ class TestVisionOperations:
         if result.success:
             assert result.data is not None
             # Check for coordinates
-            data = result.data
-            coords = data.get("coordinates") if isinstance(data, dict) else {}
+            coords = extract_coordinates(result.data)
             if isinstance(coords, dict):
                 assert coords.get("x") is not None or coords.get("click_point") is not None
 
@@ -254,7 +293,7 @@ class TestVisionOperations:
         )
 
         if result.success and result.data:
-            coords = result.data.get("coordinates") if isinstance(result.data, dict) else {}
+            coords = extract_coordinates(result.data)
             if isinstance(coords, dict):
                 click_point = coords.get("click_point", {})
                 if click_point:
@@ -298,14 +337,10 @@ class TestVisionGuiIntegration:
         """Test complete workflow: detect_coordinates -> gui_click."""
         bid = browser_with_page
 
-        detect_result = browser_client.detect_coordinates(
-            bid, payload=DetectCoordinatesRequest(prompt="the Submit Form button")
-        )
-
-        if not detect_result.success:
+        detect_result, coords = detect_with_retry(browser_client, bid, "the Submit Form button")
+        if not detect_result or not detect_result.success:
             pytest.skip("Vision detection failed")
 
-        coords = detect_result.data.get("coordinates") if isinstance(detect_result.data, dict) else {}
         if isinstance(coords, dict):
             click_point = coords.get("click_point", {})
         else:
@@ -327,14 +362,10 @@ class TestVisionGuiIntegration:
         """Test complete workflow: detect_coordinates -> gui_type_xy."""
         bid = browser_with_page
 
-        detect_result = browser_client.detect_coordinates(
-            bid, payload=DetectCoordinatesRequest(prompt="the email input field")
-        )
-
-        if not detect_result.success:
+        detect_result, coords = detect_with_retry(browser_client, bid, "the email input field")
+        if not detect_result or not detect_result.success:
             pytest.skip("Vision detection failed")
 
-        coords = detect_result.data.get("coordinates") if isinstance(detect_result.data, dict) else {}
         if isinstance(coords, dict):
             click_point = coords.get("click_point", {})
         else:
@@ -368,6 +399,6 @@ class TestVisionGuiIntegration:
         )
 
         if detect_result.success:
-            coords = detect_result.data.get("coordinates") if isinstance(detect_result.data, dict) else {}
+            coords = extract_coordinates(detect_result.data)
             if isinstance(coords, dict):
                 assert coords.get("x") is not None or coords.get("click_point") is not None

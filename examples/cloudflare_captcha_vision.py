@@ -14,10 +14,36 @@ Requirements:
 import os
 import time
 
-from airbrowser_client import ApiClient, Configuration
+from airbrowser_client import ApiClient, ApiException, Configuration
 from airbrowser_client.api import BrowserApi, HealthApi
 
 API_BASE = os.environ.get("API_BASE_URL", "http://localhost:18080/api/v1")
+
+
+def detect_checkbox(api: BrowserApi, browser_id: str, attempts: int = 3, delay: int = 5):
+    """Retry detection to handle slow Cloudflare loads."""
+    last_error = ""
+    for attempt in range(1, attempts + 1):
+        detect_result = api.detect_coordinates(
+            browser_id=browser_id,
+            payload={"prompt": "the 'Verify you are human' checkbox"},
+        )
+        if detect_result.success:
+            return detect_result
+
+        error_msg = getattr(detect_result, "error", None) or getattr(detect_result, "message", "Unknown error")
+        last_error = error_msg
+        error_lower = error_msg.lower()
+        if "loading" in error_lower or "not present" in error_lower:
+            print(f"Captcha not ready (attempt {attempt}/{attempts}): {error_msg}")
+            if attempt < attempts:
+                time.sleep(delay)
+                continue
+        print(f"Detection failed: {error_msg}")
+        return None
+
+    print(f"Captcha checkbox not detected after {attempts} attempts: {last_error}")
+    return None
 
 
 def main():
@@ -50,11 +76,16 @@ def main():
         try:
             # Navigate to Cloudflare login
             print("\nNavigating to Cloudflare login page...")
-            api.navigate_browser(
-                browser_id=browser_id,
-                payload={"url": "https://dash.cloudflare.com/login", "timeout": 30},
-            )
-            print("Navigation successful")
+            try:
+                api.navigate_browser(
+                    browser_id=browser_id,
+                    payload={"url": "https://dash.cloudflare.com/login", "timeout": 30},
+                )
+                print("Navigation successful")
+            except ApiException as exc:
+                print("Skipping: Cloudflare page unavailable or blocked.")
+                print(f"Reason: {exc}")
+                return
 
             # Wait for page to fully load (captcha needs time to render)
             print("Waiting for page and captcha to load (10s)...")
@@ -70,10 +101,16 @@ def main():
             print("STEP 1: Detecting captcha checkbox with AI vision...")
             print("-" * 40)
 
-            detect_result = api.detect_coordinates(
-                browser_id=browser_id,
-                payload={"prompt": "the 'Verify you are human' checkbox"},
-            )
+            try:
+                detect_result = detect_checkbox(api, browser_id)
+            except ApiException as exc:
+                print("Skipping: Vision detection failed (likely Cloudflare unavailable).")
+                print(f"Reason: {exc}")
+                return
+
+            if not detect_result:
+                print("Captcha checkbox not detected; page may be loading or protected.")
+                return
 
             if not detect_result.success:
                 error_msg = getattr(detect_result, "error", None) or getattr(detect_result, "message", "Unknown error")
@@ -114,11 +151,13 @@ def main():
 
                 # Re-detect after scrolling since coordinates have changed
                 print("Re-detecting captcha position after scroll...")
-                detect_result = api.detect_coordinates(
-                    browser_id=browser_id,
-                    payload={"prompt": "the 'Verify you are human' checkbox"},
-                )
-                if detect_result.success:
+                try:
+                    detect_result = detect_checkbox(api, browser_id)
+                except ApiException as exc:
+                    print("Skipping: Vision detection failed after scroll.")
+                    print(f"Reason: {exc}")
+                    return
+                if detect_result and detect_result.success:
                     data = detect_result.data or {}
                     click_point = data.get("click_point", {})
                     x = click_point.get("x")

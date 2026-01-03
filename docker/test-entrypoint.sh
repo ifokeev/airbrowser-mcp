@@ -36,21 +36,42 @@ echo ""
 # Update conftest to use the Docker service URL
 export API_BASE_URL="${BROWSER_POOL_URL}/api/v1"
 
-# Run pytest with any additional args
+# Run pytest - uses settings from pytest.ini
 cd /app/tests
 
-# Combine default args with any user-provided args
-# -n auto uses all CPU cores, -q for quiet output (faster)
-PYTEST_DEFAULT_ARGS="--tb=short -q"
 PYTEST_EXTRA_ARGS="${PYTEST_ARGS:-}"
 
-# Run tests sequentially to avoid fixture conflicts with class-scoped browser fixtures
-# Note: Parallelism can be achieved within tests using multiple browsers/tabs from the pool
-if [ $# -eq 0 ] && [ -z "$PYTEST_EXTRA_ARGS" ]; then
-    echo "Running tests sequentially (browser fixtures are class-scoped)..."
-    exec pytest $PYTEST_DEFAULT_ARGS -n 1
-elif [ -z "$PYTEST_EXTRA_ARGS" ]; then
-    exec pytest $PYTEST_DEFAULT_ARGS -n 1
-else
-    exec pytest $PYTEST_DEFAULT_ARGS $PYTEST_EXTRA_ARGS
+echo "Running tests with 4 parallel workers..."
+
+# Base marker filter from pytest.ini
+BASE_MARKERS="not slow and not external"
+
+# Allow pytest to return non-zero without exiting the script.
+set +e
+
+# Run parallel tests first (excluding isolated tests that use close_all/kill_all)
+echo "=== Phase 1: Parallel tests ==="
+pytest -m "$BASE_MARKERS and not isolated" $PYTEST_EXTRA_ARGS
+PARALLEL_EXIT=$?
+if [ $PARALLEL_EXIT -eq 5 ]; then
+    echo "No parallel tests selected."
+    PARALLEL_EXIT=0
+fi
+
+# Run isolated tests sequentially (they use close_all/kill_all)
+echo ""
+echo "=== Phase 2: Isolated tests (sequential) ==="
+pytest -m "$BASE_MARKERS and isolated" -n 1 $PYTEST_EXTRA_ARGS
+ISOLATED_EXIT=$?
+if [ $ISOLATED_EXIT -eq 5 ]; then
+    echo "No isolated tests selected."
+    ISOLATED_EXIT=0
+fi
+
+# Re-enable exit-on-error for any subsequent commands.
+set -e
+
+# Exit with failure if either phase failed
+if [ $PARALLEL_EXIT -ne 0 ] || [ $ISOLATED_EXIT -ne 0 ]; then
+    exit 1
 fi

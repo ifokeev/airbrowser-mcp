@@ -221,6 +221,7 @@ class TestBrowserWithProfile:
         # Cleanup
         browser_client.close_browser(result2.data["browser_id"])
 
+    @pytest.mark.isolated
     def test_profile_released_on_close_all(self, browser_client, profiles_client, test_profile):
         """Test that profile is released when close_all is called."""
         # Create browser with profile

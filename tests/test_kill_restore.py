@@ -5,9 +5,15 @@ Test suite for browser kill and restore functionality.
 Tests the kill (save state) and restore operations without container restart.
 
 Run with: pytest tests/test_kill_restore.py -v
+
+NOTE: These tests use close_all/kill_all which affects ALL browsers.
+They are marked as 'isolated' to run separately from parallel tests.
 """
 
 import pytest
+
+# Mark entire module to run in isolation (not parallel with other tests)
+pytestmark = pytest.mark.isolated
 from airbrowser_client.models import (
     BrowsersRequest,
     CreateBrowserRequest,

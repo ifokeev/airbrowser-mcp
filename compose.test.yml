@@ -47,6 +47,8 @@ services:
       - BROWSER_POOL_URL=http://browser-pool:8000
       - PYTHONUNBUFFERED=1
       - PYTEST_ARGS=${PYTEST_ARGS:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - TEST_PROXY=${TEST_PROXY:-}
     volumes:
       - ./tests:/app/tests:ro
       - ./examples:/app/examples:ro
