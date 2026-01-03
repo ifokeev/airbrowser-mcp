@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.11.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.10.2...v1.11.0) (2026-01-03)
+
+
+### Features
+
+* **landing:** add SEO optimization and comparison pages ([7cf2b1c](https://github.com/ifokeev/airbrowser-mcp/commit/7cf2b1c40ecf57ee75080886181e11c05cb39330))
+
+
+### Bug Fixes
+
+* **docker:** use env var interpolation for MAX_BROWSERS in supervisord ([32874ae](https://github.com/ifokeev/airbrowser-mcp/commit/32874aead6cc2aa797e9d984fbe5ef1d3c36542d))
+* **ipc:** prevent race condition with atomic file writes ([29d0d5b](https://github.com/ifokeev/airbrowser-mcp/commit/29d0d5be98137a7a792d5537ac4201d295967ccb))
+* **landing:** correct API endpoint paths in quickstart examples ([2a4308d](https://github.com/ifokeev/airbrowser-mcp/commit/2a4308d34f614857e5a6b1c2c11754fd9d9fd4e0))
+
 ## [1.10.2](https://github.com/ifokeev/airbrowser-mcp/compare/v1.10.1...v1.10.2) (2026-01-03)
 
 
