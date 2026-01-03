@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selenium vs Airbrowser: Best Browser Automation Tool for 2025</title>
+    <meta name="description" content="Compare Selenium and Airbrowser for browser automation. See differences in anti-detection, Docker deployment, REST API, and AI agent integration. Find the best Selenium alternative.">
+    <meta name="keywords" content="selenium vs airbrowser, selenium alternative, undetected selenium, browser automation comparison, selenium anti-detection, web scraping selenium">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://ifokeev.github.io/airbrowser-mcp/compare/selenium-vs-airbrowser.html">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Selenium vs Airbrowser: Complete Comparison">
+    <meta property="og:description" content="Which browser automation tool is better? Compare features, anti-detection, and AI integration.">
+    <meta property="og:url" content="https://ifokeev.github.io/airbrowser-mcp/compare/selenium-vs-airbrowser.html">
+
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Satoshi:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #131313;
+            --bg-card: #1b1b1b;
+            --bg-elevated: #232323;
+            --border: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --pink: #FC72FF;
+            --blue: #4C82FB;
+            --green: #40B66B;
+            --orange: #FF6B00;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            padding: 16px 0;
+            background: rgba(19, 19, 19, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-inner { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
+        .logo img { width: 32px; height: 32px; }
+        .logo-text { font-weight: 700; font-size: 18px; }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; }
+        .nav-links a:hover { color: var(--text-primary); }
+
+        article { padding: 80px 0; }
+        h1 { font-size: 42px; font-weight: 900; letter-spacing: -1px; margin-bottom: 24px; line-height: 1.2; }
+        h1 span { color: var(--pink); }
+        .subtitle { font-size: 20px; color: var(--text-secondary); margin-bottom: 48px; }
+        h2 { font-size: 28px; font-weight: 700; margin: 48px 0 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+        h3 { font-size: 20px; font-weight: 600; margin: 32px 0 16px; }
+        p { margin-bottom: 16px; color: var(--text-secondary); }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 32px 0;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .comparison-table th {
+            background: var(--bg-elevated);
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .comparison-table td {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .comparison-table tr:hover { background: var(--bg-elevated); }
+        .check { color: var(--green); font-weight: bold; }
+        .cross { color: #ff5f57; }
+        .partial { color: var(--orange); }
+
+        .verdict {
+            background: linear-gradient(135deg, rgba(252, 114, 255, 0.1) 0%, rgba(76, 130, 251, 0.1) 100%);
+            border: 1px solid rgba(252, 114, 255, 0.2);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 48px 0;
+        }
+        .verdict h3 { margin-top: 0; color: var(--pink); }
+
+        .cta-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            margin: 48px 0;
+        }
+        .cta-box h3 { margin-top: 0; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 9999px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            background: linear-gradient(135deg, var(--pink) 0%, #FF54B0 100%);
+            color: white;
+            margin-top: 16px;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(252, 114, 255, 0.4); }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            background: var(--bg-elevated);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        ul { margin: 16px 0 16px 24px; color: var(--text-secondary); }
+        li { margin-bottom: 8px; }
+
+        footer { padding: 48px 0; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 14px; }
+        footer a { color: var(--pink); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="../" class="logo">
+                <img src="../logo.svg" alt="Airbrowser">
+                <span class="logo-text">Airbrowser</span>
+            </a>
+            <div class="nav-links">
+                <a href="../docs/">Docs</a>
+                <a href="https://github.com/ifokeev/airbrowser-mcp" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <article>
+        <div class="container">
+            <h1>Selenium vs <span>Airbrowser</span></h1>
+            <p class="subtitle">The definitive comparison for developers who need reliable browser automation in 2025.</p>
+
+            <p>Selenium has been the go-to browser automation tool for over a decade. Airbrowser is built on top of SeleniumBase and provides a modern, API-first approach with built-in anti-detection. Here's how they compare.</p>
+
+            <h2>Quick Comparison</h2>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Selenium</th>
+                        <th>Airbrowser</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Anti-Detection</strong></td>
+                        <td class="cross">Easily detected</td>
+                        <td class="check">Built-in (UC mode)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>REST API</strong></td>
+                        <td class="cross">No (library only)</td>
+                        <td class="check">Full REST API</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MCP for AI Agents</strong></td>
+                        <td class="cross">No</td>
+                        <td class="check">Native MCP server</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Setup Complexity</strong></td>
+                        <td class="cross">WebDriver + browser + config</td>
+                        <td class="check">One Docker command</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Browser Pool</strong></td>
+                        <td class="cross">Manual implementation</td>
+                        <td class="check">Built-in (100+ browsers)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>VNC Debugging</strong></td>
+                        <td class="cross">External setup needed</td>
+                        <td class="check">Built-in noVNC</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proxy Support</strong></td>
+                        <td class="partial">Complex configuration</td>
+                        <td class="check">Per-browser proxy</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cloudflare Bypass</strong></td>
+                        <td class="cross">Blocked</td>
+                        <td class="check">Works automatically</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AI Vision Tools</strong></td>
+                        <td class="cross">No</td>
+                        <td class="check">Built-in (OpenRouter)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Learning Curve</strong></td>
+                        <td class="partial">Moderate</td>
+                        <td class="check">Low (REST/MCP)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>The Problem with Vanilla Selenium</h2>
+            <p>Selenium is a powerful library, but it has significant limitations for modern web automation:</p>
+            <ul>
+                <li><strong>Detection</strong> - Most sites detect and block Selenium via <code>navigator.webdriver</code></li>
+                <li><strong>Setup</strong> - Requires ChromeDriver, browser installation, and configuration</li>
+                <li><strong>Scaling</strong> - No built-in way to manage multiple browsers</li>
+                <li><strong>Remote Access</strong> - Selenium Grid is complex to set up and maintain</li>
+                <li><strong>AI Integration</strong> - No native support for AI agents or MCP</li>
+            </ul>
+
+            <h2>How Airbrowser Solves These Problems</h2>
+
+            <h3>1. Anti-Detection Out of the Box</h3>
+            <p>Airbrowser uses SeleniumBase's Undetected Chromedriver (UC) mode, which patches Chrome to bypass bot detection. No additional configuration needed.</p>
+
+            <h3>2. One Command Setup</h3>
+            <p>Instead of installing WebDriver, configuring browsers, and managing dependencies:</p>
+            <p><code>docker run -d -p 18080:18080 ghcr.io/ifokeev/airbrowser-mcp:latest</code></p>
+
+            <h3>3. REST API for Any Language</h3>
+            <p>Selenium requires you to use their Python, Java, or JavaScript bindings. Airbrowser provides a REST API that works with any language or framework.</p>
+
+            <h3>4. Built for AI Agents</h3>
+            <p>Native MCP integration means AI assistants like Claude can directly control browsers without wrapper code. 39 tools for complete browser control.</p>
+
+            <h2>Code Comparison</h2>
+
+            <h3>Selenium (Traditional)</h3>
+            <p>Setting up Selenium requires multiple steps and dependencies:</p>
+            <ul>
+                <li>Install selenium package</li>
+                <li>Download correct ChromeDriver version</li>
+                <li>Configure browser options</li>
+                <li>Handle WebDriver exceptions</li>
+                <li>Implement anti-detection patches manually</li>
+            </ul>
+
+            <h3>Airbrowser (Modern)</h3>
+            <p>With Airbrowser, you just make HTTP requests:</p>
+            <ul>
+                <li><code>POST /api/v1/browser/create</code> - Create browser</li>
+                <li><code>POST /api/v1/browser/{id}/navigate</code> - Navigate</li>
+                <li><code>POST /api/v1/browser/{id}/click</code> - Click</li>
+                <li><code>DELETE /api/v1/browser/{id}/close</code> - Close</li>
+            </ul>
+
+            <h2>When to Use Selenium</h2>
+            <ul>
+                <li>You need to run tests in CI/CD without Docker</li>
+                <li>You're extending existing Selenium test suites</li>
+                <li>You need to use Selenium-specific plugins</li>
+                <li>You're testing your own applications (detection doesn't matter)</li>
+            </ul>
+
+            <h2>When to Use Airbrowser</h2>
+            <ul>
+                <li>You're scraping sites with bot detection</li>
+                <li>You're building AI agents that need browser access</li>
+                <li>You need to scale to 100+ concurrent browsers</li>
+                <li>You want REST API access from any language</li>
+                <li>You need visual debugging via VNC</li>
+            </ul>
+
+            <div class="verdict">
+                <h3>The Verdict</h3>
+                <p><strong>Selenium</strong> is a reliable choice for traditional testing workflows where you control the environment.</p>
+                <p><strong>Airbrowser</strong> is the modern choice for web scraping, AI agents, and any scenario requiring anti-detection or remote browser control.</p>
+            </div>
+
+            <div class="cta-box">
+                <h3>Upgrade Your Browser Automation</h3>
+                <p>Start with Airbrowser in 60 seconds. No WebDriver setup needed.</p>
+                <a href="../#quickstart" class="btn">Get Started Free</a>
+            </div>
+        </div>
+    </article>
+
+    <footer>
+        <div class="container">
+            <p><a href="../">Airbrowser</a> - Open source browser automation for AI agents</p>
+        </div>
+    </footer>
+</body>
+</html>

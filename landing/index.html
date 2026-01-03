@@ -3,8 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Airbrowser | Undetectable Chrome Automation for AI Agents</title>
-    <meta name="description" content="Run isolated, undetectable Chrome browsers in Docker. REST API + MCP for AI agents. VNC debugging. Proxy rotation. Scale to 100+ concurrent instances.">
+    <title>Airbrowser | Undetectable Chrome Automation API for AI Agents</title>
+    <meta name="description" content="Open-source browser automation API with anti-detection. REST API + MCP server for AI agents. Bypass Cloudflare, run 100+ concurrent browsers. Selenium & Playwright alternative.">
+    <meta name="keywords" content="browser automation, web scraping api, selenium alternative, playwright alternative, headless browser, undetected chrome, anti-detection, mcp server, ai agents, browser pool, cloudflare bypass">
+    <meta name="author" content="Airbrowser">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://ifokeev.github.io/airbrowser-mcp/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ifokeev.github.io/airbrowser-mcp/">
+    <meta property="og:title" content="Airbrowser - Undetectable Chrome Automation API for AI Agents">
+    <meta property="og:description" content="Open-source browser automation with anti-detection. REST API + MCP for AI agents. Bypass Cloudflare, scale to 100+ browsers.">
+    <meta property="og:image" content="https://ifokeev.github.io/airbrowser-mcp/og-image.png">
+    <meta property="og:site_name" content="Airbrowser">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://ifokeev.github.io/airbrowser-mcp/">
+    <meta name="twitter:title" content="Airbrowser - Undetectable Chrome Automation API">
+    <meta name="twitter:description" content="Open-source browser automation with anti-detection. REST API + MCP for AI agents.">
+    <meta name="twitter:image" content="https://ifokeev.github.io/airbrowser-mcp/og-image.png">
+
+    <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Airbrowser",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Linux, macOS, Windows",
+        "description": "Open-source browser automation API with anti-detection, CDP mode, and MCP integration for AI agents",
+        "url": "https://ifokeev.github.io/airbrowser-mcp/",
+        "downloadUrl": "https://github.com/ifokeev/airbrowser-mcp/releases",
+        "softwareVersion": "1.10.2",
+        "author": {
+            "@type": "Organization",
+            "name": "Airbrowser"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "Undetected Chrome automation",
+            "REST API",
+            "MCP server for AI agents",
+            "100+ concurrent browsers",
+            "Proxy rotation",
+            "VNC debugging",
+            "Docker deployment"
+        ]
+    }
+    </script>
+
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -983,6 +1036,7 @@
             <div class="nav-links">
                 <a href="#features">Features</a>
                 <a href="#quickstart">Quickstart</a>
+                <a href="compare/">Compare</a>
                 <a href="https://github.com/ifokeev/airbrowser-mcp" target="_blank">GitHub</a>
                 <a href="docs/" class="btn btn-ghost">API Docs</a>
             </div>
@@ -1252,6 +1306,7 @@ curl -X POST http://localhost:18080/api/v1/browser/<span class="number">{browser
             <div class="footer-links">
                 <a href="https://github.com/ifokeev/airbrowser-mcp" target="_blank">GitHub</a>
                 <a href="docs/">Documentation</a>
+                <a href="compare/">Compare</a>
                 <a href="https://github.com/ifokeev/airbrowser-mcp/issues" target="_blank">Issues</a>
             </div>
             <div class="footer-copy">

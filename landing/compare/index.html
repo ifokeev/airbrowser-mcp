@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser Automation Tool Comparison | Airbrowser vs Selenium, Playwright, Puppeteer</title>
+    <meta name="description" content="Compare Airbrowser with other browser automation tools. See how Airbrowser stacks up against Selenium, Playwright, and Puppeteer for web scraping and AI agents.">
+    <meta name="keywords" content="browser automation comparison, selenium vs playwright, puppeteer alternative, web scraping tools, best browser automation">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://ifokeev.github.io/airbrowser-mcp/compare/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Browser Automation Tool Comparison">
+    <meta property="og:description" content="Compare Airbrowser with Selenium, Playwright, and Puppeteer">
+    <meta property="og:url" content="https://ifokeev.github.io/airbrowser-mcp/compare/">
+
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Satoshi:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #131313;
+            --bg-card: #1b1b1b;
+            --bg-elevated: #232323;
+            --border: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --pink: #FC72FF;
+            --blue: #4C82FB;
+            --green: #40B66B;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            padding: 16px 0;
+            background: rgba(19, 19, 19, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-inner { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
+        .logo img { width: 32px; height: 32px; }
+        .logo-text { font-weight: 700; font-size: 18px; }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; }
+        .nav-links a:hover { color: var(--text-primary); }
+
+        main { padding: 80px 0; }
+        h1 { font-size: 42px; font-weight: 900; letter-spacing: -1px; margin-bottom: 16px; line-height: 1.2; }
+        h1 span { color: var(--pink); }
+        .subtitle { font-size: 20px; color: var(--text-secondary); margin-bottom: 48px; }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .comparison-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+        .comparison-card:hover {
+            border-color: rgba(252, 114, 255, 0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        .comparison-card h2 {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .comparison-card .vs {
+            color: var(--pink);
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .comparison-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .comparison-card .arrow {
+            margin-top: 16px;
+            color: var(--pink);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .summary {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin-top: 48px;
+        }
+        .summary h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .summary p { color: var(--text-secondary); margin-bottom: 12px; }
+        .summary ul { margin: 16px 0 0 24px; color: var(--text-secondary); }
+        .summary li { margin-bottom: 8px; }
+
+        footer { padding: 48px 0; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 14px; }
+        footer a { color: var(--pink); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="../" class="logo">
+                <img src="../logo.svg" alt="Airbrowser">
+                <span class="logo-text">Airbrowser</span>
+            </a>
+            <div class="nav-links">
+                <a href="../docs/">Docs</a>
+                <a href="https://github.com/ifokeev/airbrowser-mcp" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <h1>Compare <span>Airbrowser</span></h1>
+            <p class="subtitle">See how Airbrowser stacks up against other browser automation tools for web scraping and AI agents.</p>
+
+            <div class="comparison-grid">
+                <a href="playwright-vs-airbrowser.html" class="comparison-card">
+                    <h2>Playwright <span class="vs">vs</span> Airbrowser</h2>
+                    <p>Compare anti-detection capabilities, MCP integration, and AI agent support. See which tool is better for web scraping and automation.</p>
+                    <div class="arrow">Read comparison →</div>
+                </a>
+
+                <a href="selenium-vs-airbrowser.html" class="comparison-card">
+                    <h2>Selenium <span class="vs">vs</span> Airbrowser</h2>
+                    <p>Compare setup complexity, REST API access, and Cloudflare bypass. Find out if Airbrowser is the right Selenium alternative for you.</p>
+                    <div class="arrow">Read comparison →</div>
+                </a>
+            </div>
+
+            <div class="summary">
+                <h2>Why Compare?</h2>
+                <p>Choosing the right browser automation tool depends on your use case:</p>
+                <ul>
+                    <li><strong>E2E Testing</strong> - Playwright or Selenium work well for testing your own apps</li>
+                    <li><strong>Web Scraping</strong> - Airbrowser's anti-detection is essential for protected sites</li>
+                    <li><strong>AI Agents</strong> - Airbrowser's MCP integration is purpose-built for LLM access</li>
+                    <li><strong>Scale</strong> - Airbrowser manages 100+ browsers with built-in pooling</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p><a href="../">Airbrowser</a> - Open source browser automation for AI agents</p>
+        </div>
+    </footer>
+</body>
+</html>

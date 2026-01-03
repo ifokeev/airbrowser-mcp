@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playwright vs Airbrowser: Which Browser Automation Tool is Better for AI Agents?</title>
+    <meta name="description" content="Compare Playwright and Airbrowser for browser automation. See differences in anti-detection, AI agent integration, MCP support, and scaling. Choose the right tool for web scraping and automation.">
+    <meta name="keywords" content="playwright vs airbrowser, playwright alternative, browser automation comparison, ai agent browser, mcp browser tool, anti-detection browser">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://ifokeev.github.io/airbrowser-mcp/compare/playwright-vs-airbrowser.html">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Playwright vs Airbrowser: Complete Comparison">
+    <meta property="og:description" content="Which browser automation tool is better for AI agents? Compare features, anti-detection, and MCP support.">
+    <meta property="og:url" content="https://ifokeev.github.io/airbrowser-mcp/compare/playwright-vs-airbrowser.html">
+
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Satoshi:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #131313;
+            --bg-card: #1b1b1b;
+            --bg-elevated: #232323;
+            --border: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.6);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --pink: #FC72FF;
+            --blue: #4C82FB;
+            --green: #40B66B;
+            --orange: #FF6B00;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            padding: 16px 0;
+            background: rgba(19, 19, 19, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-inner { display: flex; justify-content: space-between; align-items: center; max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        .logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text-primary); }
+        .logo img { width: 32px; height: 32px; }
+        .logo-text { font-weight: 700; font-size: 18px; }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; }
+        .nav-links a:hover { color: var(--text-primary); }
+
+        article { padding: 80px 0; }
+        h1 { font-size: 42px; font-weight: 900; letter-spacing: -1px; margin-bottom: 24px; line-height: 1.2; }
+        h1 span { color: var(--pink); }
+        .subtitle { font-size: 20px; color: var(--text-secondary); margin-bottom: 48px; }
+        h2 { font-size: 28px; font-weight: 700; margin: 48px 0 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+        h3 { font-size: 20px; font-weight: 600; margin: 32px 0 16px; }
+        p { margin-bottom: 16px; color: var(--text-secondary); }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 32px 0;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .comparison-table th {
+            background: var(--bg-elevated);
+            padding: 16px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .comparison-table td {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .comparison-table tr:hover { background: var(--bg-elevated); }
+        .check { color: var(--green); font-weight: bold; }
+        .cross { color: #ff5f57; }
+        .partial { color: var(--orange); }
+
+        .verdict {
+            background: linear-gradient(135deg, rgba(252, 114, 255, 0.1) 0%, rgba(76, 130, 251, 0.1) 100%);
+            border: 1px solid rgba(252, 114, 255, 0.2);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 48px 0;
+        }
+        .verdict h3 { margin-top: 0; color: var(--pink); }
+
+        .cta-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            margin: 48px 0;
+        }
+        .cta-box h3 { margin-top: 0; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: 9999px;
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            background: linear-gradient(135deg, var(--pink) 0%, #FF54B0 100%);
+            color: white;
+            margin-top: 16px;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(252, 114, 255, 0.4); }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            background: var(--bg-elevated);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        ul { margin: 16px 0 16px 24px; color: var(--text-secondary); }
+        li { margin-bottom: 8px; }
+
+        footer { padding: 48px 0; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 14px; }
+        footer a { color: var(--pink); text-decoration: none; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-inner">
+            <a href="../" class="logo">
+                <img src="../logo.svg" alt="Airbrowser">
+                <span class="logo-text">Airbrowser</span>
+            </a>
+            <div class="nav-links">
+                <a href="../docs/">Docs</a>
+                <a href="https://github.com/ifokeev/airbrowser-mcp" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <article>
+        <div class="container">
+            <h1>Playwright vs <span>Airbrowser</span></h1>
+            <p class="subtitle">A comprehensive comparison for developers building AI agents, web scrapers, and browser automation tools in 2025.</p>
+
+            <p>Both Playwright and Airbrowser are powerful browser automation tools, but they're designed for different use cases. This comparison will help you choose the right tool for your needs.</p>
+
+            <h2>Quick Comparison</h2>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Playwright</th>
+                        <th>Airbrowser</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Anti-Detection</strong></td>
+                        <td class="cross">Limited (easily detected)</td>
+                        <td class="check">Built-in (SeleniumBase UC)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MCP Integration</strong></td>
+                        <td class="cross">No native support</td>
+                        <td class="check">Native MCP server</td>
+                    </tr>
+                    <tr>
+                        <td><strong>AI Agent Ready</strong></td>
+                        <td class="partial">Requires wrapper code</td>
+                        <td class="check">Built for AI agents</td>
+                    </tr>
+                    <tr>
+                        <td><strong>REST API</strong></td>
+                        <td class="cross">No (library only)</td>
+                        <td class="check">Full REST API</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Concurrent Browsers</strong></td>
+                        <td class="partial">Manual management</td>
+                        <td class="check">100+ with pool management</td>
+                    </tr>
+                    <tr>
+                        <td><strong>VNC Debugging</strong></td>
+                        <td class="cross">No</td>
+                        <td class="check">Built-in noVNC</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Proxy Per Browser</strong></td>
+                        <td class="check">Yes</td>
+                        <td class="check">Yes</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Docker Deployment</strong></td>
+                        <td class="partial">Community images</td>
+                        <td class="check">Official Docker image</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Multi-Language</strong></td>
+                        <td class="check">Python, JS, .NET, Java</td>
+                        <td class="check">REST API (any language)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cloudflare Bypass</strong></td>
+                        <td class="cross">Blocked by default</td>
+                        <td class="check">Works out of the box</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>When to Use Playwright</h2>
+            <p>Playwright is an excellent choice for:</p>
+            <ul>
+                <li><strong>E2E Testing</strong> - Testing your own applications where anti-detection doesn't matter</li>
+                <li><strong>Cross-Browser Testing</strong> - Need to test Firefox, WebKit, and Chromium</li>
+                <li><strong>CI/CD Pipelines</strong> - Automated testing in controlled environments</li>
+                <li><strong>Simple Scraping</strong> - Scraping sites without bot detection</li>
+            </ul>
+
+            <h2>When to Use Airbrowser</h2>
+            <p>Airbrowser is the better choice for:</p>
+            <ul>
+                <li><strong>AI Agents</strong> - Native MCP integration for Claude, GPT, and other AI assistants</li>
+                <li><strong>Web Scraping at Scale</strong> - 100+ concurrent browsers with anti-detection</li>
+                <li><strong>Protected Sites</strong> - Bypass Cloudflare, PerimeterX, and other anti-bot systems</li>
+                <li><strong>Microservices</strong> - REST API allows any language/framework to control browsers</li>
+                <li><strong>Visual Debugging</strong> - VNC access to watch browsers in real-time</li>
+            </ul>
+
+            <h2>Anti-Detection: The Key Difference</h2>
+            <p>The biggest difference between Playwright and Airbrowser is anti-detection capability.</p>
+            <p>Playwright is easily detected by most anti-bot systems because it:</p>
+            <ul>
+                <li>Sets detectable <code>navigator.webdriver</code> flag</li>
+                <li>Has recognizable automation fingerprints</li>
+                <li>Doesn't handle Cloudflare challenges</li>
+            </ul>
+            <p>Airbrowser, built on SeleniumBase Undetected Chromedriver, bypasses these detection systems by default. No additional configuration needed.</p>
+
+            <h2>MCP Integration for AI Agents</h2>
+            <p>If you're building AI agents with Claude, GPT, or other LLMs, Airbrowser provides native Model Context Protocol (MCP) support:</p>
+            <ul>
+                <li>39 MCP tools for complete browser control</li>
+                <li>AI vision tools (<code>what_is_visible</code>, <code>detect_coordinates</code>)</li>
+                <li>Works with Claude Code, Cursor, Cline, and other MCP clients</li>
+            </ul>
+            <p>With Playwright, you'd need to build your own wrapper to expose browser actions to AI agents.</p>
+
+            <div class="verdict">
+                <h3>The Verdict</h3>
+                <p><strong>Choose Playwright</strong> if you're doing E2E testing of your own apps or need cross-browser testing.</p>
+                <p><strong>Choose Airbrowser</strong> if you're building AI agents, scraping protected sites, or need a REST API for browser automation.</p>
+            </div>
+
+            <div class="cta-box">
+                <h3>Try Airbrowser Free</h3>
+                <p>Get started with a single Docker command. No signup required.</p>
+                <a href="../#quickstart" class="btn">Get Started</a>
+            </div>
+        </div>
+    </article>
+
+    <footer>
+        <div class="container">
+            <p><a href="../">Airbrowser</a> - Open source browser automation for AI agents</p>
+        </div>
+    </footer>
+</body>
+</html>
