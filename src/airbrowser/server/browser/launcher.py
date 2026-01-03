@@ -10,7 +10,9 @@ This is the entry point for individual browser processes. It:
 import json
 import logging
 import os
+import re
 import sys
+import threading
 import time
 import traceback
 import warnings
@@ -64,6 +66,161 @@ os.environ["HOME"] = "/home/browseruser"
 from airbrowser.server.browser.utils import kill_child_processes
 
 
+def parse_proxy_credentials(proxy_url: str) -> tuple[str | None, str | None, str]:
+    """Parse proxy URL and extract credentials if present.
+
+    Args:
+        proxy_url: Proxy URL in format [user:pass@]host:port or http://[user:pass@]host:port
+
+    Returns:
+        Tuple of (username, password, proxy_server_without_credentials)
+    """
+    if not proxy_url:
+        return None, None, proxy_url
+
+    # Remove http:// or https:// prefix
+    proxy = proxy_url
+    if proxy.startswith("http://"):
+        proxy = proxy[7:]
+    elif proxy.startswith("https://"):
+        proxy = proxy[8:]
+
+    # Check for credentials (user:pass@host:port format)
+    if "@" in proxy:
+        # Pattern: user:pass@host:port
+        match = re.match(r"^([^:]+):([^@]+)@(.+)$", proxy)
+        if match:
+            username, password, server = match.groups()
+            return username, password, server
+
+    return None, None, proxy
+
+
+def setup_cdp_proxy_auth(driver, username: str, password: str):
+    """Set up CDP-based proxy authentication using Fetch domain.
+
+    This handles proxy auth requests via Chrome DevTools Protocol instead of
+    relying on the Chrome extension approach which can fail with Chrome 137+.
+    """
+    import urllib.request
+
+    import websocket
+
+    try:
+        # Get CDP WebSocket URL from the driver
+        cdp_url = None
+
+        # Try to get the CDP endpoint from driver capabilities
+        caps = driver.capabilities
+        debugger_addr = None
+
+        if "goog:chromeOptions" in caps:
+            debugger_addr = caps["goog:chromeOptions"].get("debuggerAddress")
+
+        # Fallback: try to get from se:cdp
+        if not cdp_url and "se:cdp" in caps:
+            cdp_url = caps["se:cdp"]
+
+        # If we have a debugger address, get the proper WebSocket URL from /json/version
+        if debugger_addr and not cdp_url:
+            try:
+                version_url = f"http://{debugger_addr}/json/version"
+                with urllib.request.urlopen(version_url, timeout=5) as resp:
+                    version_data = json.loads(resp.read().decode())
+                    cdp_url = version_data.get("webSocketDebuggerUrl")
+                    logger.debug(f"Got CDP URL from /json/version: {cdp_url}")
+            except Exception as e:
+                logger.warning(f"Failed to get CDP URL from /json/version: {e}")
+
+        if not cdp_url:
+            logger.warning("Could not get CDP WebSocket URL for proxy auth")
+            return
+
+        logger.info(f"Setting up CDP proxy auth via {cdp_url}")
+
+        # Create WebSocket connection for CDP events
+        def handle_cdp_events():
+            """Background thread to handle CDP proxy auth events."""
+            ws = None
+            try:
+                ws = websocket.WebSocket()
+                ws.connect(cdp_url, timeout=5)
+
+                # Enable Fetch domain with auth handling
+                ws.send(json.dumps({"id": 1, "method": "Fetch.enable", "params": {"handleAuthRequests": True}}))
+                logger.info("CDP Fetch.enable sent for proxy auth handling")
+
+                # Process events
+                msg_id = 100
+                while True:
+                    try:
+                        msg = ws.recv()
+                        if not msg:
+                            continue
+
+                        data = json.loads(msg)
+
+                        # Handle auth required event
+                        if data.get("method") == "Fetch.authRequired":
+                            request_id = data["params"]["requestId"]
+                            logger.info(f"Proxy auth requested, providing credentials for request {request_id}")
+
+                            # Respond with credentials
+                            auth_response = {
+                                "id": msg_id,
+                                "method": "Fetch.continueWithAuth",
+                                "params": {
+                                    "requestId": request_id,
+                                    "authChallengeResponse": {
+                                        "response": "ProvideCredentials",
+                                        "username": username,
+                                        "password": password,
+                                    },
+                                },
+                            }
+                            ws.send(json.dumps(auth_response))
+                            msg_id += 1
+
+                        # Handle paused requests (continue them)
+                        elif data.get("method") == "Fetch.requestPaused":
+                            request_id = data["params"]["requestId"]
+                            continue_response = {
+                                "id": msg_id,
+                                "method": "Fetch.continueRequest",
+                                "params": {"requestId": request_id},
+                            }
+                            ws.send(json.dumps(continue_response))
+                            msg_id += 1
+
+                    except websocket.WebSocketTimeoutException:
+                        continue
+                    except websocket.WebSocketConnectionClosedException:
+                        logger.info("CDP WebSocket closed, stopping proxy auth handler")
+                        break
+                    except Exception as e:
+                        logger.debug(f"CDP event handling error: {e}")
+
+            except Exception as e:
+                logger.warning(f"CDP proxy auth setup failed: {e}")
+            finally:
+                if ws:
+                    try:
+                        ws.close()
+                    except Exception:
+                        pass
+
+        # Start background thread for CDP event handling
+        auth_thread = threading.Thread(target=handle_cdp_events, daemon=True)
+        auth_thread.start()
+        logger.info("CDP proxy auth handler thread started")
+
+        # Give the thread time to connect and enable Fetch
+        time.sleep(0.5)
+
+    except Exception as e:
+        logger.warning(f"Failed to set up CDP proxy auth: {e}")
+
+
 def create_browser(config: dict):
     """Create and configure a SeleniumBase UC browser instance."""
     from seleniumbase import Driver
@@ -72,13 +229,23 @@ def create_browser(config: dict):
     user_agent = config.get("user_agent")
     profile_name = config.get("profile_name")
 
+    # Parse proxy credentials if present
+    proxy_user, proxy_pass, proxy_server = parse_proxy_credentials(proxy)
+    has_proxy_auth = proxy_user is not None and proxy_pass is not None
+
+    if has_proxy_auth:
+        logger.info(f"Proxy with authentication detected: {proxy_user}@{proxy_server}")
+    elif proxy:
+        logger.info(f"Proxy without authentication: {proxy_server}")
+
     # UC (undetected chrome) + CDP mode are always enabled
+    # Pass proxy server WITHOUT credentials - we'll handle auth via CDP
     opts = {
         "browser": "chrome",
         "uc": True,
         "log_cdp": False,
         "uc_cdp": True,
-        "proxy": proxy.replace("http://", "") if proxy else None,
+        "proxy": proxy_server if proxy else None,
         # Allow CDP WebSocket connections from any origin (required for CDP proxy)
         "chromium_arg": "--remote-allow-origins=*",
     }
@@ -107,6 +274,10 @@ def create_browser(config: dict):
         raise
 
     logger.info(f"Browser created successfully, session_id: {getattr(driver, 'session_id', 'unknown')}")
+
+    # Set up CDP-based proxy authentication if credentials were provided
+    if has_proxy_auth:
+        setup_cdp_proxy_auth(driver, proxy_user, proxy_pass)
 
     # Set window position and size
     try:
