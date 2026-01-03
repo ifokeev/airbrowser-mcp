@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.2](https://github.com/ifokeev/airbrowser-mcp/compare/v1.10.1...v1.10.2) (2026-01-03)
+
+
+### Bug Fixes
+
+* **examples:** remove non-existent headless and redundant uc parameters ([e0844b8](https://github.com/ifokeev/airbrowser-mcp/commit/e0844b8a35e6ab5e3afba5055d16ccd16173d735))
+
 ## [1.10.1](https://github.com/ifokeev/airbrowser-mcp/compare/v1.10.0...v1.10.1) (2026-01-03)
 
 
