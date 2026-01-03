@@ -41,7 +41,7 @@ def main():
 
         # Create browser
         print("\nCreating browser...")
-        response = api.create_browser(payload={"uc": True, "headless": False, "window_size": [1280, 900]})
+        response = api.create_browser(payload={"window_size": [1280, 900]})
         browser_id = response.data["browser_id"]
         print(f"Browser created: {browser_id}")
 

@@ -30,7 +30,7 @@ async def main():
 
         # 1. Create a browser
         print("\n--- Creating Browser ---")
-        result = await client.call_tool("create_browser", {"uc": True, "headless": False, "window_size": [1280, 800]})
+        result = await client.call_tool("create_browser", {"window_size": [1280, 800]})
         browser_id = result["browser_id"]
         print(f"Browser created: {browser_id}")
 

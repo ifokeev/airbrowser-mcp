@@ -68,7 +68,7 @@ def main():
             print(f"Proxy: {proxy or 'None (direct)'}")
 
             # Create browser with specific proxy
-            browser_config = {"uc": True, "headless": True, "window_size": [1280, 800]}
+            browser_config = {"window_size": [1280, 800]}
 
             if proxy:
                 browser_config["proxy"] = proxy

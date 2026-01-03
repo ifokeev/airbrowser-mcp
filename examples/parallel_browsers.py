@@ -46,8 +46,6 @@ def process_url(url: str, browser_num: int) -> dict:
         try:
             response = api.create_browser(
                 payload={
-                    "uc": True,
-                    "headless": True,  # Headless for parallel execution
                     "window_size": [1280, 800],
                 }
             )
@@ -112,7 +110,7 @@ async def run_parallel_async():
 
         try:
             # Create browser
-            async with session.post(f"{API_BASE}/browser/create", json={"uc": True, "headless": True}) as resp:
+            async with session.post(f"{API_BASE}/browser/create_browser", json={}) as resp:
                 data = await resp.json()
                 browser_id = data["data"]["browser_id"]
                 result["browser_id"] = browser_id

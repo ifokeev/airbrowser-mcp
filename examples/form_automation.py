@@ -23,7 +23,7 @@ def main():
 
         # Create browser
         print("Creating browser...")
-        response = api.create_browser(payload={"uc": True, "headless": False, "window_size": [1366, 768]})
+        response = api.create_browser(payload={"window_size": [1366, 768]})
         browser_id = response.data["browser_id"]
         print(f"Browser: {browser_id}")
 

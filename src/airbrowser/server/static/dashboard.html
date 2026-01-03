@@ -833,10 +833,6 @@
                         <div class="form-group">
                             <div class="checkbox-group">
                                 <label class="checkbox-item">
-                                    <input type="checkbox" id="uc-mode" checked>
-                                    <span>Undetected Chrome</span>
-                                </label>
-                                <label class="checkbox-item">
                                     <input type="checkbox" id="disable-images">
                                     <span>Disable images</span>
                                 </label>
@@ -1011,7 +1007,6 @@
                                 <span class="browser-status ${browser.status}">${browser.status}</span>
                             </div>
                             <div class="browser-meta">
-                                ${browser.config.uc ? '<span class="browser-tag">UC Mode</span>' : ''}
                                 ${browser.config.profile_name ? `<span class="browser-tag" style="background: rgba(59, 130, 246, 0.15); color: var(--accent);">${browser.config.profile_name}</span>` : '<span class="browser-tag">Fresh</span>'}
                             </div>
                             ${browser.current_url ? `<div class="browser-url">${browser.current_url}</div>` : ''}
@@ -1038,7 +1033,6 @@
 
             try {
                 const config = {
-                    uc: document.getElementById('uc-mode').checked,
                     disable_images: document.getElementById('disable-images').checked
                 };
 
