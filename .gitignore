@@ -102,3 +102,6 @@ undetected-testing/
 portable/dist/
 Screenshot*.png
 uv.lock
+
+# Local documents (not tracked)
+.local/
