@@ -833,8 +833,18 @@ class BrowserService:
     def process_request_file(self, request_file: Path):
         """Process a single request file"""
         try:
-            with open(request_file) as f:
-                request = json.load(f)
+            # Retry reading to handle race conditions with file writes
+            request = None
+            for _ in range(5):
+                try:
+                    with open(request_file) as f:
+                        request = json.load(f)
+                    break
+                except json.JSONDecodeError:
+                    time.sleep(0.02)
+
+            if request is None:
+                raise ValueError("Failed to read request JSON (empty or invalid)")
 
             request_type = request.get("type")
 

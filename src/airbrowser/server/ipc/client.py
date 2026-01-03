@@ -32,10 +32,14 @@ class BrowserIPCClient:
         request["request_id"] = request_id
         request["timestamp"] = time.time()
 
-        # Write request file
+        # Write request file atomically (write to .tmp, then rename)
         request_file = QUEUE_DIR / f"{request_id}.json"
-        with open(request_file, "w") as f:
+        tmp_file = QUEUE_DIR / f"{request_id}.json.tmp"
+        with open(tmp_file, "w") as f:
             json.dump(request, f)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_file, request_file)
 
         logger.debug(f"Sent request {request_id}: {request}")
 

@@ -7,6 +7,8 @@ Tests cookie get/set/delete/clear operations using CDP for full cookie access.
 Run with: pytest tests/test_cookies.py -v
 """
 
+import time
+
 import pytest
 from airbrowser_client.models import (
     CookiesRequest,
@@ -45,11 +47,14 @@ class TestGetCookies:
 
     def test_get_cookies_after_navigation(self, browser_client, browser_id):
         """Test getting cookies after visiting a site that sets cookies."""
-        # Navigate to httpbin which can set cookies
+        # Navigate to httpbin which can set cookies (this endpoint redirects after setting cookie)
         browser_client.navigate_browser(
             browser_id,
             payload=NavigateBrowserRequest(url="https://httpbin.org/cookies/set?test_cookie=test_value", timeout=30),
         )
+
+        # Wait for redirect to complete and cookie to be set
+        time.sleep(1)
 
         # Get cookies
         result = browser_client.cookies(browser_id, payload=CookiesRequest(action="get"))
