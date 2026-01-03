@@ -1089,7 +1089,7 @@
                 </div>
                 <div class="code-block">
                     <pre id="codeContent"><code><span class="comment"># Create an undetectable browser</span>
-curl -X POST http://localhost:18080/api/v1/browser/create \
+curl -X POST http://localhost:18080/api/v1/browser/create_browser \
   -H <span class="string">"Content-Type: application/json"</span> \
   -d <span class="string">'{"proxy": "http://user:pass@proxy:8080"}'</span>
 
@@ -1246,12 +1246,12 @@ curl -X POST http://localhost:18080/api/v1/browser/<span class="number">{browser
                                 <div class="terminal-step-content">
                                     <div class="terminal-step-title">Create Browser</div>
                                     <div class="terminal-step-desc">Spawn an undetectable browser instance</div>
-                                    <div class="terminal-code" data-code="curl -X POST localhost:18080/api/v1/browser/create">
+                                    <div class="terminal-code" data-code="curl -X POST localhost:18080/api/v1/browser/create_browser">
                                         <button class="copy-btn" onclick="copyCode(this)">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                             Copy
                                         </button>
-                                        <pre><span class="prompt">$</span> curl <span class="flag">-X POST</span> localhost:18080/api/v1/browser/create
+                                        <pre><span class="prompt">$</span> curl <span class="flag">-X POST</span> localhost:18080/api/v1/browser/create_browser
 
 <span class="comment"># Response: {"browser_id": "a64e1c83-8fcc-..."}</span></pre>
                                     </div>
@@ -1368,7 +1368,7 @@ curl -X POST http://localhost:18080/api/v1/browser/<span class="number">{browser
         // Code tabs
         const codeSamples = {
             curl: `<span class="comment"># Create an undetectable browser</span>
-curl -X POST http://localhost:18080/api/v1/browser/create \\
+curl -X POST http://localhost:18080/api/v1/browser/create_browser \\
   -H <span class="string">"Content-Type: application/json"</span> \\
   -d <span class="string">'{"proxy": "http://user:pass@proxy:8080"}'</span>
 
