@@ -111,6 +111,4 @@ setup.cfg
 setup.py
 test-requirements.txt
 test/__init__.py
-test/test_cookies_request.py
-test/test_execute_cdp_request.py
 tox.ini

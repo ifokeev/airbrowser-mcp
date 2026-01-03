@@ -7,6 +7,11 @@ import shutil
 import time
 import uuid
 from datetime import datetime
+
+try:
+    import psutil
+except ImportError:  # pragma: no cover - optional dependency in some environments
+    psutil = None
 from pathlib import Path
 from typing import Any
 
@@ -700,8 +705,22 @@ class BrowserPoolAdapter:
         """Get pool status"""
         service_status = self.client.get_status()
 
-        # Calculate memory usage (rough estimate)
-        memory_mb = len(self.browser_instances) * 200  # Estimate 200MB per browser
+        memory_mb = len(self.browser_instances) * 200  # Fallback estimate per browser
+        cpu_percent = 0.0
+
+        if psutil is not None:
+            try:
+                proc = psutil.Process()
+                mem_bytes = proc.memory_info().rss
+                for child in proc.children(recursive=True):
+                    try:
+                        mem_bytes += child.memory_info().rss
+                    except psutil.Error:
+                        continue
+                memory_mb = mem_bytes / (1024 * 1024)
+                cpu_percent = psutil.cpu_percent(interval=0.1)
+            except psutil.Error:
+                pass
 
         return {
             "healthy": service_status.get("status") == "success",
@@ -709,7 +728,7 @@ class BrowserPoolAdapter:
             "active_browsers": service_status.get("active_browsers", 0),
             "available_browsers": service_status.get("max_browsers", 0) - service_status.get("total_browsers", 0),
             "memory_usage_mb": memory_mb,
-            "cpu_usage_percent": 0,  # Would need psutil for real CPU usage
+            "cpu_usage_percent": cpu_percent,
             "uptime_seconds": 0,  # Would need to track start time
         }
 

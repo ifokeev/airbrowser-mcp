@@ -51,24 +51,29 @@ class PoolOperations:
 
             # Handle both dict and object responses
             if isinstance(pool_status, dict):
-                active = pool_status.get("active_browsers", 0)
-                total = pool_status.get("total_browsers", 0)
+                status_dict = pool_status
                 is_healthy = pool_status.get("healthy", False)
             else:
-                active = getattr(pool_status, "active_browsers", 0)
-                total = getattr(pool_status, "total_browsers", 0)
+                status_dict = pool_status.to_dict()
                 is_healthy = getattr(pool_status, "healthy", False)
+
+            pool_metrics = {
+                "active_browsers": status_dict.get("active_browsers", 0),
+                "total_browsers": status_dict.get("total_browsers", 0),
+                "max_browsers": status_dict.get("max_browsers", self.browser_pool.max_browsers),
+                "available_browsers": status_dict.get("available_browsers", 0),
+                "memory_usage_mb": status_dict.get("memory_usage_mb", 0),
+                "cpu_usage_percent": status_dict.get("cpu_usage_percent", 0),
+            }
+            if "uptime_seconds" in status_dict:
+                pool_metrics["uptime_seconds"] = status_dict.get("uptime_seconds", 0)
 
             data = {
                 "status": "healthy" if is_healthy else "degraded",
                 "server": "Airbrowser",
                 "version": __version__,
                 "vision_enabled": bool(os.getenv("OPENROUTER_API_KEY")),
-                "pool_metrics": {
-                    "active_browsers": active,
-                    "total_browsers": total,
-                    "max_browsers": self.browser_pool.max_browsers,
-                },
+                "pool_metrics": pool_metrics,
                 "timestamp": time.time(),
             }
 
