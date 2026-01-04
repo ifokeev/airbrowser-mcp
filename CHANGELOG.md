@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.13.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.12.1...v1.13.0) (2026-01-04)
+
+
+### Features
+
+* **api:** add current_url tracking to browser list endpoint ([f6ad219](https://github.com/ifokeev/airbrowser-mcp/commit/f6ad219db58c5e76194e21c2d5470fe345cd88a0))
+
+
+### Bug Fixes
+
+* **docker:** improve noVNC download reliability and change VNC port ([d6a4006](https://github.com/ifokeev/airbrowser-mcp/commit/d6a40067d3b892363eb8a719c7db8d7fc66d3a46))
+* **proxy:** replace mitmproxy with custom proxy forwarder ([20396ae](https://github.com/ifokeev/airbrowser-mcp/commit/20396aea0deb42a5c13441d1a99e84f095a6fad1))
+
 ## [1.12.1](https://github.com/ifokeev/airbrowser-mcp/compare/v1.12.0...v1.12.1) (2026-01-04)
 
 
