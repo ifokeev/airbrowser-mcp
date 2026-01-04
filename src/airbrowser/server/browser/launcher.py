@@ -101,7 +101,8 @@ def start_local_proxy_forwarder(
 ) -> tuple[int, "subprocess.Popen"]:
     """Start a local proxy that forwards to an authenticated upstream proxy.
 
-    Uses mitmproxy in upstream mode to handle authenticated proxy forwarding.
+    Uses a simple Python proxy forwarder script to handle authenticated proxy forwarding.
+    This is more reliable than pproxy which has issues parsing certain credential formats.
 
     Args:
         upstream_host: Upstream proxy hostname
@@ -119,37 +120,42 @@ def start_local_proxy_forwarder(
         s.bind(("127.0.0.1", 0))
         local_port = s.getsockname()[1]
 
-    # Start mitmproxy in upstream mode with separate auth flag
+    # Path to our proxy forwarder script
+    forwarder_script = Path(__file__).parent / "proxy_forwarder.py"
+
     cmd = [
-        "mitmdump",
-        "--listen-host",
-        "127.0.0.1",
-        "--listen-port",
+        sys.executable,
+        str(forwarder_script),
         str(local_port),
-        "--mode",
-        f"upstream:http://{upstream_host}:{upstream_port}",
-        "--upstream-auth",
-        f"{upstream_user}:{upstream_pass}",
-        "--ssl-insecure",
-        "-q",  # Quiet mode
+        upstream_host,
+        str(upstream_port),
+        upstream_user,
+        upstream_pass,
     ]
 
-    logger.info(f"Starting mitmproxy forwarder on port {local_port} -> {upstream_host}:{upstream_port}")
+    logger.info(f"Starting proxy forwarder on port {local_port} -> {upstream_host}:{upstream_port}")
 
     proc = subprocess.Popen(
         cmd,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
         start_new_session=True,  # Detach from parent
     )
 
-    # Give the proxy a moment to start
-    time.sleep(1.0)
+    # Wait for the proxy to signal it's ready
+    try:
+        # Read stdout until we get the PROXY_READY signal
+        ready_line = proc.stdout.readline().decode().strip()
+        if not ready_line.startswith("PROXY_READY:"):
+            stderr_output = proc.stderr.read().decode() if proc.stderr else ""
+            raise RuntimeError(f"Proxy forwarder failed to start: {stderr_output}")
+    except Exception as e:
+        if proc.poll() is not None:
+            stderr_output = proc.stderr.read().decode() if proc.stderr else ""
+            raise RuntimeError(f"Proxy forwarder exited (code: {proc.returncode}): {stderr_output}")
+        raise RuntimeError(f"Proxy forwarder startup error: {e}")
 
-    if proc.poll() is not None:
-        raise RuntimeError(f"mitmproxy failed to start (exit code: {proc.returncode})")
-
-    logger.info(f"mitmproxy forwarder started: pid={proc.pid}, port={local_port}")
+    logger.info(f"Proxy forwarder started: pid={proc.pid}, port={local_port}")
     return local_port, proc
 
 

@@ -28,7 +28,9 @@ pyautogui>=0.9.54
 pillow>=10.0.0
 
 # Proxy authentication (local proxy forwarder for authenticated upstream proxies)
-mitmproxy>=11.0.0
+# Note: mitmproxy conflicts with seleniumbase (h11 version mismatch)
+# Using pproxy instead - lightweight, pure Python, no dependencies
+pproxy>=2.7.0
 
 # Development dependencies (optional)
 pytest>=7.0.0

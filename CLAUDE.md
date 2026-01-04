@@ -218,29 +218,30 @@ await browserApi.navigateBrowser(browserId, navigateRequest);
 - See `docs/CDP_MODE_NOTES.md` for detailed information
 
 ### Proxy Authentication
-**Proxy auth uses a local mitmproxy forwarder (NOT Chrome extensions or CDP).**
+**Proxy auth uses a local pproxy forwarder (NOT Chrome extensions or CDP).**
 
 - Pass proxy URL with credentials: `user:pass@host:port`
-- For authenticated proxies, we start a local `mitmproxy` (mitmdump) process
+- For authenticated proxies, we start a local `pproxy` process
 - Chrome connects to the local proxy (no auth needed)
-- mitmproxy forwards traffic to the authenticated upstream proxy
+- pproxy forwards traffic to the authenticated upstream proxy
 
 **Architecture:**
 ```
-Chrome → localhost:random_port (no auth) → mitmproxy → upstream proxy (with auth) → internet
+Chrome → localhost:random_port (no auth) → pproxy → upstream proxy (with auth) → internet
 ```
 
-**Why mitmproxy instead of Chrome extensions:**
+**Why pproxy instead of Chrome extensions:**
 - Chrome Manifest V3 extensions have unreliable `webRequest.onAuthRequired` in UC mode
 - Service workers don't stay active to respond to auth challenges
-- mitmproxy handles auth at the network level, which is more reliable
+- pproxy handles auth at the network level, which is more reliable
+- pproxy is lightweight, pure Python, and has no external dependencies (unlike mitmproxy which conflicts with seleniumbase)
 
 **Why NOT CDP-based proxy auth:**
 - CDP `Fetch.enable` with `handleAuthRequests` intercepts ALL requests
 - This causes 429 (rate limit), 403, and CORS errors on many sites
 
 **Implementation:** `src/airbrowser/server/browser/launcher.py`:
-- `start_local_proxy_forwarder()` starts mitmdump with `--mode upstream:...` and `--upstream-auth`
+- `start_local_proxy_forwarder()` starts pproxy with `-l http://... -r http://host:port#user:pass`
 - Chrome connects to the local proxy via `--proxy-server=127.0.0.1:port`
 - The proxy process is cleaned up when the browser closes
 
