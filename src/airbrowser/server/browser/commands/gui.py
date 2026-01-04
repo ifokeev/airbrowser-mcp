@@ -10,6 +10,32 @@ from .elements import KEY_MAP
 logger = logging.getLogger(__name__)
 
 
+def _clipboard_type(text: str):
+    """Type text using clipboard (paste) - supports Unicode/Cyrillic.
+
+    PyAutoGUI's write() only supports ASCII characters. For Unicode text,
+    we copy to clipboard using xclip and paste with Ctrl+V.
+    """
+    import subprocess
+
+    import pyautogui
+
+    # Copy to clipboard using xclip (available in Docker container)
+    proc = subprocess.Popen(
+        ["xclip", "-selection", "clipboard"],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    proc.communicate(input=text.encode("utf-8"))
+
+    # Small delay to ensure clipboard is ready
+    time.sleep(0.05)
+
+    # Paste with Ctrl+V
+    pyautogui.hotkey("ctrl", "v")
+
+
 def _ensure_cdp_mode(driver):
     """Ensure CDP mode is active on the driver."""
     if not hasattr(driver, "cdp"):
@@ -117,9 +143,9 @@ def handle_gui_type_xy(driver, command: dict) -> dict:
         elif hasattr(driver, "cdp") and hasattr(driver.cdp, "gui_write"):
             driver.cdp.gui_write(text)
         else:
-            import pyautogui
-
-            pyautogui.write(text)
+            # Use clipboard-based typing for Unicode support
+            # (pyautogui.write() only supports ASCII characters)
+            _clipboard_type(text)
 
         return {
             "status": "success",
@@ -127,7 +153,7 @@ def handle_gui_type_xy(driver, command: dict) -> dict:
             "x": x,
             "y": y,
             "text_length": len(text),
-            "method": "pyautogui",
+            "method": "clipboard",
         }
     except Exception as e:
         return {"status": "error", "message": f"Failed to type at xy: {str(e)}"}
