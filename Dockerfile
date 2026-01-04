@@ -80,12 +80,17 @@ WORKDIR /app
 # Install ChromeDriver (stable - cache this)
 RUN seleniumbase install chromedriver
 
-# Install noVNC (stable - cache this)
+# Install noVNC (stable - cache this, with retry for flaky GitHub downloads)
 RUN mkdir -p /opt \
-    && curl -sL https://github.com/novnc/noVNC/archive/v1.3.0.tar.gz | tar xz -C /opt/ \
+    && for i in 1 2 3 4 5; do \
+         curl -fSL --retry 3 --retry-delay 5 -o /tmp/novnc.tar.gz \
+           https://github.com/novnc/noVNC/archive/v1.3.0.tar.gz \
+         && tar xzf /tmp/novnc.tar.gz -C /opt/ \
+         && break || { echo "Attempt $i failed, retrying in 10s..."; sleep 10; }; \
+       done \
     && mv /opt/noVNC-1.3.0 /opt/noVNC \
     && ln -s /opt/noVNC/vnc.html /opt/noVNC/index.html \
-    && rm -rf /opt/noVNC/docs /opt/noVNC/tests /opt/noVNC/*.md \
+    && rm -rf /opt/noVNC/docs /opt/noVNC/tests /opt/noVNC/*.md /tmp/novnc.tar.gz \
     && pip install --no-cache-dir websockify
 
 # Create directories and user (stable - cache this)

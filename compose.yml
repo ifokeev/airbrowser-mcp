@@ -12,7 +12,7 @@ services:
       - "18443:18443" # Dashboard/nginx HTTPS
       - "8000:8000"   # REST API (direct)
       - "3001:3001"   # MCP server (direct)
-      - "5900:5900"   # VNC server
+      - "15900:5900"  # VNC server (host 15900 -> container 5900)
       - "6080:6080"   # noVNC web interface (direct)
     environment:
       - PYTHONUNBUFFERED=1
