@@ -217,6 +217,33 @@ await browserApi.navigateBrowser(browserId, navigateRequest);
 - Use typing, clicking, and screenshots instead of script execution after CDP activation
 - See `docs/CDP_MODE_NOTES.md` for detailed information
 
+### Proxy Authentication
+**Proxy auth uses a local mitmproxy forwarder (NOT Chrome extensions or CDP).**
+
+- Pass proxy URL with credentials: `user:pass@host:port`
+- For authenticated proxies, we start a local `mitmproxy` (mitmdump) process
+- Chrome connects to the local proxy (no auth needed)
+- mitmproxy forwards traffic to the authenticated upstream proxy
+
+**Architecture:**
+```
+Chrome → localhost:random_port (no auth) → mitmproxy → upstream proxy (with auth) → internet
+```
+
+**Why mitmproxy instead of Chrome extensions:**
+- Chrome Manifest V3 extensions have unreliable `webRequest.onAuthRequired` in UC mode
+- Service workers don't stay active to respond to auth challenges
+- mitmproxy handles auth at the network level, which is more reliable
+
+**Why NOT CDP-based proxy auth:**
+- CDP `Fetch.enable` with `handleAuthRequests` intercepts ALL requests
+- This causes 429 (rate limit), 403, and CORS errors on many sites
+
+**Implementation:** `src/airbrowser/server/browser/launcher.py`:
+- `start_local_proxy_forwarder()` starts mitmdump with `--mode upstream:...` and `--upstream-auth`
+- Chrome connects to the local proxy via `--proxy-server=127.0.0.1:port`
+- The proxy process is cleaned up when the browser closes
+
 ### MCP Tools Architecture
 **MCP tools are auto-generated from `BrowserOperations` class methods.**
 

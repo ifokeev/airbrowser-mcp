@@ -11,8 +11,8 @@ import json
 import logging
 import os
 import re
+import subprocess
 import sys
-import threading
 import time
 import traceback
 import warnings
@@ -96,129 +96,61 @@ def parse_proxy_credentials(proxy_url: str) -> tuple[str | None, str | None, str
     return None, None, proxy
 
 
-def setup_cdp_proxy_auth(driver, username: str, password: str):
-    """Set up CDP-based proxy authentication using Fetch domain.
+def start_local_proxy_forwarder(
+    upstream_host: str, upstream_port: int, upstream_user: str, upstream_pass: str
+) -> tuple[int, "subprocess.Popen"]:
+    """Start a local proxy that forwards to an authenticated upstream proxy.
 
-    This handles proxy auth requests via Chrome DevTools Protocol instead of
-    relying on the Chrome extension approach which can fail with Chrome 137+.
+    Uses mitmproxy in upstream mode to handle authenticated proxy forwarding.
+
+    Args:
+        upstream_host: Upstream proxy hostname
+        upstream_port: Upstream proxy port
+        upstream_user: Upstream proxy username
+        upstream_pass: Upstream proxy password
+
+    Returns:
+        Tuple of (local_port, process)
     """
-    import urllib.request
+    import socket
 
-    import websocket
+    # Find a free port for local proxy
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        local_port = s.getsockname()[1]
 
-    try:
-        # Get CDP WebSocket URL from the driver
-        cdp_url = None
+    # Start mitmproxy in upstream mode with separate auth flag
+    cmd = [
+        "mitmdump",
+        "--listen-host",
+        "127.0.0.1",
+        "--listen-port",
+        str(local_port),
+        "--mode",
+        f"upstream:http://{upstream_host}:{upstream_port}",
+        "--upstream-auth",
+        f"{upstream_user}:{upstream_pass}",
+        "--ssl-insecure",
+        "-q",  # Quiet mode
+    ]
 
-        # Try to get the CDP endpoint from driver capabilities
-        caps = driver.capabilities
-        debugger_addr = None
+    logger.info(f"Starting mitmproxy forwarder on port {local_port} -> {upstream_host}:{upstream_port}")
 
-        if "goog:chromeOptions" in caps:
-            debugger_addr = caps["goog:chromeOptions"].get("debuggerAddress")
+    proc = subprocess.Popen(
+        cmd,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True,  # Detach from parent
+    )
 
-        # Fallback: try to get from se:cdp
-        if not cdp_url and "se:cdp" in caps:
-            cdp_url = caps["se:cdp"]
+    # Give the proxy a moment to start
+    time.sleep(1.0)
 
-        # If we have a debugger address, get the proper WebSocket URL from /json/version
-        if debugger_addr and not cdp_url:
-            try:
-                version_url = f"http://{debugger_addr}/json/version"
-                with urllib.request.urlopen(version_url, timeout=5) as resp:
-                    version_data = json.loads(resp.read().decode())
-                    cdp_url = version_data.get("webSocketDebuggerUrl")
-                    logger.debug(f"Got CDP URL from /json/version: {cdp_url}")
-            except Exception as e:
-                logger.warning(f"Failed to get CDP URL from /json/version: {e}")
+    if proc.poll() is not None:
+        raise RuntimeError(f"mitmproxy failed to start (exit code: {proc.returncode})")
 
-        if not cdp_url:
-            logger.warning("Could not get CDP WebSocket URL for proxy auth")
-            return
-
-        logger.info(f"Setting up CDP proxy auth via {cdp_url}")
-
-        # Create WebSocket connection for CDP events
-        def handle_cdp_events():
-            """Background thread to handle CDP proxy auth events."""
-            ws = None
-            try:
-                ws = websocket.WebSocket()
-                ws.connect(cdp_url, timeout=5)
-
-                # Enable Fetch domain with auth handling
-                ws.send(json.dumps({"id": 1, "method": "Fetch.enable", "params": {"handleAuthRequests": True}}))
-                logger.info("CDP Fetch.enable sent for proxy auth handling")
-
-                # Process events
-                msg_id = 100
-                while True:
-                    try:
-                        msg = ws.recv()
-                        if not msg:
-                            continue
-
-                        data = json.loads(msg)
-
-                        # Handle auth required event
-                        if data.get("method") == "Fetch.authRequired":
-                            request_id = data["params"]["requestId"]
-                            logger.info(f"Proxy auth requested, providing credentials for request {request_id}")
-
-                            # Respond with credentials
-                            auth_response = {
-                                "id": msg_id,
-                                "method": "Fetch.continueWithAuth",
-                                "params": {
-                                    "requestId": request_id,
-                                    "authChallengeResponse": {
-                                        "response": "ProvideCredentials",
-                                        "username": username,
-                                        "password": password,
-                                    },
-                                },
-                            }
-                            ws.send(json.dumps(auth_response))
-                            msg_id += 1
-
-                        # Handle paused requests (continue them)
-                        elif data.get("method") == "Fetch.requestPaused":
-                            request_id = data["params"]["requestId"]
-                            continue_response = {
-                                "id": msg_id,
-                                "method": "Fetch.continueRequest",
-                                "params": {"requestId": request_id},
-                            }
-                            ws.send(json.dumps(continue_response))
-                            msg_id += 1
-
-                    except websocket.WebSocketTimeoutException:
-                        continue
-                    except websocket.WebSocketConnectionClosedException:
-                        logger.info("CDP WebSocket closed, stopping proxy auth handler")
-                        break
-                    except Exception as e:
-                        logger.debug(f"CDP event handling error: {e}")
-
-            except Exception as e:
-                logger.warning(f"CDP proxy auth setup failed: {e}")
-            finally:
-                if ws:
-                    try:
-                        ws.close()
-                    except Exception:
-                        pass
-
-        # Start background thread for CDP event handling
-        auth_thread = threading.Thread(target=handle_cdp_events, daemon=True)
-        auth_thread.start()
-        logger.info("CDP proxy auth handler thread started")
-
-        # Give the thread time to connect and enable Fetch
-        time.sleep(0.5)
-
-    except Exception as e:
-        logger.warning(f"Failed to set up CDP proxy auth: {e}")
+    logger.info(f"mitmproxy forwarder started: pid={proc.pid}, port={local_port}")
+    return local_port, proc
 
 
 def create_browser(config: dict):
@@ -229,26 +161,46 @@ def create_browser(config: dict):
     user_agent = config.get("user_agent")
     profile_name = config.get("profile_name")
 
-    # Parse proxy credentials if present
-    proxy_user, proxy_pass, proxy_server = parse_proxy_credentials(proxy)
-    has_proxy_auth = proxy_user is not None and proxy_pass is not None
+    # Parse proxy credentials and start local forwarder if needed
+    local_proxy_proc = None
+    effective_proxy = None
 
-    if has_proxy_auth:
-        logger.info(f"Proxy with authentication detected: {proxy_user}@{proxy_server}")
-    elif proxy:
-        logger.info(f"Proxy without authentication: {proxy_server}")
+    if proxy:
+        if "@" in proxy:
+            # Has credentials - start local proxy forwarder
+            proxy_user, proxy_pass, proxy_server = parse_proxy_credentials(proxy)
+            logger.info(f"Proxy with authentication detected: {proxy_user}@{proxy_server}")
+
+            # Parse host and port
+            if ":" in proxy_server:
+                upstream_host, upstream_port = proxy_server.rsplit(":", 1)
+                upstream_port = int(upstream_port)
+            else:
+                upstream_host = proxy_server
+                upstream_port = 80
+
+            # Start local proxy forwarder
+            local_port, local_proxy_proc = start_local_proxy_forwarder(
+                upstream_host, upstream_port, proxy_user, proxy_pass
+            )
+            effective_proxy = f"127.0.0.1:{local_port}"
+            logger.info(f"Using local proxy forwarder: {effective_proxy} -> {proxy_server}")
+        else:
+            effective_proxy = proxy
+            logger.info(f"Using proxy without auth: {proxy}")
 
     # UC (undetected chrome) + CDP mode are always enabled
-    # Pass proxy server WITHOUT credentials - we'll handle auth via CDP
     opts = {
         "browser": "chrome",
         "uc": True,
         "log_cdp": False,
         "uc_cdp": True,
-        "proxy": proxy_server if proxy else None,
         # Allow CDP WebSocket connections from any origin (required for CDP proxy)
         "chromium_arg": "--remote-allow-origins=*",
     }
+
+    if effective_proxy:
+        opts["proxy"] = effective_proxy
 
     # Set user_data_dir for persistent profile
     if profile_name:
@@ -275,10 +227,6 @@ def create_browser(config: dict):
 
     logger.info(f"Browser created successfully, session_id: {getattr(driver, 'session_id', 'unknown')}")
 
-    # Set up CDP-based proxy authentication if credentials were provided
-    if has_proxy_auth:
-        setup_cdp_proxy_auth(driver, proxy_user, proxy_pass)
-
     # Set window position and size
     try:
         driver.set_window_position(0, 0)
@@ -299,7 +247,7 @@ def create_browser(config: dict):
     except Exception as e:
         logger.warning(f"Could not set window size: {e}")
 
-    return driver
+    return driver, local_proxy_proc
 
 
 def run_command_loop(driver, browser_id: str, status_file: Path, cmd_dir: Path, resp_dir: Path):
@@ -369,13 +317,24 @@ def run_command_loop(driver, browser_id: str, status_file: Path, cmd_dir: Path, 
         time.sleep(0.1)  # Small delay to prevent CPU spinning
 
 
-def cleanup(driver, status_file: Path, cmd_dir: Path, resp_dir: Path):
-    """Clean up browser and IPC directories."""
+def cleanup(driver, status_file: Path, cmd_dir: Path, resp_dir: Path, proxy_proc=None):
+    """Clean up browser, proxy process, and IPC directories."""
     try:
         if driver:
             driver.quit()
     except Exception:
         pass
+
+    # Kill local proxy forwarder if it exists
+    if proxy_proc:
+        try:
+            proxy_proc.terminate()
+            proxy_proc.wait(timeout=2)
+        except Exception:
+            try:
+                proxy_proc.kill()
+            except Exception:
+                pass
 
     kill_child_processes(os.getpid())
 
@@ -405,6 +364,7 @@ def cleanup(driver, status_file: Path, cmd_dir: Path, resp_dir: Path):
 def main():
     """Main entry point for browser launcher."""
     driver = None
+    proxy_proc = None
     status_file = None
     cmd_dir = None
     resp_dir = None
@@ -427,8 +387,8 @@ def main():
         with open(status_file, "w") as f:
             json.dump(status_data, f)
 
-        # Create browser
-        driver = create_browser(config)
+        # Create browser (and optional proxy forwarder)
+        driver, proxy_proc = create_browser(config)
 
         # Update status to ready
         status_data.update(
@@ -463,7 +423,7 @@ def main():
 
     finally:
         if status_file and cmd_dir and resp_dir:
-            cleanup(driver, status_file, cmd_dir, resp_dir)
+            cleanup(driver, status_file, cmd_dir, resp_dir, proxy_proc)
 
 
 if __name__ == "__main__":
