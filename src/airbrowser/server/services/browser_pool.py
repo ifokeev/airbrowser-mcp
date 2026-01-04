@@ -31,6 +31,7 @@ class BrowserInstance:
         self.created_at = time.time()
         self.error_message: str | None = None
         self.session_id: str | None = None
+        self.current_url: str | None = None
 
     def to_info(self) -> BrowserInfo:
         from datetime import datetime
@@ -51,6 +52,7 @@ class BrowserInstance:
             last_activity=datetime.fromtimestamp(self.created_at),
             error_message=self.error_message,
             session_id=self.session_id,
+            current_url=self.current_url,
         )
 
     def to_dict(self) -> dict:
@@ -149,6 +151,11 @@ class BrowserPoolAdapter:
     def get_browser(self, browser_id: str) -> BrowserInstance | None:
         """Get browser instance info"""
         return self.browser_instances.get(browser_id)
+
+    def update_browser_url(self, browser_id: str, url: str | None) -> None:
+        """Update the current URL for a browser instance."""
+        if browser_id in self.browser_instances:
+            self.browser_instances[browser_id].current_url = url
 
     def close_browser(self, browser_id: str) -> bool:
         """Close a browser"""
@@ -628,7 +635,14 @@ class BrowserPoolAdapter:
             instance.status = browser_data.get("status", "unknown")
             instance.session_id = browser_data.get("session_id")
             instance.created_at = browser_data.get("created_at", time.time())
+            instance.current_url = browser_data.get("current_url")
             self.browser_instances[browser_id] = instance
+
+        # Sync current_url from service for existing browsers
+        for browser_id in service_ids & local_ids:
+            browser_data = service_browsers[browser_id]
+            if "current_url" in browser_data:
+                self.browser_instances[browser_id].current_url = browser_data.get("current_url")
 
         # Remove stale browsers from local cache (but keep "creating" ones)
         for browser_id in local_ids - service_ids:

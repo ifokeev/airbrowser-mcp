@@ -26,6 +26,11 @@ class NavigationOperations:
             result = self.browser_pool.execute_action(browser_id, action)
 
             if result.success:
+                # Update current_url in browser instance
+                current_url = None
+                if isinstance(result.data, dict):
+                    current_url = result.data.get("current_url") or result.data.get("url")
+                self.browser_pool.update_browser_url(browser_id, current_url)
                 return _success(data=result.data, message=result.message)
             return _error(result.message)
 
