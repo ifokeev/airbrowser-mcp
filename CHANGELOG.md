@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.1](https://github.com/ifokeev/airbrowser-mcp/compare/v1.12.0...v1.12.1) (2026-01-04)
+
+
+### Bug Fixes
+
+* **proxy:** use mitmproxy for authenticated proxy support in UC mode ([22132e7](https://github.com/ifokeev/airbrowser-mcp/commit/22132e733b2085b47e7f334fda9d245925354537))
+
 ## [1.12.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.11.0...v1.12.0) (2026-01-03)
 
 
