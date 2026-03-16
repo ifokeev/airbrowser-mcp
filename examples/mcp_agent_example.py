@@ -43,7 +43,7 @@ async def main():
             print("Navigated to Hacker News")
 
             # 3. Use AI vision to understand the page
-            #    (requires OPENROUTER_API_KEY environment variable)
+            #    (requires VISION_API_BASE_URL, VISION_API_KEY, and VISION_MODEL)
             print("\n--- Analyzing Page with AI Vision ---")
             try:
                 analysis = await client.call_tool("what_is_visible", {"browser_id": browser_id})
@@ -51,7 +51,7 @@ async def main():
                 print(analysis.get("analysis", "No analysis available")[:500])
             except Exception as e:
                 print(f"Vision analysis not available: {e}")
-                print("(Set OPENROUTER_API_KEY to enable AI vision)")
+                print("(Set VISION_API_BASE_URL, VISION_API_KEY, and VISION_MODEL to enable AI vision)")
 
             # 4. Take a screenshot
             print("\n--- Taking Screenshot ---")

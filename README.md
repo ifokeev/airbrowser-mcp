@@ -69,19 +69,24 @@ Open **http://localhost:18080** - all services available:
 - MCP for AI agents
 - AI vision tools (optional)
 
-## AI Vision (Recommended)
+## AI Vision (Optional)
 
-Enable AI-powered vision tools (`what_is_visible`, `detect_coordinates`) by setting your OpenRouter API key. Without it, these tools won't be available to AI agents.
+Enable AI-powered vision tools (`what_is_visible`, `detect_coordinates`) with any OpenAI-compatible vision backend. Vision turns on only when `VISION_API_BASE_URL`, `VISION_API_KEY`, and `VISION_MODEL` are all set.
 
 ```bash
 # Docker run
-docker run -d -p 18080:18080 -e OPENROUTER_API_KEY=sk-or-v1-xxx ghcr.io/ifokeev/airbrowser-mcp:latest
+docker run -d -p 18080:18080 \
+  -e VISION_API_BASE_URL=https://your-openai-compatible-endpoint/v1 \
+  -e VISION_API_KEY=your-api-key \
+  -e VISION_MODEL=your-vision-model \
+  ghcr.io/ifokeev/airbrowser-mcp:latest
 
 # Docker compose
-OPENROUTER_API_KEY=sk-or-v1-xxx docker compose up
+VISION_API_BASE_URL=https://your-openai-compatible-endpoint/v1 \
+VISION_API_KEY=your-api-key \
+VISION_MODEL=your-vision-model \
+docker compose up
 ```
-
-Get your API key at https://openrouter.ai/
 
 ## MCP Client Configuration
 

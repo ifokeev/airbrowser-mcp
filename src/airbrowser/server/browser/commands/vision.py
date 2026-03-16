@@ -1,23 +1,28 @@
 """Vision-based browser commands using AI models."""
 
 import logging
-import os
 import time
 from typing import Any
 
 from airbrowser.server.utils.screenshots import take_screenshot
+from airbrowser.server.vision.config import load_vision_settings
 from airbrowser.server.vision.coordinates import detect_element_coordinates
-from airbrowser.server.vision.openrouter import OpenRouterClient
+from airbrowser.server.vision.openai_compatible import OpenAICompatibleVisionClient
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_COORD_MODEL = "google/gemini-3-flash-preview"
-DEFAULT_ANALYSIS_MODEL = "google/gemini-3-flash-preview"
 
+def resolve_vision_model(command: dict[str, Any]) -> str:
+    """Resolve the model for a single vision request."""
+    requested = (command.get("model") or "").strip()
+    if requested:
+        return requested
 
-def _get_model(command: dict, env_var: str, default: str) -> str:
-    """Get model from command, env, or default."""
-    return command.get("model") or os.getenv(env_var, default)
+    settings = load_vision_settings()
+    if settings is None:
+        raise RuntimeError("Vision client not configured")
+
+    return settings.model
 
 
 def _transform_to_screen_coords(driver, coords: dict[str, Any], fx: float = 0.5, fy: float = 0.5) -> dict[str, Any]:
@@ -109,10 +114,13 @@ def handle_detect_coordinates(driver, command: dict, browser_id: str = "unknown"
     # Clamp to valid range
     fx = max(0.0, min(1.0, fx))
     fy = max(0.0, min(1.0, fy))
-    model = _get_model(command, "OPENROUTER_COORD_MODEL", DEFAULT_COORD_MODEL)
 
     try:
         screenshot = take_screenshot(driver, browser_id)
+        if load_vision_settings() is None:
+            return {"status": "error", "message": "Vision client not configured", "screenshot_url": screenshot["url"]}
+
+        model = resolve_vision_model(command)
         coords = detect_element_coordinates(screenshot["path"], prompt, model)
 
         if coords.get("success"):
@@ -143,14 +151,14 @@ def handle_detect_coordinates(driver, command: dict, browser_id: str = "unknown"
 
 def handle_what_is_visible(driver, command: dict, browser_id: str = "unknown") -> dict:
     """Page state analysis using AI vision."""
-    model = _get_model(command, "OPENROUTER_ANALYSIS_MODEL", DEFAULT_ANALYSIS_MODEL)
-
     try:
         screenshot = take_screenshot(driver, browser_id)
-        client = OpenRouterClient(model=model)
+        settings = load_vision_settings()
+        if settings is None:
+            return {"status": "error", "message": "Vision client not configured", "screenshot_url": screenshot["url"]}
 
-        if not client.is_available():
-            return {"status": "error", "message": "OpenRouter not available", "screenshot_url": screenshot["url"]}
+        model = resolve_vision_model(command)
+        client = OpenAICompatibleVisionClient(base_url=settings.base_url, api_key=settings.api_key, model=model)
 
         prompt = """Analyze this webpage. Report:
 1. FORM FIELDS: inputs (filled/empty), required, validation errors

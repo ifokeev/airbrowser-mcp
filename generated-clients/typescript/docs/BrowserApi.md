@@ -420,7 +420,7 @@ No authorization required
 # **detectCoordinates**
 > GenericResponse detectCoordinates(payload)
 
-Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
+Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.
 
 ### Example
 
@@ -1983,7 +1983,7 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **whatIsVisible**
-> GenericResponse whatIsVisible()
+> GenericResponse whatIsVisible(payload)
 
 
 ### Example
@@ -1991,16 +1991,19 @@ No authorization required
 ```typescript
 import {
     BrowserApi,
-    Configuration
+    Configuration,
+    WhatIsVisibleRequest
 } from 'airbrowser-client';
 
 const configuration = new Configuration();
 const apiInstance = new BrowserApi(configuration);
 
 let browserId: string; // (default to undefined)
+let payload: WhatIsVisibleRequest; //
 
 const { status, data } = await apiInstance.whatIsVisible(
-    browserId
+    browserId,
+    payload
 );
 ```
 
@@ -2008,6 +2011,7 @@ const { status, data } = await apiInstance.whatIsVisible(
 
 |Name | Type | Description  | Notes|
 |------------- | ------------- | ------------- | -------------|
+| **payload** | **WhatIsVisibleRequest**|  | |
 | **browserId** | [**string**] |  | defaults to undefined|
 
 
@@ -2021,7 +2025,7 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: Not defined
+ - **Content-Type**: application/json
  - **Accept**: application/json
 
 

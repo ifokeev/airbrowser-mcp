@@ -5,6 +5,7 @@ This ensures the example files themselves stay working, not just
 the patterns they demonstrate.
 """
 
+import importlib.util
 import os
 import subprocess
 import sys
@@ -13,6 +14,15 @@ from pathlib import Path
 import pytest
 
 EXAMPLES_DIR = Path(__file__).parent.parent / "examples"
+
+
+def load_example_module(filename: str, module_name: str):
+    example_path = EXAMPLES_DIR / filename
+    spec = importlib.util.spec_from_file_location(module_name, example_path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def get_api_base_url() -> str:
@@ -25,7 +35,7 @@ def get_api_base_url() -> str:
     return os.environ.get("API_BASE_URL", "http://localhost:18080/api/v1")
 
 
-def run_example(filename: str, timeout: int = 60, env: dict = None) -> subprocess.CompletedProcess:
+def run_example(filename: str, timeout: int = 60, env: dict | None = None) -> subprocess.CompletedProcess:
     """Run an example file and return the result."""
     example_path = EXAMPLES_DIR / filename
     assert example_path.exists(), f"Example file not found: {example_path}"
@@ -50,6 +60,75 @@ def run_example(filename: str, timeout: int = 60, env: dict = None) -> subproces
 
 class TestExampleFiles:
     """Run actual example files and verify they complete successfully."""
+
+    def test_what_is_visible_reanalysis_uses_response_data(self, monkeypatch, capsys):
+        """Test examples/what_is_visible.py reads re-analysis from GenericResponse.data."""
+        module = load_example_module("what_is_visible.py", "test_what_is_visible_example")
+
+        class FakeConfiguration:
+            def __init__(self, host):
+                self.host = host
+
+        class FakeApiClient:
+            def __init__(self, config):
+                self.config = config
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, exc_type, exc, tb):
+                return False
+
+        class FakeHealthApi:
+            def __init__(self, client):
+                self.client = client
+
+            def health_check(self):
+                return type("Health", (), {"vision_enabled": True})()
+
+        class FakeBrowserApi:
+            def __init__(self, client):
+                self.client = client
+                self.what_is_visible_calls = 0
+
+            def create_browser(self, payload):
+                return type("Response", (), {"data": {"browser_id": "browser-123"}})()
+
+            def navigate_browser(self, browser_id, payload):
+                return None
+
+            def what_is_visible(self, browser_id, payload):
+                self.what_is_visible_calls += 1
+                analysis = (
+                    "filled account field detected" if self.what_is_visible_calls == 2 else "account field visible"
+                )
+                return type(
+                    "Response",
+                    (),
+                    {"success": True, "data": {"analysis": analysis, "model": "mock-model"}},
+                )()
+
+            def type_text(self, browser_id, payload):
+                return None
+
+            def take_screenshot(self, browser_id, payload):
+                return type("Response", (), {"data": {"screenshot_url": "http://shot"}})()
+
+            def close_browser(self, browser_id):
+                return None
+
+        monkeypatch.setattr(module, "Configuration", FakeConfiguration)
+        monkeypatch.setattr(module, "ApiClient", FakeApiClient)
+        monkeypatch.setattr(module, "HealthApi", FakeHealthApi)
+        monkeypatch.setattr(module, "BrowserApi", FakeBrowserApi)
+        monkeypatch.setattr(module.time, "sleep", lambda *_args, **_kwargs: None)
+
+        module.main()
+        output = capsys.readouterr().out
+
+        assert "UPDATED PAGE ANALYSIS:" in output
+        assert "Could not fill email field:" not in output
+        assert "WhatIsVisibleRequest()" in output
 
     def test_basic_navigation(self):
         """Test examples/basic_navigation.py runs without error."""
@@ -77,9 +156,9 @@ class TestExampleFiles:
 
         assert result.returncode == 0, f"Example failed:\nstdout: {result.stdout}\nstderr: {result.stderr}"
         assert "Proxy Rotation Example" in result.stdout
-        assert "Unique IPs detected: 2" in result.stdout, (
-            "Proxy should show different IP than direct connection.\n" f"stdout: {result.stdout}"
-        )
+        assert (
+            "Unique IPs detected: 2" in result.stdout
+        ), f"Proxy should show different IP than direct connection.\nstdout: {result.stdout}"
         assert "Proxy rotation is working correctly!" in result.stdout
 
     def test_form_automation(self):
@@ -107,10 +186,11 @@ class TestExampleFiles:
 
         # Check if vision is disabled on server (graceful skip)
         if "Vision tools are not available" in result.stdout:
-            pytest.skip("Vision not enabled on server (OPENROUTER_API_KEY not set)")
+            pytest.skip("Vision not enabled on server (vision config not set)")
 
         assert result.returncode == 0, f"Example failed:\nstdout: {result.stdout}\nstderr: {result.stderr}"
         assert "AI Vision Analysis Example" in result.stdout
+        assert "No prompt required - call what_is_visible with WhatIsVisibleRequest()." in result.stdout
 
     def test_cloudflare_captcha_vision(self):
         """Test examples/cloudflare_captcha_vision.py runs without error."""
@@ -118,7 +198,7 @@ class TestExampleFiles:
 
         # Check if vision is disabled on server (graceful skip)
         if "Vision tools are not available" in result.stdout:
-            pytest.skip("Vision not enabled on server (OPENROUTER_API_KEY not set)")
+            pytest.skip("Vision not enabled on server (vision config not set)")
         if "Cloudflare page unavailable or blocked" in result.stdout:
             pytest.skip("Cloudflare unavailable or blocked in this environment")
         if "Vision detection failed" in result.stdout:

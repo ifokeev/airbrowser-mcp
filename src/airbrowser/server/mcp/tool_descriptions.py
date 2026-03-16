@@ -27,7 +27,7 @@ and uses AI to analyze it, so you don't need to manually download and view scree
     "detect_coordinates": """
 **VISION-BASED ELEMENT DETECTION** - Find elements using AI vision. PREFER THIS over HTML parsing.
 
-**RECOMMENDED APPROACH**: When AI vision is enabled, use this tool to locate elements instead of
+**RECOMMENDED APPROACH**: If AI vision is configured, use this tool to locate elements instead of
 parsing HTML. It's more robust, works on any page, and enables undetectable GUI interactions.
 
 **Workflow - CLICK**: `detect_coordinates` → `gui_click_xy`
@@ -35,7 +35,7 @@ parsing HTML. It's more robust, works on any page, and enables undetectable GUI 
 **Workflow - HOVER**: `detect_coordinates` → `gui_hover_xy`
 
 **Perfect for:**
-- Any page when AI vision is enabled (preferred over selectors)
+- Any page when AI vision is configured (preferred over selectors)
 - CAPTCHAs in complex layouts ("find the hCaptcha checkbox")
 - Dynamic content without stable selectors
 - Elements easier to describe than locate in HTML ("the blue Submit button")
@@ -133,12 +133,12 @@ This performs the actual GUI click using PyAutoGUI, making it undetectable by an
     "gui_type_xy": """
 **GUI TYPE AT COORDINATES** - Click at coordinates then type text using undetectable GUI automation.
 
-**PREFERRED WORKFLOW** when AI vision is enabled:
+**PREFERRED WORKFLOW** if AI vision is configured:
 1. Call `detect_coordinates` with a description like "the email input field"
 2. Use the returned coordinates with this tool to click and type text
 
 **Use this when:**
-- AI vision is enabled and you need to type into an element
+- AI vision is configured and you need to type into an element
 - Page HTML is too large/complex for selector parsing
 - Input fields on anti-automation sites
 - Dynamic elements without stable selectors
@@ -185,7 +185,7 @@ This performs a real GUI click at coordinates, then types using PyAutoGUI - comp
     "get_content": """
 **GET VISIBLE TEXT CONTENT** - Retrieve the visible text from the current page (no HTML).
 
-**PREFER `what_is_visible`**: If AI vision is enabled, use `what_is_visible` instead - it provides
+**PREFER `what_is_visible`**: If AI vision is configured, use `what_is_visible` instead - it provides
 richer context including form states, interactive elements, and visual understanding without
 needing to parse raw text.
 
@@ -202,7 +202,7 @@ Returns: Visible text content, current URL, page title, and truncation flag.
     "take_screenshot": """
 Take a screenshot of the browser.
 
-**PREFER `what_is_visible`**: If AI vision is enabled (OPENROUTER_API_KEY set), use `what_is_visible`
+**PREFER `what_is_visible`**: If AI vision is configured, use `what_is_visible`
 instead - it's faster and provides AI analysis without manual screenshot download.
 
 **MANUAL SCREENSHOT WORKFLOW** (only if `what_is_visible` is not available):
@@ -261,7 +261,7 @@ Use `scroll_by` for relative scrolling.
 Navigate the browser to a URL.
 
 **VERIFICATION**: After navigating, verify the page loaded correctly:
-- **If AI vision enabled**: Use `what_is_visible` - provides URL, page state, and visual confirmation
+- **If AI vision is configured**: Use `what_is_visible` - provides URL, page state, and visual confirmation
 - **Otherwise**: Use `get_content` to check page title and text content
 
 Don't assume navigation succeeded just because the API returned success.
@@ -269,7 +269,7 @@ Don't assume navigation succeeded just because the API returned success.
     "click": """
 Click on an element using CSS selector or XPath.
 
-**PREFER VISION + GUI**: If AI vision is enabled, prefer using `detect_coordinates` + `gui_click_xy`:
+**PREFER VISION + GUI**: If AI vision is configured, prefer using `detect_coordinates` + `gui_click_xy`:
 1. Use `detect_coordinates` to find the element by description
 2. Use `gui_click_xy` with the returned coordinates
 This approach is more robust and undetectable by anti-automation systems.
@@ -293,7 +293,7 @@ like `:has-text()` are NOT supported. Examples:
     "type_text": """
 Type text into an input field using CSS selector or XPath.
 
-**PREFER VISION + GUI**: If AI vision is enabled, prefer using `detect_coordinates` + `gui_type_xy`:
+**PREFER VISION + GUI**: If AI vision is configured, prefer using `detect_coordinates` + `gui_type_xy`:
 1. Use `detect_coordinates` to find the input field by description
 2. Use `gui_type_xy` with the returned coordinates and text to type
 This approach is more robust and undetectable by anti-automation systems.
@@ -317,7 +317,7 @@ Press keyboard keys on an element. Supports special keys (ENTER, TAB, ESCAPE, et
 and key combinations (CTRL+a, SHIFT+TAB).
 
 **VERIFICATION**: After pressing ENTER to submit a form or perform a search, ALWAYS verify:
-- **If AI vision enabled**: Use `what_is_visible` - shows resulting page, success/error messages
+- **If AI vision is configured**: Use `what_is_visible` - shows resulting page, success/error messages
 - **Otherwise**: Use `get_content` to check the resulting page
 
 Don't assume the key press had the intended effect without verification.

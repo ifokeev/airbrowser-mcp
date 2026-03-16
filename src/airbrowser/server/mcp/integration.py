@@ -12,6 +12,7 @@ from typing import Any, get_type_hints
 from fastmcp import FastMCP  # type: ignore
 
 from ..services.browser_operations import BrowserOperations
+from ..vision.config import vision_is_enabled
 from .tool_descriptions import TOOL_DESCRIPTIONS
 
 # Methods that need start_time injected (not exposed to MCP clients)
@@ -20,7 +21,7 @@ _INJECT_START_TIME = {"get_pool_status", "health_check"}
 # Methods to exclude from MCP (internal/private)
 _EXCLUDED_METHODS = {"__init__", "__class__", "__repr__", "__str__"}
 
-# Vision tools that require OPENROUTER_API_KEY
+# Vision tools that require AI vision configuration
 _VISION_TOOLS = {"what_is_visible", "detect_coordinates"}
 
 
@@ -38,19 +39,17 @@ class MCPIntegration:
         registered = []
         skipped_vision = []
 
-        # Check if vision tools should be enabled
-        # MCP_INCLUDE_ALL_TOOLS=true enables all tools (for doc generation)
-        # OPENROUTER_API_KEY enables vision tools for actual use
+        # MCP_INCLUDE_ALL_TOOLS=true enables all tools for doc generation.
+        # Otherwise, only register vision tools when AI vision is configured.
         include_all_tools = os.environ.get("MCP_INCLUDE_ALL_TOOLS", "").lower() == "true"
-        has_openrouter_key = bool(os.environ.get("OPENROUTER_API_KEY"))
+        vision_enabled = vision_is_enabled()
 
         for name in dir(self.browser_ops):
             # Skip private/magic methods
             if name.startswith("_") or name in _EXCLUDED_METHODS:
                 continue
 
-            # Skip vision tools unless OPENROUTER_API_KEY is set or MCP_INCLUDE_ALL_TOOLS=true
-            if name in _VISION_TOOLS and not (has_openrouter_key or include_all_tools):
+            if name in _VISION_TOOLS and not (vision_enabled or include_all_tools):
                 skipped_vision.append(name)
                 continue
 
@@ -68,7 +67,7 @@ class MCPIntegration:
 
         print(f"[MCP] Auto-registered {len(registered)} tools from BrowserOperations")
         if skipped_vision:
-            print(f"[MCP] Vision tools disabled (set OPENROUTER_API_KEY to enable): {', '.join(skipped_vision)}")
+            print(f"[MCP] Vision tools disabled (configure AI vision to enable): {', '.join(skipped_vision)}")
 
     def _create_tool_wrapper(self, name: str, method: Callable) -> Callable | None:
         """Create an async MCP tool wrapper for a BrowserOperations method."""

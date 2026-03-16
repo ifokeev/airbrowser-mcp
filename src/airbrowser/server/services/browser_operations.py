@@ -217,7 +217,12 @@ class BrowserOperations:
         return self._gui.gui_press_keys_xy(browser_id, x, y, keys, timeframe)
 
     def detect_coordinates(
-        self, browser_id: str, prompt: str, fx: float | None = None, fy: float | None = None
+        self,
+        browser_id: str,
+        prompt: str,
+        fx: float | None = None,
+        fy: float | None = None,
+        model: str | None = None,
     ) -> dict[str, Any]:
         """Detect element coordinates using vision.
 
@@ -227,12 +232,13 @@ class BrowserOperations:
             fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).
                 If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).
             fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
+            model: Optional vision model override for this request.
         """
-        return self._vision.detect_coordinates(browser_id, prompt, fx, fy)
+        return self._vision.detect_coordinates(browser_id, prompt, fx, fy, model)
 
-    def what_is_visible(self, browser_id: str) -> dict[str, Any]:
+    def what_is_visible(self, browser_id: str, model: str | None = None) -> dict[str, Any]:
         """AI page analysis - what's visible."""
-        return self._vision.what_is_visible(browser_id)
+        return self._vision.what_is_visible(browser_id, model)
 
     # ==================== Page ====================
 

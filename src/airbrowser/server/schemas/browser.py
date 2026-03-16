@@ -113,7 +113,17 @@ def register_browser_schemas(api):
                 description="Natural language description of element to find",
                 required=True,
                 example="the search input field",
-            )
+            ),
+            "fx": fields.Float(description="Relative X (0..1) within the detected element"),
+            "fy": fields.Float(description="Relative Y (0..1) within the detected element"),
+            "model": fields.String(description="Optional vision model override for this request"),
+        },
+    )
+
+    schemas["WhatIsVisibleRequest"] = api.model(
+        "WhatIsVisibleRequest",
+        {
+            "model": fields.String(description="Optional vision model override for this request"),
         },
     )
 

@@ -11,6 +11,7 @@ Tests:
 Run with: pytest tests/test_vision_and_scroll.py -v
 """
 
+import json
 import os
 import time
 
@@ -24,12 +25,41 @@ from airbrowser_client.models import (
     GuiTypeXyRequest,
     NavigateBrowserRequest,
     ScrollRequest,
+    WhatIsVisibleRequest,
 )
 
 
-def has_openrouter_key():
-    """Check if OPENROUTER_API_KEY is available."""
-    return bool(os.environ.get("OPENROUTER_API_KEY"))
+def has_vision_config():
+    """Check if AI vision is configured."""
+    return all(os.environ.get(name) for name in ("VISION_API_BASE_URL", "VISION_API_KEY", "VISION_MODEL"))
+
+
+def assert_vision_client_not_configured_error(error: BadRequestException) -> None:
+    """Assert the API surfaced the generic missing-vision message."""
+    message = str(error)
+    if isinstance(getattr(error, "data", None), dict):
+        message = error.data.get("message", message)
+    elif isinstance(getattr(error, "body", None), str):
+        try:
+            payload = json.loads(error.body)
+        except json.JSONDecodeError:
+            payload = None
+        if isinstance(payload, dict):
+            message = payload.get("message", message)
+
+    assert message == "Vision client not configured", f"Unexpected error: {error}"
+
+
+def test_assert_vision_client_not_configured_error_rejects_legacy_message():
+    class FakeBadRequest:
+        data = {"message": "Legacy vision provider not available"}
+        body = '{"message": "Legacy vision provider not available"}'
+
+        def __str__(self):
+            return "Legacy vision provider not available"
+
+    with pytest.raises(AssertionError):
+        assert_vision_client_not_configured_error(FakeBadRequest())
 
 
 def extract_coordinates(result_data):
@@ -262,11 +292,11 @@ class TestVisionOperations:
                     result.message
                 ), "detect_coordinates action not registered in execute_action"
         except BadRequestException as e:
-            # 400 error means the action was found but vision API not available
+            # 400 error means the action was found but vision is not configured
             # This is OK - it means the action handler is registered
-            assert "OpenRouter not available" in str(e) or "not available" in str(e), f"Unexpected error: {e}"
+            assert_vision_client_not_configured_error(e)
 
-    @pytest.mark.skipif(not has_openrouter_key(), reason="OPENROUTER_API_KEY not set")
+    @pytest.mark.skipif(not has_vision_config(), reason="Vision config not set")
     def test_detect_coordinates_finds_element(self, browser_client, browser_with_page):
         """Test that detect_coordinates finds a visible element."""
         bid = browser_with_page
@@ -283,7 +313,7 @@ class TestVisionOperations:
             if isinstance(coords, dict):
                 assert coords.get("x") is not None or coords.get("click_point") is not None
 
-    @pytest.mark.skipif(not has_openrouter_key(), reason="OPENROUTER_API_KEY not set")
+    @pytest.mark.skipif(not has_vision_config(), reason="Vision config not set")
     def test_detect_coordinates_returns_click_point(self, browser_client, browser_with_page):
         """Test that detect_coordinates returns usable click coordinates."""
         bid = browser_with_page
@@ -305,22 +335,22 @@ class TestVisionOperations:
         bid = browser_with_page
 
         try:
-            result = browser_client.what_is_visible(bid)
+            result = browser_client.what_is_visible(bid, payload=WhatIsVisibleRequest())
             assert result is not None
             if not result.success:
                 assert "Unknown action" not in str(
                     result.message
                 ), "what_is_visible action not registered in execute_action"
         except BadRequestException as e:
-            # 400 error means action was found but vision API not available
-            assert "OpenRouter not available" in str(e) or "not available" in str(e), f"Unexpected error: {e}"
+            # 400 error means action was found but vision is not configured
+            assert_vision_client_not_configured_error(e)
 
-    @pytest.mark.skipif(not has_openrouter_key(), reason="OPENROUTER_API_KEY not set")
+    @pytest.mark.skipif(not has_vision_config(), reason="Vision config not set")
     def test_what_is_visible_returns_analysis(self, browser_client, browser_with_page):
         """Test that what_is_visible returns page analysis."""
         bid = browser_with_page
 
-        result = browser_client.what_is_visible(bid)
+        result = browser_client.what_is_visible(bid, payload=WhatIsVisibleRequest())
 
         if result.success and result.data:
             analysis = result.data.get("analysis") if isinstance(result.data, dict) else None
@@ -332,7 +362,7 @@ class TestVisionOperations:
 class TestVisionGuiIntegration:
     """Integration tests for vision + GUI workflow."""
 
-    @pytest.mark.skipif(not has_openrouter_key(), reason="OPENROUTER_API_KEY not set")
+    @pytest.mark.skipif(not has_vision_config(), reason="Vision config not set")
     def test_detect_then_gui_click(self, browser_client, browser_with_page):
         """Test complete workflow: detect_coordinates -> gui_click."""
         bid = browser_with_page
@@ -357,7 +387,7 @@ class TestVisionGuiIntegration:
         if not click_result.success:
             assert "Unknown action" not in str(click_result.message)
 
-    @pytest.mark.skipif(not has_openrouter_key(), reason="OPENROUTER_API_KEY not set")
+    @pytest.mark.skipif(not has_vision_config(), reason="Vision config not set")
     def test_detect_then_gui_type(self, browser_client, browser_with_page):
         """Test complete workflow: detect_coordinates -> gui_type_xy."""
         bid = browser_with_page
@@ -382,7 +412,7 @@ class TestVisionGuiIntegration:
         if not type_result.success:
             assert "Unknown action" not in str(type_result.message)
 
-    @pytest.mark.skipif(not has_openrouter_key(), reason="OPENROUTER_API_KEY not set")
+    @pytest.mark.skipif(not has_vision_config(), reason="Vision config not set")
     def test_scroll_then_detect(self, browser_client, browser_with_page):
         """Test scrolling to element then detecting it."""
         bid = browser_with_page

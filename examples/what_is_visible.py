@@ -6,7 +6,7 @@ Demonstrates: using the `what_is_visible` endpoint to get AI-powered
 analysis of page content. Useful for AI agents to understand page state.
 
 Requirements:
-    - OPENROUTER_API_KEY environment variable set in the container
+    - VISION_API_BASE_URL, VISION_API_KEY, and VISION_MODEL set in the container
 """
 
 import os
@@ -14,6 +14,7 @@ import time
 
 from airbrowser_client import ApiClient, Configuration
 from airbrowser_client.api import BrowserApi, HealthApi
+from airbrowser_client.models import WhatIsVisibleRequest
 
 API_BASE = os.environ.get("API_BASE_URL", "http://localhost:18080/api/v1")
 
@@ -32,7 +33,7 @@ def main():
         vision_enabled = getattr(health, "vision_enabled", False)
         if not vision_enabled:
             print("\nERROR: Vision tools are not available!")
-            print("Start the container with: OPENROUTER_API_KEY=sk-or-... docker compose up")
+            print("Start the container with VISION_API_BASE_URL, VISION_API_KEY, and VISION_MODEL set.")
             return
 
         print("\n✓ Vision tools enabled")
@@ -60,7 +61,7 @@ def main():
             print("\nAnalyzing page with AI vision...")
             analysis_start = time.time()
 
-            analysis_result = api.what_is_visible(browser_id=browser_id)
+            analysis_result = api.what_is_visible(browser_id=browser_id, payload=WhatIsVisibleRequest())
 
             analysis_time = time.time() - analysis_start
 
@@ -122,10 +123,11 @@ def main():
 
                 # Re-analyze
                 print("Re-analyzing page after filling email...")
-                analysis2_result = api.what_is_visible(browser_id=browser_id)
+                analysis2_result = api.what_is_visible(browser_id=browser_id, payload=WhatIsVisibleRequest())
 
                 if analysis2_result.success:
-                    analysis2 = analysis2_result.analysis or ""
+                    analysis2_data = analysis2_result.data or {}
+                    analysis2 = analysis2_data.get("analysis", "")
                     print("\nUPDATED PAGE ANALYSIS:")
                     print("-" * 40)
                     print(analysis2[:500] + "..." if len(analysis2) > 500 else analysis2)
@@ -149,7 +151,7 @@ def main():
             print("  - Interactive element status")
             print("  - CAPTCHA detection")
             print("  - Page purpose and next actions")
-            print("  - No prompt required - just browser_id!")
+            print("  - No prompt required - call what_is_visible with WhatIsVisibleRequest().")
             print("=" * 60)
 
         finally:

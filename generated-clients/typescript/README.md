@@ -142,6 +142,7 @@ Class | Method | HTTP request | Description
  - [TypeTextRequest](docs/TypeTextRequest.md)
  - [UploadFileRequest](docs/UploadFileRequest.md)
  - [WaitElementRequest](docs/WaitElementRequest.md)
+ - [WhatIsVisibleRequest](docs/WhatIsVisibleRequest.md)
 
 
 <a id="documentation-for-authorization"></a>

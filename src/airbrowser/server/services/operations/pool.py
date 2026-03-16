@@ -1,11 +1,11 @@
 """Pool management operations (status, health check)."""
 
-import os
 import time
 from typing import Any
 
 from airbrowser import __version__
 
+from ...vision.config import vision_is_enabled
 from ..browser_pool import BrowserPoolAdapter
 from .response import error as _error
 from .response import success as _success
@@ -72,7 +72,7 @@ class PoolOperations:
                 "status": "healthy" if is_healthy else "degraded",
                 "server": "Airbrowser",
                 "version": __version__,
-                "vision_enabled": bool(os.getenv("OPENROUTER_API_KEY")),
+                "vision_enabled": vision_is_enabled(),
                 "pool_metrics": pool_metrics,
                 "timestamp": time.time(),
             }

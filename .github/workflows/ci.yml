@@ -86,7 +86,9 @@ jobs:
 
       - name: Run integration tests
         env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          VISION_API_BASE_URL: ${{ secrets.VISION_API_BASE_URL }}
+          VISION_API_KEY: ${{ secrets.VISION_API_KEY }}
+          VISION_MODEL: ${{ secrets.VISION_MODEL }}
           TEST_PROXY: ${{ secrets.TEST_PROXY }}
         run: |
           chmod +x ./scripts/run_tests.sh

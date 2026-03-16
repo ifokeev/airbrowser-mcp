@@ -389,11 +389,16 @@ class BrowserPoolAdapter:
                         kwargs["fx"] = action.options["fx"]
                     if "fy" in action.options:
                         kwargs["fy"] = action.options["fy"]
+                    if "model" in action.options:
+                        kwargs["model"] = action.options["model"]
                 response = self.client.execute_command(browser_id, "detect_coordinates", **kwargs)
 
             elif action.action == "what_is_visible":
                 # Comprehensive page state analysis - what's visible on the current page
-                response = self.client.execute_command(browser_id, "what_is_visible")
+                kwargs = {}
+                if action.options and "model" in action.options:
+                    kwargs["model"] = action.options["model"]
+                response = self.client.execute_command(browser_id, "what_is_visible", **kwargs)
 
             # Tab operations
             elif action.action == "list_tabs":

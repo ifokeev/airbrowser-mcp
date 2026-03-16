@@ -50,6 +50,7 @@ from airbrowser_client.models.take_screenshot_request import TakeScreenshotReque
 from airbrowser_client.models.type_text_request import TypeTextRequest
 from airbrowser_client.models.upload_file_request import UploadFileRequest
 from airbrowser_client.models.wait_element_request import WaitElementRequest
+from airbrowser_client.models.what_is_visible_request import WhatIsVisibleRequest
 
 from airbrowser_client.api_client import ApiClient, RequestSerialized
 from airbrowser_client.api_response import ApiResponse
@@ -2055,7 +2056,7 @@ class BrowserApi:
     ) -> GenericResponse:
         """Detect element coordinates using vision
 
-        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
+        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.
 
         :param browser_id: (required)
         :type browser_id: str
@@ -2126,7 +2127,7 @@ class BrowserApi:
     ) -> ApiResponse[GenericResponse]:
         """Detect element coordinates using vision
 
-        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
+        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.
 
         :param browser_id: (required)
         :type browser_id: str
@@ -2197,7 +2198,7 @@ class BrowserApi:
     ) -> RESTResponseType:
         """Detect element coordinates using vision
 
-        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
+        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.
 
         :param browser_id: (required)
         :type browser_id: str
@@ -10269,6 +10270,7 @@ class BrowserApi:
     def what_is_visible(
         self,
         browser_id: StrictStr,
+        payload: WhatIsVisibleRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -10287,6 +10289,8 @@ class BrowserApi:
 
         :param browser_id: (required)
         :type browser_id: str
+        :param payload: (required)
+        :type payload: WhatIsVisibleRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -10311,6 +10315,7 @@ class BrowserApi:
 
         _param = self._what_is_visible_serialize(
             browser_id=browser_id,
+            payload=payload,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -10335,6 +10340,7 @@ class BrowserApi:
     def what_is_visible_with_http_info(
         self,
         browser_id: StrictStr,
+        payload: WhatIsVisibleRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -10353,6 +10359,8 @@ class BrowserApi:
 
         :param browser_id: (required)
         :type browser_id: str
+        :param payload: (required)
+        :type payload: WhatIsVisibleRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -10377,6 +10385,7 @@ class BrowserApi:
 
         _param = self._what_is_visible_serialize(
             browser_id=browser_id,
+            payload=payload,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -10401,6 +10410,7 @@ class BrowserApi:
     def what_is_visible_without_preload_content(
         self,
         browser_id: StrictStr,
+        payload: WhatIsVisibleRequest,
         _request_timeout: Union[
             None,
             Annotated[StrictFloat, Field(gt=0)],
@@ -10419,6 +10429,8 @@ class BrowserApi:
 
         :param browser_id: (required)
         :type browser_id: str
+        :param payload: (required)
+        :type payload: WhatIsVisibleRequest
         :param _request_timeout: timeout setting for this request. If one
                                  number provided, it will be total request
                                  timeout. It can also be a pair (tuple) of
@@ -10443,6 +10455,7 @@ class BrowserApi:
 
         _param = self._what_is_visible_serialize(
             browser_id=browser_id,
+            payload=payload,
             _request_auth=_request_auth,
             _content_type=_content_type,
             _headers=_headers,
@@ -10462,6 +10475,7 @@ class BrowserApi:
     def _what_is_visible_serialize(
         self,
         browser_id,
+        payload,
         _request_auth,
         _content_type,
         _headers,
@@ -10489,6 +10503,8 @@ class BrowserApi:
         # process the header parameters
         # process the form parameters
         # process the body parameter
+        if payload is not None:
+            _body_params = payload
 
 
         # set the HTTP header `Accept`
@@ -10499,6 +10515,19 @@ class BrowserApi:
                 ]
             )
 
+        # set the HTTP header `Content-Type`
+        if _content_type:
+            _header_params['Content-Type'] = _content_type
+        else:
+            _default_content_type = (
+                self.api_client.select_header_content_type(
+                    [
+                        'application/json'
+                    ]
+                )
+            )
+            if _default_content_type is not None:
+                _header_params['Content-Type'] = _default_content_type
 
         # authentication setting
         _auth_settings: List[str] = [

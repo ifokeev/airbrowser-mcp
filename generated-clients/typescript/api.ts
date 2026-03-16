@@ -186,6 +186,10 @@ export interface DetectCoordinatesRequest {
      * fy
      */
     'fy'?: number;
+    /**
+     * model
+     */
+    'model'?: string;
 }
 export interface DialogRequest {
     /**
@@ -767,6 +771,12 @@ export const WaitElementRequestUntilEnum = {
 
 export type WaitElementRequestUntilEnum = typeof WaitElementRequestUntilEnum[keyof typeof WaitElementRequestUntilEnum];
 
+export interface WhatIsVisibleRequest {
+    /**
+     * model
+     */
+    'model'?: string;
+}
 
 /**
  * BrowserApi - axios parameter creator
@@ -1053,7 +1063,7 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
+         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.
          * @summary Detect element coordinates using vision
          * @param {string} browserId 
          * @param {DetectCoordinatesRequest} payload 
@@ -2216,12 +2226,15 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
          * 
          * @summary AI page analysis - what\'s visible
          * @param {string} browserId 
+         * @param {WhatIsVisibleRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        whatIsVisible: async (browserId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        whatIsVisible: async (browserId: string, payload: WhatIsVisibleRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'browserId' is not null or undefined
             assertParamExists('whatIsVisible', 'browserId', browserId)
+            // verify required parameter 'payload' is not null or undefined
+            assertParamExists('whatIsVisible', 'payload', payload)
             const localVarPath = `/browser/{browser_id}/what_is_visible`
                 .replace(`{${"browser_id"}}`, encodeURIComponent(String(browserId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -2237,9 +2250,12 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
 
 
     
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(payload, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2353,7 +2369,7 @@ export const BrowserApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
+         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.
          * @summary Detect element coordinates using vision
          * @param {string} browserId 
          * @param {DetectCoordinatesRequest} payload 
@@ -2762,11 +2778,12 @@ export const BrowserApiFp = function(configuration?: Configuration) {
          * 
          * @summary AI page analysis - what\'s visible
          * @param {string} browserId 
+         * @param {WhatIsVisibleRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async whatIsVisible(browserId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.whatIsVisible(browserId, options);
+        async whatIsVisible(browserId: string, payload: WhatIsVisibleRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GenericResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.whatIsVisible(browserId, payload, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BrowserApi.whatIsVisible']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -2857,7 +2874,7 @@ export const BrowserApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.createBrowser(payload, options).then((request) => request(axios, basePath));
         },
         /**
-         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
+         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.
          * @summary Detect element coordinates using vision
          * @param {string} browserId 
          * @param {DetectCoordinatesRequest} payload 
@@ -3179,11 +3196,12 @@ export const BrowserApiFactory = function (configuration?: Configuration, basePa
          * 
          * @summary AI page analysis - what\'s visible
          * @param {string} browserId 
+         * @param {WhatIsVisibleRequest} payload 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        whatIsVisible(browserId: string, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
-            return localVarFp.whatIsVisible(browserId, options).then((request) => request(axios, basePath));
+        whatIsVisible(browserId: string, payload: WhatIsVisibleRequest, options?: RawAxiosRequestConfig): AxiosPromise<GenericResponse> {
+            return localVarFp.whatIsVisible(browserId, payload, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -3276,7 +3294,7 @@ export class BrowserApi extends BaseAPI {
     }
 
     /**
-     * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
+     * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.
      * @summary Detect element coordinates using vision
      * @param {string} browserId 
      * @param {DetectCoordinatesRequest} payload 
@@ -3627,11 +3645,12 @@ export class BrowserApi extends BaseAPI {
      * 
      * @summary AI page analysis - what\'s visible
      * @param {string} browserId 
+     * @param {WhatIsVisibleRequest} payload 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public whatIsVisible(browserId: string, options?: RawAxiosRequestConfig) {
-        return BrowserApiFp(this.configuration).whatIsVisible(browserId, options).then((request) => request(this.axios, this.basePath));
+    public whatIsVisible(browserId: string, payload: WhatIsVisibleRequest, options?: RawAxiosRequestConfig) {
+        return BrowserApiFp(this.configuration).whatIsVisible(browserId, payload, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

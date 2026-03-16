@@ -20,8 +20,10 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - API_BASE_URL=http://localhost:18080
       - NGINX_HTTPS_PORT=18443
-      # AI Vision (optional)
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      # AI vision (optional - set all three to enable)
+      - VISION_API_BASE_URL=${VISION_API_BASE_URL:-}
+      - VISION_API_KEY=${VISION_API_KEY:-}
+      - VISION_MODEL=${VISION_MODEL:-}
     volumes:
       - browser-profiles:/app/browser-profiles
       - screenshots:/app/screenshots

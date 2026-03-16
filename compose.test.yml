@@ -18,8 +18,10 @@ services:
       - SCREEN_HEIGHT=768
       # Disable session restore for tests (fresh start each time)
       - ENABLE_SESSION_RESTORE=false
-      # AI Vision (optional - enables vision tests when set)
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      # AI vision (optional - enables vision tests when all three are set)
+      - VISION_API_BASE_URL=${VISION_API_BASE_URL:-}
+      - VISION_API_KEY=${VISION_API_KEY:-}
+      - VISION_MODEL=${VISION_MODEL:-}
     tmpfs:
       - /tmp:noexec,nosuid,size=500m
       - /dev/shm:rw,nosuid,nodev,exec,size=4g
@@ -47,7 +49,9 @@ services:
       - BROWSER_POOL_URL=http://browser-pool:8000
       - PYTHONUNBUFFERED=1
       - PYTEST_ARGS=${PYTEST_ARGS:-}
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - VISION_API_BASE_URL=${VISION_API_BASE_URL:-}
+      - VISION_API_KEY=${VISION_API_KEY:-}
+      - VISION_MODEL=${VISION_MODEL:-}
       - TEST_PROXY=${TEST_PROXY:-}
     volumes:
       - ./tests:/app/tests:ro

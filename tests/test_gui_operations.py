@@ -7,6 +7,8 @@ Tests coordinate-based GUI automation using PyAutoGUI.
 Run with: pytest tests/test_gui_operations.py -v
 """
 
+import os
+
 import pytest
 from airbrowser_client.models import (
     CreateBrowserRequest,
@@ -17,6 +19,11 @@ from airbrowser_client.models import (
     NavigateBrowserRequest,
 )
 from pydantic import ValidationError
+
+
+def has_vision_config() -> bool:
+    """Check if AI vision is configured."""
+    return all(os.environ.get(name) for name in ("VISION_API_BASE_URL", "VISION_API_KEY", "VISION_MODEL"))
 
 
 @pytest.fixture(scope="class")
@@ -179,10 +186,8 @@ class TestGuiOperationsIntegration:
         """Test the vision + GUI workflow: detect_coordinates -> gui_click_xy."""
         bid = browser_with_form
 
-        import os
-
-        if not os.environ.get("OPENROUTER_API_KEY"):
-            pytest.skip("OPENROUTER_API_KEY not set")
+        if not has_vision_config():
+            pytest.skip("Vision config not set")
 
         from airbrowser_client.models import DetectCoordinatesRequest
 
@@ -197,10 +202,8 @@ class TestGuiOperationsIntegration:
         """Test the vision + GUI workflow: detect_coordinates -> gui_type_xy."""
         bid = browser_with_form
 
-        import os
-
-        if not os.environ.get("OPENROUTER_API_KEY"):
-            pytest.skip("OPENROUTER_API_KEY not set")
+        if not has_vision_config():
+            pytest.skip("Vision config not set")
 
         from airbrowser_client.models import DetectCoordinatesRequest
 

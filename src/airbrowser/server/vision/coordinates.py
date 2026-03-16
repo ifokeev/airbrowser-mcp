@@ -2,12 +2,36 @@
 
 import json
 import logging
+import os
 import re
 from typing import Any
 
-from .openrouter import OpenRouterClient
+from .config import load_vision_settings
+from .openai_compatible import OpenAICompatibleVisionClient
 
 logger = logging.getLogger(__name__)
+
+
+def _clamp_to_image_bounds(coords: dict[str, Any], img_w: int, img_h: int) -> dict[str, Any]:
+    """Clamp coordinates to stay within image bounds."""
+    if not coords.get("success"):
+        return coords
+
+    x, y = coords.get("x", 0), coords.get("y", 0)
+    w, h = coords.get("width", 0), coords.get("height", 0)
+
+    visible_h = min(y + h, img_h) - max(y, 0)
+    visible_w = min(x + w, img_w) - max(x, 0)
+    if visible_h < h * 0.5 or visible_w < w * 0.5:
+        coords["partially_visible"] = True
+        coords["visibility_warning"] = "Element is mostly off-screen, may need to scroll"
+
+    coords["x"] = max(0, min(x, img_w - 1))
+    coords["y"] = max(0, min(y, img_h - 1))
+    coords["width"] = min(w, img_w - coords["x"])
+    coords["height"] = min(h, img_h - coords["y"])
+
+    return coords
 
 
 class VisionCoordinateDetector:
@@ -67,42 +91,9 @@ If not found: {{"found": false, "error": "reason"}}"""
 
         return {"success": False, "error": f"Could not parse: {response[:200]}..."}
 
-    def _normalize_gemini_coords(self, coords: dict[str, Any], img_w: int, img_h: int) -> dict[str, Any]:
-        """Convert Gemini's 0-1000 normalized coordinates to pixels."""
-        if not coords.get("success"):
-            return coords
-        try:
-            coords["x"] = int(coords["x"] / 1000.0 * img_w)
-            coords["y"] = int(coords["y"] / 1000.0 * img_h)
-            coords["width"] = int(coords["width"] / 1000.0 * img_w)
-            coords["height"] = int(coords["height"] / 1000.0 * img_h)
-        except Exception as e:
-            logger.warning(f"Failed to normalize Gemini coordinates: {e}")
-        return coords
-
     def _clamp_to_image_bounds(self, coords: dict[str, Any], img_w: int, img_h: int) -> dict[str, Any]:
         """Clamp coordinates to stay within image bounds."""
-        if not coords.get("success"):
-            return coords
-
-        x, y = coords.get("x", 0), coords.get("y", 0)
-        w, h = coords.get("width", 0), coords.get("height", 0)
-
-        # Check if element is significantly outside viewport (more than 50% hidden)
-        visible_h = min(y + h, img_h) - max(y, 0)
-        visible_w = min(x + w, img_w) - max(x, 0)
-        if visible_h < h * 0.5 or visible_w < w * 0.5:
-            coords["partially_visible"] = True
-            coords["visibility_warning"] = "Element is mostly off-screen, may need to scroll"
-
-        # Clamp to image bounds
-        coords["x"] = max(0, min(x, img_w - 1))
-        coords["y"] = max(0, min(y, img_h - 1))
-        # Ensure width/height don't extend past image
-        coords["width"] = min(w, img_w - coords["x"])
-        coords["height"] = min(h, img_h - coords["y"])
-
-        return coords
+        return _clamp_to_image_bounds(coords, img_w, img_h)
 
     def _get_image_size(self, image_path: str) -> tuple[int, int]:
         """Get image dimensions, defaults to 1920x1080."""
@@ -116,18 +107,20 @@ If not found: {{"found": false, "error": "reason"}}"""
 
     def detect(self, image_path: str, prompt: str) -> dict[str, Any]:
         """Detect UI element coordinates."""
-        import os
-
         if not os.path.exists(image_path):
             return {"success": False, "error": f"Image not found: {image_path}"}
 
         img_w, img_h = self._get_image_size(image_path)
+        settings = load_vision_settings()
+        if settings is None:
+            return {"success": False, "error": "Vision client not configured"}
 
         try:
-            client = OpenRouterClient(model=self.model)
-            if not client.is_available():
-                return {"success": False, "error": f"OpenRouter not available for {self.model}"}
-
+            client = OpenAICompatibleVisionClient(
+                base_url=settings.base_url,
+                api_key=settings.api_key,
+                model=self.model,
+            )
             result = client.explain_screenshot(image_path, self._create_prompt(prompt))
             if not result.get("success"):
                 return {"success": False, "error": result.get("error", "Vision model failed")}
@@ -136,10 +129,6 @@ If not found: {{"found": false, "error": "reason"}}"""
             if not coords.get("success"):
                 return coords
 
-            if "gemini" in self.model.lower():
-                coords = self._normalize_gemini_coords(coords, img_w, img_h)
-
-            # Clamp coordinates to image bounds to prevent clicking outside viewport
             coords = self._clamp_to_image_bounds(coords, img_w, img_h)
 
             coords["model"] = self.model

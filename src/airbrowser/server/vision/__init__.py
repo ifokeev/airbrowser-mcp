@@ -1,6 +1,11 @@
-"""Vision AI integration."""
+"""Vision runtime helpers."""
 
-from .coordinates import VisionCoordinateDetector
-from .openrouter import OpenRouterClient, get_openrouter_client
+from .config import VisionSettings, load_vision_settings, vision_is_enabled
+from .openai_compatible import OpenAICompatibleVisionClient
 
-__all__ = ["OpenRouterClient", "get_openrouter_client", "VisionCoordinateDetector"]
+__all__ = [
+    "VisionSettings",
+    "load_vision_settings",
+    "vision_is_enabled",
+    "OpenAICompatibleVisionClient",
+]

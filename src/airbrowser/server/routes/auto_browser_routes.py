@@ -6,6 +6,7 @@ similar to how MCP tools are auto-generated. This ensures consistency between MC
 
 import inspect
 import logging
+from collections.abc import Callable
 from typing import Any, get_origin, get_type_hints
 
 from flask import request
@@ -28,6 +29,8 @@ PATH_OVERRIDES = {
     "take_screenshot": "screenshot",
     "execute_js": "execute",
 }
+
+REQUIRE_EXPLICIT_JSON_BODY = {"what_is_visible"}
 
 
 # Type hint to Flask-RESTX field mapping
@@ -147,20 +150,32 @@ def _generate_request_schema(api, method_name: str, sig: inspect.Signature, hint
 
 def _create_resource_class(
     method_name: str,
-    method: callable,
+    method: Callable[..., Any],
     http_method: str,
     has_browser_id: bool,
     request_schema,
     ns: Namespace,
     response_schema=None,
-) -> type:
+) -> type[Resource]:
     """Create a Flask-RESTX Resource class for a BrowserOperations method."""
 
     def create_handler(method_ref, needs_browser_id, route_name):
         """Create handler function with proper closure."""
 
         def handler(self, browser_id=None):
-            data = request.get_json(silent=True) or {}
+            if request.method in ("POST", "PUT", "PATCH") and route_name in REQUIRE_EXPLICIT_JSON_BODY:
+                raw_body = request.get_data(cache=True) or b""
+                if not raw_body.strip():
+                    return {"success": False, "error": "Request body is required"}, 400
+
+                parsed_data = request.get_json(silent=True)
+                if parsed_data is None:
+                    return {"success": False, "error": "Request body must be valid JSON"}, 400
+                if not isinstance(parsed_data, dict):
+                    return {"success": False, "error": "Request body must be a JSON object"}, 400
+                data = parsed_data
+            else:
+                data = request.get_json(silent=True) or {}
 
             # For GET requests, also check query params
             if request.method == "GET":
@@ -213,7 +228,7 @@ def _create_resource_class(
     return type(class_name, (Resource,), class_dict)
 
 
-def generate_browser_routes(api, browser_ops, existing_schemas: dict = None) -> Namespace:
+def generate_browser_routes(api, browser_ops, existing_schemas: dict[str, Any] | None = None) -> Namespace:
     """Auto-generate Flask-RESTX routes from BrowserOperations methods.
 
     Args:

@@ -1,6 +1,5 @@
 .gitignore
 .npmignore
-.openapi-generator-ignore
 README.md
 api.ts
 base.ts
@@ -52,6 +51,7 @@ docs/TakeScreenshotRequest.md
 docs/TypeTextRequest.md
 docs/UploadFileRequest.md
 docs/WaitElementRequest.md
+docs/WhatIsVisibleRequest.md
 git_push.sh
 index.ts
 package.json

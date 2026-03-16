@@ -1,24 +1,18 @@
-# DetectCoordinatesRequest
+# WhatIsVisibleRequest
 
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**prompt** | **string** | prompt | [default to undefined]
-**fx** | **number** | fx | [optional] [default to undefined]
-**fy** | **number** | fy | [optional] [default to undefined]
 **model** | **string** | model | [optional] [default to undefined]
 
 ## Example
 
 ```typescript
-import { DetectCoordinatesRequest } from 'airbrowser-client';
+import { WhatIsVisibleRequest } from 'airbrowser-client';
 
-const instance: DetectCoordinatesRequest = {
-    prompt,
-    fx,
-    fy,
+const instance: WhatIsVisibleRequest = {
     model,
 };
 ```

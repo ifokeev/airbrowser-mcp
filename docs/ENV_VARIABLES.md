@@ -8,7 +8,9 @@ This document describes all environment variables used by Airbrowser.
 |----------|---------|-------------|
 | `MAX_BROWSERS` | 10 | Maximum concurrent browser instances |
 | `LOG_LEVEL` | INFO | Logging verbosity (DEBUG, INFO, WARNING, ERROR) |
-| `OPENROUTER_API_KEY` | - | API key for AI vision features |
+| `VISION_API_BASE_URL` | - | OpenAI-compatible vision API base URL |
+| `VISION_API_KEY` | - | API key for AI vision features |
+| `VISION_MODEL` | - | Model used for vision tools |
 | `COMMAND_TIMEOUT_DEFAULT` | 20 | Default timeout for browser commands (seconds) |
 | `NAVIGATE_TIMEOUT_DEFAULT` | 60 | Default timeout for page navigation (seconds) |
 | `API_BASE_URL` | http://localhost:18080 | Base URL for the API server |
@@ -38,32 +40,30 @@ LOG_LEVEL=DEBUG docker compose -f compose.local.yml up
 
 ## AI Vision
 
-### `OPENROUTER_API_KEY`
+Set all three variables to enable `what_is_visible` and `detect_coordinates`.
+
+### `VISION_API_BASE_URL`
 - **Default:** None (vision features disabled)
-- **Description:** API key for OpenRouter, enabling AI-powered vision tools.
-- **Required for:** `what_is_visible`, `detect_coordinates` tools
-- **Get a key:** https://openrouter.ai/
+- **Description:** Base URL for your OpenAI-compatible vision endpoint.
 
 ```bash
-OPENROUTER_API_KEY=sk-or-v1-xxx docker compose up
+VISION_API_BASE_URL=https://your-openai-compatible-endpoint/v1 docker compose up
 ```
 
-### `OPENROUTER_COORD_MODEL`
-- **Default:** google/gemini-3-flash-preview
-- **Description:** Vision model used for `detect_coordinates` (element location).
-- **Usage:** Override to use a different model for coordinate detection.
+### `VISION_API_KEY`
+- **Default:** None (vision features disabled)
+- **Description:** API key for AI-powered vision tools.
 
 ```bash
-OPENROUTER_COORD_MODEL=anthropic/claude-3.5-sonnet docker compose up
+VISION_API_KEY=your-api-key docker compose up
 ```
 
-### `OPENROUTER_ANALYSIS_MODEL`
-- **Default:** google/gemini-3-flash-preview
-- **Description:** Vision model used for `what_is_visible` (page analysis).
-- **Usage:** Override to use a different model for page state analysis.
+### `VISION_MODEL`
+- **Default:** None (vision features disabled)
+- **Description:** Model name used for AI-powered vision tools.
 
 ```bash
-OPENROUTER_ANALYSIS_MODEL=anthropic/claude-3.5-sonnet docker compose up
+VISION_MODEL=your-vision-model docker compose up
 ```
 
 ## Timeouts
@@ -243,5 +243,7 @@ Each compose file sets appropriate defaults for its use case:
 # .env (copy from .env.example)
 
 # Optional: enables AI-powered vision tools
-OPENROUTER_API_KEY=sk-or-v1-your-key-here
+VISION_API_BASE_URL=https://your-openai-compatible-endpoint/v1
+VISION_API_KEY=your-api-key
+VISION_MODEL=your-vision-model
 ```

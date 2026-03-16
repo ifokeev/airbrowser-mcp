@@ -20,7 +20,7 @@ prometheus-client>=0.17.0
 # MCP (Model Context Protocol) support
 fastmcp>=0.3.0
 
-# OpenRouter integration for vision models
+# OpenAI-compatible vision client
 openai>=1.0.0
 
 # UC Mode and GUI automation

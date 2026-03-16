@@ -108,9 +108,9 @@ load_env() {
 
 # Environment variables to pass through to container
 ENV_VARS=(
-    "OPENROUTER_API_KEY"
-    "OPENROUTER_COORD_MODEL"
-    "OPENROUTER_ANALYSIS_MODEL"
+    "VISION_API_BASE_URL"
+    "VISION_API_KEY"
+    "VISION_MODEL"
     "MAX_BROWSERS"
     "LOG_LEVEL"
     "COMMAND_TIMEOUT_DEFAULT"
@@ -132,7 +132,7 @@ build_env_args() {
     done
 
     # Log if AI vision is enabled
-    if [[ -n "${OPENROUTER_API_KEY:-}" ]]; then
+    if [[ -n "${VISION_API_BASE_URL:-}" && -n "${VISION_API_KEY:-}" && -n "${VISION_MODEL:-}" ]]; then
         log "AI vision tools enabled"
     fi
 
@@ -207,13 +207,17 @@ case "${1:-}" in
         echo "  MCP:       /mcp"
         echo ""
         echo "Environment Variables (set via .env file or environment):"
-        echo "  OPENROUTER_API_KEY       Enable AI vision tools (recommended)"
+        echo "  VISION_API_BASE_URL      OpenAI-compatible vision endpoint"
+        echo "  VISION_API_KEY           Vision API key"
+        echo "  VISION_MODEL             Vision model name"
         echo "  MAX_BROWSERS             Max concurrent browsers (default: 10)"
         echo "  LOG_LEVEL                DEBUG, INFO, WARNING, ERROR (default: INFO)"
         echo "  SCREEN_WIDTH/HEIGHT      Virtual display size (default: 1920x1080)"
         echo ""
         echo "  Create .env file in data directory:"
-        echo "    echo 'OPENROUTER_API_KEY=sk-or-v1-xxx' > ~/Library/Application Support/Airbrowser/.env"
+        echo "    echo 'VISION_API_BASE_URL=https://your-openai-compatible-endpoint/v1' > ~/Library/Application Support/Airbrowser/.env"
+        echo "    echo 'VISION_API_KEY=your-api-key' >> ~/Library/Application Support/Airbrowser/.env"
+        echo "    echo 'VISION_MODEL=your-vision-model' >> ~/Library/Application Support/Airbrowser/.env"
         ;;
     --version|-v)
         echo "Airbrowser v0.1.1"

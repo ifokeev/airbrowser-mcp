@@ -22,7 +22,7 @@ uv pip install -e generated-clients/python
 | [`parallel_browsers.py`](parallel_browsers.py) | Run multiple browsers concurrently |
 | [`proxy_rotation.py`](proxy_rotation.py) | Different proxy per browser instance |
 | [`what_is_visible.py`](what_is_visible.py) | AI vision analysis of page content |
-| [`cloudflare_captcha_vision.py`](cloudflare_captcha_vision.py) | AI vision to detect and click captcha (requires OPENROUTER_API_KEY) |
+| [`cloudflare_captcha_vision.py`](cloudflare_captcha_vision.py) | AI vision to detect and click captcha |
 
 ## Running Examples
 
@@ -45,11 +45,14 @@ uv run python examples/proxy_rotation.py
 
 ### AI Vision Examples
 
-These examples require `OPENROUTER_API_KEY` to be set in the container:
+These examples require `VISION_API_BASE_URL`, `VISION_API_KEY`, and `VISION_MODEL` in the container:
 
 ```bash
 # Start with vision enabled
-OPENROUTER_API_KEY=sk-or-... docker compose up
+VISION_API_BASE_URL=https://your-openai-compatible-endpoint/v1 \
+VISION_API_KEY=your-api-key \
+VISION_MODEL=your-vision-model \
+docker compose up
 
 # AI vision analysis
 uv run python examples/what_is_visible.py

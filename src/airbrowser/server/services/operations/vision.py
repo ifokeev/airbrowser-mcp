@@ -15,7 +15,12 @@ class VisionOperations:
         self.browser_pool = browser_pool
 
     def detect_coordinates(
-        self, browser_id: str, prompt: str, fx: float | None = None, fy: float | None = None
+        self,
+        browser_id: str,
+        prompt: str,
+        fx: float | None = None,
+        fy: float | None = None,
+        model: str | None = None,
     ) -> dict[str, Any]:
         """
         Detect element coordinates using vision models without clicking.
@@ -26,6 +31,7 @@ class VisionOperations:
             fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).
                 If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).
             fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
+            model: Optional vision model override for this request.
 
         Returns:
             Dictionary with coordinate information
@@ -37,6 +43,8 @@ class VisionOperations:
                 options["fx"] = fx
             if fy is not None:
                 options["fy"] = fy
+            if model is not None:
+                options["model"] = model
             action = BrowserAction(action="detect_coordinates", options=options)
             result = self.browser_pool.execute_action(browser_id, action)
 
@@ -68,7 +76,7 @@ class VisionOperations:
         except Exception as e:
             return _error(f"Coordinate detection failed: {str(e)}")
 
-    def what_is_visible(self, browser_id: str) -> dict[str, Any]:
+    def what_is_visible(self, browser_id: str, model: str | None = None) -> dict[str, Any]:
         """
         Comprehensive page state analysis - what's visible on the current page.
 
@@ -83,12 +91,14 @@ class VisionOperations:
 
         Args:
             browser_id: Browser instance identifier
+            model: Optional vision model override for this request.
 
         Returns:
             Dictionary with comprehensive page state analysis
         """
         try:
-            action = BrowserAction(action="what_is_visible")
+            options = {"model": model} if model is not None else {}
+            action = BrowserAction(action="what_is_visible", options=options)
             result = self.browser_pool.execute_action(browser_id, action)
 
             if result.success:

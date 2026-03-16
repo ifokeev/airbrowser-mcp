@@ -60,9 +60,9 @@ function Import-EnvFile {
 
 # Environment variables to pass through to container
 $EnvVars = @(
-    "OPENROUTER_API_KEY",
-    "OPENROUTER_COORD_MODEL",
-    "OPENROUTER_ANALYSIS_MODEL",
+    "VISION_API_BASE_URL",
+    "VISION_API_KEY",
+    "VISION_MODEL",
     "MAX_BROWSERS",
     "LOG_LEVEL",
     "COMMAND_TIMEOUT_DEFAULT",
@@ -84,8 +84,10 @@ function Get-EnvArgs {
     }
 
     # Log if AI vision is enabled
-    $apiKey = [Environment]::GetEnvironmentVariable("OPENROUTER_API_KEY", "Process")
-    if ($apiKey) {
+    $visionBaseUrl = [Environment]::GetEnvironmentVariable("VISION_API_BASE_URL", "Process")
+    $visionApiKey = [Environment]::GetEnvironmentVariable("VISION_API_KEY", "Process")
+    $visionModel = [Environment]::GetEnvironmentVariable("VISION_MODEL", "Process")
+    if ($visionBaseUrl -and $visionApiKey -and $visionModel) {
         Write-Log "AI vision tools enabled"
     }
 
@@ -274,13 +276,17 @@ switch ($args[0]) {
         Write-Host "  MCP:       /mcp"
         Write-Host ""
         Write-Host "Environment Variables (set via .env file or environment):"
-        Write-Host "  OPENROUTER_API_KEY       Enable AI vision tools (recommended)"
+        Write-Host "  VISION_API_BASE_URL      OpenAI-compatible vision endpoint"
+        Write-Host "  VISION_API_KEY           Vision API key"
+        Write-Host "  VISION_MODEL             Vision model name"
         Write-Host "  MAX_BROWSERS             Max concurrent browsers (default: 10)"
         Write-Host "  LOG_LEVEL                DEBUG, INFO, WARNING, ERROR (default: INFO)"
         Write-Host "  SCREEN_WIDTH/HEIGHT      Virtual display size (default: 1920x1080)"
         Write-Host ""
         Write-Host "  Create .env file in data directory:"
-        Write-Host "    echo 'OPENROUTER_API_KEY=sk-or-v1-xxx' > `$env:LOCALAPPDATA\Airbrowser\.env"
+        Write-Host "    echo 'VISION_API_BASE_URL=https://your-openai-compatible-endpoint/v1' > `$env:LOCALAPPDATA\Airbrowser\.env"
+        Write-Host "    echo 'VISION_API_KEY=your-api-key' >> `$env:LOCALAPPDATA\Airbrowser\.env"
+        Write-Host "    echo 'VISION_MODEL=your-vision-model' >> `$env:LOCALAPPDATA\Airbrowser\.env"
     }
     "-h" {
         & $MyInvocation.MyCommand.Path --help
