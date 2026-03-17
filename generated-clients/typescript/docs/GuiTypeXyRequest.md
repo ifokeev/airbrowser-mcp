@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**x** | **number** | x | [default to undefined]
-**y** | **number** | y | [default to undefined]
 **text** | **string** | text | [default to undefined]
 **timeframe** | **number** | timeframe | [optional] [default to undefined]
+**x** | **number** | x | [default to undefined]
+**y** | **number** | y | [default to undefined]
 
 ## Example
 
@@ -16,10 +16,10 @@ Name | Type | Description | Notes
 import { GuiTypeXyRequest } from 'airbrowser-client';
 
 const instance: GuiTypeXyRequest = {
-    x,
-    y,
     text,
     timeframe,
+    x,
+    y,
 };
 ```
 

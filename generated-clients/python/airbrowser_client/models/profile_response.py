@@ -22,19 +22,21 @@ from typing import Any, ClassVar, Dict, List, Optional, Union
 from airbrowser_client.models.profile_info import ProfileInfo
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class ProfileResponse(BaseModel):
     """
     ProfileResponse
     """ # noqa: E501
-    success: Optional[StrictBool] = Field(default=None, description="Operation success")
-    message: Optional[StrictStr] = Field(default=None, description="Status message")
-    timestamp: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Unix timestamp")
     data: Optional[ProfileInfo] = None
-    __properties: ClassVar[List[str]] = ["success", "message", "timestamp", "data"]
+    message: Optional[StrictStr] = Field(default=None, description="Status message")
+    success: Optional[StrictBool] = Field(default=None, description="Operation success")
+    timestamp: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Unix timestamp")
+    __properties: ClassVar[List[str]] = ["data", "message", "success", "timestamp"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -46,8 +48,7 @@ class ProfileResponse(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -87,10 +88,10 @@ class ProfileResponse(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "success": obj.get("success"),
+            "data": ProfileInfo.from_dict(obj["data"]) if obj.get("data") is not None else None,
             "message": obj.get("message"),
-            "timestamp": obj.get("timestamp"),
-            "data": ProfileInfo.from_dict(obj["data"]) if obj.get("data") is not None else None
+            "success": obj.get("success"),
+            "timestamp": obj.get("timestamp")
         })
         return _obj
 

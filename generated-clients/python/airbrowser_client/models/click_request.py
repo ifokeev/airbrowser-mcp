@@ -21,19 +21,21 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, Strict
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class ClickRequest(BaseModel):
     """
     ClickRequest
     """ # noqa: E501
-    selector: StrictStr = Field(description="selector")
-    timeout: Optional[StrictInt] = Field(default=None, description="timeout")
     by: Optional[StrictStr] = Field(default='css', description="by")
     if_visible: Optional[StrictBool] = Field(default=False, description="if_visible")
-    __properties: ClassVar[List[str]] = ["selector", "timeout", "by", "if_visible"]
+    selector: StrictStr = Field(description="selector")
+    timeout: Optional[StrictInt] = Field(default=None, description="timeout")
+    __properties: ClassVar[List[str]] = ["by", "if_visible", "selector", "timeout"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -45,8 +47,7 @@ class ClickRequest(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -83,10 +84,10 @@ class ClickRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "selector": obj.get("selector"),
-            "timeout": obj.get("timeout"),
             "by": obj.get("by") if obj.get("by") is not None else 'css',
-            "if_visible": obj.get("if_visible") if obj.get("if_visible") is not None else False
+            "if_visible": obj.get("if_visible") if obj.get("if_visible") is not None else False,
+            "selector": obj.get("selector"),
+            "timeout": obj.get("timeout")
         })
         return _obj
 

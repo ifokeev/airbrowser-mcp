@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**url** | **str** | url | 
 **timeout** | **int** | timeout | [optional] 
+**url** | **str** | url | 
 
 ## Example
 

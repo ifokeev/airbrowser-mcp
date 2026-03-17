@@ -5,12 +5,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**selector** | **str** | selector | 
 **action** | **str** | action | [optional] [default to 'select']
-**value** | **str** | value | [optional] 
-**text** | **str** | text | [optional] 
-**index** | **int** | index | [optional] 
 **by** | **str** | by | [optional] [default to 'css']
+**index** | **int** | index | [optional] 
+**selector** | **str** | selector | 
+**text** | **str** | text | [optional] 
+**value** | **str** | value | [optional] 
 
 ## Example
 

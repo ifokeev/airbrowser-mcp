@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**selector** | **str** | selector | 
-**file_path** | **str** | file_path | 
 **by** | **str** | by | [optional] [default to 'css']
+**file_path** | **str** | file_path | 
+**selector** | **str** | selector | 
 
 ## Example
 

@@ -16,6 +16,10 @@ This document describes all environment variables used by Airbrowser.
 | `API_BASE_URL` | http://localhost:18080 | Base URL for the API server |
 | `BASE_PATH` | (empty) | URL path prefix for reverse proxy subpath deployment |
 | `ENABLE_SESSION_RESTORE` | true | Restore browsers after container restart |
+| `SCREENSHOTS_DIR` | /app/screenshots | Directory for screenshot storage |
+| `SCREENSHOTS_TTL_SECONDS` | 3600 | Delete screenshot files older than this age during startup and before writes |
+| `SCREENSHOTS_MAX_BYTES` | 268435456 | Maximum total screenshot bytes before oldest files are pruned |
+| `SCREENSHOTS_MIN_FREE_BYTES` | 67108864 | Minimum free space required before writing a new screenshot |
 
 ## Core Settings
 
@@ -118,6 +122,7 @@ SCREEN_WIDTH=1366 SCREEN_HEIGHT=768 docker compose up
 - **Default:** http://localhost:18080
 - **Description:** Base URL for the API server. Used internally and passed to containers.
 - **Usage:** Override when running behind a reverse proxy or with custom networking.
+- **Screenshot URLs:** Public screenshot links reuse this origin, strip a trailing `/api/v1` when present, and then apply `BASE_PATH` if configured.
 
 ```bash
 API_BASE_URL=https://api.example.com docker compose up
@@ -127,7 +132,7 @@ API_BASE_URL=https://api.example.com docker compose up
 - **Default:** (empty string)
 - **Description:** URL path prefix for deploying behind a reverse proxy with a subpath.
 - **Usage:** Set when hosting at a subpath like `/airbrowser` instead of root.
-- **Affects:** Dashboard API calls and static links.
+- **Affects:** Dashboard API calls, static links, and screenshot URLs.
 
 ```bash
 # Deploy at https://example.com/airbrowser/
@@ -163,12 +168,26 @@ BASE_PATH=/airbrowser docker compose up
 - **Description:** Directory for persistent browser profiles.
 
 ### `SCREENSHOTS_DIR`
-- **Default:** /tmp/screenshots
+- **Default:** /app/screenshots
 - **Description:** Directory for screenshot storage.
 
 ### `STATE_DIR`
 - **Default:** /app/state
 - **Description:** Directory for session state storage (used by session restore).
+
+## Screenshot Storage
+
+### `SCREENSHOTS_TTL_SECONDS`
+- **Default:** 3600
+- **Description:** Delete screenshot files older than this age during startup and before writes.
+
+### `SCREENSHOTS_MAX_BYTES`
+- **Default:** 268435456
+- **Description:** Maximum total size for screenshot files before oldest files are pruned.
+
+### `SCREENSHOTS_MIN_FREE_BYTES`
+- **Default:** 67108864
+- **Description:** Minimum free space required before writing a new screenshot.
 
 ## Feature Flags
 

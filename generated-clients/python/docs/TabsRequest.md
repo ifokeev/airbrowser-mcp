@@ -6,9 +6,9 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **action** | **str** | action | 
-**url** | **str** | url | [optional] 
-**index** | **int** | index | [optional] 
 **handle** | **str** | handle | [optional] 
+**index** | **int** | index | [optional] 
+**url** | **str** | url | [optional] 
 
 ## Example
 

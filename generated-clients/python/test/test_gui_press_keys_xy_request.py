@@ -35,16 +35,16 @@ class TestGuiPressKeysXyRequest(unittest.TestCase):
         model = GuiPressKeysXyRequest()
         if include_optional:
             return GuiPressKeysXyRequest(
-                x = 1.337,
-                y = 1.337,
                 keys = '',
-                timeframe = 1.337
+                timeframe = 1.337,
+                x = 1.337,
+                y = 1.337
             )
         else:
             return GuiPressKeysXyRequest(
+                keys = '',
                 x = 1.337,
                 y = 1.337,
-                keys = '',
         )
         """
 

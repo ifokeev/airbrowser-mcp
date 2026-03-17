@@ -7,8 +7,8 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **action** | **str** | action | 
 **cookie** | **object** | cookie | [optional] 
-**name** | **str** | name | [optional] 
 **domain** | **str** | domain | [optional] 
+**name** | **str** | name | [optional] 
 
 ## Example
 

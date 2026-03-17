@@ -21,17 +21,18 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class MouseRequest(BaseModel):
     """
     MouseRequest
     """ # noqa: E501
     action: StrictStr = Field(description="action")
+    by: Optional[StrictStr] = Field(default='css', description="by")
     selector: Optional[StrictStr] = Field(default=None, description="selector")
     source: Optional[StrictStr] = Field(default=None, description="source")
     target: Optional[StrictStr] = Field(default=None, description="target")
-    by: Optional[StrictStr] = Field(default='css', description="by")
-    __properties: ClassVar[List[str]] = ["action", "selector", "source", "target", "by"]
+    __properties: ClassVar[List[str]] = ["action", "by", "selector", "source", "target"]
 
     @field_validator('action')
     def action_validate_enum(cls, value):
@@ -41,7 +42,8 @@ class MouseRequest(BaseModel):
         return value
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -53,8 +55,7 @@ class MouseRequest(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -92,10 +93,10 @@ class MouseRequest(BaseModel):
 
         _obj = cls.model_validate({
             "action": obj.get("action"),
+            "by": obj.get("by") if obj.get("by") is not None else 'css',
             "selector": obj.get("selector"),
             "source": obj.get("source"),
-            "target": obj.get("target"),
-            "by": obj.get("by") if obj.get("by") is not None else 'css'
+            "target": obj.get("target")
         })
         return _obj
 

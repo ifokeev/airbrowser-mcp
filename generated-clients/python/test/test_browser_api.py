@@ -26,6 +26,13 @@ class TestBrowserApi(unittest.TestCase):
     def tearDown(self) -> None:
         pass
 
+    def test_browsers(self) -> None:
+        """Test case for browsers
+
+        Admin: list all, get info, or close all browsers
+        """
+        pass
+
     def test_check_element(self) -> None:
         """Test case for check_element
 
@@ -40,59 +47,59 @@ class TestBrowserApi(unittest.TestCase):
         """
         pass
 
-    def test_close_all_browsers(self) -> None:
-        """Test case for close_all_browsers
-
-        Close all active browser instances
-        """
-        pass
-
     def test_close_browser(self) -> None:
         """Test case for close_browser
 
-        Close a browser instance
+        Close browser instance
         """
         pass
 
     def test_console_logs(self) -> None:
         """Test case for console_logs
 
-        Get or clear console logs
+        Console logs: get or clear
+        """
+        pass
+
+    def test_cookies(self) -> None:
+        """Test case for cookies
+
+        Manage browser cookies
         """
         pass
 
     def test_create_browser(self) -> None:
         """Test case for create_browser
 
-        Create a new browser instance
-        """
-        pass
-
-    def test_delete_browser(self) -> None:
-        """Test case for delete_browser
-
-        Close and remove a browser instance
+        Create browser instance with optional persistent profile
         """
         pass
 
     def test_detect_coordinates(self) -> None:
         """Test case for detect_coordinates
 
-        Detect element coordinates using AI vision
+        Detect element coordinates using vision
         """
         pass
 
     def test_dialog(self) -> None:
         """Test case for dialog
 
-        Manage browser dialogs: get, accept, or dismiss
+        Dialogs: get, accept, dismiss
         """
         pass
 
     def test_emulate(self) -> None:
         """Test case for emulate
 
-        Manage device emulation: set, clear, or list_devices
+        Emulation: set, clear, list_devices
+        """
+        pass
+
+    def test_execute_cdp(self) -> None:
+        """Test case for execute_cdp
+
+        Execute a Chrome DevTools Protocol command
         """
         pass
 
@@ -110,24 +117,17 @@ class TestBrowserApi(unittest.TestCase):
         """
         pass
 
-    def test_get_browser(self) -> None:
-        """Test case for get_browser
+    def test_get_cdp_endpoint(self) -> None:
+        """Test case for get_cdp_endpoint
 
-        Get browser instance details
-        """
-        pass
-
-    def test_get_browser_status(self) -> None:
-        """Test case for get_browser_status
-
-        Get browser status
+        Get Chrome DevTools Protocol WebSocket URL for direct CDP access
         """
         pass
 
     def test_get_content(self) -> None:
         """Test case for get_content
 
-        Get page HTML content
+        Get page HTML
         """
         pass
 
@@ -138,73 +138,80 @@ class TestBrowserApi(unittest.TestCase):
         """
         pass
 
-    def test_get_pool_status(self) -> None:
-        """Test case for get_pool_status
-
-        Get browser pool status
-        """
-        pass
-
     def test_get_url(self) -> None:
         """Test case for get_url
 
-        Get current page URL
+        Get current URL
         """
         pass
 
     def test_gui_click(self) -> None:
         """Test case for gui_click
 
-        Click using selector or screen coordinates
+        GUI click by selector or coordinates
+        """
+        pass
+
+    def test_gui_hover_xy(self) -> None:
+        """Test case for gui_hover_xy
+
+        GUI hover at coordinates
+        """
+        pass
+
+    def test_gui_press_keys_xy(self) -> None:
+        """Test case for gui_press_keys_xy
+
+        Press keys at coordinates (click to focus, then send keys)
+        """
+        pass
+
+    def test_gui_type_xy(self) -> None:
+        """Test case for gui_type_xy
+
+        GUI type at coordinates - clicks then types text
         """
         pass
 
     def test_history(self) -> None:
         """Test case for history
 
-        Execute history action: back, forward, or refresh
-        """
-        pass
-
-    def test_list_browsers(self) -> None:
-        """Test case for list_browsers
-
-        List all active browser instances
+        History: back, forward, or refresh
         """
         pass
 
     def test_mouse(self) -> None:
         """Test case for mouse
 
-        Mouse action: hover or drag
+        Mouse: hover or drag
         """
         pass
 
     def test_navigate_browser(self) -> None:
         """Test case for navigate_browser
 
-        Navigate to a URL
+        Navigate to URL
         """
         pass
 
     def test_network_logs(self) -> None:
         """Test case for network_logs
 
-        Get or clear network logs
+        Network logs: get or clear
         """
         pass
 
     def test_performance(self) -> None:
         """Test case for performance
 
-        Manage performance: start_trace, stop_trace, metrics, or analyze
+        Performance: start_trace, stop_trace, metrics, analyze
         """
         pass
 
     def test_press_keys(self) -> None:
         """Test case for press_keys
 
-        Press keys on an element
+        Press keyboard keys
         """
         pass
 
@@ -218,7 +225,7 @@ class TestBrowserApi(unittest.TestCase):
     def test_scroll(self) -> None:
         """Test case for scroll
 
-        Scroll to element/coordinates (absolute) or by delta (relative)
+        Scroll to element/coords or by delta
         """
         pass
 
@@ -229,52 +236,52 @@ class TestBrowserApi(unittest.TestCase):
         """
         pass
 
+    def test_snapshot(self) -> None:
+        """Test case for snapshot
+
+        DOM or accessibility snapshot
+        """
+        pass
+
     def test_tabs(self) -> None:
         """Test case for tabs
 
-        Manage browser tabs: list, new, switch, close, or current
+        Tabs: list, new, switch, close, current
         """
         pass
 
     def test_take_screenshot(self) -> None:
         """Test case for take_screenshot
 
-        Take a screenshot
-        """
-        pass
-
-    def test_take_snapshot(self) -> None:
-        """Test case for take_snapshot
-
-        Take DOM/accessibility snapshot
+        Take screenshot
         """
         pass
 
     def test_type_text(self) -> None:
         """Test case for type_text
 
-        Type text into an element
+        Type text into element
         """
         pass
 
     def test_upload_file(self) -> None:
         """Test case for upload_file
 
-        Upload a file
+        Upload file to input
         """
         pass
 
     def test_wait_element(self) -> None:
         """Test case for wait_element
 
-        Wait for element to become visible or hidden
+        Wait for element to be visible or hidden
         """
         pass
 
     def test_what_is_visible(self) -> None:
         """Test case for what_is_visible
 
-        Analyze visible page content using AI
+        AI page analysis - what's visible
         """
         pass
 

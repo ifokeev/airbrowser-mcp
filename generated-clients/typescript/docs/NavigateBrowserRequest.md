@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**url** | **string** | url | [default to undefined]
 **timeout** | **number** | timeout | [optional] [default to undefined]
+**url** | **string** | url | [default to undefined]
 
 ## Example
 
@@ -14,8 +14,8 @@ Name | Type | Description | Notes
 import { NavigateBrowserRequest } from 'airbrowser-client';
 
 const instance: NavigateBrowserRequest = {
-    url,
     timeout,
+    url,
 };
 ```
 

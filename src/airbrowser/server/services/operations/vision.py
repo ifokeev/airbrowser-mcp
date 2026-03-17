@@ -53,7 +53,7 @@ class VisionOperations:
                 return _success(
                     data={
                         "prompt": prompt,
-                        "screenshot_url": coord_data.get("screenshot_url") or coord_data.get("screenshot_path"),
+                        "screenshot_url": coord_data.get("screenshot_url"),
                         "confidence": coord_data.get("confidence"),
                         "click_point": coord_data.get("click_point"),
                         "bounding_box": {

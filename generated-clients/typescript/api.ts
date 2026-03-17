@@ -18,20 +18,20 @@ import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from './common';
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction, replaceWithSerializableTypeIfNeeded } from './common';
 import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
 export interface BaseResponse {
     /**
-     * Operation success
-     */
-    'success': boolean;
-    /**
      * Status message
      */
     'message': string;
+    /**
+     * Operation success
+     */
+    'success': boolean;
     /**
      * Unix timestamp
      */
@@ -61,14 +61,6 @@ export type BrowsersRequestActionEnum = typeof BrowsersRequestActionEnum[keyof t
 
 export interface ClickRequest {
     /**
-     * selector
-     */
-    'selector': string;
-    /**
-     * timeout
-     */
-    'timeout'?: number;
-    /**
      * by
      */
     'by'?: string;
@@ -76,6 +68,14 @@ export interface ClickRequest {
      * if_visible
      */
     'if_visible'?: boolean;
+    /**
+     * selector
+     */
+    'selector': string;
+    /**
+     * timeout
+     */
+    'timeout'?: number;
 }
 export interface ConsoleLogsRequest {
     /**
@@ -107,13 +107,13 @@ export interface CookiesRequest {
      */
     'cookie'?: object;
     /**
-     * name
-     */
-    'name'?: string;
-    /**
      * domain
      */
     'domain'?: string;
+    /**
+     * name
+     */
+    'name'?: string;
 }
 
 export const CookiesRequestActionEnum = {
@@ -127,21 +127,9 @@ export type CookiesRequestActionEnum = typeof CookiesRequestActionEnum[keyof typ
 
 export interface CreateBrowserRequest {
     /**
-     * uc
+     * custom_args
      */
-    'uc'?: boolean;
-    /**
-     * proxy
-     */
-    'proxy'?: string;
-    /**
-     * window_size
-     */
-    'window_size'?: Array<number>;
-    /**
-     * user_agent
-     */
-    'user_agent'?: string;
+    'custom_args'?: Array<string>;
     /**
      * disable_gpu
      */
@@ -159,13 +147,25 @@ export interface CreateBrowserRequest {
      */
     'extensions'?: Array<string>;
     /**
-     * custom_args
-     */
-    'custom_args'?: Array<string>;
-    /**
      * profile_name
      */
     'profile_name'?: string;
+    /**
+     * proxy
+     */
+    'proxy'?: string;
+    /**
+     * uc
+     */
+    'uc'?: boolean;
+    /**
+     * user_agent
+     */
+    'user_agent'?: string;
+    /**
+     * window_size
+     */
+    'window_size'?: Array<number>;
 }
 export interface CreateProfileRequest {
     /**
@@ -174,10 +174,6 @@ export interface CreateProfileRequest {
     'name': string;
 }
 export interface DetectCoordinatesRequest {
-    /**
-     * prompt
-     */
-    'prompt': string;
     /**
      * fx
      */
@@ -190,6 +186,10 @@ export interface DetectCoordinatesRequest {
      * model
      */
     'model'?: string;
+    /**
+     * prompt
+     */
+    'prompt': string;
 }
 export interface DialogRequest {
     /**
@@ -220,17 +220,13 @@ export interface EmulateRequest {
      */
     'device'?: string;
     /**
-     * width
+     * device_scale_factor
      */
-    'width'?: number;
+    'device_scale_factor'?: number;
     /**
      * height
      */
     'height'?: number;
-    /**
-     * device_scale_factor
-     */
-    'device_scale_factor'?: number;
     /**
      * mobile
      */
@@ -239,6 +235,10 @@ export interface EmulateRequest {
      * user_agent
      */
     'user_agent'?: string;
+    /**
+     * width
+     */
+    'width'?: number;
 }
 
 export const EmulateRequestActionEnum = {
@@ -251,13 +251,13 @@ export type EmulateRequestActionEnum = typeof EmulateRequestActionEnum[keyof typ
 
 export interface ErrorResponse {
     /**
-     * Operation success (false)
-     */
-    'success'?: boolean;
-    /**
      * Error message
      */
     'message'?: string;
+    /**
+     * Operation success (false)
+     */
+    'success'?: boolean;
     /**
      * Unix timestamp
      */
@@ -281,45 +281,29 @@ export interface ExecuteScriptRequest {
 }
 export interface FillFormRequest {
     /**
-     * fields
-     */
-    'fields': Array<object>;
-    /**
      * by
      */
     'by'?: string;
+    /**
+     * fields
+     */
+    'fields': Array<object>;
 }
 export interface GenericResponse {
     /**
-     * Whether the operation succeeded
+     * Response data
      */
-    'success'?: boolean;
+    'data'?: object;
     /**
      * Response message
      */
     'message'?: string;
     /**
-     * Response data
+     * Whether the operation succeeded
      */
-    'data'?: object;
+    'success'?: boolean;
 }
 export interface GuiClickRequest {
-    /**
-     * selector
-     */
-    'selector'?: string;
-    /**
-     * x
-     */
-    'x'?: number;
-    /**
-     * y
-     */
-    'y'?: number;
-    /**
-     * timeframe
-     */
-    'timeframe'?: number;
     /**
      * fx
      */
@@ -328,22 +312,28 @@ export interface GuiClickRequest {
      * fy
      */
     'fy'?: number;
-}
-export interface GuiHoverXyRequest {
     /**
-     * x
+     * selector
      */
-    'x': number;
-    /**
-     * y
-     */
-    'y': number;
+    'selector'?: string;
     /**
      * timeframe
      */
     'timeframe'?: number;
+    /**
+     * x
+     */
+    'x'?: number;
+    /**
+     * y
+     */
+    'y'?: number;
 }
-export interface GuiPressKeysXyRequest {
+export interface GuiHoverXyRequest {
+    /**
+     * timeframe
+     */
+    'timeframe'?: number;
     /**
      * x
      */
@@ -352,6 +342,8 @@ export interface GuiPressKeysXyRequest {
      * y
      */
     'y': number;
+}
+export interface GuiPressKeysXyRequest {
     /**
      * keys
      */
@@ -360,8 +352,6 @@ export interface GuiPressKeysXyRequest {
      * timeframe
      */
     'timeframe'?: number;
-}
-export interface GuiTypeXyRequest {
     /**
      * x
      */
@@ -370,6 +360,8 @@ export interface GuiTypeXyRequest {
      * y
      */
     'y': number;
+}
+export interface GuiTypeXyRequest {
     /**
      * text
      */
@@ -378,12 +370,28 @@ export interface GuiTypeXyRequest {
      * timeframe
      */
     'timeframe'?: number;
+    /**
+     * x
+     */
+    'x': number;
+    /**
+     * y
+     */
+    'y': number;
 }
 export interface HealthStatus {
+    /**
+     * Pool status information
+     */
+    'pool'?: object;
     /**
      * Health status
      */
     'status'?: string;
+    /**
+     * Unix timestamp
+     */
+    'timestamp'?: number;
     /**
      * Server version
      */
@@ -392,14 +400,6 @@ export interface HealthStatus {
      * Whether AI vision tools are available
      */
     'vision_enabled'?: boolean;
-    /**
-     * Pool status information
-     */
-    'pool'?: object;
-    /**
-     * Unix timestamp
-     */
-    'timestamp'?: number;
 }
 export interface HistoryRequest {
     /**
@@ -422,6 +422,10 @@ export interface MouseRequest {
      */
     'action': MouseRequestActionEnum;
     /**
+     * by
+     */
+    'by'?: string;
+    /**
      * selector
      */
     'selector'?: string;
@@ -433,10 +437,6 @@ export interface MouseRequest {
      * target
      */
     'target'?: string;
-    /**
-     * by
-     */
-    'by'?: string;
 }
 
 export const MouseRequestActionEnum = {
@@ -448,13 +448,13 @@ export type MouseRequestActionEnum = typeof MouseRequestActionEnum[keyof typeof 
 
 export interface NavigateBrowserRequest {
     /**
-     * url
-     */
-    'url': string;
-    /**
      * timeout
      */
     'timeout'?: number;
+    /**
+     * url
+     */
+    'url': string;
 }
 export interface NetworkLogsRequest {
     /**
@@ -498,37 +498,45 @@ export type PerformanceRequestActionEnum = typeof PerformanceRequestActionEnum[k
 
 export interface PoolScaled {
     /**
-     * Operation success
+     * Scale result
      */
-    'success': boolean;
+    'data'?: ScaleData;
     /**
      * Status message
      */
     'message': string;
     /**
+     * Operation success
+     */
+    'success': boolean;
+    /**
      * Unix timestamp
      */
     'timestamp': number;
-    /**
-     * Scale result
-     */
-    'data'?: ScaleData;
 }
 export interface PressKeysRequest {
     /**
-     * selector
+     * by
      */
-    'selector': string;
+    'by'?: string;
     /**
      * keys
      */
     'keys': string;
     /**
-     * by
+     * selector
      */
-    'by'?: string;
+    'selector': string;
 }
 export interface ProfileInfo {
+    /**
+     * Whether profile is currently in use by a browser
+     */
+    'in_use'?: boolean;
+    /**
+     * Last used timestamp (ISO format)
+     */
+    'last_used'?: string;
     /**
      * Profile name
      */
@@ -541,14 +549,6 @@ export interface ProfileInfo {
      * Profile size in MB
      */
     'size_mb'?: number;
-    /**
-     * Last used timestamp (ISO format)
-     */
-    'last_used'?: string;
-    /**
-     * Whether profile is currently in use by a browser
-     */
-    'in_use'?: boolean;
 }
 export interface ProfileListData {
     /**
@@ -557,44 +557,44 @@ export interface ProfileListData {
     'profiles'?: Array<ProfileInfo>;
 }
 export interface ProfileListResponse {
-    /**
-     * Operation success
-     */
-    'success'?: boolean;
+    'data'?: ProfileListData;
     /**
      * Status message
      */
     'message'?: string;
     /**
+     * Operation success
+     */
+    'success'?: boolean;
+    /**
      * Unix timestamp
      */
     'timestamp'?: number;
-    'data'?: ProfileListData;
 }
 export interface ProfileResponse {
-    /**
-     * Operation success
-     */
-    'success'?: boolean;
+    'data'?: ProfileInfo;
     /**
      * Status message
      */
     'message'?: string;
     /**
+     * Operation success
+     */
+    'success'?: boolean;
+    /**
      * Unix timestamp
      */
     'timestamp'?: number;
-    'data'?: ProfileInfo;
 }
 export interface ResizeRequest {
-    /**
-     * width
-     */
-    'width': number;
     /**
      * height
      */
     'height': number;
+    /**
+     * width
+     */
+    'width': number;
 }
 export interface ScaleData {
     /**
@@ -610,6 +610,22 @@ export interface ScalePool {
 }
 export interface ScrollRequest {
     /**
+     * behavior
+     */
+    'behavior'?: string;
+    /**
+     * by
+     */
+    'by'?: string;
+    /**
+     * delta_x
+     */
+    'delta_x'?: number;
+    /**
+     * delta_y
+     */
+    'delta_y'?: number;
+    /**
      * selector
      */
     'selector'?: string;
@@ -621,48 +637,32 @@ export interface ScrollRequest {
      * y
      */
     'y'?: number;
-    /**
-     * delta_x
-     */
-    'delta_x'?: number;
-    /**
-     * delta_y
-     */
-    'delta_y'?: number;
-    /**
-     * behavior
-     */
-    'behavior'?: string;
-    /**
-     * by
-     */
-    'by'?: string;
 }
 export interface SelectRequest {
-    /**
-     * selector
-     */
-    'selector': string;
     /**
      * action
      */
     'action'?: SelectRequestActionEnum;
     /**
-     * value
+     * by
      */
-    'value'?: string;
-    /**
-     * text
-     */
-    'text'?: string;
+    'by'?: string;
     /**
      * index
      */
     'index'?: number;
     /**
-     * by
+     * selector
      */
-    'by'?: string;
+    'selector': string;
+    /**
+     * text
+     */
+    'text'?: string;
+    /**
+     * value
+     */
+    'value'?: string;
 }
 
 export const SelectRequestActionEnum = {
@@ -684,17 +684,17 @@ export interface TabsRequest {
      */
     'action': TabsRequestActionEnum;
     /**
-     * url
+     * handle
      */
-    'url'?: string;
+    'handle'?: string;
     /**
      * index
      */
     'index'?: number;
     /**
-     * handle
+     * url
      */
-    'handle'?: string;
+    'url'?: string;
 }
 
 export const TabsRequestActionEnum = {
@@ -715,6 +715,10 @@ export interface TakeScreenshotRequest {
 }
 export interface TypeTextRequest {
     /**
+     * by
+     */
+    'by'?: string;
+    /**
      * selector
      */
     'selector': string;
@@ -726,42 +730,38 @@ export interface TypeTextRequest {
      * timeout
      */
     'timeout'?: number;
+}
+export interface UploadFileRequest {
     /**
      * by
      */
     'by'?: string;
-}
-export interface UploadFileRequest {
-    /**
-     * selector
-     */
-    'selector': string;
     /**
      * file_path
      */
     'file_path': string;
     /**
+     * selector
+     */
+    'selector': string;
+}
+export interface WaitElementRequest {
+    /**
      * by
      */
     'by'?: string;
-}
-export interface WaitElementRequest {
     /**
      * selector
      */
     'selector': string;
     /**
-     * until
-     */
-    'until': WaitElementRequestUntilEnum;
-    /**
      * timeout
      */
     'timeout'?: number;
     /**
-     * by
+     * until
      */
-    'by'?: string;
+    'until': WaitElementRequestUntilEnum;
 }
 
 export const WaitElementRequestUntilEnum = {
@@ -805,9 +805,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -861,8 +860,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['by'] = by;
             }
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -898,9 +897,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -935,8 +933,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -972,9 +970,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1012,9 +1009,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1048,9 +1044,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1088,9 +1083,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1128,9 +1122,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1168,9 +1161,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1208,9 +1200,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1248,9 +1239,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1288,9 +1278,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1325,8 +1314,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -1359,8 +1348,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -1417,8 +1406,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
                 localVarQueryParameter['by'] = by;
             }
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -1451,8 +1440,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -1488,9 +1477,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1528,9 +1516,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1568,9 +1555,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1608,9 +1594,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1648,9 +1633,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1688,9 +1672,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1728,9 +1711,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1768,9 +1750,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1808,9 +1789,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1848,9 +1828,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1888,9 +1867,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1928,9 +1906,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -1968,9 +1945,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -2008,9 +1984,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -2048,9 +2023,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -2088,9 +2062,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -2128,9 +2101,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -2168,9 +2140,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -2208,9 +2179,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -2248,9 +2218,8 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -3680,8 +3649,8 @@ export const HealthApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3711,7 +3680,6 @@ export const HealthApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarQueryParameter = {} as any;
 
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -3838,9 +3806,8 @@ export const PoolApiAxiosParamCreator = function (configuration?: Configuration)
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -3871,8 +3838,8 @@ export const PoolApiAxiosParamCreator = function (configuration?: Configuration)
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -4002,9 +3969,8 @@ export const ProfilesApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -4040,7 +4006,6 @@ export const ProfilesApiAxiosParamCreator = function (configuration?: Configurat
             const localVarQueryParameter = {} as any;
 
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -4073,8 +4038,8 @@ export const ProfilesApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -4103,8 +4068,8 @@ export const ProfilesApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};

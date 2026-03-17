@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**width** | **int** | width | 
 **height** | **int** | height | 
+**width** | **int** | width | 
 
 ## Example
 

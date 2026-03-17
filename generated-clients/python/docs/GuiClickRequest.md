@@ -5,12 +5,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**selector** | **str** | selector | [optional] 
-**x** | **float** | x | [optional] 
-**y** | **float** | y | [optional] 
-**timeframe** | **float** | timeframe | [optional] 
 **fx** | **float** | fx | [optional] 
 **fy** | **float** | fy | [optional] 
+**selector** | **str** | selector | [optional] 
+**timeframe** | **float** | timeframe | [optional] 
+**x** | **float** | x | [optional] 
+**y** | **float** | y | [optional] 
 
 ## Example
 

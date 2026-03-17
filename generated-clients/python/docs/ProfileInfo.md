@@ -5,11 +5,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**in_use** | **bool** | Whether profile is currently in use by a browser | [optional] 
+**last_used** | **str** | Last used timestamp (ISO format) | [optional] 
 **name** | **str** | Profile name | [optional] 
 **path** | **str** | Profile storage path | [optional] 
 **size_mb** | **float** | Profile size in MB | [optional] 
-**last_used** | **str** | Last used timestamp (ISO format) | [optional] 
-**in_use** | **bool** | Whether profile is currently in use by a browser | [optional] 
 
 ## Example
 

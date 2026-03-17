@@ -35,9 +35,9 @@ class TestGenericResponse(unittest.TestCase):
         model = GenericResponse()
         if include_optional:
             return GenericResponse(
-                success = True,
+                data = None,
                 message = '',
-                data = None
+                success = True
             )
         else:
             return GenericResponse(

@@ -191,7 +191,6 @@ def register_browser_schemas(api):
             "coordinates": fields.Raw(description="Full coordinate information"),
             "bounding_box": fields.Raw(description="Element bounding box {x, y, width, height}"),
             "click_point": fields.Raw(description="Recommended click point {x, y}"),
-            "screenshot_path": fields.String(description="Path to screenshot analyzed"),
             "model_used": fields.String(description="Vision model used for detection"),
             "confidence": fields.Float(description="Detection confidence (0.0-1.0)"),
             "models_tried": fields.List(fields.String, description="Models attempted if detection failed"),
@@ -209,7 +208,6 @@ def register_browser_schemas(api):
             "analysis": fields.String(description="Comprehensive page state analysis"),
             "model": fields.String(description="AI model used for analysis"),
             "screenshot_url": fields.String(description="URL to the screenshot"),
-            "screenshot_path": fields.String(description="Path to the screenshot file"),
             "error": fields.String(description="Error message if failed"),
         },
     )

@@ -35,10 +35,10 @@ class TestWaitElementRequest(unittest.TestCase):
         model = WaitElementRequest()
         if include_optional:
             return WaitElementRequest(
-                selector = '',
                 by = 'css',
-                until = 'visible',
-                timeout = 56
+                selector = '',
+                timeout = 56,
+                until = 'visible'
             )
         else:
             return WaitElementRequest(

@@ -35,7 +35,7 @@ class TestSnapshotRequest(unittest.TestCase):
         model = SnapshotRequest()
         if include_optional:
             return SnapshotRequest(
-                type = 'dom'
+                snapshot_type = 'dom'
             )
         else:
             return SnapshotRequest(

@@ -35,13 +35,13 @@ class TestScrollRequest(unittest.TestCase):
         model = ScrollRequest()
         if include_optional:
             return ScrollRequest(
-                selector = '',
-                x = '',
-                y = '',
-                delta_x = '',
-                delta_y = '',
                 behavior = 'smooth',
-                by = 'css'
+                by = 'css',
+                delta_x = 56,
+                delta_y = 56,
+                selector = '',
+                x = 56,
+                y = 56
             )
         else:
             return ScrollRequest(

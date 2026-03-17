@@ -35,18 +35,18 @@ class TestProfileListResponse(unittest.TestCase):
         model = ProfileListResponse()
         if include_optional:
             return ProfileListResponse(
-                success = True,
-                message = '',
-                timestamp = 1.337,
                 data = airbrowser_client.models.profile_list_data.ProfileListData(
                     profiles = [
                         airbrowser_client.models.profile_info.ProfileInfo(
+                            in_use = True, 
+                            last_used = '', 
                             name = '', 
                             path = '', 
-                            size_mb = 1.337, 
-                            last_used = '', 
-                            in_use = True, )
-                        ], )
+                            size_mb = 1.337, )
+                        ], ),
+                message = '',
+                success = True,
+                timestamp = 1.337
             )
         else:
             return ProfileListResponse(

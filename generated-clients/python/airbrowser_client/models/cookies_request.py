@@ -21,6 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class CookiesRequest(BaseModel):
     """
@@ -28,9 +29,9 @@ class CookiesRequest(BaseModel):
     """ # noqa: E501
     action: StrictStr = Field(description="action")
     cookie: Optional[Dict[str, Any]] = Field(default=None, description="cookie")
-    name: Optional[StrictStr] = Field(default=None, description="name")
     domain: Optional[StrictStr] = Field(default=None, description="domain")
-    __properties: ClassVar[List[str]] = ["action", "cookie", "name", "domain"]
+    name: Optional[StrictStr] = Field(default=None, description="name")
+    __properties: ClassVar[List[str]] = ["action", "cookie", "domain", "name"]
 
     @field_validator('action')
     def action_validate_enum(cls, value):
@@ -40,7 +41,8 @@ class CookiesRequest(BaseModel):
         return value
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -52,8 +54,7 @@ class CookiesRequest(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -92,8 +93,8 @@ class CookiesRequest(BaseModel):
         _obj = cls.model_validate({
             "action": obj.get("action"),
             "cookie": obj.get("cookie"),
-            "name": obj.get("name"),
-            "domain": obj.get("domain")
+            "domain": obj.get("domain"),
+            "name": obj.get("name")
         })
         return _obj
 

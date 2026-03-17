@@ -198,7 +198,6 @@ def register_response_schemas(api):
         "ScreenshotData",
         {
             "screenshot_url": fields.String(description="URL to screenshot"),
-            "screenshot_path": fields.String(description="Path to screenshot file"),
         },
     )
 

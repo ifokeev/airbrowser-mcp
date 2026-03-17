@@ -21,25 +21,27 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, Strict
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class CreateBrowserRequest(BaseModel):
     """
     CreateBrowserRequest
     """ # noqa: E501
-    uc: Optional[StrictBool] = Field(default=True, description="uc")
-    proxy: Optional[StrictStr] = Field(default=None, description="proxy")
-    window_size: Optional[List[StrictInt]] = Field(default=None, description="window_size")
-    user_agent: Optional[StrictStr] = Field(default=None, description="user_agent")
+    custom_args: Optional[List[StrictStr]] = Field(default=None, description="custom_args")
     disable_gpu: Optional[StrictBool] = Field(default=False, description="disable_gpu")
     disable_images: Optional[StrictBool] = Field(default=False, description="disable_images")
     disable_javascript: Optional[StrictBool] = Field(default=False, description="disable_javascript")
     extensions: Optional[List[StrictStr]] = Field(default=None, description="extensions")
-    custom_args: Optional[List[StrictStr]] = Field(default=None, description="custom_args")
     profile_name: Optional[StrictStr] = Field(default=None, description="profile_name")
-    __properties: ClassVar[List[str]] = ["uc", "proxy", "window_size", "user_agent", "disable_gpu", "disable_images", "disable_javascript", "extensions", "custom_args", "profile_name"]
+    proxy: Optional[StrictStr] = Field(default=None, description="proxy")
+    uc: Optional[StrictBool] = Field(default=True, description="uc")
+    user_agent: Optional[StrictStr] = Field(default=None, description="user_agent")
+    window_size: Optional[List[StrictInt]] = Field(default=None, description="window_size")
+    __properties: ClassVar[List[str]] = ["custom_args", "disable_gpu", "disable_images", "disable_javascript", "extensions", "profile_name", "proxy", "uc", "user_agent", "window_size"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -51,8 +53,7 @@ class CreateBrowserRequest(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -89,16 +90,16 @@ class CreateBrowserRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "uc": obj.get("uc") if obj.get("uc") is not None else True,
-            "proxy": obj.get("proxy"),
-            "window_size": obj.get("window_size"),
-            "user_agent": obj.get("user_agent"),
+            "custom_args": obj.get("custom_args"),
             "disable_gpu": obj.get("disable_gpu") if obj.get("disable_gpu") is not None else False,
             "disable_images": obj.get("disable_images") if obj.get("disable_images") is not None else False,
             "disable_javascript": obj.get("disable_javascript") if obj.get("disable_javascript") is not None else False,
             "extensions": obj.get("extensions"),
-            "custom_args": obj.get("custom_args"),
-            "profile_name": obj.get("profile_name")
+            "profile_name": obj.get("profile_name"),
+            "proxy": obj.get("proxy"),
+            "uc": obj.get("uc") if obj.get("uc") is not None else True,
+            "user_agent": obj.get("user_agent"),
+            "window_size": obj.get("window_size")
         })
         return _obj
 

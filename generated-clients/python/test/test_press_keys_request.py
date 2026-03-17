@@ -35,14 +35,14 @@ class TestPressKeysRequest(unittest.TestCase):
         model = PressKeysRequest()
         if include_optional:
             return PressKeysRequest(
-                selector = '',
                 by = 'css',
-                keys = ''
+                keys = '',
+                selector = ''
             )
         else:
             return PressKeysRequest(
-                selector = '',
                 keys = '',
+                selector = '',
         )
         """
 

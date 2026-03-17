@@ -21,17 +21,19 @@ from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class NavigateBrowserRequest(BaseModel):
     """
     NavigateBrowserRequest
     """ # noqa: E501
-    url: StrictStr = Field(description="url")
     timeout: Optional[StrictInt] = Field(default=None, description="timeout")
-    __properties: ClassVar[List[str]] = ["url", "timeout"]
+    url: StrictStr = Field(description="url")
+    __properties: ClassVar[List[str]] = ["timeout", "url"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -43,8 +45,7 @@ class NavigateBrowserRequest(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -81,8 +82,8 @@ class NavigateBrowserRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "url": obj.get("url"),
-            "timeout": obj.get("timeout")
+            "timeout": obj.get("timeout"),
+            "url": obj.get("url")
         })
         return _obj
 

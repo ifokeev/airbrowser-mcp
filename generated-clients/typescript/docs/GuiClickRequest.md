@@ -5,12 +5,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**selector** | **string** | selector | [optional] [default to undefined]
-**x** | **number** | x | [optional] [default to undefined]
-**y** | **number** | y | [optional] [default to undefined]
-**timeframe** | **number** | timeframe | [optional] [default to undefined]
 **fx** | **number** | fx | [optional] [default to undefined]
 **fy** | **number** | fy | [optional] [default to undefined]
+**selector** | **string** | selector | [optional] [default to undefined]
+**timeframe** | **number** | timeframe | [optional] [default to undefined]
+**x** | **number** | x | [optional] [default to undefined]
+**y** | **number** | y | [optional] [default to undefined]
 
 ## Example
 
@@ -18,12 +18,12 @@ Name | Type | Description | Notes
 import { GuiClickRequest } from 'airbrowser-client';
 
 const instance: GuiClickRequest = {
-    selector,
-    x,
-    y,
-    timeframe,
     fx,
     fy,
+    selector,
+    timeframe,
+    x,
+    y,
 };
 ```
 

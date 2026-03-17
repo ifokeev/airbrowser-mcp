@@ -21,6 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, Stri
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class EmulateRequest(BaseModel):
     """
@@ -28,12 +29,12 @@ class EmulateRequest(BaseModel):
     """ # noqa: E501
     action: Optional[StrictStr] = Field(default='set', description="action")
     device: Optional[StrictStr] = Field(default=None, description="device")
-    width: Optional[StrictInt] = Field(default=None, description="width")
-    height: Optional[StrictInt] = Field(default=None, description="height")
     device_scale_factor: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="device_scale_factor")
+    height: Optional[StrictInt] = Field(default=None, description="height")
     mobile: Optional[StrictBool] = Field(default=None, description="mobile")
     user_agent: Optional[StrictStr] = Field(default=None, description="user_agent")
-    __properties: ClassVar[List[str]] = ["action", "device", "width", "height", "device_scale_factor", "mobile", "user_agent"]
+    width: Optional[StrictInt] = Field(default=None, description="width")
+    __properties: ClassVar[List[str]] = ["action", "device", "device_scale_factor", "height", "mobile", "user_agent", "width"]
 
     @field_validator('action')
     def action_validate_enum(cls, value):
@@ -46,7 +47,8 @@ class EmulateRequest(BaseModel):
         return value
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -58,8 +60,7 @@ class EmulateRequest(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -98,11 +99,11 @@ class EmulateRequest(BaseModel):
         _obj = cls.model_validate({
             "action": obj.get("action") if obj.get("action") is not None else 'set',
             "device": obj.get("device"),
-            "width": obj.get("width"),
-            "height": obj.get("height"),
             "device_scale_factor": obj.get("device_scale_factor"),
+            "height": obj.get("height"),
             "mobile": obj.get("mobile"),
-            "user_agent": obj.get("user_agent")
+            "user_agent": obj.get("user_agent"),
+            "width": obj.get("width")
         })
         return _obj
 

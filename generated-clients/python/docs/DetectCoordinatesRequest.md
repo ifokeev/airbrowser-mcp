@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**prompt** | **str** | prompt | 
 **fx** | **float** | fx | [optional] 
 **fy** | **float** | fy | [optional] 
 **model** | **str** | model | [optional] 
+**prompt** | **str** | prompt | 
 
 ## Example
 

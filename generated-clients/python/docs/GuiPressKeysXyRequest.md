@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**x** | **float** | x | 
-**y** | **float** | y | 
 **keys** | **str** | keys | 
 **timeframe** | **float** | timeframe | [optional] 
+**x** | **float** | x | 
+**y** | **float** | y | 
 
 ## Example
 

@@ -22,19 +22,21 @@ from typing import Any, ClassVar, Dict, List, Optional, Union
 from airbrowser_client.models.scale_data import ScaleData
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class PoolScaled(BaseModel):
     """
     PoolScaled
     """ # noqa: E501
-    success: StrictBool = Field(description="Operation success")
-    message: StrictStr = Field(description="Status message")
-    timestamp: Union[StrictFloat, StrictInt] = Field(description="Unix timestamp")
     data: Optional[ScaleData] = Field(default=None, description="Scale result")
-    __properties: ClassVar[List[str]] = ["success", "message", "timestamp", "data"]
+    message: StrictStr = Field(description="Status message")
+    success: StrictBool = Field(description="Operation success")
+    timestamp: Union[StrictFloat, StrictInt] = Field(description="Unix timestamp")
+    __properties: ClassVar[List[str]] = ["data", "message", "success", "timestamp"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -46,8 +48,7 @@ class PoolScaled(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -87,10 +88,10 @@ class PoolScaled(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "success": obj.get("success"),
+            "data": ScaleData.from_dict(obj["data"]) if obj.get("data") is not None else None,
             "message": obj.get("message"),
-            "timestamp": obj.get("timestamp"),
-            "data": ScaleData.from_dict(obj["data"]) if obj.get("data") is not None else None
+            "success": obj.get("success"),
+            "timestamp": obj.get("timestamp")
         })
         return _obj
 

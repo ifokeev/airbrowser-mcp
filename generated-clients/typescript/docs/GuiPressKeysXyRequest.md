@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**x** | **number** | x | [default to undefined]
-**y** | **number** | y | [default to undefined]
 **keys** | **string** | keys | [default to undefined]
 **timeframe** | **number** | timeframe | [optional] [default to undefined]
+**x** | **number** | x | [default to undefined]
+**y** | **number** | y | [default to undefined]
 
 ## Example
 
@@ -16,10 +16,10 @@ Name | Type | Description | Notes
 import { GuiPressKeysXyRequest } from 'airbrowser-client';
 
 const instance: GuiPressKeysXyRequest = {
-    x,
-    y,
     keys,
     timeframe,
+    x,
+    y,
 };
 ```
 

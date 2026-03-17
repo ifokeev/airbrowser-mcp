@@ -5,13 +5,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**behavior** | **string** | behavior | [optional] [default to 'smooth']
+**by** | **string** | by | [optional] [default to 'css']
+**delta_x** | **number** | delta_x | [optional] [default to undefined]
+**delta_y** | **number** | delta_y | [optional] [default to undefined]
 **selector** | **string** | selector | [optional] [default to undefined]
 **x** | **number** | x | [optional] [default to undefined]
 **y** | **number** | y | [optional] [default to undefined]
-**delta_x** | **number** | delta_x | [optional] [default to undefined]
-**delta_y** | **number** | delta_y | [optional] [default to undefined]
-**behavior** | **string** | behavior | [optional] [default to 'smooth']
-**by** | **string** | by | [optional] [default to 'css']
 
 ## Example
 
@@ -19,13 +19,13 @@ Name | Type | Description | Notes
 import { ScrollRequest } from 'airbrowser-client';
 
 const instance: ScrollRequest = {
+    behavior,
+    by,
+    delta_x,
+    delta_y,
     selector,
     x,
     y,
-    delta_x,
-    delta_y,
-    behavior,
-    by,
 };
 ```
 

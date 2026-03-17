@@ -21,21 +21,23 @@ from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, Stric
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class GuiClickRequest(BaseModel):
     """
     GuiClickRequest
     """ # noqa: E501
-    selector: Optional[StrictStr] = Field(default=None, description="selector")
-    x: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="x")
-    y: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="y")
-    timeframe: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="timeframe")
     fx: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="fx")
     fy: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="fy")
-    __properties: ClassVar[List[str]] = ["selector", "x", "y", "timeframe", "fx", "fy"]
+    selector: Optional[StrictStr] = Field(default=None, description="selector")
+    timeframe: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="timeframe")
+    x: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="x")
+    y: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="y")
+    __properties: ClassVar[List[str]] = ["fx", "fy", "selector", "timeframe", "x", "y"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -47,8 +49,7 @@ class GuiClickRequest(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -85,12 +86,12 @@ class GuiClickRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "selector": obj.get("selector"),
-            "x": obj.get("x"),
-            "y": obj.get("y"),
-            "timeframe": obj.get("timeframe"),
             "fx": obj.get("fx"),
-            "fy": obj.get("fy")
+            "fy": obj.get("fy"),
+            "selector": obj.get("selector"),
+            "timeframe": obj.get("timeframe"),
+            "x": obj.get("x"),
+            "y": obj.get("y")
         })
         return _obj
 

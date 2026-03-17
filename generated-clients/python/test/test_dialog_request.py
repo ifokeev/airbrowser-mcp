@@ -35,12 +35,12 @@ class TestDialogRequest(unittest.TestCase):
         model = DialogRequest()
         if include_optional:
             return DialogRequest(
-                action = '',
+                action = 'get',
                 text = ''
             )
         else:
             return DialogRequest(
-                action = '',
+                action = 'get',
         )
         """
 

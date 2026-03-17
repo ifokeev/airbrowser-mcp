@@ -21,22 +21,24 @@ from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class ScrollRequest(BaseModel):
     """
     ScrollRequest
     """ # noqa: E501
+    behavior: Optional[StrictStr] = Field(default='smooth', description="behavior")
+    by: Optional[StrictStr] = Field(default='css', description="by")
+    delta_x: Optional[StrictInt] = Field(default=None, description="delta_x")
+    delta_y: Optional[StrictInt] = Field(default=None, description="delta_y")
     selector: Optional[StrictStr] = Field(default=None, description="selector")
     x: Optional[StrictInt] = Field(default=None, description="x")
     y: Optional[StrictInt] = Field(default=None, description="y")
-    delta_x: Optional[StrictInt] = Field(default=None, description="delta_x")
-    delta_y: Optional[StrictInt] = Field(default=None, description="delta_y")
-    behavior: Optional[StrictStr] = Field(default='smooth', description="behavior")
-    by: Optional[StrictStr] = Field(default='css', description="by")
-    __properties: ClassVar[List[str]] = ["selector", "x", "y", "delta_x", "delta_y", "behavior", "by"]
+    __properties: ClassVar[List[str]] = ["behavior", "by", "delta_x", "delta_y", "selector", "x", "y"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -48,8 +50,7 @@ class ScrollRequest(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -86,13 +87,13 @@ class ScrollRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "selector": obj.get("selector"),
-            "x": obj.get("x"),
-            "y": obj.get("y"),
+            "behavior": obj.get("behavior") if obj.get("behavior") is not None else 'smooth',
+            "by": obj.get("by") if obj.get("by") is not None else 'css',
             "delta_x": obj.get("delta_x"),
             "delta_y": obj.get("delta_y"),
-            "behavior": obj.get("behavior") if obj.get("behavior") is not None else 'smooth',
-            "by": obj.get("by") if obj.get("by") is not None else 'css'
+            "selector": obj.get("selector"),
+            "x": obj.get("x"),
+            "y": obj.get("y")
         })
         return _obj
 

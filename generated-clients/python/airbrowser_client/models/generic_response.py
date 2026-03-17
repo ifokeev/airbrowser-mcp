@@ -21,18 +21,20 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class GenericResponse(BaseModel):
     """
     GenericResponse
     """ # noqa: E501
-    success: Optional[StrictBool] = Field(default=None, description="Whether the operation succeeded")
-    message: Optional[StrictStr] = Field(default=None, description="Response message")
     data: Optional[Dict[str, Any]] = Field(default=None, description="Response data")
-    __properties: ClassVar[List[str]] = ["success", "message", "data"]
+    message: Optional[StrictStr] = Field(default=None, description="Response message")
+    success: Optional[StrictBool] = Field(default=None, description="Whether the operation succeeded")
+    __properties: ClassVar[List[str]] = ["data", "message", "success"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -44,8 +46,7 @@ class GenericResponse(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -82,9 +83,9 @@ class GenericResponse(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "success": obj.get("success"),
+            "data": obj.get("data"),
             "message": obj.get("message"),
-            "data": obj.get("data")
+            "success": obj.get("success")
         })
         return _obj
 

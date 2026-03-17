@@ -21,19 +21,21 @@ from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, Stric
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class DetectCoordinatesRequest(BaseModel):
     """
     DetectCoordinatesRequest
     """ # noqa: E501
-    prompt: StrictStr = Field(description="prompt")
     fx: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="fx")
     fy: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="fy")
     model: Optional[StrictStr] = Field(default=None, description="model")
-    __properties: ClassVar[List[str]] = ["prompt", "fx", "fy", "model"]
+    prompt: StrictStr = Field(description="prompt")
+    __properties: ClassVar[List[str]] = ["fx", "fy", "model", "prompt"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -45,8 +47,7 @@ class DetectCoordinatesRequest(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -83,10 +84,10 @@ class DetectCoordinatesRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "prompt": obj.get("prompt"),
             "fx": obj.get("fx"),
             "fy": obj.get("fy"),
-            "model": obj.get("model")
+            "model": obj.get("model"),
+            "prompt": obj.get("prompt")
         })
         return _obj
 

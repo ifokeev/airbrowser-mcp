@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**success** | **bool** | Whether the operation succeeded | [optional] 
-**message** | **str** | Response message | [optional] 
 **data** | **object** | Response data | [optional] 
+**message** | **str** | Response message | [optional] 
+**success** | **bool** | Whether the operation succeeded | [optional] 
 
 ## Example
 

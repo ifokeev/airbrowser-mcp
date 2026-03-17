@@ -5,11 +5,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**pool** | **object** | Pool status information | [optional] 
 **status** | **str** | Health status | [optional] 
+**timestamp** | **float** | Unix timestamp | [optional] 
 **version** | **str** | Server version | [optional] 
 **vision_enabled** | **bool** | Whether AI vision tools are available | [optional] 
-**pool** | **object** | Pool status information | [optional] 
-**timestamp** | **float** | Unix timestamp | [optional] 
 
 ## Example
 

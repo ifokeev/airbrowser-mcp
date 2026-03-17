@@ -21,16 +21,17 @@ from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr, field_v
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class WaitElementRequest(BaseModel):
     """
     WaitElementRequest
     """ # noqa: E501
-    selector: StrictStr = Field(description="selector")
-    until: StrictStr = Field(description="until")
-    timeout: Optional[StrictInt] = Field(default=None, description="timeout")
     by: Optional[StrictStr] = Field(default='css', description="by")
-    __properties: ClassVar[List[str]] = ["selector", "until", "timeout", "by"]
+    selector: StrictStr = Field(description="selector")
+    timeout: Optional[StrictInt] = Field(default=None, description="timeout")
+    until: StrictStr = Field(description="until")
+    __properties: ClassVar[List[str]] = ["by", "selector", "timeout", "until"]
 
     @field_validator('until')
     def until_validate_enum(cls, value):
@@ -40,7 +41,8 @@ class WaitElementRequest(BaseModel):
         return value
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -52,8 +54,7 @@ class WaitElementRequest(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -90,10 +91,10 @@ class WaitElementRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "by": obj.get("by") if obj.get("by") is not None else 'css',
             "selector": obj.get("selector"),
-            "until": obj.get("until"),
             "timeout": obj.get("timeout"),
-            "by": obj.get("by") if obj.get("by") is not None else 'css'
+            "until": obj.get("until")
         })
         return _obj
 

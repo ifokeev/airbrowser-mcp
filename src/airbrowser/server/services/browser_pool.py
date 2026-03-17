@@ -209,21 +209,7 @@ class BrowserPoolAdapter:
                     by=getattr(action, "by", "css"),
                 )
             elif action.action == "screenshot":
-                # Save screenshot to a writable directory and return URL
-                # Prefer env var SCREENSHOTS_DIR, else default to /tmp/screenshots
-                base_dir = os.environ.get("SCREENSHOTS_DIR", "/tmp/screenshots")
-                screenshots_dir = Path(base_dir)
-                screenshots_dir.mkdir(parents=True, exist_ok=True)
-                filename = f"{browser_id}_{int(time.time())}.png"
-                screenshot_path = screenshots_dir / filename
-
-                response = self.client.execute_command(browser_id, "screenshot", filename=str(screenshot_path))
-
-                if response.get("status") == "success" and screenshot_path.exists():
-                    # Map to nginx-served URL
-                    screenshot_url = f"/screenshots/{filename}"
-                    response["screenshot_url"] = screenshot_url
-                    response["screenshot_path"] = screenshot_url
+                response = self.client.execute_command(browser_id, "screenshot")
 
             elif action.action == "get_text":
                 response = self.client.execute_command(
@@ -609,7 +595,6 @@ class BrowserPoolAdapter:
                     success=True,
                     message=response.get("message", "Action completed successfully"),
                     data=response,
-                    screenshot_path=response.get("screenshot_url") if isinstance(response, dict) else None,
                 )
             else:
                 # Include more details in error message

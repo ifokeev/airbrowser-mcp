@@ -21,20 +21,22 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, Stri
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class HealthStatus(BaseModel):
     """
     HealthStatus
     """ # noqa: E501
+    pool: Optional[Dict[str, Any]] = Field(default=None, description="Pool status information")
     status: Optional[StrictStr] = Field(default=None, description="Health status")
+    timestamp: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Unix timestamp")
     version: Optional[StrictStr] = Field(default=None, description="Server version")
     vision_enabled: Optional[StrictBool] = Field(default=None, description="Whether AI vision tools are available")
-    pool: Optional[Dict[str, Any]] = Field(default=None, description="Pool status information")
-    timestamp: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Unix timestamp")
-    __properties: ClassVar[List[str]] = ["status", "version", "vision_enabled", "pool", "timestamp"]
+    __properties: ClassVar[List[str]] = ["pool", "status", "timestamp", "version", "vision_enabled"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -46,8 +48,7 @@ class HealthStatus(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -84,11 +85,11 @@ class HealthStatus(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "status": obj.get("status"),
-            "version": obj.get("version"),
-            "vision_enabled": obj.get("vision_enabled"),
             "pool": obj.get("pool"),
-            "timestamp": obj.get("timestamp")
+            "status": obj.get("status"),
+            "timestamp": obj.get("timestamp"),
+            "version": obj.get("version"),
+            "vision_enabled": obj.get("vision_enabled")
         })
         return _obj
 

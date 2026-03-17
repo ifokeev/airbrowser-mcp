@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**selector** | **string** | selector | [default to undefined]
-**file_path** | **string** | file_path | [default to undefined]
 **by** | **string** | by | [optional] [default to 'css']
+**file_path** | **string** | file_path | [default to undefined]
+**selector** | **string** | selector | [default to undefined]
 
 ## Example
 
@@ -15,9 +15,9 @@ Name | Type | Description | Notes
 import { UploadFileRequest } from 'airbrowser-client';
 
 const instance: UploadFileRequest = {
-    selector,
-    file_path,
     by,
+    file_path,
+    selector,
 };
 ```
 

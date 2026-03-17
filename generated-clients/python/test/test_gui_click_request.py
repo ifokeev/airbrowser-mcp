@@ -35,12 +35,12 @@ class TestGuiClickRequest(unittest.TestCase):
         model = GuiClickRequest()
         if include_optional:
             return GuiClickRequest(
+                fx = 1.337,
+                fy = 1.337,
                 selector = '',
-                x = '',
-                y = '',
                 timeframe = 1.337,
-                fx = '',
-                fy = ''
+                x = 1.337,
+                y = 1.337
             )
         else:
             return GuiClickRequest(

@@ -1,5 +1,3 @@
-# coding: utf-8
-
 """
     Airbrowser API
 
@@ -10,6 +8,7 @@
 
     Do not edit the class manually.
 """  # noqa: E501
+
 
 import warnings
 from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
@@ -91,8 +90,8 @@ class PoolApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '400': "ErrorResponse",
             '200': "PoolScaled",
+            '400': "ErrorResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -158,8 +157,8 @@ class PoolApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '400': "ErrorResponse",
             '200': "PoolScaled",
+            '400': "ErrorResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -225,8 +224,8 @@ class PoolApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '400': "ErrorResponse",
             '200': "PoolScaled",
+            '400': "ErrorResponse",
         }
         response_data = self.api_client.call_api(
             *_param,

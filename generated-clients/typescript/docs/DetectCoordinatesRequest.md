@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**prompt** | **string** | prompt | [default to undefined]
 **fx** | **number** | fx | [optional] [default to undefined]
 **fy** | **number** | fy | [optional] [default to undefined]
 **model** | **string** | model | [optional] [default to undefined]
+**prompt** | **string** | prompt | [default to undefined]
 
 ## Example
 
@@ -16,10 +16,10 @@ Name | Type | Description | Notes
 import { DetectCoordinatesRequest } from 'airbrowser-client';
 
 const instance: DetectCoordinatesRequest = {
-    prompt,
     fx,
     fy,
     model,
+    prompt,
 };
 ```
 

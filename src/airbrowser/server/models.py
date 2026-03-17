@@ -127,7 +127,6 @@ class ActionResult:
     success: bool
     message: str
     data: Any | None = None
-    screenshot_path: str | None = None
     execution_time: float = 0.0
 
     def to_dict(self) -> dict[str, Any]:
@@ -135,7 +134,6 @@ class ActionResult:
             "success": self.success,
             "message": self.message,
             "data": self.data,
-            "screenshot_path": self.screenshot_path,
             "execution_time": self.execution_time,
         }
 

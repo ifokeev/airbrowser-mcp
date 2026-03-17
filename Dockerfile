@@ -46,7 +46,7 @@ RUN for i in 1 2 3; do apt-get update && break || sleep 5; done \
     # Minimal system tools
     wget curl ca-certificates gnupg xvfb supervisor procps nginx openssl \
     # Fonts (minimal set)
-    fonts-liberation fonts-dejavu-core fontconfig \
+    fonts-liberation fonts-dejavu-core fonts-noto-cjk fontconfig \
     # X11/VNC (minimal)
     fluxbox x11vnc xterm dbus-x11 \
     # Chrome dependencies
@@ -65,6 +65,7 @@ RUN for i in 1 2 3; do apt-get update && break || sleep 5; done \
     && wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
     && apt-get install -y ./google-chrome-stable_current_amd64.deb \
     && rm ./google-chrome-stable_current_amd64.deb \
+    && fc-cache -f \
     # Cleanup (be careful not to break Chrome)
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \

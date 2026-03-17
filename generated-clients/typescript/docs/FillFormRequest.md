@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**fields** | **Array&lt;object&gt;** | fields | [default to undefined]
 **by** | **string** | by | [optional] [default to 'css']
+**fields** | **Array&lt;object&gt;** | fields | [default to undefined]
 
 ## Example
 
@@ -14,8 +14,8 @@ Name | Type | Description | Notes
 import { FillFormRequest } from 'airbrowser-client';
 
 const instance: FillFormRequest = {
-    fields,
     by,
+    fields,
 };
 ```
 

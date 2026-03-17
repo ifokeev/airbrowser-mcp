@@ -6,10 +6,10 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **action** | **string** | action | [default to undefined]
+**by** | **string** | by | [optional] [default to 'css']
 **selector** | **string** | selector | [optional] [default to undefined]
 **source** | **string** | source | [optional] [default to undefined]
 **target** | **string** | target | [optional] [default to undefined]
-**by** | **string** | by | [optional] [default to 'css']
 
 ## Example
 
@@ -18,10 +18,10 @@ import { MouseRequest } from 'airbrowser-client';
 
 const instance: MouseRequest = {
     action,
+    by,
     selector,
     source,
     target,
-    by,
 };
 ```
 

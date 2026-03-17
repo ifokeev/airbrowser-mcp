@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**success** | **bool** | Operation success | [optional] 
-**message** | **str** | Status message | [optional] 
-**timestamp** | **float** | Unix timestamp | [optional] 
 **data** | [**ProfileListData**](ProfileListData.md) |  | [optional] 
+**message** | **str** | Status message | [optional] 
+**success** | **bool** | Operation success | [optional] 
+**timestamp** | **float** | Unix timestamp | [optional] 
 
 ## Example
 

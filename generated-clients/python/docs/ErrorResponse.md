@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**success** | **bool** | Operation success (false) | [optional] [default to False]
 **message** | **str** | Error message | [optional] 
+**success** | **bool** | Operation success (false) | [optional] [default to False]
 **timestamp** | **float** | Unix timestamp | [optional] 
 
 ## Example

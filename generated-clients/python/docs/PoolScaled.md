@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**success** | **bool** | Operation success | 
-**message** | **str** | Status message | 
-**timestamp** | **float** | Unix timestamp | 
 **data** | [**ScaleData**](ScaleData.md) | Scale result | [optional] 
+**message** | **str** | Status message | 
+**success** | **bool** | Operation success | 
+**timestamp** | **float** | Unix timestamp | 
 
 ## Example
 

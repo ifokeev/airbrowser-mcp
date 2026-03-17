@@ -163,6 +163,10 @@ ENV_VARS=(
     "NAVIGATE_TIMEOUT_DEFAULT"
     "SCREEN_WIDTH"
     "SCREEN_HEIGHT"
+    "SCREENSHOTS_DIR"
+    "SCREENSHOTS_TTL_SECONDS"
+    "SCREENSHOTS_MAX_BYTES"
+    "SCREENSHOTS_MIN_FREE_BYTES"
 )
 
 # Build environment args for docker/podman
@@ -232,7 +236,7 @@ main() {
             --network=host \
             --name airbrowser \
             -v "$DATA_DIR/profiles:/app/browser-profiles" \
-            -v "$DATA_DIR/screenshots:/tmp/screenshots" \
+            -v "$DATA_DIR/screenshots:/app/screenshots" \
             -v "$DATA_DIR/downloads:/app/downloads" \
             $ENV_ARGS \
             airbrowser:latest
@@ -245,7 +249,7 @@ main() {
             --network=host \
             --name airbrowser \
             -v "$DATA_DIR/profiles:/app/browser-profiles" \
-            -v "$DATA_DIR/screenshots:/tmp/screenshots" \
+            -v "$DATA_DIR/screenshots:/app/screenshots" \
             -v "$DATA_DIR/downloads:/app/downloads" \
             $ENV_ARGS \
             airbrowser:latest
@@ -256,7 +260,7 @@ main() {
             --network=host \
             --name airbrowser \
             -v "$DATA_DIR/profiles:/app/browser-profiles" \
-            -v "$DATA_DIR/screenshots:/tmp/screenshots" \
+            -v "$DATA_DIR/screenshots:/app/screenshots" \
             -v "$DATA_DIR/downloads:/app/downloads" \
             $ENV_ARGS \
             airbrowser:latest
@@ -292,6 +296,10 @@ case "${1:-}" in
         echo "  MAX_BROWSERS             Max concurrent browsers (default: 10)"
         echo "  LOG_LEVEL                DEBUG, INFO, WARNING, ERROR (default: INFO)"
         echo "  SCREEN_WIDTH/HEIGHT      Virtual display size (default: 1920x1080)"
+        echo "  SCREENSHOTS_DIR          Screenshot storage directory (default: /app/screenshots)"
+        echo "  SCREENSHOTS_TTL_SECONDS  Screenshot TTL before pruning (default: 3600)"
+        echo "  SCREENSHOTS_MAX_BYTES    Screenshot byte budget before pruning"
+        echo "  SCREENSHOTS_MIN_FREE_BYTES  Required free space before screenshot writes"
         echo ""
         echo "  Create .env file in data directory:"
         echo "    echo 'VISION_API_BASE_URL=https://your-openai-compatible-endpoint/v1' > ~/.local/share/airbrowser/.env"

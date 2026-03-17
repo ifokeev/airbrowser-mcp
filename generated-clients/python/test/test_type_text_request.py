@@ -35,10 +35,10 @@ class TestTypeTextRequest(unittest.TestCase):
         model = TypeTextRequest()
         if include_optional:
             return TypeTextRequest(
+                by = 'css',
                 selector = '',
                 text = '',
-                timeout = '',
-                by = 'css'
+                timeout = 56
             )
         else:
             return TypeTextRequest(

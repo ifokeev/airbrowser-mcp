@@ -35,12 +35,12 @@ class TestSelectRequest(unittest.TestCase):
         model = SelectRequest()
         if include_optional:
             return SelectRequest(
-                selector = '',
-                by = 'css',
                 action = 'select',
-                value = '',
+                by = 'css',
+                index = 56,
+                selector = '',
                 text = '',
-                index = 56
+                value = ''
             )
         else:
             return SelectRequest(

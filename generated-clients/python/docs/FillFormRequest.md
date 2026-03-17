@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**fields** | **List[object]** | fields | 
 **by** | **str** | by | [optional] [default to 'css']
+**fields** | **List[object]** | fields | 
 
 ## Example
 

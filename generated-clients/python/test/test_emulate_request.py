@@ -37,11 +37,11 @@ class TestEmulateRequest(unittest.TestCase):
             return EmulateRequest(
                 action = 'set',
                 device = '',
-                width = '',
-                height = '',
-                device_scale_factor = '',
-                mobile = '',
-                user_agent = ''
+                device_scale_factor = 1.337,
+                height = 56,
+                mobile = True,
+                user_agent = '',
+                width = 56
             )
         else:
             return EmulateRequest(

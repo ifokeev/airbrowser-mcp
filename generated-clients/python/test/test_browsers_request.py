@@ -35,11 +35,12 @@ class TestBrowsersRequest(unittest.TestCase):
         model = BrowsersRequest()
         if include_optional:
             return BrowsersRequest(
-                action = ''
+                action = 'list',
+                browser_id = ''
             )
         else:
             return BrowsersRequest(
-                action = '',
+                action = 'list',
         )
         """
 

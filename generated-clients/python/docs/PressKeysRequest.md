@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**selector** | **str** | selector | 
-**keys** | **str** | keys | 
 **by** | **str** | by | [optional] [default to 'css']
+**keys** | **str** | keys | 
+**selector** | **str** | selector | 
 
 ## Example
 

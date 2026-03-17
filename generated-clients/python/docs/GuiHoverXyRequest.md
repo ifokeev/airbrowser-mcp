@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**timeframe** | **float** | timeframe | [optional] 
 **x** | **float** | x | 
 **y** | **float** | y | 
-**timeframe** | **float** | timeframe | [optional] 
 
 ## Example
 

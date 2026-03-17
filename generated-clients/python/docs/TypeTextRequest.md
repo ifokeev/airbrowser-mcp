@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**by** | **str** | by | [optional] [default to 'css']
 **selector** | **str** | selector | 
 **text** | **str** | text | 
 **timeout** | **int** | timeout | [optional] 
-**by** | **str** | by | [optional] [default to 'css']
 
 ## Example
 

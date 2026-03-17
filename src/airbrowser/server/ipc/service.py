@@ -16,6 +16,7 @@ from typing import Any
 sys.path.insert(0, "/app/src")
 
 from airbrowser.server.services.state_manager import StateManager
+from airbrowser.server.utils.screenshots import prune_screenshots
 
 # Set display before importing SeleniumBase
 os.environ["DISPLAY"] = ":99"
@@ -280,6 +281,7 @@ class BrowserService:
 
         # Clean up old files
         self._cleanup_old_files()
+        prune_screenshots()
 
         # Session restore on startup
         self.session_restore_enabled = _env_truthy("ENABLE_SESSION_RESTORE", default=True)

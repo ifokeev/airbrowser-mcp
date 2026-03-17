@@ -21,20 +21,22 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, Stri
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class ProfileInfo(BaseModel):
     """
     ProfileInfo
     """ # noqa: E501
+    in_use: Optional[StrictBool] = Field(default=None, description="Whether profile is currently in use by a browser")
+    last_used: Optional[StrictStr] = Field(default=None, description="Last used timestamp (ISO format)")
     name: Optional[StrictStr] = Field(default=None, description="Profile name")
     path: Optional[StrictStr] = Field(default=None, description="Profile storage path")
     size_mb: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Profile size in MB")
-    last_used: Optional[StrictStr] = Field(default=None, description="Last used timestamp (ISO format)")
-    in_use: Optional[StrictBool] = Field(default=None, description="Whether profile is currently in use by a browser")
-    __properties: ClassVar[List[str]] = ["name", "path", "size_mb", "last_used", "in_use"]
+    __properties: ClassVar[List[str]] = ["in_use", "last_used", "name", "path", "size_mb"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -46,8 +48,7 @@ class ProfileInfo(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -84,11 +85,11 @@ class ProfileInfo(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "in_use": obj.get("in_use"),
+            "last_used": obj.get("last_used"),
             "name": obj.get("name"),
             "path": obj.get("path"),
-            "size_mb": obj.get("size_mb"),
-            "last_used": obj.get("last_used"),
-            "in_use": obj.get("in_use")
+            "size_mb": obj.get("size_mb")
         })
         return _obj
 

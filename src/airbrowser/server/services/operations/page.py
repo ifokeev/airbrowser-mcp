@@ -26,7 +26,7 @@ class PageOperations:
             screenshot_url = None
             if isinstance(result.data, dict):
                 # Return URL only (path is internal Docker path, not accessible externally)
-                screenshot_url = result.data.get("url") or result.data.get("screenshot_url")
+                screenshot_url = result.data.get("url")
 
             return _success(
                 data={"screenshot_url": screenshot_url},

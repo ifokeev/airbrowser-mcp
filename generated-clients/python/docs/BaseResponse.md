@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**success** | **bool** | Operation success | 
 **message** | **str** | Status message | 
+**success** | **bool** | Operation success | 
 **timestamp** | **float** | Unix timestamp | 
 
 ## Example

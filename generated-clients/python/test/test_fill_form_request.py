@@ -35,19 +35,15 @@ class TestFillFormRequest(unittest.TestCase):
         model = FillFormRequest()
         if include_optional:
             return FillFormRequest(
+                by = 'css',
                 fields = [
-                    airbrowser_client.models.form_field.FormField(
-                        selector = '', 
-                        value = '', )
-                    ],
-                by = 'css'
+                    None
+                    ]
             )
         else:
             return FillFormRequest(
                 fields = [
-                    airbrowser_client.models.form_field.FormField(
-                        selector = '', 
-                        value = '', )
+                    None
                     ],
         )
         """

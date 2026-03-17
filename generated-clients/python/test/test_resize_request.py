@@ -35,13 +35,13 @@ class TestResizeRequest(unittest.TestCase):
         model = ResizeRequest()
         if include_optional:
             return ResizeRequest(
-                width = 56,
-                height = 56
+                height = 56,
+                width = 56
             )
         else:
             return ResizeRequest(
-                width = 56,
                 height = 56,
+                width = 56,
         )
         """
 

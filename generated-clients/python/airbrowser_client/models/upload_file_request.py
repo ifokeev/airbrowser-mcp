@@ -21,18 +21,20 @@ from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class UploadFileRequest(BaseModel):
     """
     UploadFileRequest
     """ # noqa: E501
-    selector: StrictStr = Field(description="selector")
-    file_path: StrictStr = Field(description="file_path")
     by: Optional[StrictStr] = Field(default='css', description="by")
-    __properties: ClassVar[List[str]] = ["selector", "file_path", "by"]
+    file_path: StrictStr = Field(description="file_path")
+    selector: StrictStr = Field(description="selector")
+    __properties: ClassVar[List[str]] = ["by", "file_path", "selector"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -44,8 +46,7 @@ class UploadFileRequest(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -82,9 +83,9 @@ class UploadFileRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "selector": obj.get("selector"),
+            "by": obj.get("by") if obj.get("by") is not None else 'css',
             "file_path": obj.get("file_path"),
-            "by": obj.get("by") if obj.get("by") is not None else 'css'
+            "selector": obj.get("selector")
         })
         return _obj
 

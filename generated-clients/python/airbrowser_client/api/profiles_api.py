@@ -1,5 +1,3 @@
-# coding: utf-8
-
 """
     Airbrowser API
 
@@ -10,6 +8,7 @@
 
     Do not edit the class manually.
 """  # noqa: E501
+
 
 import warnings
 from pydantic import validate_call, Field, StrictFloat, StrictStr, StrictInt
@@ -93,8 +92,8 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '400': None,
             '200': "ProfileResponse",
+            '400': None,
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -160,8 +159,8 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '400': None,
             '200': "ProfileResponse",
+            '400': None,
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -227,8 +226,8 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '400': None,
             '200': "ProfileResponse",
+            '400': None,
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -366,9 +365,9 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '404': None,
-            '400': None,
             '200': None,
+            '400': None,
+            '404': None,
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -434,9 +433,9 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '404': None,
-            '400': None,
             '200': None,
+            '400': None,
+            '404': None,
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -502,9 +501,9 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '404': None,
-            '400': None,
             '200': None,
+            '400': None,
+            '404': None,
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -622,8 +621,8 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '404': None,
             '200': "ProfileResponse",
+            '404': None,
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -689,8 +688,8 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '404': None,
             '200': "ProfileResponse",
+            '404': None,
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -756,8 +755,8 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '404': None,
             '200': "ProfileResponse",
+            '404': None,
         }
         response_data = self.api_client.call_api(
             *_param,

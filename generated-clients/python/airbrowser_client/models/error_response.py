@@ -21,18 +21,20 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, Stri
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class ErrorResponse(BaseModel):
     """
     ErrorResponse
     """ # noqa: E501
-    success: Optional[StrictBool] = Field(default=False, description="Operation success (false)")
     message: Optional[StrictStr] = Field(default=None, description="Error message")
+    success: Optional[StrictBool] = Field(default=False, description="Operation success (false)")
     timestamp: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Unix timestamp")
-    __properties: ClassVar[List[str]] = ["success", "message", "timestamp"]
+    __properties: ClassVar[List[str]] = ["message", "success", "timestamp"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -44,8 +46,7 @@ class ErrorResponse(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -82,8 +83,8 @@ class ErrorResponse(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "success": obj.get("success") if obj.get("success") is not None else False,
             "message": obj.get("message"),
+            "success": obj.get("success") if obj.get("success") is not None else False,
             "timestamp": obj.get("timestamp")
         })
         return _obj

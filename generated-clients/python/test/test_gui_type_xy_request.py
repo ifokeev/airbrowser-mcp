@@ -35,16 +35,16 @@ class TestGuiTypeXyRequest(unittest.TestCase):
         model = GuiTypeXyRequest()
         if include_optional:
             return GuiTypeXyRequest(
-                x = 1.337,
-                y = 1.337,
                 text = '',
-                timeframe = 1.337
+                timeframe = 1.337,
+                x = 1.337,
+                y = 1.337
             )
         else:
             return GuiTypeXyRequest(
+                text = '',
                 x = 1.337,
                 y = 1.337,
-                text = '',
         )
         """
 

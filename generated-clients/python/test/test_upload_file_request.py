@@ -35,14 +35,14 @@ class TestUploadFileRequest(unittest.TestCase):
         model = UploadFileRequest()
         if include_optional:
             return UploadFileRequest(
-                selector = '',
+                by = 'css',
                 file_path = '',
-                by = 'css'
+                selector = ''
             )
         else:
             return UploadFileRequest(
-                selector = '',
                 file_path = '',
+                selector = '',
         )
         """
 

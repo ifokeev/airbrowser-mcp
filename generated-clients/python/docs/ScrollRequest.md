@@ -5,13 +5,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**behavior** | **str** | behavior | [optional] [default to 'smooth']
+**by** | **str** | by | [optional] [default to 'css']
+**delta_x** | **int** | delta_x | [optional] 
+**delta_y** | **int** | delta_y | [optional] 
 **selector** | **str** | selector | [optional] 
 **x** | **int** | x | [optional] 
 **y** | **int** | y | [optional] 
-**delta_x** | **int** | delta_x | [optional] 
-**delta_y** | **int** | delta_y | [optional] 
-**behavior** | **str** | behavior | [optional] [default to 'smooth']
-**by** | **str** | by | [optional] [default to 'css']
 
 ## Example
 

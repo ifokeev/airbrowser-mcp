@@ -21,19 +21,21 @@ from pydantic import BaseModel, ConfigDict, Field, StrictInt, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
+from pydantic_core import to_jsonable_python
 
 class TypeTextRequest(BaseModel):
     """
     TypeTextRequest
     """ # noqa: E501
+    by: Optional[StrictStr] = Field(default='css', description="by")
     selector: StrictStr = Field(description="selector")
     text: StrictStr = Field(description="text")
     timeout: Optional[StrictInt] = Field(default=None, description="timeout")
-    by: Optional[StrictStr] = Field(default='css', description="by")
-    __properties: ClassVar[List[str]] = ["selector", "text", "timeout", "by"]
+    __properties: ClassVar[List[str]] = ["by", "selector", "text", "timeout"]
 
     model_config = ConfigDict(
-        populate_by_name=True,
+        validate_by_name=True,
+        validate_by_alias=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
@@ -45,8 +47,7 @@ class TypeTextRequest(BaseModel):
 
     def to_json(self) -> str:
         """Returns the JSON representation of the model using alias"""
-        # TODO: pydantic v2: use .model_dump_json(by_alias=True, exclude_unset=True) instead
-        return json.dumps(self.to_dict())
+        return json.dumps(to_jsonable_python(self.to_dict()))
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
@@ -83,10 +84,10 @@ class TypeTextRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "by": obj.get("by") if obj.get("by") is not None else 'css',
             "selector": obj.get("selector"),
             "text": obj.get("text"),
-            "timeout": obj.get("timeout"),
-            "by": obj.get("by") if obj.get("by") is not None else 'css'
+            "timeout": obj.get("timeout")
         })
         return _obj
 

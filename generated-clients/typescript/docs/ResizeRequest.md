@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**width** | **number** | width | [default to undefined]
 **height** | **number** | height | [default to undefined]
+**width** | **number** | width | [default to undefined]
 
 ## Example
 
@@ -14,8 +14,8 @@ Name | Type | Description | Notes
 import { ResizeRequest } from 'airbrowser-client';
 
 const instance: ResizeRequest = {
-    width,
     height,
+    width,
 };
 ```
 

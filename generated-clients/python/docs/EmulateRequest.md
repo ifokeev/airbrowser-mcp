@@ -7,11 +7,11 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **action** | **str** | action | [optional] [default to 'set']
 **device** | **str** | device | [optional] 
-**width** | **int** | width | [optional] 
-**height** | **int** | height | [optional] 
 **device_scale_factor** | **float** | device_scale_factor | [optional] 
+**height** | **int** | height | [optional] 
 **mobile** | **bool** | mobile | [optional] 
 **user_agent** | **str** | user_agent | [optional] 
+**width** | **int** | width | [optional] 
 
 ## Example
 

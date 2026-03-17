@@ -1,6 +1,10 @@
 import asyncio
+import os
+from pathlib import Path
 
 import pytest
+from flask import Flask
+from flask_restx import Api
 
 import airbrowser.server.app as app_module
 import airbrowser.server.browser.commands.vision as vision_commands
@@ -8,6 +12,9 @@ import airbrowser.server.services.browser_pool as browser_pool_module
 from airbrowser.server.mcp.integration import MCPIntegration
 from airbrowser.server.mcp.tool_descriptions import TOOL_DESCRIPTIONS
 from airbrowser.server.models import ActionResult, BrowserAction
+from airbrowser.server.schemas.browser import register_browser_schemas
+from airbrowser.server.schemas.responses import register_response_schemas
+from airbrowser.server.services.operations.page import PageOperations
 from airbrowser.server.services.operations.pool import PoolOperations
 from airbrowser.server.vision.config import load_vision_settings, vision_is_enabled
 from airbrowser.server.vision.openai_compatible import OpenAICompatibleVisionClient
@@ -86,6 +93,14 @@ class CapturingIPCClient:
     def execute_command(self, browser_id: str, command: str, **kwargs):
         self.calls.append((browser_id, command, kwargs))
 
+        if command == "screenshot":
+            return {
+                "status": "success",
+                "url": "http://localhost:18080/screenshots/example.png",
+                "path": "/app/screenshots/example.png",
+                "filename": "example.png",
+            }
+
         if command == "detect_coordinates":
             return {
                 "status": "success",
@@ -102,6 +117,16 @@ class CapturingIPCClient:
             }
 
         raise AssertionError(f"Unexpected command: {command}")
+
+
+class StaticBrowserPool:
+    def __init__(self, result: ActionResult):
+        self.result = result
+        self.actions = []
+
+    def execute_action(self, browser_id: str, action):
+        self.actions.append((browser_id, action))
+        return self.result
 
 
 @pytest.fixture
@@ -285,6 +310,44 @@ def test_browser_pool_what_is_visible_forwards_model_to_ipc(browser_pool_adapter
     )
 
 
+def test_browser_pool_screenshot_uses_command_response_url(browser_pool_adapter):
+    adapter, ipc_client = browser_pool_adapter
+
+    result = adapter.execute_action("browser-123", BrowserAction(action="screenshot"))
+
+    assert ipc_client.calls[-1] == ("browser-123", "screenshot", {})
+    assert result.success is True
+    assert result.data == {
+        "status": "success",
+        "url": "http://localhost:18080/screenshots/example.png",
+        "path": "/app/screenshots/example.png",
+        "filename": "example.png",
+    }
+
+
+def test_action_result_to_dict_excludes_legacy_screenshot_path():
+    result = ActionResult(success=True, message="ok", data={"screenshot_url": "http://shot"})
+
+    assert "screenshot_path" not in result.to_dict()
+
+
+def test_page_operations_take_screenshot_ignores_legacy_screenshot_url_only_payload():
+    operation = PageOperations(
+        StaticBrowserPool(
+            ActionResult(
+                success=True,
+                message="Screenshot captured",
+                data={"screenshot_url": "http://localhost:18080/screenshots/legacy.png"},
+            )
+        )
+    )
+
+    result = operation.take_screenshot("browser-123")
+
+    assert result["success"] is True
+    assert result["data"]["screenshot_url"] is None
+
+
 def test_detect_coordinates_route_accepts_and_threads_model_override(browser_route_client):
     client, browser_pool = browser_route_client
 
@@ -354,6 +417,41 @@ def test_what_is_visible_openapi_requires_request_body(browser_route_client):
             "schema": {"$ref": "#/definitions/WhatIsVisibleRequest"},
         }
     ]
+
+
+def test_schema_models_exclude_legacy_screenshot_path():
+    api = Api(Flask(__name__))
+    browser_schemas = register_browser_schemas(api)
+    response_schemas = register_response_schemas(api)
+
+    assert "screenshot_path" not in browser_schemas["DetectCoordinatesResult"].__schema__["properties"]
+    assert "screenshot_path" not in browser_schemas["WhatIsVisibleResult"].__schema__["properties"]
+    assert "screenshot_path" not in api.models["ScreenshotData"].__schema__["properties"]
+    assert "data" in response_schemas["ScreenshotResponse"].__schema__["properties"]
+
+
+def test_serve_screenshot_uses_configured_directory_and_touches_file(monkeypatch, tmp_path):
+    monkeypatch.setenv("ENABLE_MCP", "false")
+    monkeypatch.setenv("SCREENSHOTS_DIR", str(tmp_path))
+    monkeypatch.setattr(app_module, "BrowserPoolAdapter", CapturingBrowserPool)
+    filename = "serve-screenshot-hermetic.png"
+    configured_bytes = b"configured-shot"
+    legacy_bytes = b"legacy-shot"
+    image = tmp_path / filename
+    image.write_bytes(configured_bytes)
+    before = image.stat().st_mtime - 10
+    os.utime(image, (before, before))
+    legacy_dir = Path("/tmp/screenshots")
+    legacy_dir.mkdir(parents=True, exist_ok=True)
+    (legacy_dir / filename).write_bytes(legacy_bytes)
+
+    app, _ = app_module.create_app()
+    client = app.test_client()
+    response = client.get(f"/screenshots/{filename}")
+
+    assert response.status_code == 200
+    assert response.data == configured_bytes
+    assert image.stat().st_mtime > before
 
 
 def test_handle_what_is_visible_returns_generic_error_when_unconfigured(monkeypatch):

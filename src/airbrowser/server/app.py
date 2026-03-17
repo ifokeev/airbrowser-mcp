@@ -11,6 +11,7 @@ from werkzeug.exceptions import HTTPException
 from .mcp.integration import MCPIntegration
 from .services.browser_operations import BrowserOperations
 from .services.browser_pool import BrowserPoolAdapter
+from .utils.screenshots import get_screenshot_dir, touch_screenshot
 
 
 def _env_truthy(name: str, default: bool = False) -> bool:
@@ -143,14 +144,11 @@ def create_app():
 </html>"""
         return swagger_ui_html
 
-    # Screenshots route - serve screenshots publicly
-    SCREENSHOT_DIR = "/tmp/screenshots"
-    os.makedirs(SCREENSHOT_DIR, exist_ok=True)
-
     @app.route("/screenshots/<path:filename>")
     def serve_screenshot(filename):
         """Serve screenshot files."""
-        return send_from_directory(SCREENSHOT_DIR, filename)
+        touch_screenshot(filename)
+        return send_from_directory(get_screenshot_dir(), filename)
 
     # Simple health endpoint for Docker healthcheck
     @app.route("/health")

@@ -6,10 +6,10 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **action** | **str** | action | 
+**by** | **str** | by | [optional] [default to 'css']
 **selector** | **str** | selector | [optional] 
 **source** | **str** | source | [optional] 
 **target** | **str** | target | [optional] 
-**by** | **str** | by | [optional] [default to 'css']
 
 ## Example
 
