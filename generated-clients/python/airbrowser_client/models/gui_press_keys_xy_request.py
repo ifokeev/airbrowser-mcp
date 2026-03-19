@@ -27,11 +27,11 @@ class GuiPressKeysXyRequest(BaseModel):
     """
     GuiPressKeysXyRequest
     """ # noqa: E501
-    keys: StrictStr = Field(description="keys")
-    timeframe: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="timeframe")
     x: Union[StrictFloat, StrictInt] = Field(description="x")
     y: Union[StrictFloat, StrictInt] = Field(description="y")
-    __properties: ClassVar[List[str]] = ["keys", "timeframe", "x", "y"]
+    keys: StrictStr = Field(description="keys")
+    timeframe: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="timeframe")
+    __properties: ClassVar[List[str]] = ["x", "y", "keys", "timeframe"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -84,11 +84,9 @@ class GuiPressKeysXyRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "keys": obj.get("keys"),
-            "timeframe": obj.get("timeframe"),
             "x": obj.get("x"),
-            "y": obj.get("y")
+            "y": obj.get("y"),
+            "keys": obj.get("keys"),
+            "timeframe": obj.get("timeframe")
         })
         return _obj
-
-

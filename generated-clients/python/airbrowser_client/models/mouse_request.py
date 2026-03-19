@@ -28,11 +28,11 @@ class MouseRequest(BaseModel):
     MouseRequest
     """ # noqa: E501
     action: StrictStr = Field(description="action")
-    by: Optional[StrictStr] = Field(default='css', description="by")
     selector: Optional[StrictStr] = Field(default=None, description="selector")
     source: Optional[StrictStr] = Field(default=None, description="source")
     target: Optional[StrictStr] = Field(default=None, description="target")
-    __properties: ClassVar[List[str]] = ["action", "by", "selector", "source", "target"]
+    by: Optional[StrictStr] = Field(default='css', description="by")
+    __properties: ClassVar[List[str]] = ["action", "selector", "source", "target", "by"]
 
     @field_validator('action')
     def action_validate_enum(cls, value):
@@ -93,11 +93,9 @@ class MouseRequest(BaseModel):
 
         _obj = cls.model_validate({
             "action": obj.get("action"),
-            "by": obj.get("by") if obj.get("by") is not None else 'css',
             "selector": obj.get("selector"),
             "source": obj.get("source"),
-            "target": obj.get("target")
+            "target": obj.get("target"),
+            "by": obj.get("by") if obj.get("by") is not None else 'css'
         })
         return _obj
-
-

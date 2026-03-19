@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**data** | [**ScaleData**](ScaleData.md) | Scale result | [optional] [default to undefined]
-**message** | **string** | Status message | [default to undefined]
 **success** | **boolean** | Operation success | [default to undefined]
+**message** | **string** | Status message | [default to undefined]
 **timestamp** | **number** | Unix timestamp | [default to undefined]
+**data** | [**ScaleData**](ScaleData.md) | Scale result | [optional] [default to undefined]
 
 ## Example
 
@@ -16,10 +16,10 @@ Name | Type | Description | Notes
 import { PoolScaled } from 'airbrowser-client';
 
 const instance: PoolScaled = {
-    data,
-    message,
     success,
+    message,
     timestamp,
+    data,
 };
 ```
 

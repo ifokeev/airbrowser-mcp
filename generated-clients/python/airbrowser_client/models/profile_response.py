@@ -28,11 +28,11 @@ class ProfileResponse(BaseModel):
     """
     ProfileResponse
     """ # noqa: E501
-    data: Optional[ProfileInfo] = None
-    message: Optional[StrictStr] = Field(default=None, description="Status message")
     success: Optional[StrictBool] = Field(default=None, description="Operation success")
+    message: Optional[StrictStr] = Field(default=None, description="Status message")
     timestamp: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Unix timestamp")
-    __properties: ClassVar[List[str]] = ["data", "message", "success", "timestamp"]
+    data: Optional[ProfileInfo] = None
+    __properties: ClassVar[List[str]] = ["success", "message", "timestamp", "data"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -88,11 +88,9 @@ class ProfileResponse(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "data": ProfileInfo.from_dict(obj["data"]) if obj.get("data") is not None else None,
-            "message": obj.get("message"),
             "success": obj.get("success"),
-            "timestamp": obj.get("timestamp")
+            "message": obj.get("message"),
+            "timestamp": obj.get("timestamp"),
+            "data": ProfileInfo.from_dict(obj["data"]) if obj.get("data") is not None else None
         })
         return _obj
-
-

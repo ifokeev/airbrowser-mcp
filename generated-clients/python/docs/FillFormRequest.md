@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**fields** | **List[object]** | fields |
 **by** | **str** | by | [optional] [default to 'css']
-**fields** | **List[object]** | fields | 
 
 ## Example
 
@@ -26,5 +26,3 @@ fill_form_request_dict = fill_form_request_instance.to_dict()
 fill_form_request_from_dict = FillFormRequest.from_dict(fill_form_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

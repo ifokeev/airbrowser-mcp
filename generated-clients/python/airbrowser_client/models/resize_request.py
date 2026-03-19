@@ -27,9 +27,9 @@ class ResizeRequest(BaseModel):
     """
     ResizeRequest
     """ # noqa: E501
-    height: StrictInt = Field(description="height")
     width: StrictInt = Field(description="width")
-    __properties: ClassVar[List[str]] = ["height", "width"]
+    height: StrictInt = Field(description="height")
+    __properties: ClassVar[List[str]] = ["width", "height"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -82,9 +82,7 @@ class ResizeRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "height": obj.get("height"),
-            "width": obj.get("width")
+            "width": obj.get("width"),
+            "height": obj.get("height")
         })
         return _obj
-
-

@@ -5,10 +5,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**fx** | **number** | fx | [optional] [default to undefined]
-**fy** | **number** | fy | [optional] [default to undefined]
-**model** | **string** | model | [optional] [default to undefined]
-**prompt** | **string** | prompt | [default to undefined]
+**prompt** | **string** | Natural language description of element to find | [default to undefined]
+**fx** | **number** | Relative X (0..1) within the detected element | [optional] [default to undefined]
+**fy** | **number** | Relative Y (0..1) within the detected element | [optional] [default to undefined]
+**model** | **string** | Optional vision model override for this request | [optional] [default to undefined]
+**hit_test** | **string** | Detect-time validation mode | [optional] [default to HitTestEnum_Off]
+**auto_snap** | **string** | Auto-snap mode for nearby targets | [optional] [default to AutoSnapEnum_Off]
+**snap_radius** | **number** | Maximum snap radius in CSS pixels | [optional] [default to undefined]
+**include_debug** | **boolean** | Include smart-targeting debug details | [optional] [default to false]
 
 ## Example
 
@@ -16,10 +20,14 @@ Name | Type | Description | Notes
 import { DetectCoordinatesRequest } from 'airbrowser-client';
 
 const instance: DetectCoordinatesRequest = {
+    prompt,
     fx,
     fy,
     model,
-    prompt,
+    hit_test,
+    auto_snap,
+    snap_radius,
+    include_debug,
 };
 ```
 

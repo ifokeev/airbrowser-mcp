@@ -29,12 +29,12 @@ class EmulateRequest(BaseModel):
     """ # noqa: E501
     action: Optional[StrictStr] = Field(default='set', description="action")
     device: Optional[StrictStr] = Field(default=None, description="device")
-    device_scale_factor: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="device_scale_factor")
+    width: Optional[StrictInt] = Field(default=None, description="width")
     height: Optional[StrictInt] = Field(default=None, description="height")
+    device_scale_factor: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="device_scale_factor")
     mobile: Optional[StrictBool] = Field(default=None, description="mobile")
     user_agent: Optional[StrictStr] = Field(default=None, description="user_agent")
-    width: Optional[StrictInt] = Field(default=None, description="width")
-    __properties: ClassVar[List[str]] = ["action", "device", "device_scale_factor", "height", "mobile", "user_agent", "width"]
+    __properties: ClassVar[List[str]] = ["action", "device", "width", "height", "device_scale_factor", "mobile", "user_agent"]
 
     @field_validator('action')
     def action_validate_enum(cls, value):
@@ -99,12 +99,10 @@ class EmulateRequest(BaseModel):
         _obj = cls.model_validate({
             "action": obj.get("action") if obj.get("action") is not None else 'set',
             "device": obj.get("device"),
-            "device_scale_factor": obj.get("device_scale_factor"),
+            "width": obj.get("width"),
             "height": obj.get("height"),
+            "device_scale_factor": obj.get("device_scale_factor"),
             "mobile": obj.get("mobile"),
-            "user_agent": obj.get("user_agent"),
-            "width": obj.get("width")
+            "user_agent": obj.get("user_agent")
         })
         return _obj
-
-

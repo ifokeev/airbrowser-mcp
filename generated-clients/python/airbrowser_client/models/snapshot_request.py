@@ -84,5 +84,3 @@ class SnapshotRequest(BaseModel):
             "snapshot_type": obj.get("snapshot_type") if obj.get("snapshot_type") is not None else 'dom'
         })
         return _obj
-
-

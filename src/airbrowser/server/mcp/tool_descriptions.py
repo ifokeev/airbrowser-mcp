@@ -30,6 +30,12 @@ and uses AI to analyze it, so you don't need to manually download and view scree
 **RECOMMENDED APPROACH**: If AI vision is configured, use this tool to locate elements instead of
 parsing HTML. It's more robust, works on any page, and enables undetectable GUI interactions.
 
+**RECOMMENDED SMART MODE FOR CLICK WORKFLOWS**:
+- `hit_test="strict"` validates the raw vision point before you trust it
+- `auto_snap="nearest_clickable"` recovers when vision lands near the intended control
+- `snap_radius=96` keeps snapping conservative
+- `include_debug=true` returns candidate details when you need to inspect why a point missed
+
 **Workflow - CLICK**: `detect_coordinates` → `gui_click_xy`
 **Workflow - TYPE**: `detect_coordinates` → `gui_type_xy`
 **Workflow - HOVER**: `detect_coordinates` → `gui_hover_xy`
@@ -73,13 +79,25 @@ left of center and avoid hitting the wrong element:
 
 Example: For Google search, use `fx=0.2` to click the text input area, not the camera icon.
 
+When smart targeting runs, keep using the legacy `click_point` for the raw vision output and read
+`resolved_click_point` plus `outcome_status` to decide whether the tool confirmed or corrected the target.
+
 Returns:
 - Bounding box coordinates (x, y, width, height)
 - Recommended click point (calculated using fx, fy offsets)
 - Detection confidence score
 """,
     "gui_click": """
-**GUI CLICK WITH SELECTOR** - Click elements using CSS/XPath selectors with undetectable GUI automation.
+**GUI CLICK WITH SELECTOR OR COORDINATES** - Click using selectors or screen coordinates with optional smart validation.
+
+**RECOMMENDED SMART MODE**:
+- `pre_click_validate="strict"` checks the click target before execution
+- `auto_snap="nearest_clickable"` safely corrects near-miss coordinate clicks
+- `post_click_feedback="auto"` checks for URL, content, focus, or visible-state changes after the click
+- `include_debug=true` exposes precheck and postcheck diagnostics when you need to inspect a miss
+
+Use selector mode when you know the element selector. Use coordinate mode when vision found the point or the page is too large to parse reliably.
+For MCP compatibility, `gui_click_xy` mirrors coordinate-mode `gui_click` with the same smart-click options and response fields.
 
 **SELECTOR SYNTAX**: Use standard CSS selectors or XPath only. Playwright-style selectors
 like `:has-text()` are NOT supported. Examples:
@@ -108,10 +126,18 @@ the actual click, making it undetectable by anti-automation measures.
 **VERIFICATION**: After clicking, use `what_is_visible` to verify the action worked.
 
 **Parameters:**
-- fx, fy: Optional fractional offsets (0.0-1.0) within element to click
+- selector mode: `selector` with optional `fx` / `fy`
+- coordinate mode: `x` / `y` with optional `pre_click_validate`, `auto_snap`, `snap_radius`, `post_click_feedback`
 """,
     "gui_click_xy": """
-**GUI CLICK WITH COORDINATES** - Click at specific screen coordinates using GUI automation.
+**GUI CLICK WITH COORDINATES** - MCP compatibility alias for coordinate-mode `gui_click`.
+
+This alias exists for older agents and docs that still call `gui_click_xy`. It mirrors coordinate-mode `gui_click`, accepts the same smart-click options, and returns the same outcome contract.
+
+**RECOMMENDED SMART MODE**:
+- `pre_click_validate="strict"`
+- `auto_snap="nearest_clickable"`
+- `post_click_feedback="auto"`
 
 **Best for large/complex pages (>100KB HTML)**: When `get_page_content` returns too much data
 to parse effectively, use this coordinate-based approach instead of selector-based clicking.
@@ -125,6 +151,12 @@ to parse effectively, use this coordinate-based approach instead of selector-bas
 - CAPTCHAs in visually complex layouts
 - Dynamic elements without stable selectors
 - Elements that are easier to describe visually than locate in HTML
+
+**Shared coordinate-mode options**:
+- `x`, `y`, `timeframe`
+- `pre_click_validate`, `auto_snap`, `snap_radius`
+- `post_click_feedback`, `post_click_timeout_ms`
+- `return_content`, `content_limit_chars`, `include_debug`
 
 This performs the actual GUI click using PyAutoGUI, making it undetectable by anti-automation systems.
 

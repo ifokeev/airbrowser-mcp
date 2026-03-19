@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**data** | [**ProfileInfo**](ProfileInfo.md) |  | [optional] [default to undefined]
-**message** | **string** | Status message | [optional] [default to undefined]
 **success** | **boolean** | Operation success | [optional] [default to undefined]
+**message** | **string** | Status message | [optional] [default to undefined]
 **timestamp** | **number** | Unix timestamp | [optional] [default to undefined]
+**data** | [**ProfileInfo**](ProfileInfo.md) |  | [optional] [default to undefined]
 
 ## Example
 
@@ -16,10 +16,10 @@ Name | Type | Description | Notes
 import { ProfileResponse } from 'airbrowser-client';
 
 const instance: ProfileResponse = {
-    data,
-    message,
     success,
+    message,
     timestamp,
+    data,
 };
 ```
 

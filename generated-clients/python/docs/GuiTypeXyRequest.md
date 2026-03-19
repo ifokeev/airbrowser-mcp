@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**text** | **str** | text | 
-**timeframe** | **float** | timeframe | [optional] 
-**x** | **float** | x | 
-**y** | **float** | y | 
+**x** | **float** | x |
+**y** | **float** | y |
+**text** | **str** | text |
+**timeframe** | **float** | timeframe | [optional]
 
 ## Example
 
@@ -28,5 +28,3 @@ gui_type_xy_request_dict = gui_type_xy_request_instance.to_dict()
 gui_type_xy_request_from_dict = GuiTypeXyRequest.from_dict(gui_type_xy_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -35,11 +35,11 @@ class TestHealthStatus(unittest.TestCase):
         model = HealthStatus()
         if include_optional:
             return HealthStatus(
-                pool = None,
                 status = '',
-                timestamp = 1.337,
                 version = '',
-                vision_enabled = True
+                vision_enabled = True,
+                pool = None,
+                timestamp = 1.337
             )
         else:
             return HealthStatus(

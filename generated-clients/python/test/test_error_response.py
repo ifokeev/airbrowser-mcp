@@ -35,8 +35,8 @@ class TestErrorResponse(unittest.TestCase):
         model = ErrorResponse()
         if include_optional:
             return ErrorResponse(
-                message = '',
                 success = True,
+                message = '',
                 timestamp = 1.337
             )
         else:

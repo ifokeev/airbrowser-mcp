@@ -92,8 +92,8 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ProfileResponse",
             '400': None,
+            '200': "ProfileResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -159,8 +159,8 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ProfileResponse",
             '400': None,
+            '200': "ProfileResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -226,8 +226,8 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ProfileResponse",
             '400': None,
+            '200': "ProfileResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -365,9 +365,9 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': None,
-            '400': None,
             '404': None,
+            '400': None,
+            '200': None,
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -433,9 +433,9 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': None,
-            '400': None,
             '404': None,
+            '400': None,
+            '200': None,
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -501,9 +501,9 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': None,
-            '400': None,
             '404': None,
+            '400': None,
+            '200': None,
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -621,8 +621,8 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ProfileResponse",
             '404': None,
+            '200': "ProfileResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -688,8 +688,8 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ProfileResponse",
             '404': None,
+            '200': "ProfileResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -755,8 +755,8 @@ class ProfilesApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "ProfileResponse",
             '404': None,
+            '200': "ProfileResponse",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -1066,5 +1066,3 @@ class ProfilesApi:
             _host=_host,
             _request_auth=_request_auth
         )
-
-

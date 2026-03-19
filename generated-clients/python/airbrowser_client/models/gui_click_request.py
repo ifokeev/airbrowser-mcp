@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
@@ -27,13 +27,51 @@ class GuiClickRequest(BaseModel):
     """
     GuiClickRequest
     """ # noqa: E501
-    fx: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="fx")
-    fy: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="fy")
-    selector: Optional[StrictStr] = Field(default=None, description="selector")
-    timeframe: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="timeframe")
-    x: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="x")
-    y: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="y")
-    __properties: ClassVar[List[str]] = ["fx", "fy", "selector", "timeframe", "x", "y"]
+    selector: Optional[StrictStr] = Field(default=None, description="Element selector (CSS or XPath)")
+    x: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Screen X coordinate (coordinate mode)")
+    y: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Screen Y coordinate (coordinate mode)")
+    timeframe: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Mouse move duration (seconds)")
+    fx: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Relative X (0..1) within element to click")
+    fy: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Relative Y (0..1) within element to click")
+    pre_click_validate: Optional[StrictStr] = Field(default='off', description="Pre-click validation mode")
+    auto_snap: Optional[StrictStr] = Field(default='off', description="Auto-snap mode for nearby targets")
+    snap_radius: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Maximum snap radius in CSS pixels")
+    post_click_feedback: Optional[StrictStr] = Field(default='none', description="Post-click feedback mode")
+    post_click_timeout_ms: Optional[StrictInt] = Field(default=None, description="Post-click observation timeout in milliseconds")
+    return_content: Optional[StrictBool] = Field(default=False, description="Include truncated content in post-click feedback")
+    content_limit_chars: Optional[StrictInt] = Field(default=None, description="Maximum returned content length")
+    include_debug: Optional[StrictBool] = Field(default=False, description="Include smart-click debug diagnostics")
+    __properties: ClassVar[List[str]] = ["selector", "x", "y", "timeframe", "fx", "fy", "pre_click_validate", "auto_snap", "snap_radius", "post_click_feedback", "post_click_timeout_ms", "return_content", "content_limit_chars", "include_debug"]
+
+    @field_validator('pre_click_validate')
+    def pre_click_validate_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['off', 'warn', 'strict']):
+            raise ValueError("must be one of enum values ('off', 'warn', 'strict')")
+        return value
+
+    @field_validator('auto_snap')
+    def auto_snap_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['off', 'nearest_clickable', 'nearest_interactive']):
+            raise ValueError("must be one of enum values ('off', 'nearest_clickable', 'nearest_interactive')")
+        return value
+
+    @field_validator('post_click_feedback')
+    def post_click_feedback_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['none', 'url', 'content', 'visible', 'auto']):
+            raise ValueError("must be one of enum values ('none', 'url', 'content', 'visible', 'auto')")
+        return value
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -86,13 +124,19 @@ class GuiClickRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "selector": obj.get("selector"),
+            "x": obj.get("x"),
+            "y": obj.get("y"),
+            "timeframe": obj.get("timeframe"),
             "fx": obj.get("fx"),
             "fy": obj.get("fy"),
-            "selector": obj.get("selector"),
-            "timeframe": obj.get("timeframe"),
-            "x": obj.get("x"),
-            "y": obj.get("y")
+            "pre_click_validate": obj.get("pre_click_validate") if obj.get("pre_click_validate") is not None else 'off',
+            "auto_snap": obj.get("auto_snap") if obj.get("auto_snap") is not None else 'off',
+            "snap_radius": obj.get("snap_radius"),
+            "post_click_feedback": obj.get("post_click_feedback") if obj.get("post_click_feedback") is not None else 'none',
+            "post_click_timeout_ms": obj.get("post_click_timeout_ms"),
+            "return_content": obj.get("return_content") if obj.get("return_content") is not None else False,
+            "content_limit_chars": obj.get("content_limit_chars"),
+            "include_debug": obj.get("include_debug") if obj.get("include_debug") is not None else False
         })
         return _obj
-
-

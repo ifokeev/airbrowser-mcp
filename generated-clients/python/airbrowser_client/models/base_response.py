@@ -27,10 +27,10 @@ class BaseResponse(BaseModel):
     """
     BaseResponse
     """ # noqa: E501
-    message: StrictStr = Field(description="Status message")
     success: StrictBool = Field(description="Operation success")
+    message: StrictStr = Field(description="Status message")
     timestamp: Union[StrictFloat, StrictInt] = Field(description="Unix timestamp")
-    __properties: ClassVar[List[str]] = ["message", "success", "timestamp"]
+    __properties: ClassVar[List[str]] = ["success", "message", "timestamp"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -83,10 +83,8 @@ class BaseResponse(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "message": obj.get("message"),
             "success": obj.get("success"),
+            "message": obj.get("message"),
             "timestamp": obj.get("timestamp")
         })
         return _obj
-
-

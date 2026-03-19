@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**by** | **string** | by | [optional] [default to 'css']
 **selector** | **string** | selector | [default to undefined]
 **text** | **string** | text | [default to undefined]
 **timeout** | **number** | timeout | [optional] [default to undefined]
+**by** | **string** | by | [optional] [default to 'css']
 
 ## Example
 
@@ -16,10 +16,10 @@ Name | Type | Description | Notes
 import { TypeTextRequest } from 'airbrowser-client';
 
 const instance: TypeTextRequest = {
-    by,
     selector,
     text,
     timeout,
+    by,
 };
 ```
 

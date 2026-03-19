@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**message** | **string** | Status message | [default to undefined]
 **success** | **boolean** | Operation success | [default to undefined]
+**message** | **string** | Status message | [default to undefined]
 **timestamp** | **number** | Unix timestamp | [default to undefined]
 
 ## Example
@@ -15,8 +15,8 @@ Name | Type | Description | Notes
 import { BaseResponse } from 'airbrowser-client';
 
 const instance: BaseResponse = {
-    message,
     success,
+    message,
     timestamp,
 };
 ```

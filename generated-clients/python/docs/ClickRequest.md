@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**selector** | **str** | selector |
+**timeout** | **int** | timeout | [optional]
 **by** | **str** | by | [optional] [default to 'css']
 **if_visible** | **bool** | if_visible | [optional] [default to False]
-**selector** | **str** | selector | 
-**timeout** | **int** | timeout | [optional] 
 
 ## Example
 
@@ -28,5 +28,3 @@ click_request_dict = click_request_instance.to_dict()
 click_request_from_dict = ClickRequest.from_dict(click_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

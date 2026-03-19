@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**target_size** | **int** | New maximum number of browsers | 
+**target_size** | **int** | New maximum number of browsers |
 
 ## Example
 
@@ -25,5 +25,3 @@ scale_pool_dict = scale_pool_instance.to_dict()
 scale_pool_from_dict = ScalePool.from_dict(scale_pool_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

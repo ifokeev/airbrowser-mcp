@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**method** | **str** | method | 
-**params** | **object** | params | [optional] 
+**method** | **str** | method |
+**params** | **object** | params | [optional]
 
 ## Example
 
@@ -26,5 +26,3 @@ execute_cdp_request_dict = execute_cdp_request_instance.to_dict()
 execute_cdp_request_from_dict = ExecuteCdpRequest.from_dict(execute_cdp_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

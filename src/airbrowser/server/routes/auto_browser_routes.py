@@ -12,6 +12,8 @@ from typing import Any, get_origin, get_type_hints
 from flask import request
 from flask_restx import Namespace, Resource, fields
 
+from ..services.errors import InvalidOperationParameters
+
 logger = logging.getLogger(__name__)
 
 # Methods to exclude from auto-generation (in separate namespaces)
@@ -31,6 +33,18 @@ PATH_OVERRIDES = {
 }
 
 REQUIRE_EXPLICIT_JSON_BODY = {"what_is_visible"}
+
+REQUEST_SCHEMA_OVERRIDES = {
+    "detect_coordinates": "DetectCoordinatesRequest",
+    "gui_click": "GuiClickRequest",
+    "gui_click_xy": "GuiClickXYRequest",
+}
+
+RESPONSE_SCHEMA_OVERRIDES = {
+    "detect_coordinates": "DetectCoordinatesResult",
+    "gui_click": "GuiClickResult",
+    "gui_click_xy": "GuiClickResult",
+}
 
 
 # Type hint to Flask-RESTX field mapping
@@ -185,16 +199,23 @@ def _create_resource_class(
 
             try:
                 if needs_browser_id:
+                    inspect.signature(method_ref).bind(browser_id, **data)
+                else:
+                    inspect.signature(method_ref).bind(**data)
+            except TypeError as e:
+                return {"success": False, "error": f"Invalid parameters: {str(e)}"}, 400
+
+            try:
+                if needs_browser_id:
                     result = method_ref(browser_id, **data)
                 else:
                     result = method_ref(**data)
                 return result
-            except TypeError as e:
-                # Handle missing required parameters
+            except InvalidOperationParameters as e:
                 return {"success": False, "error": f"Invalid parameters: {str(e)}"}, 400
             except Exception as e:
                 logger.error(f"Auto-route {route_name} error: {e}", exc_info=True)
-                return {"success": False, "error": str(e)}, 400
+                return {"success": False, "error": str(e)}, 500
 
         return handler
 
@@ -285,12 +306,24 @@ def generate_browser_routes(api, browser_ops, existing_schemas: dict[str, Any] |
         else:
             path = f"/{path_name}"
 
-        # Generate request schema
-        request_schema = _generate_request_schema(api, method_name, sig, hints, has_browser_id)
+        request_schema = None
+        if existing_schemas:
+            request_override_name = REQUEST_SCHEMA_OVERRIDES.get(method_name)
+            if request_override_name:
+                request_schema = existing_schemas.get(request_override_name)
+
+        if request_schema is None:
+            request_schema = _generate_request_schema(api, method_name, sig, hints, has_browser_id)
+
+        response_schema = generic_response
+        if existing_schemas:
+            override_name = RESPONSE_SCHEMA_OVERRIDES.get(method_name)
+            if override_name:
+                response_schema = existing_schemas.get(override_name, generic_response)
 
         # Create resource class
         resource_class = _create_resource_class(
-            method_name, method, http_method, has_browser_id, request_schema, ns, generic_response
+            method_name, method, http_method, has_browser_id, request_schema, ns, response_schema
         )
 
         # Register route

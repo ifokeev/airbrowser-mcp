@@ -92,5 +92,3 @@ class ProfileListData(BaseModel):
             "profiles": [ProfileInfo.from_dict(_item) for _item in obj["profiles"]] if obj.get("profiles") is not None else None
         })
         return _obj
-
-

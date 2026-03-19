@@ -93,5 +93,3 @@ class DialogRequest(BaseModel):
             "text": obj.get("text")
         })
         return _obj
-
-

@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**selector** | **str** | selector |
+**until** | **str** | until |
+**timeout** | **int** | timeout | [optional]
 **by** | **str** | by | [optional] [default to 'css']
-**selector** | **str** | selector | 
-**timeout** | **int** | timeout | [optional] 
-**until** | **str** | until | 
 
 ## Example
 
@@ -28,5 +28,3 @@ wait_element_request_dict = wait_element_request_instance.to_dict()
 wait_element_request_from_dict = WaitElementRequest.from_dict(wait_element_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

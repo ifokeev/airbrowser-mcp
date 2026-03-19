@@ -38,7 +38,9 @@ __all__ = [
     "CookiesRequest",
     "CreateBrowserRequest",
     "CreateProfileRequest",
+    "DetectCoordinatesData",
     "DetectCoordinatesRequest",
+    "DetectCoordinatesResult",
     "DialogRequest",
     "EmulateRequest",
     "ErrorResponse",
@@ -46,7 +48,10 @@ __all__ = [
     "ExecuteScriptRequest",
     "FillFormRequest",
     "GenericResponse",
+    "GuiClickData",
     "GuiClickRequest",
+    "GuiClickResult",
+    "GuiClickXYRequest",
     "GuiHoverXyRequest",
     "GuiPressKeysXyRequest",
     "GuiTypeXyRequest",
@@ -101,7 +106,9 @@ from airbrowser_client.models.console_logs_request import ConsoleLogsRequest as 
 from airbrowser_client.models.cookies_request import CookiesRequest as CookiesRequest
 from airbrowser_client.models.create_browser_request import CreateBrowserRequest as CreateBrowserRequest
 from airbrowser_client.models.create_profile_request import CreateProfileRequest as CreateProfileRequest
+from airbrowser_client.models.detect_coordinates_data import DetectCoordinatesData as DetectCoordinatesData
 from airbrowser_client.models.detect_coordinates_request import DetectCoordinatesRequest as DetectCoordinatesRequest
+from airbrowser_client.models.detect_coordinates_result import DetectCoordinatesResult as DetectCoordinatesResult
 from airbrowser_client.models.dialog_request import DialogRequest as DialogRequest
 from airbrowser_client.models.emulate_request import EmulateRequest as EmulateRequest
 from airbrowser_client.models.error_response import ErrorResponse as ErrorResponse
@@ -109,7 +116,10 @@ from airbrowser_client.models.execute_cdp_request import ExecuteCdpRequest as Ex
 from airbrowser_client.models.execute_script_request import ExecuteScriptRequest as ExecuteScriptRequest
 from airbrowser_client.models.fill_form_request import FillFormRequest as FillFormRequest
 from airbrowser_client.models.generic_response import GenericResponse as GenericResponse
+from airbrowser_client.models.gui_click_data import GuiClickData as GuiClickData
 from airbrowser_client.models.gui_click_request import GuiClickRequest as GuiClickRequest
+from airbrowser_client.models.gui_click_result import GuiClickResult as GuiClickResult
+from airbrowser_client.models.gui_click_xy_request import GuiClickXYRequest as GuiClickXYRequest
 from airbrowser_client.models.gui_hover_xy_request import GuiHoverXyRequest as GuiHoverXyRequest
 from airbrowser_client.models.gui_press_keys_xy_request import GuiPressKeysXyRequest as GuiPressKeysXyRequest
 from airbrowser_client.models.gui_type_xy_request import GuiTypeXyRequest as GuiTypeXyRequest
@@ -137,4 +147,3 @@ from airbrowser_client.models.type_text_request import TypeTextRequest as TypeTe
 from airbrowser_client.models.upload_file_request import UploadFileRequest as UploadFileRequest
 from airbrowser_client.models.wait_element_request import WaitElementRequest as WaitElementRequest
 from airbrowser_client.models.what_is_visible_request import WhatIsVisibleRequest as WhatIsVisibleRequest
-

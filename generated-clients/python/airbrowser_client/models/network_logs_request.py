@@ -93,5 +93,3 @@ class NetworkLogsRequest(BaseModel):
             "limit": obj.get("limit")
         })
         return _obj
-
-

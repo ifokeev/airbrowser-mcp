@@ -35,14 +35,14 @@ class TestBaseResponse(unittest.TestCase):
         model = BaseResponse()
         if include_optional:
             return BaseResponse(
-                message = '',
                 success = True,
+                message = '',
                 timestamp = 1.337
             )
         else:
             return BaseResponse(
-                message = '',
                 success = True,
+                message = '',
                 timestamp = 1.337,
         )
         """

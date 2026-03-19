@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **str** | action | 
-**handle** | **str** | handle | [optional] 
-**index** | **int** | index | [optional] 
-**url** | **str** | url | [optional] 
+**action** | **str** | action |
+**url** | **str** | url | [optional]
+**index** | **int** | index | [optional]
+**handle** | **str** | handle | [optional]
 
 ## Example
 
@@ -28,5 +28,3 @@ tabs_request_dict = tabs_request_instance.to_dict()
 tabs_request_from_dict = TabsRequest.from_dict(tabs_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

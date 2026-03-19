@@ -1,9 +1,11 @@
 """Vision-based browser commands using AI models."""
 
 import logging
+import math
 import time
 from typing import Any
 
+from airbrowser.server.browser.smart_targeting import Point, Rect, resolve_detect_target
 from airbrowser.server.utils.screenshots import take_screenshot
 from airbrowser.server.vision.config import load_vision_settings
 from airbrowser.server.vision.coordinates import detect_element_coordinates
@@ -101,6 +103,115 @@ def _transform_to_screen_coords(driver, coords: dict[str, Any], fx: float = 0.5,
     return coords
 
 
+def _point_to_payload(point: Point | None) -> dict[str, int] | None:
+    if point is None:
+        return None
+    return {"x": int(round(point.x)), "y": int(round(point.y))}
+
+
+def _viewport_bbox_from_transform(coords: dict[str, Any]) -> Rect | None:
+    transform_info = coords.get("transform_info") or {}
+    original = transform_info.get("original") or {}
+    scale = transform_info.get("scale") or {}
+    try:
+        return Rect(
+            float(original["x"]) * float(scale["x"]),
+            float(original["y"]) * float(scale["y"]),
+            float(original["w"]) * float(scale["x"]),
+            float(original["h"]) * float(scale["y"]),
+        )
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
+def _hit_test_element_payload(hit_test_result: Any) -> dict[str, Any] | None:
+    if hit_test_result is None:
+        return None
+    return {
+        "tag": hit_test_result.tag,
+        "text": hit_test_result.text,
+        "interactive": hit_test_result.interactive,
+    }
+
+
+def _snap_candidate_payload(candidate: Any) -> dict[str, Any] | None:
+    if candidate is None:
+        return None
+    return {
+        "tag": candidate.tag,
+        "text": candidate.text,
+        "interactive": candidate.interactive,
+    }
+
+
+def _snap_distance_px(resolution: Any) -> float | None:
+    if resolution.snap_candidate is None or resolution.original_viewport_point is None:
+        return None
+    nearest = resolution.snap_candidate.rect.nearest_point(resolution.original_viewport_point)
+    return round(
+        math.hypot(resolution.original_viewport_point.x - nearest.x, resolution.original_viewport_point.y - nearest.y),
+        2,
+    )
+
+
+def _build_resolved_target_payload(resolution: Any) -> dict[str, Any] | None:
+    point = _point_to_payload(resolution.resolved_screen_point)
+    element = _snap_candidate_payload(resolution.snap_candidate) or _hit_test_element_payload(
+        resolution.hit_test_result
+    )
+    if point is None and element is None:
+        return None
+    return {"point": point, "element": element}
+
+
+def _build_snap_result_payload(resolution: Any, strategy: str) -> dict[str, Any]:
+    if resolution.snap_candidate is None:
+        return {
+            "applied": False,
+            "strategy": strategy,
+            "distance_px": None,
+            "snapped_element": None,
+            "snapped_point": None,
+        }
+
+    return {
+        "applied": True,
+        "strategy": strategy,
+        "distance_px": _snap_distance_px(resolution),
+        "snapped_element": _snap_candidate_payload(resolution.snap_candidate),
+        "snapped_point": _point_to_payload(resolution.resolved_screen_point),
+    }
+
+
+def _build_detect_debug_payload(coords: dict[str, Any], resolution: Any) -> dict[str, Any]:
+    debug = {
+        "transform_info": coords.get("transform_info"),
+        "original_viewport_point": _point_to_payload(resolution.original_viewport_point),
+        "resolved_viewport_point": _point_to_payload(resolution.resolved_viewport_point),
+    }
+    if resolution.hit_test_result is not None:
+        debug["hit_test_result"] = {
+            "point": _point_to_payload(resolution.original_screen_point),
+            "viewport_point": _point_to_payload(resolution.hit_test_result.viewport_point),
+            "element": _hit_test_element_payload(resolution.hit_test_result),
+            "reason": resolution.hit_test_result.reason,
+            "reason_detail": resolution.hit_test_result.reason_detail,
+        }
+    if resolution.snap_candidate is not None:
+        debug["snap_candidate"] = _snap_candidate_payload(resolution.snap_candidate)
+    return debug
+
+
+def _build_detect_message(prompt: str, resolution: Any) -> str:
+    if resolution.outcome_status == "snapped_match":
+        return f"Found: {prompt}"
+    if resolution.outcome_status == "exact_match":
+        return f"Found: {prompt}"
+    if resolution.outcome_status == "raw_vision_point":
+        return f"Found: {prompt}"
+    return resolution.reason_detail or resolution.reason or f"Found: {prompt}"
+
+
 def handle_detect_coordinates(driver, command: dict, browser_id: str = "unknown") -> dict:
     """Detect element coordinates using vision AI."""
     prompt = command.get("prompt")
@@ -111,6 +222,10 @@ def handle_detect_coordinates(driver, command: dict, browser_id: str = "unknown"
     fx_explicit = command.get("fx") is not None
     fx = float(command.get("fx", 0.5))
     fy = float(command.get("fy", 0.5))
+    hit_test = command.get("hit_test", "off") or "off"
+    auto_snap = command.get("auto_snap", "off") or "off"
+    snap_radius = float(command.get("snap_radius", 96))
+    include_debug = bool(command.get("include_debug", False))
     # Clamp to valid range
     fx = max(0.0, min(1.0, fx))
     fy = max(0.0, min(1.0, fy))
@@ -135,8 +250,33 @@ def handle_detect_coordinates(driver, command: dict, browser_id: str = "unknown"
                 logger.debug(f"Auto left-bias: aspect_ratio={aspect_ratio:.1f}, using fx={fx}")
 
             coords = _transform_to_screen_coords(driver, coords, fx, fy)
+            raw_click_point = Point(float(coords["click_point"]["x"]), float(coords["click_point"]["y"]))
+            raw_bbox = _viewport_bbox_from_transform(coords)
+            resolution = resolve_detect_target(
+                driver=driver,
+                raw_point=raw_click_point,
+                raw_bbox=raw_bbox,
+                hit_test_mode=hit_test,
+                auto_snap=auto_snap,
+                snap_radius=snap_radius,
+            )
+
+            coords["outcome_status"] = resolution.outcome_status
+            coords["reason"] = resolution.reason
+            coords["reason_detail"] = resolution.reason_detail
+            coords["resolved_target"] = _build_resolved_target_payload(resolution)
+            coords["resolved_click_point"] = _point_to_payload(resolution.resolved_screen_point)
+            coords["snap_result"] = _build_snap_result_payload(resolution, auto_snap)
+            coords["recommended_next_action"] = resolution.recommended_next_action
             coords["screenshot_url"] = screenshot["url"]
-            return {"status": "success", "message": f"Found: {prompt}", "coordinates": coords}
+            if include_debug:
+                coords["debug"] = _build_detect_debug_payload(coords, resolution)
+            return {
+                "status": "success",
+                "success": resolution.success,
+                "message": _build_detect_message(prompt, resolution),
+                "coordinates": coords,
+            }
         else:
             return {
                 "status": "error",

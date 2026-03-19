@@ -84,5 +84,3 @@ class TakeScreenshotRequest(BaseModel):
             "full_page": obj.get("full_page") if obj.get("full_page") is not None else False
         })
         return _obj
-
-

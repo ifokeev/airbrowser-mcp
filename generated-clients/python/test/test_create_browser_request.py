@@ -35,22 +35,22 @@ class TestCreateBrowserRequest(unittest.TestCase):
         model = CreateBrowserRequest()
         if include_optional:
             return CreateBrowserRequest(
-                custom_args = [
-                    ''
+                uc = True,
+                proxy = '',
+                window_size = [
+                    56
                     ],
+                user_agent = '',
                 disable_gpu = True,
                 disable_images = True,
                 disable_javascript = True,
                 extensions = [
                     ''
                     ],
-                profile_name = '',
-                proxy = '',
-                uc = True,
-                user_agent = '',
-                window_size = [
-                    56
-                    ]
+                custom_args = [
+                    ''
+                    ],
+                profile_name = ''
             )
         else:
             return CreateBrowserRequest(

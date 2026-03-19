@@ -73,6 +73,8 @@ Open **http://localhost:18080** - all services available:
 
 Enable AI-powered vision tools (`what_is_visible`, `detect_coordinates`) with any OpenAI-compatible vision backend. Vision turns on only when `VISION_API_BASE_URL`, `VISION_API_KEY`, and `VISION_MODEL` are all set.
 
+When smart targeting is enabled per request, `detect_coordinates` can validate a raw vision point, optionally snap to a nearby clickable target, and return both the original `click_point` and a `resolved_click_point` with an `outcome_status` that tells you whether the result was confirmed, corrected, or needs inspection before clicking. Pair that with `gui_click` or MCP-compatible `gui_click_xy` to re-check coordinate clicks and request post-click feedback.
+
 ```bash
 # Docker run
 docker run -d -p 18080:18080 \

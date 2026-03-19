@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **str** | action | 
-**categories** | **str** | categories | [optional] 
+**action** | **str** | action |
+**categories** | **str** | categories | [optional]
 
 ## Example
 
@@ -26,5 +26,3 @@ performance_request_dict = performance_request_instance.to_dict()
 performance_request_from_dict = PerformanceRequest.from_dict(performance_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

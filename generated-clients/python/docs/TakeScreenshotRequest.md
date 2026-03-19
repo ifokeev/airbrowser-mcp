@@ -25,5 +25,3 @@ take_screenshot_request_dict = take_screenshot_request_instance.to_dict()
 take_screenshot_request_from_dict = TakeScreenshotRequest.from_dict(take_screenshot_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

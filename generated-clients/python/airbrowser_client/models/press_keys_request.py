@@ -27,10 +27,10 @@ class PressKeysRequest(BaseModel):
     """
     PressKeysRequest
     """ # noqa: E501
-    by: Optional[StrictStr] = Field(default='css', description="by")
-    keys: StrictStr = Field(description="keys")
     selector: StrictStr = Field(description="selector")
-    __properties: ClassVar[List[str]] = ["by", "keys", "selector"]
+    keys: StrictStr = Field(description="keys")
+    by: Optional[StrictStr] = Field(default='css', description="by")
+    __properties: ClassVar[List[str]] = ["selector", "keys", "by"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -83,10 +83,8 @@ class PressKeysRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "by": obj.get("by") if obj.get("by") is not None else 'css',
+            "selector": obj.get("selector"),
             "keys": obj.get("keys"),
-            "selector": obj.get("selector")
+            "by": obj.get("by") if obj.get("by") is not None else 'css'
         })
         return _obj
-
-

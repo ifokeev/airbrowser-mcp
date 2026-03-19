@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **str** | action | 
-**text** | **str** | text | [optional] 
+**action** | **str** | action |
+**text** | **str** | text | [optional]
 
 ## Example
 
@@ -26,5 +26,3 @@ dialog_request_dict = dialog_request_instance.to_dict()
 dialog_request_from_dict = DialogRequest.from_dict(dialog_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

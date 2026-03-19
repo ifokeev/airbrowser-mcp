@@ -67,7 +67,7 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    payload = airbrowser_client.BrowsersRequest() # BrowsersRequest | 
+    payload = airbrowser_client.BrowsersRequest() # BrowsersRequest |
 
     try:
         # Admin: list all, get info, or close all browsers
@@ -92,7 +92,7 @@ Class | Method | HTTP request | Description
 *BrowserApi* | [**console_logs**](docs/BrowserApi.md#console_logs) | **POST** /browser/{browser_id}/console_logs | Console logs: get or clear
 *BrowserApi* | [**cookies**](docs/BrowserApi.md#cookies) | **POST** /browser/{browser_id}/cookies | Manage browser cookies
 *BrowserApi* | [**create_browser**](docs/BrowserApi.md#create_browser) | **POST** /browser/create_browser | Create browser instance with optional persistent profile
-*BrowserApi* | [**detect_coordinates**](docs/BrowserApi.md#detect_coordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using vision
+*BrowserApi* | [**detect_coordinates**](docs/BrowserApi.md#detect_coordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using vision with optional smart targeting
 *BrowserApi* | [**dialog**](docs/BrowserApi.md#dialog) | **POST** /browser/{browser_id}/dialog | Dialogs: get, accept, dismiss
 *BrowserApi* | [**emulate**](docs/BrowserApi.md#emulate) | **POST** /browser/{browser_id}/emulate | Emulation: set, clear, list_devices
 *BrowserApi* | [**execute_cdp**](docs/BrowserApi.md#execute_cdp) | **POST** /browser/{browser_id}/execute_cdp | Execute a Chrome DevTools Protocol command
@@ -102,7 +102,8 @@ Class | Method | HTTP request | Description
 *BrowserApi* | [**get_content**](docs/BrowserApi.md#get_content) | **GET** /browser/{browser_id}/get_content | Get page HTML
 *BrowserApi* | [**get_element_data**](docs/BrowserApi.md#get_element_data) | **GET** /browser/{browser_id}/get_element_data | Get element text, attribute, or property
 *BrowserApi* | [**get_url**](docs/BrowserApi.md#get_url) | **GET** /browser/{browser_id}/get_url | Get current URL
-*BrowserApi* | [**gui_click**](docs/BrowserApi.md#gui_click) | **POST** /browser/{browser_id}/gui_click | GUI click by selector or coordinates
+*BrowserApi* | [**gui_click**](docs/BrowserApi.md#gui_click) | **POST** /browser/{browser_id}/gui_click | GUI click by selector or coordinates with smart validation
+*BrowserApi* | [**gui_click_xy**](docs/BrowserApi.md#gui_click_xy) | **POST** /browser/{browser_id}/gui_click_xy | MCP compatibility alias for coordinate-mode &#x60;gui_click&#x60;
 *BrowserApi* | [**gui_hover_xy**](docs/BrowserApi.md#gui_hover_xy) | **POST** /browser/{browser_id}/gui_hover_xy | GUI hover at coordinates
 *BrowserApi* | [**gui_press_keys_xy**](docs/BrowserApi.md#gui_press_keys_xy) | **POST** /browser/{browser_id}/gui_press_keys_xy | Press keys at coordinates (click to focus, then send keys)
 *BrowserApi* | [**gui_type_xy**](docs/BrowserApi.md#gui_type_xy) | **POST** /browser/{browser_id}/gui_type_xy | GUI type at coordinates - clicks then types text
@@ -141,7 +142,9 @@ Class | Method | HTTP request | Description
  - [CookiesRequest](docs/CookiesRequest.md)
  - [CreateBrowserRequest](docs/CreateBrowserRequest.md)
  - [CreateProfileRequest](docs/CreateProfileRequest.md)
+ - [DetectCoordinatesData](docs/DetectCoordinatesData.md)
  - [DetectCoordinatesRequest](docs/DetectCoordinatesRequest.md)
+ - [DetectCoordinatesResult](docs/DetectCoordinatesResult.md)
  - [DialogRequest](docs/DialogRequest.md)
  - [EmulateRequest](docs/EmulateRequest.md)
  - [ErrorResponse](docs/ErrorResponse.md)
@@ -149,7 +152,10 @@ Class | Method | HTTP request | Description
  - [ExecuteScriptRequest](docs/ExecuteScriptRequest.md)
  - [FillFormRequest](docs/FillFormRequest.md)
  - [GenericResponse](docs/GenericResponse.md)
+ - [GuiClickData](docs/GuiClickData.md)
  - [GuiClickRequest](docs/GuiClickRequest.md)
+ - [GuiClickResult](docs/GuiClickResult.md)
+ - [GuiClickXYRequest](docs/GuiClickXYRequest.md)
  - [GuiHoverXyRequest](docs/GuiHoverXyRequest.md)
  - [GuiPressKeysXyRequest](docs/GuiPressKeysXyRequest.md)
  - [GuiTypeXyRequest](docs/GuiTypeXyRequest.md)
@@ -186,7 +192,3 @@ Endpoints do not require authorization.
 
 
 ## Author
-
-
-
-

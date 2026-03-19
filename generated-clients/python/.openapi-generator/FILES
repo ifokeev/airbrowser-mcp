@@ -22,7 +22,9 @@ airbrowser_client/models/console_logs_request.py
 airbrowser_client/models/cookies_request.py
 airbrowser_client/models/create_browser_request.py
 airbrowser_client/models/create_profile_request.py
+airbrowser_client/models/detect_coordinates_data.py
 airbrowser_client/models/detect_coordinates_request.py
+airbrowser_client/models/detect_coordinates_result.py
 airbrowser_client/models/dialog_request.py
 airbrowser_client/models/emulate_request.py
 airbrowser_client/models/error_response.py
@@ -30,7 +32,10 @@ airbrowser_client/models/execute_cdp_request.py
 airbrowser_client/models/execute_script_request.py
 airbrowser_client/models/fill_form_request.py
 airbrowser_client/models/generic_response.py
+airbrowser_client/models/gui_click_data.py
 airbrowser_client/models/gui_click_request.py
+airbrowser_client/models/gui_click_result.py
+airbrowser_client/models/gui_click_xy_request.py
 airbrowser_client/models/gui_hover_xy_request.py
 airbrowser_client/models/gui_press_keys_xy_request.py
 airbrowser_client/models/gui_type_xy_request.py
@@ -68,7 +73,9 @@ docs/ConsoleLogsRequest.md
 docs/CookiesRequest.md
 docs/CreateBrowserRequest.md
 docs/CreateProfileRequest.md
+docs/DetectCoordinatesData.md
 docs/DetectCoordinatesRequest.md
+docs/DetectCoordinatesResult.md
 docs/DialogRequest.md
 docs/EmulateRequest.md
 docs/ErrorResponse.md
@@ -76,7 +83,10 @@ docs/ExecuteCdpRequest.md
 docs/ExecuteScriptRequest.md
 docs/FillFormRequest.md
 docs/GenericResponse.md
+docs/GuiClickData.md
 docs/GuiClickRequest.md
+docs/GuiClickResult.md
+docs/GuiClickXYRequest.md
 docs/GuiHoverXyRequest.md
 docs/GuiPressKeysXyRequest.md
 docs/GuiTypeXyRequest.md
@@ -122,7 +132,9 @@ test/test_console_logs_request.py
 test/test_cookies_request.py
 test/test_create_browser_request.py
 test/test_create_profile_request.py
+test/test_detect_coordinates_data.py
 test/test_detect_coordinates_request.py
+test/test_detect_coordinates_result.py
 test/test_dialog_request.py
 test/test_emulate_request.py
 test/test_error_response.py
@@ -130,7 +142,10 @@ test/test_execute_cdp_request.py
 test/test_execute_script_request.py
 test/test_fill_form_request.py
 test/test_generic_response.py
+test/test_gui_click_data.py
 test/test_gui_click_request.py
+test/test_gui_click_result.py
+test/test_gui_click_xy_request.py
 test/test_gui_hover_xy_request.py
 test/test_gui_press_keys_xy_request.py
 test/test_gui_type_xy_request.py

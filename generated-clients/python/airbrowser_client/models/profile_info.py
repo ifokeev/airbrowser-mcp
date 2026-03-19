@@ -27,12 +27,12 @@ class ProfileInfo(BaseModel):
     """
     ProfileInfo
     """ # noqa: E501
-    in_use: Optional[StrictBool] = Field(default=None, description="Whether profile is currently in use by a browser")
-    last_used: Optional[StrictStr] = Field(default=None, description="Last used timestamp (ISO format)")
     name: Optional[StrictStr] = Field(default=None, description="Profile name")
     path: Optional[StrictStr] = Field(default=None, description="Profile storage path")
     size_mb: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Profile size in MB")
-    __properties: ClassVar[List[str]] = ["in_use", "last_used", "name", "path", "size_mb"]
+    last_used: Optional[StrictStr] = Field(default=None, description="Last used timestamp (ISO format)")
+    in_use: Optional[StrictBool] = Field(default=None, description="Whether profile is currently in use by a browser")
+    __properties: ClassVar[List[str]] = ["name", "path", "size_mb", "last_used", "in_use"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -85,12 +85,10 @@ class ProfileInfo(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "in_use": obj.get("in_use"),
-            "last_used": obj.get("last_used"),
             "name": obj.get("name"),
             "path": obj.get("path"),
-            "size_mb": obj.get("size_mb")
+            "size_mb": obj.get("size_mb"),
+            "last_used": obj.get("last_used"),
+            "in_use": obj.get("in_use")
         })
         return _obj
-
-

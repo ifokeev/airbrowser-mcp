@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **str** | action | 
-**limit** | **int** | limit | [optional] 
+**action** | **str** | action |
+**limit** | **int** | limit | [optional]
 
 ## Example
 
@@ -26,5 +26,3 @@ console_logs_request_dict = console_logs_request_instance.to_dict()
 console_logs_request_from_dict = ConsoleLogsRequest.from_dict(console_logs_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

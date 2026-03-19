@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**timeout** | **int** | timeout | [optional] 
-**url** | **str** | url | 
+**url** | **str** | url |
+**timeout** | **int** | timeout | [optional]
 
 ## Example
 
@@ -26,5 +26,3 @@ navigate_browser_request_dict = navigate_browser_request_instance.to_dict()
 navigate_browser_request_from_dict = NavigateBrowserRequest.from_dict(navigate_browser_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

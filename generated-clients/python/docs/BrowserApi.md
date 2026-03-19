@@ -11,7 +11,7 @@ Method | HTTP request | Description
 [**console_logs**](BrowserApi.md#console_logs) | **POST** /browser/{browser_id}/console_logs | Console logs: get or clear
 [**cookies**](BrowserApi.md#cookies) | **POST** /browser/{browser_id}/cookies | Manage browser cookies
 [**create_browser**](BrowserApi.md#create_browser) | **POST** /browser/create_browser | Create browser instance with optional persistent profile
-[**detect_coordinates**](BrowserApi.md#detect_coordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using vision
+[**detect_coordinates**](BrowserApi.md#detect_coordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using vision with optional smart targeting
 [**dialog**](BrowserApi.md#dialog) | **POST** /browser/{browser_id}/dialog | Dialogs: get, accept, dismiss
 [**emulate**](BrowserApi.md#emulate) | **POST** /browser/{browser_id}/emulate | Emulation: set, clear, list_devices
 [**execute_cdp**](BrowserApi.md#execute_cdp) | **POST** /browser/{browser_id}/execute_cdp | Execute a Chrome DevTools Protocol command
@@ -21,7 +21,8 @@ Method | HTTP request | Description
 [**get_content**](BrowserApi.md#get_content) | **GET** /browser/{browser_id}/get_content | Get page HTML
 [**get_element_data**](BrowserApi.md#get_element_data) | **GET** /browser/{browser_id}/get_element_data | Get element text, attribute, or property
 [**get_url**](BrowserApi.md#get_url) | **GET** /browser/{browser_id}/get_url | Get current URL
-[**gui_click**](BrowserApi.md#gui_click) | **POST** /browser/{browser_id}/gui_click | GUI click by selector or coordinates
+[**gui_click**](BrowserApi.md#gui_click) | **POST** /browser/{browser_id}/gui_click | GUI click by selector or coordinates with smart validation
+[**gui_click_xy**](BrowserApi.md#gui_click_xy) | **POST** /browser/{browser_id}/gui_click_xy | MCP compatibility alias for coordinate-mode &#x60;gui_click&#x60;
 [**gui_hover_xy**](BrowserApi.md#gui_hover_xy) | **POST** /browser/{browser_id}/gui_hover_xy | GUI hover at coordinates
 [**gui_press_keys_xy**](BrowserApi.md#gui_press_keys_xy) | **POST** /browser/{browser_id}/gui_press_keys_xy | Press keys at coordinates (click to focus, then send keys)
 [**gui_type_xy**](BrowserApi.md#gui_type_xy) | **POST** /browser/{browser_id}/gui_type_xy | GUI type at coordinates - clicks then types text
@@ -69,7 +70,7 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    payload = airbrowser_client.BrowsersRequest() # BrowsersRequest | 
+    payload = airbrowser_client.BrowsersRequest() # BrowsersRequest |
 
     try:
         # Admin: list all, get info, or close all browsers
@@ -87,7 +88,7 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **payload** | [**BrowsersRequest**](BrowsersRequest.md)|  | 
+ **payload** | [**BrowsersRequest**](BrowsersRequest.md)|  |
 
 ### Return type
 
@@ -135,7 +136,7 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
+    browser_id = 'browser_id_example' # str |
     selector = 'selector_example' # str | selector
     check = 'check_example' # str | check
     by = 'by_example' # str | by (optional)
@@ -156,10 +157,10 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **selector** | **str**| selector | 
- **check** | **str**| check | 
- **by** | **str**| by | [optional] 
+ **browser_id** | **str**|  |
+ **selector** | **str**| selector |
+ **check** | **str**| check |
+ **by** | **str**| by | [optional]
 
 ### Return type
 
@@ -210,8 +211,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.ClickRequest() # ClickRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.ClickRequest() # ClickRequest |
 
     try:
         # Click element
@@ -229,8 +230,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**ClickRequest**](ClickRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**ClickRequest**](ClickRequest.md)|  |
 
 ### Return type
 
@@ -278,7 +279,7 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
+    browser_id = 'browser_id_example' # str |
 
     try:
         # Close browser instance
@@ -296,7 +297,7 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
+ **browser_id** | **str**|  |
 
 ### Return type
 
@@ -345,8 +346,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.ConsoleLogsRequest() # ConsoleLogsRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.ConsoleLogsRequest() # ConsoleLogsRequest |
 
     try:
         # Console logs: get or clear
@@ -364,8 +365,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**ConsoleLogsRequest**](ConsoleLogsRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**ConsoleLogsRequest**](ConsoleLogsRequest.md)|  |
 
 ### Return type
 
@@ -426,8 +427,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.CookiesRequest() # CookiesRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.CookiesRequest() # CookiesRequest |
 
     try:
         # Manage browser cookies
@@ -445,8 +446,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**CookiesRequest**](CookiesRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**CookiesRequest**](CookiesRequest.md)|  |
 
 ### Return type
 
@@ -495,7 +496,7 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    payload = airbrowser_client.CreateBrowserRequest() # CreateBrowserRequest | 
+    payload = airbrowser_client.CreateBrowserRequest() # CreateBrowserRequest |
 
     try:
         # Create browser instance with optional persistent profile
@@ -513,7 +514,7 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **payload** | [**CreateBrowserRequest**](CreateBrowserRequest.md)|  | 
+ **payload** | [**CreateBrowserRequest**](CreateBrowserRequest.md)|  |
 
 ### Return type
 
@@ -537,9 +538,9 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **detect_coordinates**
-> GenericResponse detect_coordinates(browser_id, payload)
+> DetectCoordinatesResult detect_coordinates(browser_id, payload)
 
-Detect element coordinates using vision
+Detect element coordinates using vision with optional smart targeting
 
 Args:
     browser_id: Browser instance identifier
@@ -548,6 +549,12 @@ Args:
         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).
     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
     model: Optional vision model override for this request.
+    hit_test: Detect-time validation mode: off, warn, or strict.
+        Recommended for agents: `strict`.
+    auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.
+        Recommended for agents: `nearest_clickable`.
+    snap_radius: Maximum snap radius in CSS pixels.
+    include_debug: Include detect debug diagnostics when available.
 
 ### Example
 
@@ -555,7 +562,7 @@ Args:
 ```python
 import airbrowser_client
 from airbrowser_client.models.detect_coordinates_request import DetectCoordinatesRequest
-from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.models.detect_coordinates_result import DetectCoordinatesResult
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -570,11 +577,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.DetectCoordinatesRequest() # DetectCoordinatesRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.DetectCoordinatesRequest() # DetectCoordinatesRequest |
 
     try:
-        # Detect element coordinates using vision
+        # Detect element coordinates using vision with optional smart targeting
         api_response = api_instance.detect_coordinates(browser_id, payload)
         print("The response of BrowserApi->detect_coordinates:\n")
         pprint(api_response)
@@ -589,12 +596,12 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**DetectCoordinatesRequest**](DetectCoordinatesRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**DetectCoordinatesRequest**](DetectCoordinatesRequest.md)|  |
 
 ### Return type
 
-[**GenericResponse**](GenericResponse.md)
+[**DetectCoordinatesResult**](DetectCoordinatesResult.md)
 
 ### Authorization
 
@@ -639,8 +646,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.DialogRequest() # DialogRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.DialogRequest() # DialogRequest |
 
     try:
         # Dialogs: get, accept, dismiss
@@ -658,8 +665,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**DialogRequest**](DialogRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**DialogRequest**](DialogRequest.md)|  |
 
 ### Return type
 
@@ -708,8 +715,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.EmulateRequest() # EmulateRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.EmulateRequest() # EmulateRequest |
 
     try:
         # Emulation: set, clear, list_devices
@@ -727,8 +734,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**EmulateRequest**](EmulateRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**EmulateRequest**](EmulateRequest.md)|  |
 
 ### Return type
 
@@ -786,8 +793,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.ExecuteCdpRequest() # ExecuteCdpRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.ExecuteCdpRequest() # ExecuteCdpRequest |
 
     try:
         # Execute a Chrome DevTools Protocol command
@@ -805,8 +812,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**ExecuteCdpRequest**](ExecuteCdpRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**ExecuteCdpRequest**](ExecuteCdpRequest.md)|  |
 
 ### Return type
 
@@ -855,8 +862,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.ExecuteScriptRequest() # ExecuteScriptRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.ExecuteScriptRequest() # ExecuteScriptRequest |
 
     try:
         # Execute JavaScript
@@ -874,8 +881,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**ExecuteScriptRequest**](ExecuteScriptRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**ExecuteScriptRequest**](ExecuteScriptRequest.md)|  |
 
 ### Return type
 
@@ -924,8 +931,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.FillFormRequest() # FillFormRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.FillFormRequest() # FillFormRequest |
 
     try:
         # Fill multiple form fields
@@ -943,8 +950,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**FillFormRequest**](FillFormRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**FillFormRequest**](FillFormRequest.md)|  |
 
 ### Return type
 
@@ -1001,7 +1008,7 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
+    browser_id = 'browser_id_example' # str |
 
     try:
         # Get Chrome DevTools Protocol WebSocket URL for direct CDP access
@@ -1019,7 +1026,7 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
+ **browser_id** | **str**|  |
 
 ### Return type
 
@@ -1067,7 +1074,7 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
+    browser_id = 'browser_id_example' # str |
 
     try:
         # Get page HTML
@@ -1085,7 +1092,7 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
+ **browser_id** | **str**|  |
 
 ### Return type
 
@@ -1133,7 +1140,7 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
+    browser_id = 'browser_id_example' # str |
     selector = 'selector_example' # str | selector
     data_type = 'data_type_example' # str | data_type
     name = 'name_example' # str | name (optional)
@@ -1155,11 +1162,11 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **selector** | **str**| selector | 
- **data_type** | **str**| data_type | 
- **name** | **str**| name | [optional] 
- **by** | **str**| by | [optional] 
+ **browser_id** | **str**|  |
+ **selector** | **str**| selector |
+ **data_type** | **str**| data_type |
+ **name** | **str**| name | [optional]
+ **by** | **str**| by | [optional]
 
 ### Return type
 
@@ -1207,7 +1214,7 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
+    browser_id = 'browser_id_example' # str |
 
     try:
         # Get current URL
@@ -1225,7 +1232,7 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
+ **browser_id** | **str**|  |
 
 ### Return type
 
@@ -1249,17 +1256,28 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **gui_click**
-> GenericResponse gui_click(browser_id, payload)
+> GuiClickResult gui_click(browser_id, payload)
 
-GUI click by selector or coordinates
+GUI click by selector or coordinates with smart validation
+
+Selector mode uses `selector` with optional `fx` / `fy` offsets.
+Coordinate mode uses `x` / `y` and supports smart targeting knobs such as
+`pre_click_validate`, `auto_snap`, and `post_click_feedback`.
+
+Recommended agent mode:
+- `pre_click_validate="strict"`
+- `auto_snap="nearest_clickable"`
+- `post_click_feedback="auto"`
+
+MCP keeps `gui_click_xy` as a compatibility alias for coordinate-mode `gui_click`.
 
 ### Example
 
 
 ```python
 import airbrowser_client
-from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.models.gui_click_request import GuiClickRequest
+from airbrowser_client.models.gui_click_result import GuiClickResult
 from airbrowser_client.rest import ApiException
 from pprint import pprint
 
@@ -1274,11 +1292,11 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.GuiClickRequest() # GuiClickRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.GuiClickRequest() # GuiClickRequest |
 
     try:
-        # GUI click by selector or coordinates
+        # GUI click by selector or coordinates with smart validation
         api_response = api_instance.gui_click(browser_id, payload)
         print("The response of BrowserApi->gui_click:\n")
         pprint(api_response)
@@ -1293,12 +1311,84 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**GuiClickRequest**](GuiClickRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**GuiClickRequest**](GuiClickRequest.md)|  |
 
 ### Return type
 
-[**GenericResponse**](GenericResponse.md)
+[**GuiClickResult**](GuiClickResult.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+### HTTP response details
+
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **gui_click_xy**
+> GuiClickResult gui_click_xy(browser_id, payload)
+
+MCP compatibility alias for coordinate-mode `gui_click`
+
+This mirrors coordinate-mode `gui_click`, accepts the same smart-click options,
+and returns the same response contract.
+
+### Example
+
+
+```python
+import airbrowser_client
+from airbrowser_client.models.gui_click_result import GuiClickResult
+from airbrowser_client.models.gui_click_xy_request import GuiClickXYRequest
+from airbrowser_client.rest import ApiException
+from pprint import pprint
+
+# Defining the host is optional and defaults to /api/v1
+# See configuration.py for a list of all supported configuration parameters.
+configuration = airbrowser_client.Configuration(
+    host = "/api/v1"
+)
+
+
+# Enter a context with an instance of the API client
+with airbrowser_client.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = airbrowser_client.BrowserApi(api_client)
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.GuiClickXYRequest() # GuiClickXYRequest |
+
+    try:
+        # MCP compatibility alias for coordinate-mode `gui_click`
+        api_response = api_instance.gui_click_xy(browser_id, payload)
+        print("The response of BrowserApi->gui_click_xy:\n")
+        pprint(api_response)
+    except Exception as e:
+        print("Exception when calling BrowserApi->gui_click_xy: %s\n" % e)
+```
+
+
+
+### Parameters
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **browser_id** | **str**|  |
+ **payload** | [**GuiClickXYRequest**](GuiClickXYRequest.md)|  |
+
+### Return type
+
+[**GuiClickResult**](GuiClickResult.md)
 
 ### Authorization
 
@@ -1343,8 +1433,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.GuiHoverXyRequest() # GuiHoverXyRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.GuiHoverXyRequest() # GuiHoverXyRequest |
 
     try:
         # GUI hover at coordinates
@@ -1362,8 +1452,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**GuiHoverXyRequest**](GuiHoverXyRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**GuiHoverXyRequest**](GuiHoverXyRequest.md)|  |
 
 ### Return type
 
@@ -1412,8 +1502,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.GuiPressKeysXyRequest() # GuiPressKeysXyRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.GuiPressKeysXyRequest() # GuiPressKeysXyRequest |
 
     try:
         # Press keys at coordinates (click to focus, then send keys)
@@ -1431,8 +1521,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**GuiPressKeysXyRequest**](GuiPressKeysXyRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**GuiPressKeysXyRequest**](GuiPressKeysXyRequest.md)|  |
 
 ### Return type
 
@@ -1481,8 +1571,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.GuiTypeXyRequest() # GuiTypeXyRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.GuiTypeXyRequest() # GuiTypeXyRequest |
 
     try:
         # GUI type at coordinates - clicks then types text
@@ -1500,8 +1590,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**GuiTypeXyRequest**](GuiTypeXyRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**GuiTypeXyRequest**](GuiTypeXyRequest.md)|  |
 
 ### Return type
 
@@ -1550,8 +1640,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.HistoryRequest() # HistoryRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.HistoryRequest() # HistoryRequest |
 
     try:
         # History: back, forward, or refresh
@@ -1569,8 +1659,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**HistoryRequest**](HistoryRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**HistoryRequest**](HistoryRequest.md)|  |
 
 ### Return type
 
@@ -1619,8 +1709,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.MouseRequest() # MouseRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.MouseRequest() # MouseRequest |
 
     try:
         # Mouse: hover or drag
@@ -1638,8 +1728,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**MouseRequest**](MouseRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**MouseRequest**](MouseRequest.md)|  |
 
 ### Return type
 
@@ -1688,8 +1778,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.NavigateBrowserRequest() # NavigateBrowserRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.NavigateBrowserRequest() # NavigateBrowserRequest |
 
     try:
         # Navigate to URL
@@ -1707,8 +1797,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**NavigateBrowserRequest**](NavigateBrowserRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**NavigateBrowserRequest**](NavigateBrowserRequest.md)|  |
 
 ### Return type
 
@@ -1757,8 +1847,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.NetworkLogsRequest() # NetworkLogsRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.NetworkLogsRequest() # NetworkLogsRequest |
 
     try:
         # Network logs: get or clear
@@ -1776,8 +1866,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**NetworkLogsRequest**](NetworkLogsRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**NetworkLogsRequest**](NetworkLogsRequest.md)|  |
 
 ### Return type
 
@@ -1826,8 +1916,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.PerformanceRequest() # PerformanceRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.PerformanceRequest() # PerformanceRequest |
 
     try:
         # Performance: start_trace, stop_trace, metrics, analyze
@@ -1845,8 +1935,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**PerformanceRequest**](PerformanceRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**PerformanceRequest**](PerformanceRequest.md)|  |
 
 ### Return type
 
@@ -1895,8 +1985,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.PressKeysRequest() # PressKeysRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.PressKeysRequest() # PressKeysRequest |
 
     try:
         # Press keyboard keys
@@ -1914,8 +2004,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**PressKeysRequest**](PressKeysRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**PressKeysRequest**](PressKeysRequest.md)|  |
 
 ### Return type
 
@@ -1964,8 +2054,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.ResizeRequest() # ResizeRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.ResizeRequest() # ResizeRequest |
 
     try:
         # Resize viewport
@@ -1983,8 +2073,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**ResizeRequest**](ResizeRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**ResizeRequest**](ResizeRequest.md)|  |
 
 ### Return type
 
@@ -2033,8 +2123,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.ScrollRequest() # ScrollRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.ScrollRequest() # ScrollRequest |
 
     try:
         # Scroll to element/coords or by delta
@@ -2052,8 +2142,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**ScrollRequest**](ScrollRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**ScrollRequest**](ScrollRequest.md)|  |
 
 ### Return type
 
@@ -2102,8 +2192,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.SelectRequest() # SelectRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.SelectRequest() # SelectRequest |
 
     try:
         # Select dropdown: select option or get options
@@ -2121,8 +2211,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**SelectRequest**](SelectRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**SelectRequest**](SelectRequest.md)|  |
 
 ### Return type
 
@@ -2171,8 +2261,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.SnapshotRequest() # SnapshotRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.SnapshotRequest() # SnapshotRequest |
 
     try:
         # DOM or accessibility snapshot
@@ -2190,8 +2280,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**SnapshotRequest**](SnapshotRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**SnapshotRequest**](SnapshotRequest.md)|  |
 
 ### Return type
 
@@ -2240,8 +2330,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.TabsRequest() # TabsRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.TabsRequest() # TabsRequest |
 
     try:
         # Tabs: list, new, switch, close, current
@@ -2259,8 +2349,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**TabsRequest**](TabsRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**TabsRequest**](TabsRequest.md)|  |
 
 ### Return type
 
@@ -2309,8 +2399,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.TakeScreenshotRequest() # TakeScreenshotRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.TakeScreenshotRequest() # TakeScreenshotRequest |
 
     try:
         # Take screenshot
@@ -2328,8 +2418,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**TakeScreenshotRequest**](TakeScreenshotRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**TakeScreenshotRequest**](TakeScreenshotRequest.md)|  |
 
 ### Return type
 
@@ -2378,8 +2468,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.TypeTextRequest() # TypeTextRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.TypeTextRequest() # TypeTextRequest |
 
     try:
         # Type text into element
@@ -2397,8 +2487,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**TypeTextRequest**](TypeTextRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**TypeTextRequest**](TypeTextRequest.md)|  |
 
 ### Return type
 
@@ -2447,8 +2537,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.UploadFileRequest() # UploadFileRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.UploadFileRequest() # UploadFileRequest |
 
     try:
         # Upload file to input
@@ -2466,8 +2556,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**UploadFileRequest**](UploadFileRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**UploadFileRequest**](UploadFileRequest.md)|  |
 
 ### Return type
 
@@ -2516,8 +2606,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.WaitElementRequest() # WaitElementRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.WaitElementRequest() # WaitElementRequest |
 
     try:
         # Wait for element to be visible or hidden
@@ -2535,8 +2625,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**WaitElementRequest**](WaitElementRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**WaitElementRequest**](WaitElementRequest.md)|  |
 
 ### Return type
 
@@ -2585,8 +2675,8 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.BrowserApi(api_client)
-    browser_id = 'browser_id_example' # str | 
-    payload = airbrowser_client.WhatIsVisibleRequest() # WhatIsVisibleRequest | 
+    browser_id = 'browser_id_example' # str |
+    payload = airbrowser_client.WhatIsVisibleRequest() # WhatIsVisibleRequest |
 
     try:
         # AI page analysis - what's visible
@@ -2604,8 +2694,8 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **browser_id** | **str**|  | 
- **payload** | [**WhatIsVisibleRequest**](WhatIsVisibleRequest.md)|  | 
+ **browser_id** | **str**|  |
+ **payload** | [**WhatIsVisibleRequest**](WhatIsVisibleRequest.md)|  |
 
 ### Return type
 
@@ -2627,4 +2717,3 @@ No authorization required
 **200** | Success |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

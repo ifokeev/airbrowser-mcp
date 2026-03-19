@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**message** | **string** | Error message | [optional] [default to undefined]
 **success** | **boolean** | Operation success (false) | [optional] [default to false]
+**message** | **string** | Error message | [optional] [default to undefined]
 **timestamp** | **number** | Unix timestamp | [optional] [default to undefined]
 
 ## Example
@@ -15,8 +15,8 @@ Name | Type | Description | Notes
 import { ErrorResponse } from 'airbrowser-client';
 
 const instance: ErrorResponse = {
-    message,
     success,
+    message,
     timestamp,
 };
 ```

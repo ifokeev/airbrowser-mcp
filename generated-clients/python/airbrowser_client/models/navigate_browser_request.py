@@ -27,9 +27,9 @@ class NavigateBrowserRequest(BaseModel):
     """
     NavigateBrowserRequest
     """ # noqa: E501
-    timeout: Optional[StrictInt] = Field(default=None, description="timeout")
     url: StrictStr = Field(description="url")
-    __properties: ClassVar[List[str]] = ["timeout", "url"]
+    timeout: Optional[StrictInt] = Field(default=None, description="timeout")
+    __properties: ClassVar[List[str]] = ["url", "timeout"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -82,9 +82,7 @@ class NavigateBrowserRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "timeout": obj.get("timeout"),
-            "url": obj.get("url")
+            "url": obj.get("url"),
+            "timeout": obj.get("timeout")
         })
         return _obj
-
-

@@ -29,6 +29,17 @@ from airbrowser_client.models import (
 )
 
 
+def result_to_dict(value):
+    """Normalize generated-client models and dict payloads."""
+    if value is None or isinstance(value, dict):
+        return value
+    if hasattr(value, "to_dict"):
+        return value.to_dict()
+    if hasattr(value, "model_dump"):
+        return value.model_dump(by_alias=True)
+    return value
+
+
 def has_vision_config():
     """Check if AI vision is configured."""
     return all(os.environ.get(name) for name in ("VISION_API_BASE_URL", "VISION_API_KEY", "VISION_MODEL"))
@@ -135,6 +146,7 @@ def browser_with_page(browser_client):
                             style="padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer;">
                         Submit Form
                     </button>
+                    <div id="submit-status" style="margin-top: 12px; color: #005000;">Idle</div>
                 </form>
 
                 <div style="margin: 50px 0;">
@@ -153,6 +165,11 @@ def browser_with_page(browser_client):
                 </div>
             </div>
         `;
+        document.getElementById('submit-btn').addEventListener('click', function() {
+            history.pushState({}, '', '#submitted');
+            document.getElementById('submit-status').textContent = 'Submitted';
+            this.classList.add('clicked');
+        });
         """
     )
     browser_client.execute_script(bid, payload=exec_request)
@@ -359,17 +376,21 @@ class TestVisionOperations:
 
 
 @pytest.mark.browser
+@pytest.mark.isolated
 class TestVisionGuiIntegration:
     """Integration tests for vision + GUI workflow."""
 
     @pytest.mark.skipif(not has_vision_config(), reason="Vision config not set")
     def test_detect_then_gui_click(self, browser_client, browser_with_page):
-        """Test complete workflow: detect_coordinates -> gui_click."""
+        """Test complete workflow: detect_coordinates -> gui_click with observable result."""
         bid = browser_with_page
 
-        detect_result, coords = detect_with_retry(browser_client, bid, "the Submit Form button")
+        detect_result, coords = detect_with_retry(browser_client, bid, "the blue Submit Form button")
         if not detect_result or not detect_result.success:
             pytest.skip("Vision detection failed")
+
+        detect_data = result_to_dict(detect_result.data) or {}
+        assert detect_data.get("outcome_status") in {"exact_match", "snapped_match"}
 
         if isinstance(coords, dict):
             click_point = coords.get("click_point", {})
@@ -380,12 +401,22 @@ class TestVisionGuiIntegration:
             pytest.skip("No click_point returned")
 
         click_result = browser_client.gui_click(
-            bid, payload=GuiClickRequest(x=float(click_point["x"]), y=float(click_point["y"]))
+            bid,
+            payload=GuiClickRequest(
+                x=float(click_point["x"]),
+                y=float(click_point["y"]),
+                pre_click_validate="strict",
+                auto_snap="nearest_clickable",
+                post_click_feedback="auto",
+                post_click_timeout_ms=300,
+            ),
         )
 
         assert click_result is not None
-        if not click_result.success:
-            assert "Unknown action" not in str(click_result.message)
+        assert click_result.success is True
+        click_data = result_to_dict(click_result.data) or {}
+        assert click_data.get("outcome_status") in {"clicked_exact", "clicked_snapped"}
+        assert click_data.get("postcheck", {}).get("status") in {"url_changed", "content_changed"}
 
     @pytest.mark.skipif(not has_vision_config(), reason="Vision config not set")
     def test_detect_then_gui_type(self, browser_client, browser_with_page):

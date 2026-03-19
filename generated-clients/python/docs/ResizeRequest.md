@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**height** | **int** | height | 
-**width** | **int** | width | 
+**width** | **int** | width |
+**height** | **int** | height |
 
 ## Example
 
@@ -26,5 +26,3 @@ resize_request_dict = resize_request_instance.to_dict()
 resize_request_from_dict = ResizeRequest.from_dict(resize_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

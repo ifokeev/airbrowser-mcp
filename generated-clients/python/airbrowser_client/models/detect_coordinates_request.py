@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
@@ -27,11 +27,35 @@ class DetectCoordinatesRequest(BaseModel):
     """
     DetectCoordinatesRequest
     """ # noqa: E501
-    fx: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="fx")
-    fy: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="fy")
-    model: Optional[StrictStr] = Field(default=None, description="model")
-    prompt: StrictStr = Field(description="prompt")
-    __properties: ClassVar[List[str]] = ["fx", "fy", "model", "prompt"]
+    prompt: StrictStr = Field(description="Natural language description of element to find")
+    fx: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Relative X (0..1) within the detected element")
+    fy: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Relative Y (0..1) within the detected element")
+    model: Optional[StrictStr] = Field(default=None, description="Optional vision model override for this request")
+    hit_test: Optional[StrictStr] = Field(default='off', description="Detect-time validation mode")
+    auto_snap: Optional[StrictStr] = Field(default='off', description="Auto-snap mode for nearby targets")
+    snap_radius: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Maximum snap radius in CSS pixels")
+    include_debug: Optional[StrictBool] = Field(default=False, description="Include smart-targeting debug details")
+    __properties: ClassVar[List[str]] = ["prompt", "fx", "fy", "model", "hit_test", "auto_snap", "snap_radius", "include_debug"]
+
+    @field_validator('hit_test')
+    def hit_test_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['off', 'warn', 'strict']):
+            raise ValueError("must be one of enum values ('off', 'warn', 'strict')")
+        return value
+
+    @field_validator('auto_snap')
+    def auto_snap_validate_enum(cls, value):
+        """Validates the enum"""
+        if value is None:
+            return value
+
+        if value not in set(['off', 'nearest_clickable', 'nearest_interactive']):
+            raise ValueError("must be one of enum values ('off', 'nearest_clickable', 'nearest_interactive')")
+        return value
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -84,11 +108,13 @@ class DetectCoordinatesRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
+            "prompt": obj.get("prompt"),
             "fx": obj.get("fx"),
             "fy": obj.get("fy"),
             "model": obj.get("model"),
-            "prompt": obj.get("prompt")
+            "hit_test": obj.get("hit_test") if obj.get("hit_test") is not None else 'off',
+            "auto_snap": obj.get("auto_snap") if obj.get("auto_snap") is not None else 'off',
+            "snap_radius": obj.get("snap_radius"),
+            "include_debug": obj.get("include_debug") if obj.get("include_debug") is not None else False
         })
         return _obj
-
-

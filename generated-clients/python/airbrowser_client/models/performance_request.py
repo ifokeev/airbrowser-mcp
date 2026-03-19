@@ -93,5 +93,3 @@ class PerformanceRequest(BaseModel):
             "categories": obj.get("categories")
         })
         return _obj
-
-

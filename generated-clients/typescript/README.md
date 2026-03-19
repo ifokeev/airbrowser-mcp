@@ -58,7 +58,7 @@ Class | Method | HTTP request | Description
 *BrowserApi* | [**consoleLogs**](docs/BrowserApi.md#consolelogs) | **POST** /browser/{browser_id}/console_logs | Console logs: get or clear
 *BrowserApi* | [**cookies**](docs/BrowserApi.md#cookies) | **POST** /browser/{browser_id}/cookies | Manage browser cookies
 *BrowserApi* | [**createBrowser**](docs/BrowserApi.md#createbrowser) | **POST** /browser/create_browser | Create browser instance with optional persistent profile
-*BrowserApi* | [**detectCoordinates**](docs/BrowserApi.md#detectcoordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using vision
+*BrowserApi* | [**detectCoordinates**](docs/BrowserApi.md#detectcoordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using vision with optional smart targeting
 *BrowserApi* | [**dialog**](docs/BrowserApi.md#dialog) | **POST** /browser/{browser_id}/dialog | Dialogs: get, accept, dismiss
 *BrowserApi* | [**emulate**](docs/BrowserApi.md#emulate) | **POST** /browser/{browser_id}/emulate | Emulation: set, clear, list_devices
 *BrowserApi* | [**executeCdp**](docs/BrowserApi.md#executecdp) | **POST** /browser/{browser_id}/execute_cdp | Execute a Chrome DevTools Protocol command
@@ -68,7 +68,8 @@ Class | Method | HTTP request | Description
 *BrowserApi* | [**getContent**](docs/BrowserApi.md#getcontent) | **GET** /browser/{browser_id}/get_content | Get page HTML
 *BrowserApi* | [**getElementData**](docs/BrowserApi.md#getelementdata) | **GET** /browser/{browser_id}/get_element_data | Get element text, attribute, or property
 *BrowserApi* | [**getUrl**](docs/BrowserApi.md#geturl) | **GET** /browser/{browser_id}/get_url | Get current URL
-*BrowserApi* | [**guiClick**](docs/BrowserApi.md#guiclick) | **POST** /browser/{browser_id}/gui_click | GUI click by selector or coordinates
+*BrowserApi* | [**guiClick**](docs/BrowserApi.md#guiclick) | **POST** /browser/{browser_id}/gui_click | GUI click by selector or coordinates with smart validation
+*BrowserApi* | [**guiClickXy**](docs/BrowserApi.md#guiclickxy) | **POST** /browser/{browser_id}/gui_click_xy | MCP compatibility alias for coordinate-mode &#x60;gui_click&#x60;
 *BrowserApi* | [**guiHoverXy**](docs/BrowserApi.md#guihoverxy) | **POST** /browser/{browser_id}/gui_hover_xy | GUI hover at coordinates
 *BrowserApi* | [**guiPressKeysXy**](docs/BrowserApi.md#guipresskeysxy) | **POST** /browser/{browser_id}/gui_press_keys_xy | Press keys at coordinates (click to focus, then send keys)
 *BrowserApi* | [**guiTypeXy**](docs/BrowserApi.md#guitypexy) | **POST** /browser/{browser_id}/gui_type_xy | GUI type at coordinates - clicks then types text
@@ -107,7 +108,9 @@ Class | Method | HTTP request | Description
  - [CookiesRequest](docs/CookiesRequest.md)
  - [CreateBrowserRequest](docs/CreateBrowserRequest.md)
  - [CreateProfileRequest](docs/CreateProfileRequest.md)
+ - [DetectCoordinatesData](docs/DetectCoordinatesData.md)
  - [DetectCoordinatesRequest](docs/DetectCoordinatesRequest.md)
+ - [DetectCoordinatesResult](docs/DetectCoordinatesResult.md)
  - [DialogRequest](docs/DialogRequest.md)
  - [EmulateRequest](docs/EmulateRequest.md)
  - [ErrorResponse](docs/ErrorResponse.md)
@@ -115,7 +118,10 @@ Class | Method | HTTP request | Description
  - [ExecuteScriptRequest](docs/ExecuteScriptRequest.md)
  - [FillFormRequest](docs/FillFormRequest.md)
  - [GenericResponse](docs/GenericResponse.md)
+ - [GuiClickData](docs/GuiClickData.md)
  - [GuiClickRequest](docs/GuiClickRequest.md)
+ - [GuiClickResult](docs/GuiClickResult.md)
+ - [GuiClickXYRequest](docs/GuiClickXYRequest.md)
  - [GuiHoverXyRequest](docs/GuiHoverXyRequest.md)
  - [GuiPressKeysXyRequest](docs/GuiPressKeysXyRequest.md)
  - [GuiTypeXyRequest](docs/GuiTypeXyRequest.md)
@@ -149,4 +155,3 @@ Class | Method | HTTP request | Description
 ## Documentation For Authorization
 
 Endpoints do not require authorization.
-

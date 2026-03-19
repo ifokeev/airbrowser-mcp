@@ -34,7 +34,7 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.PoolApi(api_client)
-    payload = airbrowser_client.ScalePool() # ScalePool | 
+    payload = airbrowser_client.ScalePool() # ScalePool |
 
     try:
         # Scale the browser pool to a new maximum size
@@ -52,7 +52,7 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **payload** | [**ScalePool**](ScalePool.md)|  | 
+ **payload** | [**ScalePool**](ScalePool.md)|  |
 
 ### Return type
 
@@ -71,8 +71,8 @@ No authorization required
 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | Success |  -  |
 **400** | Bad request |  -  |
+**200** | Success |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -137,4 +137,3 @@ No authorization required
 **200** | Success |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

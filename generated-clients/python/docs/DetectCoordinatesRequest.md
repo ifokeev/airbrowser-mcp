@@ -5,10 +5,14 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**fx** | **float** | fx | [optional] 
-**fy** | **float** | fy | [optional] 
-**model** | **str** | model | [optional] 
-**prompt** | **str** | prompt | 
+**prompt** | **str** | Natural language description of element to find |
+**fx** | **float** | Relative X (0..1) within the detected element | [optional]
+**fy** | **float** | Relative Y (0..1) within the detected element | [optional]
+**model** | **str** | Optional vision model override for this request | [optional]
+**hit_test** | **str** | Detect-time validation mode | [optional] [default to 'off']
+**auto_snap** | **str** | Auto-snap mode for nearby targets | [optional] [default to 'off']
+**snap_radius** | **float** | Maximum snap radius in CSS pixels | [optional]
+**include_debug** | **bool** | Include smart-targeting debug details | [optional] [default to False]
 
 ## Example
 
@@ -28,5 +32,3 @@ detect_coordinates_request_dict = detect_coordinates_request_instance.to_dict()
 detect_coordinates_request_from_dict = DetectCoordinatesRequest.from_dict(detect_coordinates_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

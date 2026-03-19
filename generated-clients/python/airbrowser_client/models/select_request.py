@@ -27,13 +27,13 @@ class SelectRequest(BaseModel):
     """
     SelectRequest
     """ # noqa: E501
-    action: Optional[StrictStr] = Field(default='select', description="action")
-    by: Optional[StrictStr] = Field(default='css', description="by")
-    index: Optional[StrictInt] = Field(default=None, description="index")
     selector: StrictStr = Field(description="selector")
-    text: Optional[StrictStr] = Field(default=None, description="text")
+    action: Optional[StrictStr] = Field(default='select', description="action")
     value: Optional[StrictStr] = Field(default=None, description="value")
-    __properties: ClassVar[List[str]] = ["action", "by", "index", "selector", "text", "value"]
+    text: Optional[StrictStr] = Field(default=None, description="text")
+    index: Optional[StrictInt] = Field(default=None, description="index")
+    by: Optional[StrictStr] = Field(default='css', description="by")
+    __properties: ClassVar[List[str]] = ["selector", "action", "value", "text", "index", "by"]
 
     @field_validator('action')
     def action_validate_enum(cls, value):
@@ -96,13 +96,11 @@ class SelectRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "action": obj.get("action") if obj.get("action") is not None else 'select',
-            "by": obj.get("by") if obj.get("by") is not None else 'css',
-            "index": obj.get("index"),
             "selector": obj.get("selector"),
+            "action": obj.get("action") if obj.get("action") is not None else 'select',
+            "value": obj.get("value"),
             "text": obj.get("text"),
-            "value": obj.get("value")
+            "index": obj.get("index"),
+            "by": obj.get("by") if obj.get("by") is not None else 'css'
         })
         return _obj
-
-

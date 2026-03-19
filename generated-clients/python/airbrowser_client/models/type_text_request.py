@@ -27,11 +27,11 @@ class TypeTextRequest(BaseModel):
     """
     TypeTextRequest
     """ # noqa: E501
-    by: Optional[StrictStr] = Field(default='css', description="by")
     selector: StrictStr = Field(description="selector")
     text: StrictStr = Field(description="text")
     timeout: Optional[StrictInt] = Field(default=None, description="timeout")
-    __properties: ClassVar[List[str]] = ["by", "selector", "text", "timeout"]
+    by: Optional[StrictStr] = Field(default='css', description="by")
+    __properties: ClassVar[List[str]] = ["selector", "text", "timeout", "by"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -84,11 +84,9 @@ class TypeTextRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "by": obj.get("by") if obj.get("by") is not None else 'css',
             "selector": obj.get("selector"),
             "text": obj.get("text"),
-            "timeout": obj.get("timeout")
+            "timeout": obj.get("timeout"),
+            "by": obj.get("by") if obj.get("by") is not None else 'css'
         })
         return _obj
-
-

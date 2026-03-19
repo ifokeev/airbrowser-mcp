@@ -93,16 +93,66 @@ def register_browser_schemas(api):
             "x": fields.Float(description="Screen X coordinate", required=True),
             "y": fields.Float(description="Screen Y coordinate", required=True),
             "timeframe": fields.Float(description="Mouse move duration (seconds)", default=0.25),
+            "pre_click_validate": fields.String(
+                description="Pre-click validation mode",
+                enum=["off", "warn", "strict"],
+                default="off",
+            ),
+            "auto_snap": fields.String(
+                description="Auto-snap mode for nearby targets",
+                enum=["off", "nearest_clickable", "nearest_interactive"],
+                default="off",
+            ),
+            "snap_radius": fields.Float(description="Maximum snap radius in CSS pixels", default=96),
+            "post_click_feedback": fields.String(
+                description="Post-click feedback mode",
+                enum=["none", "url", "content", "visible", "auto"],
+                default="none",
+            ),
+            "post_click_timeout_ms": fields.Integer(
+                description="Post-click observation timeout in milliseconds", default=1500
+            ),
+            "return_content": fields.Boolean(
+                description="Include truncated content in post-click feedback", default=False
+            ),
+            "content_limit_chars": fields.Integer(description="Maximum returned content length", default=4000),
+            "include_debug": fields.Boolean(description="Include smart-click debug diagnostics", default=False),
         },
     )
 
     schemas["GuiClickRequest"] = api.model(
         "GuiClickRequest",
         {
-            "selector": fields.String(description="Element selector (CSS or XPath)", required=True),
+            "selector": fields.String(description="Element selector (CSS or XPath)"),
+            "x": fields.Float(description="Screen X coordinate (coordinate mode)"),
+            "y": fields.Float(description="Screen Y coordinate (coordinate mode)"),
             "timeframe": fields.Float(description="Mouse move duration (seconds)", default=0.25),
             "fx": fields.Float(description="Relative X (0..1) within element to click", required=False),
             "fy": fields.Float(description="Relative Y (0..1) within element to click", required=False),
+            "pre_click_validate": fields.String(
+                description="Pre-click validation mode",
+                enum=["off", "warn", "strict"],
+                default="off",
+            ),
+            "auto_snap": fields.String(
+                description="Auto-snap mode for nearby targets",
+                enum=["off", "nearest_clickable", "nearest_interactive"],
+                default="off",
+            ),
+            "snap_radius": fields.Float(description="Maximum snap radius in CSS pixels", default=96),
+            "post_click_feedback": fields.String(
+                description="Post-click feedback mode",
+                enum=["none", "url", "content", "visible", "auto"],
+                default="none",
+            ),
+            "post_click_timeout_ms": fields.Integer(
+                description="Post-click observation timeout in milliseconds", default=1500
+            ),
+            "return_content": fields.Boolean(
+                description="Include truncated content in post-click feedback", default=False
+            ),
+            "content_limit_chars": fields.Integer(description="Maximum returned content length", default=4000),
+            "include_debug": fields.Boolean(description="Include smart-click debug diagnostics", default=False),
         },
     )
 
@@ -117,6 +167,18 @@ def register_browser_schemas(api):
             "fx": fields.Float(description="Relative X (0..1) within the detected element"),
             "fy": fields.Float(description="Relative Y (0..1) within the detected element"),
             "model": fields.String(description="Optional vision model override for this request"),
+            "hit_test": fields.String(
+                description="Detect-time validation mode",
+                enum=["off", "warn", "strict"],
+                default="off",
+            ),
+            "auto_snap": fields.String(
+                description="Auto-snap mode for nearby targets",
+                enum=["off", "nearest_clickable", "nearest_interactive"],
+                default="off",
+            ),
+            "snap_radius": fields.Float(description="Maximum snap radius in CSS pixels", default=96),
+            "include_debug": fields.Boolean(description="Include smart-targeting debug details", default=False),
         },
     )
 
@@ -181,21 +243,61 @@ def register_browser_schemas(api):
     )
 
     # Response schemas for specific endpoints
+    schemas["DetectCoordinatesData"] = api.model(
+        "DetectCoordinatesData",
+        {
+            "prompt": fields.String(description="Element description used"),
+            "bounding_box": fields.Raw(description="Element bounding box {x, y, width, height}"),
+            "click_point": fields.Raw(description="Recommended click point {x, y}"),
+            "confidence": fields.Float(description="Detection confidence (0.0-1.0)"),
+            "outcome_status": fields.String(description="Machine-readable detect outcome status"),
+            "reason": fields.String(description="Machine-readable detect reason code"),
+            "reason_detail": fields.String(description="Human-readable reason detail"),
+            "resolved_target": fields.Raw(description="Resolved target details after validation or snapping"),
+            "resolved_click_point": fields.Raw(description="Validated or snapped click point {x, y}"),
+            "snap_result": fields.Raw(description="Details about any snap candidate that was applied"),
+            "recommended_next_action": fields.String(description="Suggested next action for callers"),
+            "screenshot_url": fields.String(description="URL to the screenshot"),
+            "image_size": fields.Raw(description="Original screenshot dimensions"),
+            "transform_info": fields.Raw(description="Coordinate transform metadata"),
+            "debug": fields.Raw(description="Optional smart-targeting debug details"),
+        },
+    )
+
     schemas["DetectCoordinatesResult"] = api.model(
         "DetectCoordinatesResult",
         {
             "success": fields.Boolean(description="Operation success"),
             "message": fields.String(description="Success message"),
-            "timestamp": fields.Float(description="Unix timestamp"),
-            "prompt": fields.String(description="Element description used"),
-            "coordinates": fields.Raw(description="Full coordinate information"),
-            "bounding_box": fields.Raw(description="Element bounding box {x, y, width, height}"),
-            "click_point": fields.Raw(description="Recommended click point {x, y}"),
-            "model_used": fields.String(description="Vision model used for detection"),
-            "confidence": fields.Float(description="Detection confidence (0.0-1.0)"),
-            "models_tried": fields.List(fields.String, description="Models attempted if detection failed"),
-            "data": fields.Raw(description="Additional result data"),
-            "error": fields.String(description="Error message if failed"),
+            "data": fields.Nested(schemas["DetectCoordinatesData"], description="Detect response payload"),
+        },
+    )
+
+    schemas["GuiClickData"] = api.model(
+        "GuiClickData",
+        {
+            "status": fields.String(description="Legacy inner status"),
+            "success": fields.Boolean(description="Legacy inner success flag"),
+            "message": fields.String(description="Legacy inner message"),
+            "x": fields.Float(description="Requested or resolved screen X coordinate"),
+            "y": fields.Float(description="Requested or resolved screen Y coordinate"),
+            "outcome_status": fields.String(description="Machine-readable click outcome status"),
+            "reason": fields.String(description="Machine-readable click reason code"),
+            "reason_detail": fields.String(description="Human-readable reason detail"),
+            "precheck": fields.Raw(description="Pre-click validation details"),
+            "execution": fields.Raw(description="Click execution details"),
+            "postcheck": fields.Raw(description="Post-click feedback details"),
+            "recommended_next_action": fields.String(description="Suggested next action for callers"),
+            "debug": fields.Raw(description="Optional smart-click debug details"),
+        },
+    )
+
+    schemas["GuiClickResult"] = api.model(
+        "GuiClickResult",
+        {
+            "success": fields.Boolean(description="Operation success"),
+            "message": fields.String(description="Success message"),
+            "data": fields.Nested(schemas["GuiClickData"], description="GUI click response payload"),
         },
     )
 
@@ -561,6 +663,30 @@ def register_browser_schemas(api):
             "timeframe": fields.Float(description="Mouse move duration (seconds)", default=0.25),
             "fx": fields.Float(description="Relative X (0..1) within element to click"),
             "fy": fields.Float(description="Relative Y (0..1) within element to click"),
+            "pre_click_validate": fields.String(
+                description="Pre-click validation mode",
+                enum=["off", "warn", "strict"],
+                default="off",
+            ),
+            "auto_snap": fields.String(
+                description="Auto-snap mode for nearby targets",
+                enum=["off", "nearest_clickable", "nearest_interactive"],
+                default="off",
+            ),
+            "snap_radius": fields.Float(description="Maximum snap radius in CSS pixels", default=96),
+            "post_click_feedback": fields.String(
+                description="Post-click feedback mode",
+                enum=["none", "url", "content", "visible", "auto"],
+                default="none",
+            ),
+            "post_click_timeout_ms": fields.Integer(
+                description="Post-click observation timeout in milliseconds", default=1500
+            ),
+            "return_content": fields.Boolean(
+                description="Include truncated content in post-click feedback", default=False
+            ),
+            "content_limit_chars": fields.Integer(description="Maximum returned content length", default=4000),
+            "include_debug": fields.Boolean(description="Include smart-click debug diagnostics", default=False),
         },
     )
 

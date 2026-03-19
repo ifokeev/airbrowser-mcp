@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**data** | [**ProfileListData**](ProfileListData.md) |  | [optional] 
-**message** | **str** | Status message | [optional] 
-**success** | **bool** | Operation success | [optional] 
-**timestamp** | **float** | Unix timestamp | [optional] 
+**success** | **bool** | Operation success | [optional]
+**message** | **str** | Status message | [optional]
+**timestamp** | **float** | Unix timestamp | [optional]
+**data** | [**ProfileListData**](ProfileListData.md) |  | [optional]
 
 ## Example
 
@@ -28,5 +28,3 @@ profile_list_response_dict = profile_list_response_instance.to_dict()
 profile_list_response_from_dict = ProfileListResponse.from_dict(profile_list_response_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

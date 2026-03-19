@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**data** | **object** | Response data | [optional] [default to undefined]
-**message** | **string** | Response message | [optional] [default to undefined]
 **success** | **boolean** | Whether the operation succeeded | [optional] [default to undefined]
+**message** | **string** | Response message | [optional] [default to undefined]
+**data** | **object** | Response data | [optional] [default to undefined]
 
 ## Example
 
@@ -15,9 +15,9 @@ Name | Type | Description | Notes
 import { GenericResponse } from 'airbrowser-client';
 
 const instance: GenericResponse = {
-    data,
-    message,
     success,
+    message,
+    data,
 };
 ```
 

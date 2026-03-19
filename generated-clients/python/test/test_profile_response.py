@@ -35,15 +35,15 @@ class TestProfileResponse(unittest.TestCase):
         model = ProfileResponse()
         if include_optional:
             return ProfileResponse(
-                data = airbrowser_client.models.profile_info.ProfileInfo(
-                    in_use = True, 
-                    last_used = '', 
-                    name = '', 
-                    path = '', 
-                    size_mb = 1.337, ),
-                message = '',
                 success = True,
-                timestamp = 1.337
+                message = '',
+                timestamp = 1.337,
+                data = airbrowser_client.models.profile_info.ProfileInfo(
+                    name = '',
+                    path = '',
+                    size_mb = 1.337,
+                    last_used = '',
+                    in_use = True, )
             )
         else:
             return ProfileResponse(

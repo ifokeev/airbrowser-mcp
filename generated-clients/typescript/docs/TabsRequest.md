@@ -6,9 +6,9 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **action** | **string** | action | [default to undefined]
-**handle** | **string** | handle | [optional] [default to undefined]
-**index** | **number** | index | [optional] [default to undefined]
 **url** | **string** | url | [optional] [default to undefined]
+**index** | **number** | index | [optional] [default to undefined]
+**handle** | **string** | handle | [optional] [default to undefined]
 
 ## Example
 
@@ -17,9 +17,9 @@ import { TabsRequest } from 'airbrowser-client';
 
 const instance: TabsRequest = {
     action,
-    handle,
-    index,
     url,
+    index,
+    handle,
 };
 ```
 

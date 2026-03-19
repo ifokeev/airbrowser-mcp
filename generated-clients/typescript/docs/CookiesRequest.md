@@ -7,8 +7,8 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **action** | **string** | action | [default to undefined]
 **cookie** | **object** | cookie | [optional] [default to undefined]
-**domain** | **string** | domain | [optional] [default to undefined]
 **name** | **string** | name | [optional] [default to undefined]
+**domain** | **string** | domain | [optional] [default to undefined]
 
 ## Example
 
@@ -18,8 +18,8 @@ import { CookiesRequest } from 'airbrowser-client';
 const instance: CookiesRequest = {
     action,
     cookie,
-    domain,
     name,
+    domain,
 };
 ```
 

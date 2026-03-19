@@ -35,11 +35,11 @@ class TestProfileInfo(unittest.TestCase):
         model = ProfileInfo()
         if include_optional:
             return ProfileInfo(
-                in_use = True,
-                last_used = '',
                 name = '',
                 path = '',
-                size_mb = 1.337
+                size_mb = 1.337,
+                last_used = '',
+                in_use = True
             )
         else:
             return ProfileInfo(

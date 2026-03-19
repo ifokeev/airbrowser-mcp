@@ -28,10 +28,10 @@ class TabsRequest(BaseModel):
     TabsRequest
     """ # noqa: E501
     action: StrictStr = Field(description="action")
-    handle: Optional[StrictStr] = Field(default=None, description="handle")
-    index: Optional[StrictInt] = Field(default=None, description="index")
     url: Optional[StrictStr] = Field(default=None, description="url")
-    __properties: ClassVar[List[str]] = ["action", "handle", "index", "url"]
+    index: Optional[StrictInt] = Field(default=None, description="index")
+    handle: Optional[StrictStr] = Field(default=None, description="handle")
+    __properties: ClassVar[List[str]] = ["action", "url", "index", "handle"]
 
     @field_validator('action')
     def action_validate_enum(cls, value):
@@ -92,10 +92,8 @@ class TabsRequest(BaseModel):
 
         _obj = cls.model_validate({
             "action": obj.get("action"),
-            "handle": obj.get("handle"),
+            "url": obj.get("url"),
             "index": obj.get("index"),
-            "url": obj.get("url")
+            "handle": obj.get("handle")
         })
         return _obj
-
-

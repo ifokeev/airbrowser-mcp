@@ -35,10 +35,10 @@ class TestClickRequest(unittest.TestCase):
         model = ClickRequest()
         if include_optional:
             return ClickRequest(
-                by = 'css',
-                if_visible = True,
                 selector = '',
-                timeout = 56
+                timeout = 56,
+                by = 'css',
+                if_visible = True
             )
         else:
             return ClickRequest(

@@ -85,5 +85,3 @@ class ScalePool(BaseModel):
             "target_size": obj.get("target_size")
         })
         return _obj
-
-

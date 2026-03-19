@@ -20,7 +20,9 @@ from airbrowser_client.models.console_logs_request import ConsoleLogsRequest
 from airbrowser_client.models.cookies_request import CookiesRequest
 from airbrowser_client.models.create_browser_request import CreateBrowserRequest
 from airbrowser_client.models.create_profile_request import CreateProfileRequest
+from airbrowser_client.models.detect_coordinates_data import DetectCoordinatesData
 from airbrowser_client.models.detect_coordinates_request import DetectCoordinatesRequest
+from airbrowser_client.models.detect_coordinates_result import DetectCoordinatesResult
 from airbrowser_client.models.dialog_request import DialogRequest
 from airbrowser_client.models.emulate_request import EmulateRequest
 from airbrowser_client.models.error_response import ErrorResponse
@@ -28,7 +30,10 @@ from airbrowser_client.models.execute_cdp_request import ExecuteCdpRequest
 from airbrowser_client.models.execute_script_request import ExecuteScriptRequest
 from airbrowser_client.models.fill_form_request import FillFormRequest
 from airbrowser_client.models.generic_response import GenericResponse
+from airbrowser_client.models.gui_click_data import GuiClickData
 from airbrowser_client.models.gui_click_request import GuiClickRequest
+from airbrowser_client.models.gui_click_result import GuiClickResult
+from airbrowser_client.models.gui_click_xy_request import GuiClickXYRequest
 from airbrowser_client.models.gui_hover_xy_request import GuiHoverXyRequest
 from airbrowser_client.models.gui_press_keys_xy_request import GuiPressKeysXyRequest
 from airbrowser_client.models.gui_type_xy_request import GuiTypeXyRequest
@@ -56,4 +61,3 @@ from airbrowser_client.models.type_text_request import TypeTextRequest
 from airbrowser_client.models.upload_file_request import UploadFileRequest
 from airbrowser_client.models.wait_element_request import WaitElementRequest
 from airbrowser_client.models.what_is_visible_request import WhatIsVisibleRequest
-

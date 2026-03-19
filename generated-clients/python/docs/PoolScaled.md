@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**data** | [**ScaleData**](ScaleData.md) | Scale result | [optional] 
-**message** | **str** | Status message | 
-**success** | **bool** | Operation success | 
-**timestamp** | **float** | Unix timestamp | 
+**success** | **bool** | Operation success |
+**message** | **str** | Status message |
+**timestamp** | **float** | Unix timestamp |
+**data** | [**ScaleData**](ScaleData.md) | Scale result | [optional]
 
 ## Example
 
@@ -28,5 +28,3 @@ pool_scaled_dict = pool_scaled_instance.to_dict()
 pool_scaled_from_dict = PoolScaled.from_dict(pool_scaled_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

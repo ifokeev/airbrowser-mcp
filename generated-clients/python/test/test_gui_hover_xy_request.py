@@ -35,9 +35,9 @@ class TestGuiHoverXyRequest(unittest.TestCase):
         model = GuiHoverXyRequest()
         if include_optional:
             return GuiHoverXyRequest(
-                timeframe = 1.337,
                 x = 1.337,
-                y = 1.337
+                y = 1.337,
+                timeframe = 1.337
             )
         else:
             return GuiHoverXyRequest(

@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**new_max_browsers** | **int** | New maximum browser count | [optional] 
+**new_max_browsers** | **int** | New maximum browser count | [optional]
 
 ## Example
 
@@ -25,5 +25,3 @@ scale_data_dict = scale_data_instance.to_dict()
 scale_data_from_dict = ScaleData.from_dict(scale_data_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

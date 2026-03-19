@@ -78,7 +78,7 @@ class TestBrowserApi(unittest.TestCase):
     def test_detect_coordinates(self) -> None:
         """Test case for detect_coordinates
 
-        Detect element coordinates using vision
+        Detect element coordinates using vision with optional smart targeting
         """
         pass
 
@@ -148,7 +148,14 @@ class TestBrowserApi(unittest.TestCase):
     def test_gui_click(self) -> None:
         """Test case for gui_click
 
-        GUI click by selector or coordinates
+        GUI click by selector or coordinates with smart validation
+        """
+        pass
+
+    def test_gui_click_xy(self) -> None:
+        """Test case for gui_click_xy
+
+        MCP compatibility alias for coordinate-mode `gui_click`
         """
         pass
 

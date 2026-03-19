@@ -5,13 +5,13 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**selector** | **str** | selector | [optional]
+**x** | **int** | x | [optional]
+**y** | **int** | y | [optional]
+**delta_x** | **int** | delta_x | [optional]
+**delta_y** | **int** | delta_y | [optional]
 **behavior** | **str** | behavior | [optional] [default to 'smooth']
 **by** | **str** | by | [optional] [default to 'css']
-**delta_x** | **int** | delta_x | [optional] 
-**delta_y** | **int** | delta_y | [optional] 
-**selector** | **str** | selector | [optional] 
-**x** | **int** | x | [optional] 
-**y** | **int** | y | [optional] 
 
 ## Example
 
@@ -31,5 +31,3 @@ scroll_request_dict = scroll_request_instance.to_dict()
 scroll_request_from_dict = ScrollRequest.from_dict(scroll_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

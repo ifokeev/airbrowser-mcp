@@ -27,11 +27,11 @@ class WaitElementRequest(BaseModel):
     """
     WaitElementRequest
     """ # noqa: E501
-    by: Optional[StrictStr] = Field(default='css', description="by")
     selector: StrictStr = Field(description="selector")
-    timeout: Optional[StrictInt] = Field(default=None, description="timeout")
     until: StrictStr = Field(description="until")
-    __properties: ClassVar[List[str]] = ["by", "selector", "timeout", "until"]
+    timeout: Optional[StrictInt] = Field(default=None, description="timeout")
+    by: Optional[StrictStr] = Field(default='css', description="by")
+    __properties: ClassVar[List[str]] = ["selector", "until", "timeout", "by"]
 
     @field_validator('until')
     def until_validate_enum(cls, value):
@@ -91,11 +91,9 @@ class WaitElementRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "by": obj.get("by") if obj.get("by") is not None else 'css',
             "selector": obj.get("selector"),
+            "until": obj.get("until"),
             "timeout": obj.get("timeout"),
-            "until": obj.get("until")
+            "by": obj.get("by") if obj.get("by") is not None else 'css'
         })
         return _obj
-
-

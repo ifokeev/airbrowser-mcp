@@ -24,6 +24,7 @@ from airbrowser_client.models.console_logs_request import ConsoleLogsRequest
 from airbrowser_client.models.cookies_request import CookiesRequest
 from airbrowser_client.models.create_browser_request import CreateBrowserRequest
 from airbrowser_client.models.detect_coordinates_request import DetectCoordinatesRequest
+from airbrowser_client.models.detect_coordinates_result import DetectCoordinatesResult
 from airbrowser_client.models.dialog_request import DialogRequest
 from airbrowser_client.models.emulate_request import EmulateRequest
 from airbrowser_client.models.execute_cdp_request import ExecuteCdpRequest
@@ -31,6 +32,8 @@ from airbrowser_client.models.execute_script_request import ExecuteScriptRequest
 from airbrowser_client.models.fill_form_request import FillFormRequest
 from airbrowser_client.models.generic_response import GenericResponse
 from airbrowser_client.models.gui_click_request import GuiClickRequest
+from airbrowser_client.models.gui_click_result import GuiClickResult
+from airbrowser_client.models.gui_click_xy_request import GuiClickXYRequest
 from airbrowser_client.models.gui_hover_xy_request import GuiHoverXyRequest
 from airbrowser_client.models.gui_press_keys_xy_request import GuiPressKeysXyRequest
 from airbrowser_client.models.gui_type_xy_request import GuiTypeXyRequest
@@ -600,17 +603,17 @@ class BrowserApi:
             _path_params['browser_id'] = browser_id
         # process the query parameters
         if selector is not None:
-            
+
             _query_params.append(('selector', selector))
-            
+
         if check is not None:
-            
+
             _query_params.append(('check', check))
-            
+
         if by is not None:
-            
+
             _query_params.append(('by', by))
-            
+
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -2052,10 +2055,10 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> GenericResponse:
-        """Detect element coordinates using vision
+    ) -> DetectCoordinatesResult:
+        """Detect element coordinates using vision with optional smart targeting
 
-        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.
+        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.     hit_test: Detect-time validation mode: off, warn, or strict.         Recommended for agents: `strict`.     auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.         Recommended for agents: `nearest_clickable`.     snap_radius: Maximum snap radius in CSS pixels.     include_debug: Include detect debug diagnostics when available.
 
         :param browser_id: (required)
         :type browser_id: str
@@ -2093,7 +2096,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "GenericResponse",
+            '200': "DetectCoordinatesResult",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -2123,10 +2126,10 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[GenericResponse]:
-        """Detect element coordinates using vision
+    ) -> ApiResponse[DetectCoordinatesResult]:
+        """Detect element coordinates using vision with optional smart targeting
 
-        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.
+        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.     hit_test: Detect-time validation mode: off, warn, or strict.         Recommended for agents: `strict`.     auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.         Recommended for agents: `nearest_clickable`.     snap_radius: Maximum snap radius in CSS pixels.     include_debug: Include detect debug diagnostics when available.
 
         :param browser_id: (required)
         :type browser_id: str
@@ -2164,7 +2167,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "GenericResponse",
+            '200': "DetectCoordinatesResult",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -2195,9 +2198,9 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """Detect element coordinates using vision
+        """Detect element coordinates using vision with optional smart targeting
 
-        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.
+        Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.     hit_test: Detect-time validation mode: off, warn, or strict.         Recommended for agents: `strict`.     auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.         Recommended for agents: `nearest_clickable`.     snap_radius: Maximum snap radius in CSS pixels.     include_debug: Include detect debug diagnostics when available.
 
         :param browser_id: (required)
         :type browser_id: str
@@ -2235,7 +2238,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "GenericResponse",
+            '200': "DetectCoordinatesResult",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -4542,21 +4545,21 @@ class BrowserApi:
             _path_params['browser_id'] = browser_id
         # process the query parameters
         if selector is not None:
-            
+
             _query_params.append(('selector', selector))
-            
+
         if data_type is not None:
-            
+
             _query_params.append(('data_type', data_type))
-            
+
         if name is not None:
-            
+
             _query_params.append(('name', name))
-            
+
         if by is not None:
-            
+
             _query_params.append(('by', by))
-            
+
         # process the header parameters
         # process the form parameters
         # process the body parameter
@@ -4867,9 +4870,10 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> GenericResponse:
-        """GUI click by selector or coordinates
+    ) -> GuiClickResult:
+        """GUI click by selector or coordinates with smart validation
 
+        Selector mode uses `selector` with optional `fx` / `fy` offsets. Coordinate mode uses `x` / `y` and supports smart targeting knobs such as `pre_click_validate`, `auto_snap`, and `post_click_feedback`.  Recommended agent mode: - `pre_click_validate=\"strict\"` - `auto_snap=\"nearest_clickable\"` - `post_click_feedback=\"auto\"`  MCP keeps `gui_click_xy` as a compatibility alias for coordinate-mode `gui_click`.
 
         :param browser_id: (required)
         :type browser_id: str
@@ -4907,7 +4911,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "GenericResponse",
+            '200': "GuiClickResult",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -4937,9 +4941,10 @@ class BrowserApi:
         _content_type: Optional[StrictStr] = None,
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
-    ) -> ApiResponse[GenericResponse]:
-        """GUI click by selector or coordinates
+    ) -> ApiResponse[GuiClickResult]:
+        """GUI click by selector or coordinates with smart validation
 
+        Selector mode uses `selector` with optional `fx` / `fy` offsets. Coordinate mode uses `x` / `y` and supports smart targeting knobs such as `pre_click_validate`, `auto_snap`, and `post_click_feedback`.  Recommended agent mode: - `pre_click_validate=\"strict\"` - `auto_snap=\"nearest_clickable\"` - `post_click_feedback=\"auto\"`  MCP keeps `gui_click_xy` as a compatibility alias for coordinate-mode `gui_click`.
 
         :param browser_id: (required)
         :type browser_id: str
@@ -4977,7 +4982,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "GenericResponse",
+            '200': "GuiClickResult",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -5008,8 +5013,9 @@ class BrowserApi:
         _headers: Optional[Dict[StrictStr, Any]] = None,
         _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
     ) -> RESTResponseType:
-        """GUI click by selector or coordinates
+        """GUI click by selector or coordinates with smart validation
 
+        Selector mode uses `selector` with optional `fx` / `fy` offsets. Coordinate mode uses `x` / `y` and supports smart targeting knobs such as `pre_click_validate`, `auto_snap`, and `post_click_feedback`.  Recommended agent mode: - `pre_click_validate=\"strict\"` - `auto_snap=\"nearest_clickable\"` - `post_click_feedback=\"auto\"`  MCP keeps `gui_click_xy` as a compatibility alias for coordinate-mode `gui_click`.
 
         :param browser_id: (required)
         :type browser_id: str
@@ -5047,7 +5053,7 @@ class BrowserApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "GenericResponse",
+            '200': "GuiClickResult",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -5120,6 +5126,294 @@ class BrowserApi:
         return self.api_client.param_serialize(
             method='POST',
             resource_path='/browser/{browser_id}/gui_click',
+            path_params=_path_params,
+            query_params=_query_params,
+            header_params=_header_params,
+            body=_body_params,
+            post_params=_form_params,
+            files=_files,
+            auth_settings=_auth_settings,
+            collection_formats=_collection_formats,
+            _host=_host,
+            _request_auth=_request_auth
+        )
+
+
+
+
+    @validate_call
+    def gui_click_xy(
+        self,
+        browser_id: StrictStr,
+        payload: GuiClickXYRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> GuiClickResult:
+        """MCP compatibility alias for coordinate-mode `gui_click`
+
+        This mirrors coordinate-mode `gui_click`, accepts the same smart-click options, and returns the same response contract.
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: GuiClickXYRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._gui_click_xy_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GuiClickResult",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        ).data
+
+
+    @validate_call
+    def gui_click_xy_with_http_info(
+        self,
+        browser_id: StrictStr,
+        payload: GuiClickXYRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> ApiResponse[GuiClickResult]:
+        """MCP compatibility alias for coordinate-mode `gui_click`
+
+        This mirrors coordinate-mode `gui_click`, accepts the same smart-click options, and returns the same response contract.
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: GuiClickXYRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._gui_click_xy_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GuiClickResult",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        response_data.read()
+        return self.api_client.response_deserialize(
+            response_data=response_data,
+            response_types_map=_response_types_map,
+        )
+
+
+    @validate_call
+    def gui_click_xy_without_preload_content(
+        self,
+        browser_id: StrictStr,
+        payload: GuiClickXYRequest,
+        _request_timeout: Union[
+            None,
+            Annotated[StrictFloat, Field(gt=0)],
+            Tuple[
+                Annotated[StrictFloat, Field(gt=0)],
+                Annotated[StrictFloat, Field(gt=0)]
+            ]
+        ] = None,
+        _request_auth: Optional[Dict[StrictStr, Any]] = None,
+        _content_type: Optional[StrictStr] = None,
+        _headers: Optional[Dict[StrictStr, Any]] = None,
+        _host_index: Annotated[StrictInt, Field(ge=0, le=0)] = 0,
+    ) -> RESTResponseType:
+        """MCP compatibility alias for coordinate-mode `gui_click`
+
+        This mirrors coordinate-mode `gui_click`, accepts the same smart-click options, and returns the same response contract.
+
+        :param browser_id: (required)
+        :type browser_id: str
+        :param payload: (required)
+        :type payload: GuiClickXYRequest
+        :param _request_timeout: timeout setting for this request. If one
+                                 number provided, it will be total request
+                                 timeout. It can also be a pair (tuple) of
+                                 (connection, read) timeouts.
+        :type _request_timeout: int, tuple(int, int), optional
+        :param _request_auth: set to override the auth_settings for an a single
+                              request; this effectively ignores the
+                              authentication in the spec for a single request.
+        :type _request_auth: dict, optional
+        :param _content_type: force content-type for the request.
+        :type _content_type: str, Optional
+        :param _headers: set to override the headers for a single
+                         request; this effectively ignores the headers
+                         in the spec for a single request.
+        :type _headers: dict, optional
+        :param _host_index: set to override the host_index for a single
+                            request; this effectively ignores the host_index
+                            in the spec for a single request.
+        :type _host_index: int, optional
+        :return: Returns the result object.
+        """ # noqa: E501
+
+        _param = self._gui_click_xy_serialize(
+            browser_id=browser_id,
+            payload=payload,
+            _request_auth=_request_auth,
+            _content_type=_content_type,
+            _headers=_headers,
+            _host_index=_host_index
+        )
+
+        _response_types_map: Dict[str, Optional[str]] = {
+            '200': "GuiClickResult",
+        }
+        response_data = self.api_client.call_api(
+            *_param,
+            _request_timeout=_request_timeout
+        )
+        return response_data.response
+
+
+    def _gui_click_xy_serialize(
+        self,
+        browser_id,
+        payload,
+        _request_auth,
+        _content_type,
+        _headers,
+        _host_index,
+    ) -> RequestSerialized:
+
+        _host = None
+
+        _collection_formats: Dict[str, str] = {
+        }
+
+        _path_params: Dict[str, str] = {}
+        _query_params: List[Tuple[str, str]] = []
+        _header_params: Dict[str, Optional[str]] = _headers or {}
+        _form_params: List[Tuple[str, str]] = []
+        _files: Dict[
+            str, Union[str, bytes, List[str], List[bytes], List[Tuple[str, bytes]]]
+        ] = {}
+        _body_params: Optional[bytes] = None
+
+        # process the path parameters
+        if browser_id is not None:
+            _path_params['browser_id'] = browser_id
+        # process the query parameters
+        # process the header parameters
+        # process the form parameters
+        # process the body parameter
+        if payload is not None:
+            _body_params = payload
+
+
+        # set the HTTP header `Accept`
+        if 'Accept' not in _header_params:
+            _header_params['Accept'] = self.api_client.select_header_accept(
+                [
+                    'application/json'
+                ]
+            )
+
+        # set the HTTP header `Content-Type`
+        if _content_type:
+            _header_params['Content-Type'] = _content_type
+        else:
+            _default_content_type = (
+                self.api_client.select_header_content_type(
+                    [
+                        'application/json'
+                    ]
+                )
+            )
+            if _default_content_type is not None:
+                _header_params['Content-Type'] = _default_content_type
+
+        # authentication setting
+        _auth_settings: List[str] = [
+        ]
+
+        return self.api_client.param_serialize(
+            method='POST',
+            resource_path='/browser/{browser_id}/gui_click_xy',
             path_params=_path_params,
             query_params=_query_params,
             header_params=_header_params,
@@ -10546,5 +10840,3 @@ class BrowserApi:
             _host=_host,
             _request_auth=_request_auth
         )
-
-

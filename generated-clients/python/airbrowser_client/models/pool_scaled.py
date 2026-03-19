@@ -28,11 +28,11 @@ class PoolScaled(BaseModel):
     """
     PoolScaled
     """ # noqa: E501
-    data: Optional[ScaleData] = Field(default=None, description="Scale result")
-    message: StrictStr = Field(description="Status message")
     success: StrictBool = Field(description="Operation success")
+    message: StrictStr = Field(description="Status message")
     timestamp: Union[StrictFloat, StrictInt] = Field(description="Unix timestamp")
-    __properties: ClassVar[List[str]] = ["data", "message", "success", "timestamp"]
+    data: Optional[ScaleData] = Field(default=None, description="Scale result")
+    __properties: ClassVar[List[str]] = ["success", "message", "timestamp", "data"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -88,11 +88,9 @@ class PoolScaled(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "data": ScaleData.from_dict(obj["data"]) if obj.get("data") is not None else None,
-            "message": obj.get("message"),
             "success": obj.get("success"),
-            "timestamp": obj.get("timestamp")
+            "message": obj.get("message"),
+            "timestamp": obj.get("timestamp"),
+            "data": ScaleData.from_dict(obj["data"]) if obj.get("data") is not None else None
         })
         return _obj
-
-

@@ -14,7 +14,9 @@ docs/ConsoleLogsRequest.md
 docs/CookiesRequest.md
 docs/CreateBrowserRequest.md
 docs/CreateProfileRequest.md
+docs/DetectCoordinatesData.md
 docs/DetectCoordinatesRequest.md
+docs/DetectCoordinatesResult.md
 docs/DialogRequest.md
 docs/EmulateRequest.md
 docs/ErrorResponse.md
@@ -22,7 +24,10 @@ docs/ExecuteCdpRequest.md
 docs/ExecuteScriptRequest.md
 docs/FillFormRequest.md
 docs/GenericResponse.md
+docs/GuiClickData.md
 docs/GuiClickRequest.md
+docs/GuiClickResult.md
+docs/GuiClickXYRequest.md
 docs/GuiHoverXyRequest.md
 docs/GuiPressKeysXyRequest.md
 docs/GuiTypeXyRequest.md

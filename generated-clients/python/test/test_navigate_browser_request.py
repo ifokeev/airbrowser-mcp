@@ -35,8 +35,8 @@ class TestNavigateBrowserRequest(unittest.TestCase):
         model = NavigateBrowserRequest()
         if include_optional:
             return NavigateBrowserRequest(
-                timeout = 56,
-                url = ''
+                url = '',
+                timeout = 56
             )
         else:
             return NavigateBrowserRequest(

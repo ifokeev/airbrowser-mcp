@@ -93,5 +93,3 @@ class ConsoleLogsRequest(BaseModel):
             "limit": obj.get("limit")
         })
         return _obj
-
-

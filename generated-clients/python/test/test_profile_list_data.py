@@ -37,11 +37,11 @@ class TestProfileListData(unittest.TestCase):
             return ProfileListData(
                 profiles = [
                     airbrowser_client.models.profile_info.ProfileInfo(
-                        in_use = True, 
-                        last_used = '', 
-                        name = '', 
-                        path = '', 
-                        size_mb = 1.337, )
+                        name = '',
+                        path = '',
+                        size_mb = 1.337,
+                        last_used = '',
+                        in_use = True, )
                     ]
             )
         else:

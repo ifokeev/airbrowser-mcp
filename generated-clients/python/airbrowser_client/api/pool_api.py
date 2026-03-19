@@ -90,8 +90,8 @@ class PoolApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "PoolScaled",
             '400': "ErrorResponse",
+            '200': "PoolScaled",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -157,8 +157,8 @@ class PoolApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "PoolScaled",
             '400': "ErrorResponse",
+            '200': "PoolScaled",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -224,8 +224,8 @@ class PoolApi:
         )
 
         _response_types_map: Dict[str, Optional[str]] = {
-            '200': "PoolScaled",
             '400': "ErrorResponse",
+            '200': "PoolScaled",
         }
         response_data = self.api_client.call_api(
             *_param,
@@ -548,5 +548,3 @@ class PoolApi:
             _host=_host,
             _request_auth=_request_auth
         )
-
-

@@ -35,16 +35,16 @@ class TestPoolScaled(unittest.TestCase):
         model = PoolScaled()
         if include_optional:
             return PoolScaled(
-                data = airbrowser_client.models.scale_data.ScaleData(
-                    new_max_browsers = 56, ),
-                message = '',
                 success = True,
-                timestamp = 1.337
+                message = '',
+                timestamp = 1.337,
+                data = airbrowser_client.models.scale_data.ScaleData(
+                    new_max_browsers = 56, )
             )
         else:
             return PoolScaled(
-                message = '',
                 success = True,
+                message = '',
                 timestamp = 1.337,
         )
         """

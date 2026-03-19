@@ -36,9 +36,9 @@ class TestTabsRequest(unittest.TestCase):
         if include_optional:
             return TabsRequest(
                 action = 'list',
-                handle = '',
+                url = '',
                 index = 56,
-                url = ''
+                handle = ''
             )
         else:
             return TabsRequest(

@@ -57,7 +57,10 @@ pytest --markers
 # Run tests by marker
 pytest tests/ -m "browser"
 pytest tests/ -m "not slow"
+pytest tests/ -m "isolated" -n 0
 ```
+
+Use the `isolated` mark for suites that touch shared browser or display state. That includes `close_all` / `kill_all` flows and browser-driving smart-click regressions that should not run alongside other tests. When you call `pytest` directly, add `-n 0` because `pytest.ini` enables xdist by default; `./scripts/run_tests.sh` already runs isolated suites in its sequential phase.
 
 ## Running Tests
 
@@ -74,6 +77,9 @@ The `run_tests.sh` script handles everything:
 
 # Run specific tests by name
 ./scripts/run_tests.sh -k "test_health"
+
+# Run focused smart-click coverage by keyword
+./scripts/run_tests.sh -r -k "smart_click"
 
 # Run specific tests by marker
 ./scripts/run_tests.sh -m "quick"
@@ -100,10 +106,10 @@ docker compose up -d browser-pool
 source .venv/bin/activate
 
 # 3. Install test dependencies
-pip install pytest pytest-xdist pytest-timeout
+uv pip install pytest pytest-xdist pytest-timeout
 
 # 4. Install generated client
-pip install -e generated-clients/python
+uv pip install -e generated-clients/python
 
 # 5. Run tests
 pytest tests/ -v
@@ -131,8 +137,8 @@ pytest tests/ -n auto
 ```
 
 **Two-Phase Execution:** The test runner (`docker/test-entrypoint.sh`) automatically runs tests in two phases:
-1. Parallel tests (excluding `close_all` tests)
-2. Sequential `close_all` tests (to avoid closing other tests' browsers)
+1. Parallel tests (excluding `isolated` suites)
+2. Sequential `isolated` tests (for suites that touch shared browser/display state, such as `close_all` / `kill_all` flows and smart-click browser-driving regressions)
 
 This is handled automatically by `./scripts/run_tests.sh`.
 
@@ -432,7 +438,7 @@ docker compose restart browser-pool
 ./scripts/generate_client.sh
 
 # Reinstall client
-pip install -e generated-clients/python --force-reinstall
+uv pip install -e generated-clients/python --force-reinstall
 ```
 
 ### Port Conflicts

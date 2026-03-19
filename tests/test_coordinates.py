@@ -2,8 +2,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
+import airbrowser.server.browser.commands.vision as vision_commands
 import airbrowser.server.vision.coordinates as vision_coordinates
 from airbrowser.server.browser.commands.vision import _transform_to_screen_coords
+from airbrowser.server.browser.smart_targeting import Point, SmartTargetResult
 from airbrowser.server.vision.coordinates import VisionCoordinateDetector, detect_element_coordinates
 
 
@@ -132,3 +134,110 @@ def test_detect_element_coordinates_uses_generic_client(monkeypatch, tmp_path):
         "api_key": "test-key",
         "model": "rightcode/gpt-5.4",
     }
+
+
+def test_handle_detect_coordinates_keeps_wide_box_left_bias_when_fx_missing(monkeypatch):
+    monkeypatch.setattr(
+        vision_commands,
+        "take_screenshot",
+        lambda driver, browser_id: {"path": "/tmp/fake.png", "url": "http://shot"},
+    )
+    monkeypatch.setattr(
+        vision_commands,
+        "detect_element_coordinates",
+        lambda image_path, prompt, model: {
+            "success": True,
+            "x": 400,
+            "y": 300,
+            "width": 1000,
+            "height": 50,
+            "confidence": 0.9,
+            "model": model,
+            "image_size": {"width": 1920, "height": 1080},
+        },
+    )
+    monkeypatch.setenv("VISION_API_BASE_URL", "https://cliproxy.ldc-fe.org/v1")
+    monkeypatch.setenv("VISION_API_KEY", "test-key")
+    monkeypatch.setenv("VISION_MODEL", "default/model")
+
+    class FakeDriver:
+        def get_window_rect(self):
+            return {"x": 0, "y": 0, "width": 1920, "height": 1080}
+
+        def execute_script(self, script):
+            return {"return window.innerWidth;": 1920, "return window.innerHeight;": 1080}[script]
+
+    result = vision_commands.handle_detect_coordinates(
+        driver=FakeDriver(),
+        command={"prompt": "the text input area of the search box", "hit_test": "off", "auto_snap": "off"},
+        browser_id="test-browser",
+    )
+
+    assert result["status"] == "success"
+    assert result["coordinates"]["click_point"] == {"x": 650, "y": 325}
+    assert result["coordinates"]["resolved_click_point"] == {"x": 650, "y": 325}
+
+
+def test_handle_detect_coordinates_passes_viewport_bbox_to_smart_targeting(monkeypatch):
+    monkeypatch.setattr(
+        vision_commands,
+        "take_screenshot",
+        lambda driver, browser_id: {"path": "/tmp/fake.png", "url": "http://shot"},
+    )
+    monkeypatch.setattr(
+        vision_commands,
+        "detect_element_coordinates",
+        lambda image_path, prompt, model: {
+            "success": True,
+            "x": 200,
+            "y": 100,
+            "width": 400,
+            "height": 80,
+            "confidence": 0.9,
+            "model": model,
+            "image_size": {"width": 2000, "height": 1000},
+        },
+    )
+    monkeypatch.setenv("VISION_API_BASE_URL", "https://cliproxy.ldc-fe.org/v1")
+    monkeypatch.setenv("VISION_API_KEY", "test-key")
+    monkeypatch.setenv("VISION_MODEL", "default/model")
+
+    captured = {}
+
+    def fake_resolve_detect_target(*, driver, raw_point, raw_bbox, hit_test_mode, auto_snap, snap_radius):
+        captured["raw_point"] = raw_point
+        captured["raw_bbox"] = raw_bbox
+        return SmartTargetResult(
+            success=True,
+            outcome_status="raw_vision_point",
+            reason=None,
+            reason_detail=None,
+            original_screen_point=raw_point,
+            original_viewport_point=Point(200, 90),
+            resolved_screen_point=raw_point,
+            resolved_viewport_point=Point(200, 90),
+            recommended_next_action="proceed",
+        )
+
+    monkeypatch.setattr(vision_commands, "resolve_detect_target", fake_resolve_detect_target)
+
+    class FakeDriver:
+        def get_window_rect(self):
+            return {"x": 100, "y": 200, "width": 1200, "height": 700}
+
+        def execute_script(self, script):
+            return {"return window.innerWidth;": 1000, "return window.innerHeight;": 500}[script]
+
+    result = vision_commands.handle_detect_coordinates(
+        driver=FakeDriver(),
+        command={"prompt": "the search input", "hit_test": "warn"},
+        browser_id="test-browser",
+    )
+
+    assert result["status"] == "success"
+    assert result["coordinates"]["x"] == 200
+    assert result["coordinates"]["y"] == 450
+    assert captured["raw_bbox"].x == pytest.approx(100)
+    assert captured["raw_bbox"].y == pytest.approx(50)
+    assert captured["raw_bbox"].width == pytest.approx(200)
+    assert captured["raw_bbox"].height == pytest.approx(40)

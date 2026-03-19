@@ -37,8 +37,8 @@ class TestCookiesRequest(unittest.TestCase):
             return CookiesRequest(
                 action = 'get',
                 cookie = None,
-                domain = '',
-                name = ''
+                name = '',
+                domain = ''
             )
         else:
             return CookiesRequest(

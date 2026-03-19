@@ -5,11 +5,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**in_use** | **bool** | Whether profile is currently in use by a browser | [optional] 
-**last_used** | **str** | Last used timestamp (ISO format) | [optional] 
-**name** | **str** | Profile name | [optional] 
-**path** | **str** | Profile storage path | [optional] 
-**size_mb** | **float** | Profile size in MB | [optional] 
+**name** | **str** | Profile name | [optional]
+**path** | **str** | Profile storage path | [optional]
+**size_mb** | **float** | Profile size in MB | [optional]
+**last_used** | **str** | Last used timestamp (ISO format) | [optional]
+**in_use** | **bool** | Whether profile is currently in use by a browser | [optional]
 
 ## Example
 
@@ -29,5 +29,3 @@ profile_info_dict = profile_info_instance.to_dict()
 profile_info_from_dict = ProfileInfo.from_dict(profile_info_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **str** | action | 
+**action** | **str** | action |
 
 ## Example
 
@@ -25,5 +25,3 @@ history_request_dict = history_request_instance.to_dict()
 history_request_from_dict = HistoryRequest.from_dict(history_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

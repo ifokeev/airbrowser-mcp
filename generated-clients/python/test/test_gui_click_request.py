@@ -35,12 +35,20 @@ class TestGuiClickRequest(unittest.TestCase):
         model = GuiClickRequest()
         if include_optional:
             return GuiClickRequest(
+                selector = '',
+                x = 1.337,
+                y = 1.337,
+                timeframe = 1.337,
                 fx = 1.337,
                 fy = 1.337,
-                selector = '',
-                timeframe = 1.337,
-                x = 1.337,
-                y = 1.337
+                pre_click_validate = 'off',
+                auto_snap = 'off',
+                snap_radius = 1.337,
+                post_click_feedback = 'none',
+                post_click_timeout_ms = 56,
+                return_content = True,
+                content_limit_chars = 56,
+                include_debug = True
             )
         else:
             return GuiClickRequest(

@@ -124,8 +124,9 @@ Tools are auto-generated from `BrowserOperations`. Key tools:
 | `type_text` | Type text into element |
 | `take_screenshot` | Capture screenshot |
 | `what_is_visible` | AI-powered page analysis |
-| `detect_coordinates` | Vision-based element detection |
-| `gui_click` | Undetectable GUI click |
+| `detect_coordinates` | Vision-based element detection with optional smart targeting |
+| `gui_click` | Undetectable GUI click by selector or coordinates with smart validation |
+| `gui_click_xy` | MCP compatibility alias for coordinate-mode `gui_click` |
 | `dialog` | Handle browser dialogs |
 | `console_logs` | Get/clear console logs |
 | `close_browser` | Close browser instance |
@@ -136,6 +137,42 @@ tools = await client.list_tools()
 for tool in tools:
     print(f"{tool.name}: {tool.description}")
 ```
+
+## Smart Click Workflow
+
+For vision-guided clicks, prefer `detect_coordinates` first and inspect the smart-targeting fields before clicking:
+
+```python
+detect = await client.call_tool("detect_coordinates", {
+    "browser_id": browser_id,
+    "prompt": "the Learn more link near the paragraph",
+    "hit_test": "strict",
+    "auto_snap": "nearest_clickable"
+})
+data = detect.get("data")
+if not detect.get("success") or not isinstance(data, dict):
+    raise RuntimeError(detect.get("message", "inspect detect result before clicking"))
+
+status = data.get("outcome_status")
+if status not in {"exact_match", "snapped_match"}:
+    raise RuntimeError(f"inspect detect result before clicking: {status}")
+
+point = data.get("resolved_click_point") or data["click_point"]
+
+click = await client.call_tool("gui_click_xy", {
+    "browser_id": browser_id,
+    "x": point["x"],
+    "y": point["y"],
+    "pre_click_validate": "strict",
+    "auto_snap": "nearest_clickable",
+    "post_click_feedback": "auto"
+})
+```
+
+- `detect_coordinates` keeps the legacy `click_point` and adds `resolved_click_point` plus `outcome_status` when smart targeting runs.
+- Only click when `detect_coordinates` returns a clean match such as `exact_match` or `snapped_match`; warning and failure outcomes can still include click fields for inspection.
+- `gui_click` supports selector mode and coordinate mode; `gui_click_xy` is the public MCP alias for the coordinate-mode path.
+- Coordinate-mode click responses expose `outcome_status` and structured `precheck`, `execution`, and `postcheck` fields.
 
 ## Architecture
 

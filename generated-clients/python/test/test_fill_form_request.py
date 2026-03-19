@@ -35,10 +35,10 @@ class TestFillFormRequest(unittest.TestCase):
         model = FillFormRequest()
         if include_optional:
             return FillFormRequest(
-                by = 'css',
                 fields = [
                     None
-                    ]
+                    ],
+                by = 'css'
             )
         else:
             return FillFormRequest(

@@ -36,7 +36,7 @@ configuration = airbrowser_client.Configuration(
 with airbrowser_client.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = airbrowser_client.ProfilesApi(api_client)
-    payload = airbrowser_client.CreateProfileRequest() # CreateProfileRequest | 
+    payload = airbrowser_client.CreateProfileRequest() # CreateProfileRequest |
 
     try:
         # Create a new browser profile
@@ -54,7 +54,7 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **payload** | [**CreateProfileRequest**](CreateProfileRequest.md)|  | 
+ **payload** | [**CreateProfileRequest**](CreateProfileRequest.md)|  |
 
 ### Return type
 
@@ -73,8 +73,8 @@ No authorization required
 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | Success |  -  |
 **400** | Bad request |  -  |
+**200** | Success |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -118,7 +118,7 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **profile_name** | **str**| Profile name | 
+ **profile_name** | **str**| Profile name |
 
 ### Return type
 
@@ -137,9 +137,9 @@ No authorization required
 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | Success |  -  |
-**400** | Profile in use |  -  |
 **404** | Profile not found |  -  |
+**400** | Profile in use |  -  |
+**200** | Success |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -186,7 +186,7 @@ with airbrowser_client.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **profile_name** | **str**| Profile name | 
+ **profile_name** | **str**| Profile name |
 
 ### Return type
 
@@ -205,8 +205,8 @@ No authorization required
 
 | Status code | Description | Response headers |
 |-------------|-------------|------------------|
-**200** | Success |  -  |
 **404** | Profile not found |  -  |
+**200** | Success |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -271,4 +271,3 @@ No authorization required
 **200** | Success |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

@@ -27,10 +27,10 @@ class GenericResponse(BaseModel):
     """
     GenericResponse
     """ # noqa: E501
-    data: Optional[Dict[str, Any]] = Field(default=None, description="Response data")
-    message: Optional[StrictStr] = Field(default=None, description="Response message")
     success: Optional[StrictBool] = Field(default=None, description="Whether the operation succeeded")
-    __properties: ClassVar[List[str]] = ["data", "message", "success"]
+    message: Optional[StrictStr] = Field(default=None, description="Response message")
+    data: Optional[Dict[str, Any]] = Field(default=None, description="Response data")
+    __properties: ClassVar[List[str]] = ["success", "message", "data"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -83,10 +83,8 @@ class GenericResponse(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "data": obj.get("data"),
+            "success": obj.get("success"),
             "message": obj.get("message"),
-            "success": obj.get("success")
+            "data": obj.get("data")
         })
         return _obj
-
-

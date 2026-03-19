@@ -5,8 +5,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **str** | action | 
-**browser_id** | **str** | browser_id | [optional] 
+**action** | **str** | action |
+**browser_id** | **str** | browser_id | [optional]
 
 ## Example
 
@@ -26,5 +26,3 @@ browsers_request_dict = browsers_request_instance.to_dict()
 browsers_request_from_dict = BrowsersRequest.from_dict(browsers_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

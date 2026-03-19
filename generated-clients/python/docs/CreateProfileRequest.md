@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**name** | **str** | Profile name | 
+**name** | **str** | Profile name |
 
 ## Example
 
@@ -25,5 +25,3 @@ create_profile_request_dict = create_profile_request_instance.to_dict()
 create_profile_request_from_dict = CreateProfileRequest.from_dict(create_profile_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

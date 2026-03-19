@@ -27,10 +27,10 @@ class ErrorResponse(BaseModel):
     """
     ErrorResponse
     """ # noqa: E501
-    message: Optional[StrictStr] = Field(default=None, description="Error message")
     success: Optional[StrictBool] = Field(default=False, description="Operation success (false)")
+    message: Optional[StrictStr] = Field(default=None, description="Error message")
     timestamp: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Unix timestamp")
-    __properties: ClassVar[List[str]] = ["message", "success", "timestamp"]
+    __properties: ClassVar[List[str]] = ["success", "message", "timestamp"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -83,10 +83,8 @@ class ErrorResponse(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "message": obj.get("message"),
             "success": obj.get("success") if obj.get("success") is not None else False,
+            "message": obj.get("message"),
             "timestamp": obj.get("timestamp")
         })
         return _obj
-
-

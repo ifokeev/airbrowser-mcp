@@ -27,10 +27,10 @@ class UploadFileRequest(BaseModel):
     """
     UploadFileRequest
     """ # noqa: E501
-    by: Optional[StrictStr] = Field(default='css', description="by")
-    file_path: StrictStr = Field(description="file_path")
     selector: StrictStr = Field(description="selector")
-    __properties: ClassVar[List[str]] = ["by", "file_path", "selector"]
+    file_path: StrictStr = Field(description="file_path")
+    by: Optional[StrictStr] = Field(default='css', description="by")
+    __properties: ClassVar[List[str]] = ["selector", "file_path", "by"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -83,10 +83,8 @@ class UploadFileRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "by": obj.get("by") if obj.get("by") is not None else 'css',
+            "selector": obj.get("selector"),
             "file_path": obj.get("file_path"),
-            "selector": obj.get("selector")
+            "by": obj.get("by") if obj.get("by") is not None else 'css'
         })
         return _obj
-
-

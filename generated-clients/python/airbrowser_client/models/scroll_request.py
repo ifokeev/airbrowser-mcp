@@ -27,14 +27,14 @@ class ScrollRequest(BaseModel):
     """
     ScrollRequest
     """ # noqa: E501
-    behavior: Optional[StrictStr] = Field(default='smooth', description="behavior")
-    by: Optional[StrictStr] = Field(default='css', description="by")
-    delta_x: Optional[StrictInt] = Field(default=None, description="delta_x")
-    delta_y: Optional[StrictInt] = Field(default=None, description="delta_y")
     selector: Optional[StrictStr] = Field(default=None, description="selector")
     x: Optional[StrictInt] = Field(default=None, description="x")
     y: Optional[StrictInt] = Field(default=None, description="y")
-    __properties: ClassVar[List[str]] = ["behavior", "by", "delta_x", "delta_y", "selector", "x", "y"]
+    delta_x: Optional[StrictInt] = Field(default=None, description="delta_x")
+    delta_y: Optional[StrictInt] = Field(default=None, description="delta_y")
+    behavior: Optional[StrictStr] = Field(default='smooth', description="behavior")
+    by: Optional[StrictStr] = Field(default='css', description="by")
+    __properties: ClassVar[List[str]] = ["selector", "x", "y", "delta_x", "delta_y", "behavior", "by"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -87,14 +87,12 @@ class ScrollRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "behavior": obj.get("behavior") if obj.get("behavior") is not None else 'smooth',
-            "by": obj.get("by") if obj.get("by") is not None else 'css',
-            "delta_x": obj.get("delta_x"),
-            "delta_y": obj.get("delta_y"),
             "selector": obj.get("selector"),
             "x": obj.get("x"),
-            "y": obj.get("y")
+            "y": obj.get("y"),
+            "delta_x": obj.get("delta_x"),
+            "delta_y": obj.get("delta_y"),
+            "behavior": obj.get("behavior") if obj.get("behavior") is not None else 'smooth',
+            "by": obj.get("by") if obj.get("by") is not None else 'css'
         })
         return _obj
-
-

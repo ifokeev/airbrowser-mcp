@@ -27,10 +27,10 @@ class GuiHoverXyRequest(BaseModel):
     """
     GuiHoverXyRequest
     """ # noqa: E501
-    timeframe: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="timeframe")
     x: Union[StrictFloat, StrictInt] = Field(description="x")
     y: Union[StrictFloat, StrictInt] = Field(description="y")
-    __properties: ClassVar[List[str]] = ["timeframe", "x", "y"]
+    timeframe: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="timeframe")
+    __properties: ClassVar[List[str]] = ["x", "y", "timeframe"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -83,10 +83,8 @@ class GuiHoverXyRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "timeframe": obj.get("timeframe"),
             "x": obj.get("x"),
-            "y": obj.get("y")
+            "y": obj.get("y"),
+            "timeframe": obj.get("timeframe")
         })
         return _obj
-
-

@@ -93,5 +93,3 @@ class BrowsersRequest(BaseModel):
             "browser_id": obj.get("browser_id")
         })
         return _obj
-
-

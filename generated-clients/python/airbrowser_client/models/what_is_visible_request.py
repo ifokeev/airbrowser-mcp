@@ -84,5 +84,3 @@ class WhatIsVisibleRequest(BaseModel):
             "model": obj.get("model")
         })
         return _obj
-
-

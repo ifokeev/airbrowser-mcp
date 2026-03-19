@@ -318,25 +318,41 @@ class BrowserPoolAdapter:
                 )
 
             elif action.action == "gui_click":
-                # GUI-based click using screen coordinates computed via CDP
-                timeframe = action.options.get("timeframe", 0.25) if action.options else 0.25
-                fx = action.options.get("fx") if action.options else None
-                fy = action.options.get("fy") if action.options else None
+                opts = action.options or {}
                 response = self.client.execute_command(
                     browser_id,
                     "gui_click",
                     selector=action.selector,
-                    timeframe=timeframe,
-                    fx=fx,
-                    fy=fy,
+                    timeframe=opts.get("timeframe", 0.25),
+                    fx=opts.get("fx"),
+                    fy=opts.get("fy"),
+                    pre_click_validate=opts.get("pre_click_validate", "off"),
+                    auto_snap=opts.get("auto_snap", "off"),
+                    snap_radius=opts.get("snap_radius", 96),
+                    post_click_feedback=opts.get("post_click_feedback", "none"),
+                    post_click_timeout_ms=opts.get("post_click_timeout_ms", 1500),
+                    return_content=opts.get("return_content", False),
+                    content_limit_chars=opts.get("content_limit_chars", 4000),
+                    include_debug=opts.get("include_debug", False),
                 )
 
             elif action.action == "gui_click_xy":
-                # Absolute screen-coordinate click via PyAutoGUI
-                x = action.options.get("x") if action.options else None
-                y = action.options.get("y") if action.options else None
-                timeframe = action.options.get("timeframe", 0.25) if action.options else 0.25
-                response = self.client.execute_command(browser_id, "gui_click_xy", x=x, y=y, timeframe=timeframe)
+                opts = action.options or {}
+                response = self.client.execute_command(
+                    browser_id,
+                    "gui_click_xy",
+                    x=opts.get("x"),
+                    y=opts.get("y"),
+                    timeframe=opts.get("timeframe", 0.25),
+                    pre_click_validate=opts.get("pre_click_validate", "off"),
+                    auto_snap=opts.get("auto_snap", "off"),
+                    snap_radius=opts.get("snap_radius", 96),
+                    post_click_feedback=opts.get("post_click_feedback", "none"),
+                    post_click_timeout_ms=opts.get("post_click_timeout_ms", 1500),
+                    return_content=opts.get("return_content", False),
+                    content_limit_chars=opts.get("content_limit_chars", 4000),
+                    include_debug=opts.get("include_debug", False),
+                )
 
             elif action.action == "gui_type_xy":
                 # Click at coordinates then type text via PyAutoGUI
@@ -377,6 +393,14 @@ class BrowserPoolAdapter:
                         kwargs["fy"] = action.options["fy"]
                     if "model" in action.options:
                         kwargs["model"] = action.options["model"]
+                    if "hit_test" in action.options:
+                        kwargs["hit_test"] = action.options["hit_test"]
+                    if "auto_snap" in action.options:
+                        kwargs["auto_snap"] = action.options["auto_snap"]
+                    if "snap_radius" in action.options:
+                        kwargs["snap_radius"] = action.options["snap_radius"]
+                    if "include_debug" in action.options:
+                        kwargs["include_debug"] = action.options["include_debug"]
                 response = self.client.execute_command(browser_id, "detect_coordinates", **kwargs)
 
             elif action.action == "what_is_visible":

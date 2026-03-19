@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**data** | **object** | Response data | [optional] 
-**message** | **str** | Response message | [optional] 
-**success** | **bool** | Whether the operation succeeded | [optional] 
+**success** | **bool** | Whether the operation succeeded | [optional]
+**message** | **str** | Response message | [optional]
+**data** | **object** | Response data | [optional]
 
 ## Example
 
@@ -27,5 +27,3 @@ generic_response_dict = generic_response_instance.to_dict()
 generic_response_from_dict = GenericResponse.from_dict(generic_response_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

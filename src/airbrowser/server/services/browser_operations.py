@@ -6,6 +6,7 @@ This is a slim coordinator that delegates to specialized operations modules.
 from typing import Any
 
 from .browser_pool import BrowserPoolAdapter
+from .errors import InvalidOperationParameters
 from .operations import (
     BrowsersAction,
     CookieAction,
@@ -198,9 +199,92 @@ class BrowserOperations:
         timeframe: float = 0.25,
         fx: float | None = None,
         fy: float | None = None,
+        pre_click_validate: str = "off",
+        auto_snap: str = "off",
+        snap_radius: float = 96,
+        post_click_feedback: str = "none",
+        post_click_timeout_ms: int = 1500,
+        return_content: bool = False,
+        content_limit_chars: int = 4000,
+        include_debug: bool = False,
     ) -> dict[str, Any]:
-        """GUI click by selector or coordinates."""
-        return self._gui.gui_click(browser_id, selector, x, y, timeframe, fx, fy)
+        """GUI click by selector or coordinates with smart validation.
+
+        Selector mode uses `selector` with optional `fx` / `fy` offsets.
+        Coordinate mode uses `x` / `y` and supports smart targeting knobs such as
+        `pre_click_validate`, `auto_snap`, and `post_click_feedback`.
+
+        Recommended agent mode:
+        - `pre_click_validate="strict"`
+        - `auto_snap="nearest_clickable"`
+        - `post_click_feedback="auto"`
+
+        MCP keeps `gui_click_xy` as a compatibility alias for coordinate-mode `gui_click`.
+        """
+        selector_mode = selector is not None
+        coordinate_mode = x is not None or y is not None
+
+        if selector_mode and coordinate_mode:
+            raise InvalidOperationParameters("selector cannot be combined with x/y coordinates")
+        if not selector_mode and not coordinate_mode:
+            raise InvalidOperationParameters("either selector or both x and y coordinates are required")
+        if coordinate_mode and (x is None or y is None):
+            raise InvalidOperationParameters("coordinate mode requires both x and y")
+        if coordinate_mode and (fx is not None or fy is not None):
+            raise InvalidOperationParameters("fx/fy are only valid in selector mode")
+
+        return self._gui.gui_click(
+            browser_id=browser_id,
+            selector=selector,
+            x=x,
+            y=y,
+            timeframe=timeframe,
+            fx=fx,
+            fy=fy,
+            pre_click_validate=pre_click_validate,
+            auto_snap=auto_snap,
+            snap_radius=snap_radius,
+            post_click_feedback=post_click_feedback,
+            post_click_timeout_ms=post_click_timeout_ms,
+            return_content=return_content,
+            content_limit_chars=content_limit_chars,
+            include_debug=include_debug,
+        )
+
+    def gui_click_xy(
+        self,
+        browser_id: str,
+        x: float,
+        y: float,
+        timeframe: float = 0.25,
+        pre_click_validate: str = "off",
+        auto_snap: str = "off",
+        snap_radius: float = 96,
+        post_click_feedback: str = "none",
+        post_click_timeout_ms: int = 1500,
+        return_content: bool = False,
+        content_limit_chars: int = 4000,
+        include_debug: bool = False,
+    ) -> dict[str, Any]:
+        """MCP compatibility alias for coordinate-mode `gui_click`.
+
+        This mirrors coordinate-mode `gui_click`, accepts the same smart-click options,
+        and returns the same response contract.
+        """
+        return self.gui_click(
+            browser_id=browser_id,
+            x=x,
+            y=y,
+            timeframe=timeframe,
+            pre_click_validate=pre_click_validate,
+            auto_snap=auto_snap,
+            snap_radius=snap_radius,
+            post_click_feedback=post_click_feedback,
+            post_click_timeout_ms=post_click_timeout_ms,
+            return_content=return_content,
+            content_limit_chars=content_limit_chars,
+            include_debug=include_debug,
+        )
 
     def gui_type_xy(self, browser_id: str, x: float, y: float, text: str, timeframe: float = 0.25) -> dict[str, Any]:
         """GUI type at coordinates - clicks then types text."""
@@ -223,8 +307,12 @@ class BrowserOperations:
         fx: float | None = None,
         fy: float | None = None,
         model: str | None = None,
+        hit_test: str = "off",
+        auto_snap: str = "off",
+        snap_radius: float = 96,
+        include_debug: bool = False,
     ) -> dict[str, Any]:
-        """Detect element coordinates using vision.
+        """Detect element coordinates using vision with optional smart targeting.
 
         Args:
             browser_id: Browser instance identifier
@@ -233,8 +321,24 @@ class BrowserOperations:
                 If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).
             fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
             model: Optional vision model override for this request.
+            hit_test: Detect-time validation mode: off, warn, or strict.
+                Recommended for agents: `strict`.
+            auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.
+                Recommended for agents: `nearest_clickable`.
+            snap_radius: Maximum snap radius in CSS pixels.
+            include_debug: Include detect debug diagnostics when available.
         """
-        return self._vision.detect_coordinates(browser_id, prompt, fx, fy, model)
+        return self._vision.detect_coordinates(
+            browser_id,
+            prompt,
+            fx,
+            fy,
+            model,
+            hit_test,
+            auto_snap,
+            snap_radius,
+            include_debug,
+        )
 
     def what_is_visible(self, browser_id: str, model: str | None = None) -> dict[str, Any]:
         """AI page analysis - what's visible."""

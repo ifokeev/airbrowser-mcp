@@ -5,11 +5,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **str** | action | 
+**action** | **str** | action |
+**selector** | **str** | selector | [optional]
+**source** | **str** | source | [optional]
+**target** | **str** | target | [optional]
 **by** | **str** | by | [optional] [default to 'css']
-**selector** | **str** | selector | [optional] 
-**source** | **str** | source | [optional] 
-**target** | **str** | target | [optional] 
 
 ## Example
 
@@ -29,5 +29,3 @@ mouse_request_dict = mouse_request_instance.to_dict()
 mouse_request_from_dict = MouseRequest.from_dict(mouse_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

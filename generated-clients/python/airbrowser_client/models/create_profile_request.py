@@ -84,5 +84,3 @@ class CreateProfileRequest(BaseModel):
             "name": obj.get("name")
         })
         return _obj
-
-

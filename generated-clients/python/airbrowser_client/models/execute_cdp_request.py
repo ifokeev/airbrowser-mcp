@@ -86,5 +86,3 @@ class ExecuteCdpRequest(BaseModel):
             "params": obj.get("params")
         })
         return _obj
-
-

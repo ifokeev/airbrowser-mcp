@@ -44,10 +44,14 @@ class CapturingBrowserPool:
     def __init__(self, max_browsers: int = 50):
         self.max_browsers = max_browsers
         self.actions = []
+        self.override_result = None
         type(self).instances.append(self)
 
     def execute_action(self, browser_id: str, action):
         self.actions.append((browser_id, action))
+
+        if self.override_result is not None:
+            return self.override_result
 
         if action.action == "detect_coordinates":
             return ActionResult(
@@ -61,6 +65,21 @@ class CapturingBrowserPool:
                         "height": 40,
                         "confidence": 0.9,
                         "click_point": {"x": 25, "y": 40},
+                        "resolved_click_point": {"x": 24, "y": 35},
+                        "outcome_status": "snapped_match",
+                        "reason": "hit_html_root",
+                        "reason_detail": "hit non-interactive root element",
+                        "resolved_target": {
+                            "point": {"x": 24, "y": 35},
+                            "element": {"tag": "A", "text": "Submit", "interactive": True},
+                        },
+                        "snap_result": {
+                            "applied": True,
+                            "strategy": "nearest_clickable",
+                            "distance_px": 18,
+                            "snapped_point": {"x": 24, "y": 35},
+                        },
+                        "recommended_next_action": "proceed",
                         "image_size": {"width": 100, "height": 80},
                         "transform_info": {"scale": {"x": 1.0, "y": 1.0}},
                         "screenshot_url": "http://shot",
@@ -294,6 +313,37 @@ def test_browser_pool_detect_coordinates_forwards_model_to_ipc(browser_pool_adap
     )
 
 
+def test_browser_pool_detect_coordinates_forwards_smart_targeting_options_to_ipc(browser_pool_adapter):
+    adapter, ipc_client = browser_pool_adapter
+
+    result = adapter.execute_action(
+        "browser-123",
+        BrowserAction(
+            action="detect_coordinates",
+            options={
+                "prompt": "the submit button",
+                "hit_test": "strict",
+                "auto_snap": "nearest_clickable",
+                "snap_radius": 96,
+                "include_debug": True,
+            },
+        ),
+    )
+
+    assert result.success is True
+    assert ipc_client.calls[-1] == (
+        "browser-123",
+        "detect_coordinates",
+        {
+            "prompt": "the submit button",
+            "hit_test": "strict",
+            "auto_snap": "nearest_clickable",
+            "snap_radius": 96,
+            "include_debug": True,
+        },
+    )
+
+
 def test_browser_pool_what_is_visible_forwards_model_to_ipc(browser_pool_adapter):
     adapter, ipc_client = browser_pool_adapter
 
@@ -361,6 +411,159 @@ def test_detect_coordinates_route_accepts_and_threads_model_override(browser_rou
     assert response.json["data"]["bounding_box"] == {"x": 10, "y": 20, "width": 30, "height": 40}
     assert browser_pool.actions[-1][0] == "browser-123"
     assert browser_pool.actions[-1][1].options["model"] == "rightcode/gpt-5.4"
+
+
+def test_detect_coordinates_route_threads_smart_targeting_options_and_returns_additive_fields(browser_route_client):
+    client, browser_pool = browser_route_client
+
+    response = client.post(
+        "/api/v1/browser/browser-123/detect_coordinates",
+        json={
+            "prompt": "the submit button",
+            "hit_test": "strict",
+            "auto_snap": "nearest_clickable",
+            "snap_radius": 96,
+            "include_debug": True,
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json["success"] is True
+    assert response.json["data"]["click_point"] == {"x": 25, "y": 40}
+    assert response.json["data"]["resolved_click_point"] == {"x": 24, "y": 35}
+    assert response.json["data"]["outcome_status"] == "snapped_match"
+    assert response.json["data"]["recommended_next_action"] == "proceed"
+    assert browser_pool.actions[-1][1].options["hit_test"] == "strict"
+    assert browser_pool.actions[-1][1].options["auto_snap"] == "nearest_clickable"
+    assert browser_pool.actions[-1][1].options["snap_radius"] == 96
+    assert browser_pool.actions[-1][1].options["include_debug"] is True
+
+
+@pytest.mark.parametrize(
+    ("logical_success", "outcome_status", "reason", "recommended_next_action"),
+    [
+        (False, "fail_iframe_boundary", "hit_iframe_boundary", "switch_to_iframe_context"),
+        (True, "warn_hit_test_unavailable", "hit_test_unavailable", "inspect_page"),
+    ],
+)
+def test_detect_coordinates_route_returns_http_200_with_structured_warning_or_failure_payload(
+    browser_route_client,
+    logical_success,
+    outcome_status,
+    reason,
+    recommended_next_action,
+):
+    client, browser_pool = browser_route_client
+    browser_pool.actions.clear()
+    browser_pool.override_result = ActionResult(
+        success=logical_success,
+        message="Smart targeting produced diagnostics",
+        data={
+            "coordinates": {
+                "x": 280,
+                "y": 393,
+                "width": 90,
+                "height": 20,
+                "click_point": {"x": 325, "y": 403},
+                "resolved_click_point": {"x": 325, "y": 403},
+                "outcome_status": outcome_status,
+                "reason": reason,
+                "reason_detail": "diagnostic detail",
+                "recommended_next_action": recommended_next_action,
+                "screenshot_url": "http://shot",
+            }
+        },
+    )
+
+    response = client.post(
+        "/api/v1/browser/browser-123/detect_coordinates",
+        json={
+            "prompt": "the submit button",
+            "hit_test": "strict",
+            "auto_snap": "nearest_clickable",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json["success"] is logical_success
+    assert response.json["message"] == "Smart targeting produced diagnostics"
+    assert response.json["data"]["outcome_status"] == outcome_status
+    assert response.json["data"]["reason"] == reason
+    assert response.json["data"]["recommended_next_action"] == recommended_next_action
+    assert response.json["data"]["click_point"] == {"x": 325, "y": 403}
+    assert browser_pool.actions[-1][0] == "browser-123"
+    browser_pool.override_result = None
+
+
+def test_detect_coordinates_unexpected_backend_fault_bubbles_up():
+    from airbrowser.server.services.operations.vision import VisionOperations
+
+    browser_pool = type(
+        "ExplodingPool",
+        (),
+        {
+            "execute_action": staticmethod(
+                lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("vision backend exploded"))
+            )
+        },
+    )()
+
+    with pytest.raises(RuntimeError, match="vision backend exploded"):
+        VisionOperations(browser_pool).detect_coordinates("browser-123", prompt="the submit button")
+
+
+def test_detect_coordinates_route_returns_http_500_for_unexpected_backend_fault(browser_route_client):
+    client, browser_pool = browser_route_client
+
+    def exploding_execute_action(browser_id, action):
+        raise RuntimeError("vision backend exploded")
+
+    browser_pool.execute_action = exploding_execute_action
+
+    response = client.post(
+        "/api/v1/browser/browser-123/detect_coordinates",
+        json={"prompt": "the submit button"},
+    )
+
+    assert response.status_code == 500
+    assert response.json == {"success": False, "error": "vision backend exploded"}
+
+
+def test_detect_coordinates_openapi_uses_detect_response_schema(browser_route_client):
+    client, _ = browser_route_client
+
+    response = client.get("/api/v1/swagger.json")
+
+    assert response.status_code == 200
+    path_item = response.json["paths"]["/browser/{browser_id}/detect_coordinates"]
+    assert path_item["post"]["responses"]["200"]["schema"] == {"$ref": "#/definitions/DetectCoordinatesResult"}
+
+
+def test_detect_coordinates_openapi_uses_hand_authored_request_schema(browser_route_client):
+    client, _ = browser_route_client
+
+    response = client.get("/api/v1/swagger.json")
+
+    assert response.status_code == 200
+    path_item = response.json["paths"]["/browser/{browser_id}/detect_coordinates"]
+    assert path_item["post"]["parameters"] == [
+        {
+            "name": "payload",
+            "required": True,
+            "in": "body",
+            "schema": {"$ref": "#/definitions/DetectCoordinatesRequest"},
+        }
+    ]
+
+    request_definition = response.json["definitions"]["DetectCoordinatesRequest"]["properties"]
+    assert request_definition["hit_test"]["type"] == "string"
+    assert request_definition["hit_test"]["description"] == "Detect-time validation mode"
+    assert request_definition["hit_test"]["default"] == "off"
+    assert request_definition["hit_test"]["enum"] == ["off", "warn", "strict"]
+    assert request_definition["auto_snap"]["type"] == "string"
+    assert request_definition["auto_snap"]["description"] == "Auto-snap mode for nearby targets"
+    assert request_definition["auto_snap"]["default"] == "off"
+    assert request_definition["auto_snap"]["enum"] == ["off", "nearest_clickable", "nearest_interactive"]
 
 
 def test_what_is_visible_route_rejects_missing_request_body(browser_route_client):

@@ -22,8 +22,98 @@ VERSION="${VERSION:-1.0.0}"
 GITHUB_USER="${GITHUB_USER:-ifokeev}"
 GITHUB_REPO="${GITHUB_REPO:-airbrowser-mcp}"
 OUTPUT_DIR="generated-clients/python"
+TYPESCRIPT_OUTPUT_DIR="generated-clients/typescript"
 SPEC_PATH="${SPEC_PATH:-openapi.json}"
 SPEC_FILE="openapi_spec.json" # temp file used for generation
+PYTHON_OUTPUT_DIR_TMP=""
+TYPESCRIPT_OUTPUT_DIR_TMP=""
+PYTHON_LOG=""
+TYPESCRIPT_LOG=""
+
+cleanup() {
+    if [ -n "$SPEC_FILE" ] && [ -f "$SPEC_FILE" ]; then
+        rm -f "$SPEC_FILE"
+    fi
+    if [ -n "$PYTHON_OUTPUT_DIR_TMP" ] && [ -d "$PYTHON_OUTPUT_DIR_TMP" ]; then
+        rm -rf "$PYTHON_OUTPUT_DIR_TMP"
+    fi
+    if [ -n "$TYPESCRIPT_OUTPUT_DIR_TMP" ] && [ -d "$TYPESCRIPT_OUTPUT_DIR_TMP" ]; then
+        rm -rf "$TYPESCRIPT_OUTPUT_DIR_TMP"
+    fi
+    if [ -n "$PYTHON_LOG" ] && [ -f "$PYTHON_LOG" ]; then
+        rm -f "$PYTHON_LOG"
+    fi
+    if [ -n "$TYPESCRIPT_LOG" ] && [ -f "$TYPESCRIPT_LOG" ]; then
+        rm -f "$TYPESCRIPT_LOG"
+    fi
+}
+
+trap cleanup EXIT
+
+validate_spec() {
+    local spec_path="$1"
+
+    uv run python - "$spec_path" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+spec_path = Path(sys.argv[1])
+
+try:
+    payload = json.loads(spec_path.read_text())
+except Exception as exc:  # noqa: BLE001
+    raise SystemExit(f"❌ Error: Invalid OpenAPI JSON in {spec_path}: {exc}")
+
+if not isinstance(payload, dict):
+    raise SystemExit(f"❌ Error: OpenAPI spec in {spec_path} must be a JSON object")
+
+if not payload.get("swagger") and not payload.get("openapi"):
+    raise SystemExit(f"❌ Error: OpenAPI spec in {spec_path} is missing a swagger/openapi version")
+
+paths = payload.get("paths")
+if not isinstance(paths, dict):
+    raise SystemExit(f"❌ Error: OpenAPI spec in {spec_path} is missing a valid paths object")
+PY
+}
+
+print_filtered_log() {
+    local log_path="$1"
+
+    grep -E "(INFO|WARN|ERROR|writing file)" "$log_path" || true
+}
+
+sanitize_generated_tree() {
+    local target_dir="$1"
+
+    uv run python - "$target_dir" <<'PY'
+from pathlib import Path
+import sys
+
+root = Path(sys.argv[1])
+
+for path in root.rglob("*"):
+    if not path.is_file():
+        continue
+
+    try:
+        original = path.read_text(encoding="utf-8")
+    except UnicodeDecodeError:
+        continue
+
+    normalized = original.replace("\r\n", "\n")
+    lines = [line.rstrip() for line in normalized.splitlines()]
+    while lines and lines[-1] == "":
+        lines.pop()
+
+    cleaned = "\n".join(lines)
+    if cleaned:
+        cleaned += "\n"
+
+    if cleaned != normalized:
+        path.write_text(cleaned, encoding="utf-8")
+PY
+}
 
 # Step 1: Acquire OpenAPI spec
 if [ -f "$SPEC_PATH" ]; then
@@ -31,7 +121,7 @@ if [ -f "$SPEC_PATH" ]; then
     cp "$SPEC_PATH" "$SPEC_FILE"
 else
     echo "📋 Fetching latest OpenAPI spec from $API_URL/api/v1/swagger.json..."
-    curl -s "$API_URL/api/v1/swagger.json" > "$SPEC_FILE"
+    curl -fsS "$API_URL/api/v1/swagger.json" > "$SPEC_FILE"
 fi
 
 if [ ! -s "$SPEC_FILE" ]; then
@@ -40,29 +130,40 @@ if [ ! -s "$SPEC_FILE" ]; then
 fi
 
 echo "✅ OpenAPI spec saved to $SPEC_FILE"
+validate_spec "$SPEC_FILE"
+echo "✅ OpenAPI spec validated"
 
 # Step 2: Generate Python client using Docker
 echo ""
 echo "🔧 Generating Python client..."
 
-# Ensure output directory exists with correct permissions
-mkdir -p "$OUTPUT_DIR"
+PYTHON_OUTPUT_DIR_TMP="$(mktemp -d "$REPO_ROOT/generated-clients/python.tmp.XXXXXX")"
+PYTHON_LOG="$(mktemp "$REPO_ROOT/generated-clients/python.generate.XXXXXX.log")"
 
-docker run --rm \
+if ! docker run --rm \
   --user "$(id -u):$(id -g)" \
   -v "$(pwd):/local" \
   openapitools/openapi-generator-cli:latest generate \
   -i "/local/$SPEC_FILE" \
   -g python \
-  -o "/local/$OUTPUT_DIR" \
+  -o "/local/${PYTHON_OUTPUT_DIR_TMP#$REPO_ROOT/}" \
   --skip-validate-spec \
   --git-user-id "$GITHUB_USER" \
   --git-repo-id "$GITHUB_REPO" \
   --additional-properties packageName=airbrowser_client,projectName=airbrowser-client,packageVersion="$VERSION" \
-  2>&1 | grep -E "(INFO|WARN|ERROR|writing file)" || true
+  >"$PYTHON_LOG" 2>&1; then
+    print_filtered_log "$PYTHON_LOG"
+    echo "❌ Error: Failed to generate Python client"
+    exit 1
+fi
 
-# Check if generation was successful
-if [ -d "$OUTPUT_DIR/airbrowser_client" ]; then
+print_filtered_log "$PYTHON_LOG"
+
+if [ -f "$PYTHON_OUTPUT_DIR_TMP/airbrowser_client/api_client.py" ]; then
+    sanitize_generated_tree "$PYTHON_OUTPUT_DIR_TMP"
+    rm -rf "$OUTPUT_DIR"
+    mv "$PYTHON_OUTPUT_DIR_TMP" "$OUTPUT_DIR"
+    PYTHON_OUTPUT_DIR_TMP=""
     echo ""
     echo "✅ Python client generated successfully in $OUTPUT_DIR"
     echo ""
@@ -91,37 +192,47 @@ fi
 # Step 3: Generate TypeScript client
 echo ""
 echo "🔧 Generating TypeScript client..."
-TYPESCRIPT_OUTPUT_DIR="generated-clients/typescript"
 
-# Clean and recreate directory with correct permissions
-rm -rf "$TYPESCRIPT_OUTPUT_DIR"
-mkdir -p "$TYPESCRIPT_OUTPUT_DIR"
+TYPESCRIPT_OUTPUT_DIR_TMP="$(mktemp -d "$REPO_ROOT/generated-clients/typescript.tmp.XXXXXX")"
+TYPESCRIPT_LOG="$(mktemp "$REPO_ROOT/generated-clients/typescript.generate.XXXXXX.log")"
 
-docker run --rm \
+if ! docker run --rm \
   --user "$(id -u):$(id -g)" \
   -v "$(pwd):/local" \
   openapitools/openapi-generator-cli:latest generate \
   -i "/local/$SPEC_FILE" \
   -g typescript-axios \
-  -o "/local/$TYPESCRIPT_OUTPUT_DIR" \
+  -o "/local/${TYPESCRIPT_OUTPUT_DIR_TMP#$REPO_ROOT/}" \
   --skip-validate-spec \
   --git-user-id "$GITHUB_USER" \
   --git-repo-id "$GITHUB_REPO" \
   --additional-properties npmName=airbrowser-client,npmVersion="$VERSION",supportsES6=true \
-  2>&1 | grep -E "(INFO|WARN|ERROR|writing file)" | tail -20 || true
+  >"$TYPESCRIPT_LOG" 2>&1; then
+    print_filtered_log "$TYPESCRIPT_LOG"
+    echo "❌ Error: Failed to generate TypeScript client"
+    exit 1
+fi
 
-if [ -f "$TYPESCRIPT_OUTPUT_DIR/api.ts" ]; then
+print_filtered_log "$TYPESCRIPT_LOG"
+
+if [ -f "$TYPESCRIPT_OUTPUT_DIR_TMP/api.ts" ]; then
+    sanitize_generated_tree "$TYPESCRIPT_OUTPUT_DIR_TMP"
+    rm -rf "$TYPESCRIPT_OUTPUT_DIR"
+    mv "$TYPESCRIPT_OUTPUT_DIR_TMP" "$TYPESCRIPT_OUTPUT_DIR"
+    TYPESCRIPT_OUTPUT_DIR_TMP=""
     echo ""
     echo "✅ TypeScript client generated successfully in $TYPESCRIPT_OUTPUT_DIR"
 else
-    echo "⚠️ Warning: TypeScript client generation may have failed"
+    echo "❌ Error: Failed to generate TypeScript client"
+    exit 1
 fi
 
 # Step 4: Clean up the OpenAPI spec file
 echo ""
 echo "🧹 Cleaning up OpenAPI spec file..."
-rm -f "$SPEC_FILE"
 echo "✅ Removed $SPEC_FILE"
+rm -f "$SPEC_FILE"
+SPEC_FILE=""
 
 echo ""
 echo "🎉 Done! Clients have been generated:"

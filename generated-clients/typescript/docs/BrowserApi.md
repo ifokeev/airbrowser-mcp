@@ -11,7 +11,7 @@ All URIs are relative to */api/v1*
 |[**consoleLogs**](#consolelogs) | **POST** /browser/{browser_id}/console_logs | Console logs: get or clear|
 |[**cookies**](#cookies) | **POST** /browser/{browser_id}/cookies | Manage browser cookies|
 |[**createBrowser**](#createbrowser) | **POST** /browser/create_browser | Create browser instance with optional persistent profile|
-|[**detectCoordinates**](#detectcoordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using vision|
+|[**detectCoordinates**](#detectcoordinates) | **POST** /browser/{browser_id}/detect_coordinates | Detect element coordinates using vision with optional smart targeting|
 |[**dialog**](#dialog) | **POST** /browser/{browser_id}/dialog | Dialogs: get, accept, dismiss|
 |[**emulate**](#emulate) | **POST** /browser/{browser_id}/emulate | Emulation: set, clear, list_devices|
 |[**executeCdp**](#executecdp) | **POST** /browser/{browser_id}/execute_cdp | Execute a Chrome DevTools Protocol command|
@@ -21,7 +21,8 @@ All URIs are relative to */api/v1*
 |[**getContent**](#getcontent) | **GET** /browser/{browser_id}/get_content | Get page HTML|
 |[**getElementData**](#getelementdata) | **GET** /browser/{browser_id}/get_element_data | Get element text, attribute, or property|
 |[**getUrl**](#geturl) | **GET** /browser/{browser_id}/get_url | Get current URL|
-|[**guiClick**](#guiclick) | **POST** /browser/{browser_id}/gui_click | GUI click by selector or coordinates|
+|[**guiClick**](#guiclick) | **POST** /browser/{browser_id}/gui_click | GUI click by selector or coordinates with smart validation|
+|[**guiClickXy**](#guiclickxy) | **POST** /browser/{browser_id}/gui_click_xy | MCP compatibility alias for coordinate-mode &#x60;gui_click&#x60;|
 |[**guiHoverXy**](#guihoverxy) | **POST** /browser/{browser_id}/gui_hover_xy | GUI hover at coordinates|
 |[**guiPressKeysXy**](#guipresskeysxy) | **POST** /browser/{browser_id}/gui_press_keys_xy | Press keys at coordinates (click to focus, then send keys)|
 |[**guiTypeXy**](#guitypexy) | **POST** /browser/{browser_id}/gui_type_xy | GUI type at coordinates - clicks then types text|
@@ -418,9 +419,9 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **detectCoordinates**
-> GenericResponse detectCoordinates(payload)
+> DetectCoordinatesResult detectCoordinates(payload)
 
-Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.
+Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.     hit_test: Detect-time validation mode: off, warn, or strict.         Recommended for agents: `strict`.     auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.         Recommended for agents: `nearest_clickable`.     snap_radius: Maximum snap radius in CSS pixels.     include_debug: Include detect debug diagnostics when available.
 
 ### Example
 
@@ -453,7 +454,7 @@ const { status, data } = await apiInstance.detectCoordinates(
 
 ### Return type
 
-**GenericResponse**
+**DetectCoordinatesResult**
 
 ### Authorization
 
@@ -957,8 +958,9 @@ No authorization required
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 # **guiClick**
-> GenericResponse guiClick(payload)
+> GuiClickResult guiClick(payload)
 
+Selector mode uses `selector` with optional `fx` / `fy` offsets. Coordinate mode uses `x` / `y` and supports smart targeting knobs such as `pre_click_validate`, `auto_snap`, and `post_click_feedback`.  Recommended agent mode: - `pre_click_validate=\"strict\"` - `auto_snap=\"nearest_clickable\"` - `post_click_feedback=\"auto\"`  MCP keeps `gui_click_xy` as a compatibility alias for coordinate-mode `gui_click`.
 
 ### Example
 
@@ -991,7 +993,62 @@ const { status, data } = await apiInstance.guiClick(
 
 ### Return type
 
-**GenericResponse**
+**GuiClickResult**
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+ - **Content-Type**: application/json
+ - **Accept**: application/json
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | Success |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **guiClickXy**
+> GuiClickResult guiClickXy(payload)
+
+This mirrors coordinate-mode `gui_click`, accepts the same smart-click options, and returns the same response contract.
+
+### Example
+
+```typescript
+import {
+    BrowserApi,
+    Configuration,
+    GuiClickXYRequest
+} from 'airbrowser-client';
+
+const configuration = new Configuration();
+const apiInstance = new BrowserApi(configuration);
+
+let browserId: string; // (default to undefined)
+let payload: GuiClickXYRequest; //
+
+const { status, data } = await apiInstance.guiClickXy(
+    browserId,
+    payload
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **payload** | **GuiClickXYRequest**|  | |
+| **browserId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**GuiClickResult**
 
 ### Authorization
 
@@ -2035,4 +2092,3 @@ No authorization required
 |**200** | Success |  -  |
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-

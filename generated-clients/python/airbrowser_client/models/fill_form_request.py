@@ -27,9 +27,9 @@ class FillFormRequest(BaseModel):
     """
     FillFormRequest
     """ # noqa: E501
-    by: Optional[StrictStr] = Field(default='css', description="by")
     fields: List[Dict[str, Any]] = Field(description="fields")
-    __properties: ClassVar[List[str]] = ["by", "fields"]
+    by: Optional[StrictStr] = Field(default='css', description="by")
+    __properties: ClassVar[List[str]] = ["fields", "by"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -82,9 +82,7 @@ class FillFormRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "by": obj.get("by") if obj.get("by") is not None else 'css',
-            "fields": obj.get("fields")
+            "fields": obj.get("fields"),
+            "by": obj.get("by") if obj.get("by") is not None else 'css'
         })
         return _obj
-
-

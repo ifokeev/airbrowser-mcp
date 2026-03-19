@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**profiles** | [**List[ProfileInfo]**](ProfileInfo.md) | List of profiles | [optional] 
+**profiles** | [**List[ProfileInfo]**](ProfileInfo.md) | List of profiles | [optional]
 
 ## Example
 
@@ -25,5 +25,3 @@ profile_list_data_dict = profile_list_data_instance.to_dict()
 profile_list_data_from_dict = ProfileListData.from_dict(profile_list_data_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**timeframe** | **number** | timeframe | [optional] [default to undefined]
 **x** | **number** | x | [default to undefined]
 **y** | **number** | y | [default to undefined]
+**timeframe** | **number** | timeframe | [optional] [default to undefined]
 
 ## Example
 
@@ -15,9 +15,9 @@ Name | Type | Description | Notes
 import { GuiHoverXyRequest } from 'airbrowser-client';
 
 const instance: GuiHoverXyRequest = {
-    timeframe,
     x,
     y,
+    timeframe,
 };
 ```
 

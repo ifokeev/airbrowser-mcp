@@ -5,7 +5,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**model** | **str** | model | [optional] 
+**model** | **str** | model | [optional]
 
 ## Example
 
@@ -25,5 +25,3 @@ what_is_visible_request_dict = what_is_visible_request_instance.to_dict()
 what_is_visible_request_from_dict = WhatIsVisibleRequest.from_dict(what_is_visible_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

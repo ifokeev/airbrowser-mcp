@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**selector** | **str** | selector |
+**file_path** | **str** | file_path |
 **by** | **str** | by | [optional] [default to 'css']
-**file_path** | **str** | file_path | 
-**selector** | **str** | selector | 
 
 ## Example
 
@@ -27,5 +27,3 @@ upload_file_request_dict = upload_file_request_instance.to_dict()
 upload_file_request_from_dict = UploadFileRequest.from_dict(upload_file_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **str** | action | 
-**cookie** | **object** | cookie | [optional] 
-**domain** | **str** | domain | [optional] 
-**name** | **str** | name | [optional] 
+**action** | **str** | action |
+**cookie** | **object** | cookie | [optional]
+**name** | **str** | name | [optional]
+**domain** | **str** | domain | [optional]
 
 ## Example
 
@@ -28,5 +28,3 @@ cookies_request_dict = cookies_request_instance.to_dict()
 cookies_request_from_dict = CookiesRequest.from_dict(cookies_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

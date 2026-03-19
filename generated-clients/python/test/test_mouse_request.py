@@ -36,10 +36,10 @@ class TestMouseRequest(unittest.TestCase):
         if include_optional:
             return MouseRequest(
                 action = 'hover',
-                by = 'css',
                 selector = '',
                 source = '',
-                target = ''
+                target = '',
+                by = 'css'
             )
         else:
             return MouseRequest(

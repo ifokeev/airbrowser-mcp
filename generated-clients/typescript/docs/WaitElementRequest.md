@@ -5,10 +5,10 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**by** | **string** | by | [optional] [default to 'css']
 **selector** | **string** | selector | [default to undefined]
-**timeout** | **number** | timeout | [optional] [default to undefined]
 **until** | **string** | until | [default to undefined]
+**timeout** | **number** | timeout | [optional] [default to undefined]
+**by** | **string** | by | [optional] [default to 'css']
 
 ## Example
 
@@ -16,10 +16,10 @@ Name | Type | Description | Notes
 import { WaitElementRequest } from 'airbrowser-client';
 
 const instance: WaitElementRequest = {
-    by,
     selector,
-    timeout,
     until,
+    timeout,
+    by,
 };
 ```
 

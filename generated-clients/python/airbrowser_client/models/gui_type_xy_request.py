@@ -27,11 +27,11 @@ class GuiTypeXyRequest(BaseModel):
     """
     GuiTypeXyRequest
     """ # noqa: E501
-    text: StrictStr = Field(description="text")
-    timeframe: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="timeframe")
     x: Union[StrictFloat, StrictInt] = Field(description="x")
     y: Union[StrictFloat, StrictInt] = Field(description="y")
-    __properties: ClassVar[List[str]] = ["text", "timeframe", "x", "y"]
+    text: StrictStr = Field(description="text")
+    timeframe: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="timeframe")
+    __properties: ClassVar[List[str]] = ["x", "y", "text", "timeframe"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -84,11 +84,9 @@ class GuiTypeXyRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "text": obj.get("text"),
-            "timeframe": obj.get("timeframe"),
             "x": obj.get("x"),
-            "y": obj.get("y")
+            "y": obj.get("y"),
+            "text": obj.get("text"),
+            "timeframe": obj.get("timeframe")
         })
         return _obj
-
-

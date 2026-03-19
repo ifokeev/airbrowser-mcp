@@ -80,9 +80,9 @@ class TestBrowserStatusLifecycle:
         )
 
         if created_browser:
-            assert (
-                created_browser.get("status") == "ready"
-            ), f"Browser should be 'ready' after creation, got: {created_browser.get('status')}"
+            assert created_browser.get("status") == "ready", (
+                f"Browser should be 'ready' after creation, got: {created_browser.get('status')}"
+            )
 
         # Cleanup
         if created_browser_id:
@@ -107,9 +107,9 @@ class TestBrowserStatusLifecycle:
             # browsers are returned as dicts
             created_browser = next((b for b in browsers if b.get("id") == browser_id), None)
             assert created_browser is not None, "Created browser should be in list"
-            assert (
-                created_browser.get("status") == "ready"
-            ), f"Expected 'ready' status, got: {created_browser.get('status')}"
+            assert created_browser.get("status") == "ready", (
+                f"Expected 'ready' status, got: {created_browser.get('status')}"
+            )
 
         finally:
             # Cleanup

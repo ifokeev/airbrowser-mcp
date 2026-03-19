@@ -44,6 +44,7 @@ COMMAND_HANDLERS = {
     "get_dialog": dialogs.handle_get_dialog,
     # GUI operations
     "gui_click": gui.handle_gui_click,
+    # Keep the internal coordinate command as a compatibility alias for the smart gui_click pipeline.
     "gui_click_xy": gui.handle_gui_click_xy,
     "gui_type_xy": gui.handle_gui_type_xy,
     "gui_hover_xy": gui.handle_gui_hover_xy,

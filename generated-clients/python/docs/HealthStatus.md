@@ -5,11 +5,11 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**pool** | **object** | Pool status information | [optional] 
-**status** | **str** | Health status | [optional] 
-**timestamp** | **float** | Unix timestamp | [optional] 
-**version** | **str** | Server version | [optional] 
-**vision_enabled** | **bool** | Whether AI vision tools are available | [optional] 
+**status** | **str** | Health status | [optional]
+**version** | **str** | Server version | [optional]
+**vision_enabled** | **bool** | Whether AI vision tools are available | [optional]
+**pool** | **object** | Pool status information | [optional]
+**timestamp** | **float** | Unix timestamp | [optional]
 
 ## Example
 
@@ -29,5 +29,3 @@ health_status_dict = health_status_instance.to_dict()
 health_status_from_dict = HealthStatus.from_dict(health_status_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

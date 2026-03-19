@@ -27,12 +27,12 @@ class HealthStatus(BaseModel):
     """
     HealthStatus
     """ # noqa: E501
-    pool: Optional[Dict[str, Any]] = Field(default=None, description="Pool status information")
     status: Optional[StrictStr] = Field(default=None, description="Health status")
-    timestamp: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Unix timestamp")
     version: Optional[StrictStr] = Field(default=None, description="Server version")
     vision_enabled: Optional[StrictBool] = Field(default=None, description="Whether AI vision tools are available")
-    __properties: ClassVar[List[str]] = ["pool", "status", "timestamp", "version", "vision_enabled"]
+    pool: Optional[Dict[str, Any]] = Field(default=None, description="Pool status information")
+    timestamp: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Unix timestamp")
+    __properties: ClassVar[List[str]] = ["status", "version", "vision_enabled", "pool", "timestamp"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -85,12 +85,10 @@ class HealthStatus(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "pool": obj.get("pool"),
             "status": obj.get("status"),
-            "timestamp": obj.get("timestamp"),
             "version": obj.get("version"),
-            "vision_enabled": obj.get("vision_enabled")
+            "vision_enabled": obj.get("vision_enabled"),
+            "pool": obj.get("pool"),
+            "timestamp": obj.get("timestamp")
         })
         return _obj
-
-

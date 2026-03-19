@@ -5,12 +5,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**action** | **string** | action | [optional] [default to ActionEnum_Select]
-**by** | **string** | by | [optional] [default to 'css']
-**index** | **number** | index | [optional] [default to undefined]
 **selector** | **string** | selector | [default to undefined]
-**text** | **string** | text | [optional] [default to undefined]
+**action** | **string** | action | [optional] [default to ActionEnum_Select]
 **value** | **string** | value | [optional] [default to undefined]
+**text** | **string** | text | [optional] [default to undefined]
+**index** | **number** | index | [optional] [default to undefined]
+**by** | **string** | by | [optional] [default to 'css']
 
 ## Example
 
@@ -18,12 +18,12 @@ Name | Type | Description | Notes
 import { SelectRequest } from 'airbrowser-client';
 
 const instance: SelectRequest = {
-    action,
-    by,
-    index,
     selector,
-    text,
+    action,
     value,
+    text,
+    index,
+    by,
 };
 ```
 

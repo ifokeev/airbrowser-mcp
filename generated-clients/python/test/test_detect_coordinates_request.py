@@ -35,14 +35,18 @@ class TestDetectCoordinatesRequest(unittest.TestCase):
         model = DetectCoordinatesRequest()
         if include_optional:
             return DetectCoordinatesRequest(
+                prompt = 'the search input field',
                 fx = 1.337,
                 fy = 1.337,
                 model = '',
-                prompt = ''
+                hit_test = 'off',
+                auto_snap = 'off',
+                snap_radius = 1.337,
+                include_debug = True
             )
         else:
             return DetectCoordinatesRequest(
-                prompt = '',
+                prompt = 'the search input field',
         )
         """
 

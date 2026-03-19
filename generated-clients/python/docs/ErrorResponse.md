@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**message** | **str** | Error message | [optional] 
 **success** | **bool** | Operation success (false) | [optional] [default to False]
-**timestamp** | **float** | Unix timestamp | [optional] 
+**message** | **str** | Error message | [optional]
+**timestamp** | **float** | Unix timestamp | [optional]
 
 ## Example
 
@@ -27,5 +27,3 @@ error_response_dict = error_response_instance.to_dict()
 error_response_from_dict = ErrorResponse.from_dict(error_response_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-

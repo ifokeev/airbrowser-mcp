@@ -84,5 +84,3 @@ class ScaleData(BaseModel):
             "new_max_browsers": obj.get("new_max_browsers")
         })
         return _obj
-
-

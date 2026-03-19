@@ -29,9 +29,9 @@ class CookiesRequest(BaseModel):
     """ # noqa: E501
     action: StrictStr = Field(description="action")
     cookie: Optional[Dict[str, Any]] = Field(default=None, description="cookie")
-    domain: Optional[StrictStr] = Field(default=None, description="domain")
     name: Optional[StrictStr] = Field(default=None, description="name")
-    __properties: ClassVar[List[str]] = ["action", "cookie", "domain", "name"]
+    domain: Optional[StrictStr] = Field(default=None, description="domain")
+    __properties: ClassVar[List[str]] = ["action", "cookie", "name", "domain"]
 
     @field_validator('action')
     def action_validate_enum(cls, value):
@@ -93,9 +93,7 @@ class CookiesRequest(BaseModel):
         _obj = cls.model_validate({
             "action": obj.get("action"),
             "cookie": obj.get("cookie"),
-            "domain": obj.get("domain"),
-            "name": obj.get("name")
+            "name": obj.get("name"),
+            "domain": obj.get("domain")
         })
         return _obj
-
-

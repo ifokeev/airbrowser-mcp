@@ -91,5 +91,3 @@ class HistoryRequest(BaseModel):
             "action": obj.get("action")
         })
         return _obj
-
-

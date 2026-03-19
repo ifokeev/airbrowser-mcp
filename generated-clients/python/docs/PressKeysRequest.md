@@ -5,9 +5,9 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+**selector** | **str** | selector |
+**keys** | **str** | keys |
 **by** | **str** | by | [optional] [default to 'css']
-**keys** | **str** | keys | 
-**selector** | **str** | selector | 
 
 ## Example
 
@@ -27,5 +27,3 @@ press_keys_request_dict = press_keys_request_instance.to_dict()
 press_keys_request_from_dict = PressKeysRequest.from_dict(press_keys_request_dict)
 ```
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
-
-
