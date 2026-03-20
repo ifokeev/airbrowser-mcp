@@ -31,11 +31,12 @@ class DetectCoordinatesRequest(BaseModel):
     fx: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Relative X (0..1) within the detected element")
     fy: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Relative Y (0..1) within the detected element")
     model: Optional[StrictStr] = Field(default=None, description="Optional vision model override for this request")
+    stream: Optional[StrictBool] = Field(default=None, description="Optional vision streaming override for this request")
     hit_test: Optional[StrictStr] = Field(default='off', description="Detect-time validation mode")
     auto_snap: Optional[StrictStr] = Field(default='off', description="Auto-snap mode for nearby targets")
     snap_radius: Optional[Union[StrictFloat, StrictInt]] = Field(default=None, description="Maximum snap radius in CSS pixels")
     include_debug: Optional[StrictBool] = Field(default=False, description="Include smart-targeting debug details")
-    __properties: ClassVar[List[str]] = ["prompt", "fx", "fy", "model", "hit_test", "auto_snap", "snap_radius", "include_debug"]
+    __properties: ClassVar[List[str]] = ["prompt", "fx", "fy", "model", "stream", "hit_test", "auto_snap", "snap_radius", "include_debug"]
 
     @field_validator('hit_test')
     def hit_test_validate_enum(cls, value):
@@ -112,6 +113,7 @@ class DetectCoordinatesRequest(BaseModel):
             "fx": obj.get("fx"),
             "fy": obj.get("fy"),
             "model": obj.get("model"),
+            "stream": obj.get("stream"),
             "hit_test": obj.get("hit_test") if obj.get("hit_test") is not None else 'off',
             "auto_snap": obj.get("auto_snap") if obj.get("auto_snap") is not None else 'off',
             "snap_radius": obj.get("snap_radius"),

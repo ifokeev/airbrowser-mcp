@@ -393,6 +393,8 @@ class BrowserPoolAdapter:
                         kwargs["fy"] = action.options["fy"]
                     if "model" in action.options:
                         kwargs["model"] = action.options["model"]
+                    if "stream" in action.options:
+                        kwargs["stream"] = action.options["stream"]
                     if "hit_test" in action.options:
                         kwargs["hit_test"] = action.options["hit_test"]
                     if "auto_snap" in action.options:
@@ -406,8 +408,11 @@ class BrowserPoolAdapter:
             elif action.action == "what_is_visible":
                 # Comprehensive page state analysis - what's visible on the current page
                 kwargs = {}
-                if action.options and "model" in action.options:
-                    kwargs["model"] = action.options["model"]
+                if action.options:
+                    if "model" in action.options:
+                        kwargs["model"] = action.options["model"]
+                    if "stream" in action.options:
+                        kwargs["stream"] = action.options["stream"]
                 response = self.client.execute_command(browser_id, "what_is_visible", **kwargs)
 
             # Tab operations

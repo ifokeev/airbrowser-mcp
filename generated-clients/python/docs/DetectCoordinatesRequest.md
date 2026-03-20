@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **fx** | **float** | Relative X (0..1) within the detected element | [optional]
 **fy** | **float** | Relative Y (0..1) within the detected element | [optional]
 **model** | **str** | Optional vision model override for this request | [optional]
+**stream** | **bool** | Optional vision streaming override for this request | [optional]
 **hit_test** | **str** | Detect-time validation mode | [optional] [default to 'off']
 **auto_snap** | **str** | Auto-snap mode for nearby targets | [optional] [default to 'off']
 **snap_radius** | **float** | Maximum snap radius in CSS pixels | [optional]

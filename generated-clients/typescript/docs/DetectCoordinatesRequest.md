@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **fx** | **number** | Relative X (0..1) within the detected element | [optional] [default to undefined]
 **fy** | **number** | Relative Y (0..1) within the detected element | [optional] [default to undefined]
 **model** | **string** | Optional vision model override for this request | [optional] [default to undefined]
+**stream** | **boolean** | Optional vision streaming override for this request | [optional] [default to undefined]
 **hit_test** | **string** | Detect-time validation mode | [optional] [default to HitTestEnum_Off]
 **auto_snap** | **string** | Auto-snap mode for nearby targets | [optional] [default to AutoSnapEnum_Off]
 **snap_radius** | **number** | Maximum snap radius in CSS pixels | [optional] [default to undefined]
@@ -24,6 +25,7 @@ const instance: DetectCoordinatesRequest = {
     fx,
     fy,
     model,
+    stream,
     hit_test,
     auto_snap,
     snap_radius,

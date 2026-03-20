@@ -39,6 +39,7 @@ class TestDetectCoordinatesRequest(unittest.TestCase):
                 fx = 1.337,
                 fy = 1.337,
                 model = '',
+                stream = True,
                 hit_test = 'off',
                 auto_snap = 'off',
                 snap_radius = 1.337,

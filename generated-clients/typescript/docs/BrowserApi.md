@@ -421,7 +421,7 @@ No authorization required
 # **detectCoordinates**
 > DetectCoordinatesResult detectCoordinates(payload)
 
-Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.     hit_test: Detect-time validation mode: off, warn, or strict.         Recommended for agents: `strict`.     auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.         Recommended for agents: `nearest_clickable`.     snap_radius: Maximum snap radius in CSS pixels.     include_debug: Include detect debug diagnostics when available.
+Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.     stream: Optional vision streaming override for this request.     hit_test: Detect-time validation mode: off, warn, or strict.         Recommended for agents: `strict`.     auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.         Recommended for agents: `nearest_clickable`.     snap_radius: Maximum snap radius in CSS pixels.     include_debug: Include detect debug diagnostics when available.
 
 ### Example
 

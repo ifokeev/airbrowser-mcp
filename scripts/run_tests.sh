@@ -26,7 +26,7 @@ NC='\033[0m' # No Color
 # Default options
 FORCE_BUILD=""
 SHOW_LOGS_ON_FAILURE=false
-PYTEST_ARGS=""
+PYTEST_ARGS_ARRAY=()
 CLEANUP=true
 REUSE_CONTAINERS=false
 
@@ -49,9 +49,13 @@ while [[ $# -gt 0 ]]; do
             REUSE_CONTAINERS=true
             shift
             ;;
-        -k|-m|--tb|--maxfail|-x|-v|-vv)
-            PYTEST_ARGS="$PYTEST_ARGS $1 $2"
+        -k|-m|--tb|--maxfail)
+            PYTEST_ARGS_ARRAY+=("$1" "$2")
             shift 2
+            ;;
+        -x|-v|-vv)
+            PYTEST_ARGS_ARRAY+=("$1")
+            shift
             ;;
         --help|-h)
             echo "Usage: $0 [OPTIONS] [PYTEST_ARGS]"
@@ -76,7 +80,7 @@ while [[ $# -gt 0 ]]; do
             exit 0
             ;;
         *)
-            PYTEST_ARGS="$PYTEST_ARGS $1"
+            PYTEST_ARGS_ARRAY+=("$1")
             shift
             ;;
     esac
@@ -101,8 +105,15 @@ cleanup() {
 # Set up trap for cleanup
 trap cleanup EXIT
 
-# Export pytest args for docker-compose
-export PYTEST_ARGS
+# Export pytest args for docker-compose.
+# Encode as NUL-delimited base64 so spaced -k/-m expressions survive env transport.
+if [ ${#PYTEST_ARGS_ARRAY[@]} -gt 0 ]; then
+    PYTEST_ARGS_B64="$(printf '%s\0' "${PYTEST_ARGS_ARRAY[@]}" | base64 | tr -d '\n')"
+else
+    PYTEST_ARGS_B64=""
+fi
+export PYTEST_ARGS_B64
+unset PYTEST_ARGS
 
 # Check if we can reuse existing containers
 if [ "$REUSE_CONTAINERS" = true ]; then

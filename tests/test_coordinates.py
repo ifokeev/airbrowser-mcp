@@ -115,7 +115,7 @@ def test_detect_element_coordinates_uses_generic_client(monkeypatch, tmp_path):
             captured["api_key"] = api_key
             captured["model"] = model
 
-        def explain_screenshot(self, image_path, prompt):
+        def explain_screenshot(self, image_path, prompt, stream=False):
             return {
                 "success": True,
                 "explanation": '{"found": true, "x": 10, "y": 20, "width": 30, "height": 40, "confidence": 0.9}',
@@ -145,7 +145,7 @@ def test_handle_detect_coordinates_keeps_wide_box_left_bias_when_fx_missing(monk
     monkeypatch.setattr(
         vision_commands,
         "detect_element_coordinates",
-        lambda image_path, prompt, model: {
+        lambda image_path, prompt, model, stream=False: {
             "success": True,
             "x": 400,
             "y": 300,
@@ -187,7 +187,7 @@ def test_handle_detect_coordinates_passes_viewport_bbox_to_smart_targeting(monke
     monkeypatch.setattr(
         vision_commands,
         "detect_element_coordinates",
-        lambda image_path, prompt, model: {
+        lambda image_path, prompt, model, stream=False: {
             "success": True,
             "x": 200,
             "y": 100,

@@ -105,7 +105,7 @@ If not found: {{"found": false, "error": "reason"}}"""
         except Exception:
             return (1920, 1080)
 
-    def detect(self, image_path: str, prompt: str) -> dict[str, Any]:
+    def detect(self, image_path: str, prompt: str, stream: bool = False) -> dict[str, Any]:
         """Detect UI element coordinates."""
         if not os.path.exists(image_path):
             return {"success": False, "error": f"Image not found: {image_path}"}
@@ -121,7 +121,7 @@ If not found: {{"found": false, "error": "reason"}}"""
                 api_key=settings.api_key,
                 model=self.model,
             )
-            result = client.explain_screenshot(image_path, self._create_prompt(prompt))
+            result = client.explain_screenshot(image_path, self._create_prompt(prompt), stream=stream)
             if not result.get("success"):
                 return {"success": False, "error": result.get("error", "Vision model failed")}
 
@@ -142,6 +142,6 @@ If not found: {{"found": false, "error": "reason"}}"""
             return {"success": False, "error": str(e)}
 
 
-def detect_element_coordinates(image_path: str, prompt: str, model: str) -> dict[str, Any]:
+def detect_element_coordinates(image_path: str, prompt: str, model: str, stream: bool = False) -> dict[str, Any]:
     """Detect element coordinates using specified model."""
-    return VisionCoordinateDetector(model).detect(image_path, prompt)
+    return VisionCoordinateDetector(model).detect(image_path, prompt, stream=stream)

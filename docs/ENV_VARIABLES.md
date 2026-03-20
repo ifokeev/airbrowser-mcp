@@ -11,6 +11,7 @@ This document describes all environment variables used by Airbrowser.
 | `VISION_API_BASE_URL` | - | OpenAI-compatible vision API base URL |
 | `VISION_API_KEY` | - | API key for AI vision features |
 | `VISION_MODEL` | - | Model used for vision tools |
+| `VISION_STREAM_DEFAULT` | false | Default `stream` mode for vision requests when omitted |
 | `COMMAND_TIMEOUT_DEFAULT` | 20 | Default timeout for browser commands (seconds) |
 | `NAVIGATE_TIMEOUT_DEFAULT` | 60 | Default timeout for page navigation (seconds) |
 | `API_BASE_URL` | http://localhost:18080 | Base URL for the API server |
@@ -44,7 +45,9 @@ LOG_LEVEL=DEBUG docker compose -f compose.local.yml up
 
 ## AI Vision
 
-Set all three variables to enable `what_is_visible` and `detect_coordinates`.
+Set `VISION_API_BASE_URL`, `VISION_API_KEY`, and `VISION_MODEL` to enable `what_is_visible` and `detect_coordinates`. Set `VISION_STREAM_DEFAULT` only if you want a different default when requests omit `stream`.
+
+All shipped compose files forward `VISION_STREAM_DEFAULT` into the relevant containers when it is set.
 
 ### `VISION_API_BASE_URL`
 - **Default:** None (vision features disabled)
@@ -68,6 +71,15 @@ VISION_API_KEY=your-api-key docker compose up
 
 ```bash
 VISION_MODEL=your-vision-model docker compose up
+```
+
+### `VISION_STREAM_DEFAULT`
+- **Default:** false
+- **Description:** Default `stream` mode for `what_is_visible` and `detect_coordinates` when a request omits `stream`.
+- **Usage:** Useful for OpenAI-compatible vision/reasoning providers that require `stream=true`. A request `stream` value overrides this env default.
+
+```bash
+VISION_STREAM_DEFAULT=true docker compose up
 ```
 
 ## Timeouts
@@ -255,6 +267,7 @@ Each compose file sets appropriate defaults for its use case:
 | `SCREEN_WIDTH` | (default) | (default) | 1366 |
 | `SCREEN_HEIGHT` | (default) | (default) | 768 |
 | `ENABLE_SESSION_RESTORE` | true | true | false |
+| `VISION_STREAM_DEFAULT` | forwarded when set (app default false) | forwarded when set (app default false) | forwarded when set (app default false) |
 
 ## Example .env File
 
@@ -265,4 +278,5 @@ Each compose file sets appropriate defaults for its use case:
 VISION_API_BASE_URL=https://your-openai-compatible-endpoint/v1
 VISION_API_KEY=your-api-key
 VISION_MODEL=your-vision-model
+VISION_STREAM_DEFAULT=true
 ```

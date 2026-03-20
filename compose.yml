@@ -24,10 +24,11 @@ services:
       - SCREENSHOTS_MAX_BYTES=${SCREENSHOTS_MAX_BYTES:-268435456}
       - SCREENSHOTS_MIN_FREE_BYTES=${SCREENSHOTS_MIN_FREE_BYTES:-67108864}
       - NGINX_HTTPS_PORT=18443
-      # AI vision (optional - set all three to enable)
+      # AI vision (optional - set base URL, key, and model to enable; stream default is optional)
       - VISION_API_BASE_URL=${VISION_API_BASE_URL:-}
       - VISION_API_KEY=${VISION_API_KEY:-}
       - VISION_MODEL=${VISION_MODEL:-}
+      - VISION_STREAM_DEFAULT=${VISION_STREAM_DEFAULT:-}
     volumes:
       - browser-profiles:/app/browser-profiles
       - screenshots:/app/screenshots

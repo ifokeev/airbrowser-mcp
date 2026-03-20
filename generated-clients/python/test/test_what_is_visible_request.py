@@ -35,7 +35,8 @@ class TestWhatIsVisibleRequest(unittest.TestCase):
         model = WhatIsVisibleRequest()
         if include_optional:
             return WhatIsVisibleRequest(
-                model = ''
+                model = '',
+                stream = True
             )
         else:
             return WhatIsVisibleRequest(

@@ -29,10 +29,11 @@ services:
       - NGINX_HTTPS_PORT=18443
       # Enable hot reload via fs_watcher in supervisord.dev.conf
       - FLASK_ENV=development
-      # AI vision (optional - set all three to enable)
+      # AI vision (optional - set base URL, key, and model to enable; stream default is optional)
       - VISION_API_BASE_URL=${VISION_API_BASE_URL:-}
       - VISION_API_KEY=${VISION_API_KEY:-}
       - VISION_MODEL=${VISION_MODEL:-}
+      - VISION_STREAM_DEFAULT=${VISION_STREAM_DEFAULT:-}
     volumes:
       - ./src:/app/src            # Hot reload - code changes restart services
       - ./docker:/app/docker      # Supervisord configs

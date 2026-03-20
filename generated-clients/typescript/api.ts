@@ -253,6 +253,10 @@ export interface DetectCoordinatesRequest {
      */
     'model'?: string;
     /**
+     * Optional vision streaming override for this request
+     */
+    'stream'?: boolean;
+    /**
      * Detect-time validation mode
      */
     'hit_test'?: DetectCoordinatesRequestHitTestEnum;
@@ -1080,6 +1084,10 @@ export interface WhatIsVisibleRequest {
      * model
      */
     'model'?: string;
+    /**
+     * stream
+     */
+    'stream'?: boolean;
 }
 
 /**
@@ -1362,7 +1370,7 @@ export const BrowserApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.     hit_test: Detect-time validation mode: off, warn, or strict.         Recommended for agents: `strict`.     auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.         Recommended for agents: `nearest_clickable`.     snap_radius: Maximum snap radius in CSS pixels.     include_debug: Include detect debug diagnostics when available.
+         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.     stream: Optional vision streaming override for this request.     hit_test: Detect-time validation mode: off, warn, or strict.         Recommended for agents: `strict`.     auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.         Recommended for agents: `nearest_clickable`.     snap_radius: Maximum snap radius in CSS pixels.     include_debug: Include detect debug diagnostics when available.
          * @summary Detect element coordinates using vision with optional smart targeting
          * @param {string} browserId
          * @param {DetectCoordinatesRequest} payload
@@ -2681,7 +2689,7 @@ export const BrowserApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
-         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.     hit_test: Detect-time validation mode: off, warn, or strict.         Recommended for agents: `strict`.     auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.         Recommended for agents: `nearest_clickable`.     snap_radius: Maximum snap radius in CSS pixels.     include_debug: Include detect debug diagnostics when available.
+         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.     stream: Optional vision streaming override for this request.     hit_test: Detect-time validation mode: off, warn, or strict.         Recommended for agents: `strict`.     auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.         Recommended for agents: `nearest_clickable`.     snap_radius: Maximum snap radius in CSS pixels.     include_debug: Include detect debug diagnostics when available.
          * @summary Detect element coordinates using vision with optional smart targeting
          * @param {string} browserId
          * @param {DetectCoordinatesRequest} payload
@@ -3200,7 +3208,7 @@ export const BrowserApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.createBrowser(payload, options).then((request) => request(axios, basePath));
         },
         /**
-         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.     hit_test: Detect-time validation mode: off, warn, or strict.         Recommended for agents: `strict`.     auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.         Recommended for agents: `nearest_clickable`.     snap_radius: Maximum snap radius in CSS pixels.     include_debug: Include detect debug diagnostics when available.
+         * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.     stream: Optional vision streaming override for this request.     hit_test: Detect-time validation mode: off, warn, or strict.         Recommended for agents: `strict`.     auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.         Recommended for agents: `nearest_clickable`.     snap_radius: Maximum snap radius in CSS pixels.     include_debug: Include detect debug diagnostics when available.
          * @summary Detect element coordinates using vision with optional smart targeting
          * @param {string} browserId
          * @param {DetectCoordinatesRequest} payload
@@ -3631,7 +3639,7 @@ export class BrowserApi extends BaseAPI {
     }
 
     /**
-     * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.     hit_test: Detect-time validation mode: off, warn, or strict.         Recommended for agents: `strict`.     auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.         Recommended for agents: `nearest_clickable`.     snap_radius: Maximum snap radius in CSS pixels.     include_debug: Include detect debug diagnostics when available.
+     * Args:     browser_id: Browser instance identifier     prompt: Natural language description of element to find     fx: Fractional x offset for click point (0.0=left, 0.5=center, 1.0=right).         If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).     fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).     model: Optional vision model override for this request.     stream: Optional vision streaming override for this request.     hit_test: Detect-time validation mode: off, warn, or strict.         Recommended for agents: `strict`.     auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.         Recommended for agents: `nearest_clickable`.     snap_radius: Maximum snap radius in CSS pixels.     include_debug: Include detect debug diagnostics when available.
      * @summary Detect element coordinates using vision with optional smart targeting
      * @param {string} browserId
      * @param {DetectCoordinatesRequest} payload

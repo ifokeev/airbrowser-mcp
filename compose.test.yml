@@ -22,10 +22,11 @@ services:
       - SCREEN_HEIGHT=768
       # Disable session restore for tests (fresh start each time)
       - ENABLE_SESSION_RESTORE=false
-      # AI vision (optional - enables vision tests when all three are set)
+      # AI vision (optional - enables vision tests when base URL, key, and model are set)
       - VISION_API_BASE_URL=${VISION_API_BASE_URL:-}
       - VISION_API_KEY=${VISION_API_KEY:-}
       - VISION_MODEL=${VISION_MODEL:-}
+      - VISION_STREAM_DEFAULT=${VISION_STREAM_DEFAULT:-}
     tmpfs:
       - /tmp:noexec,nosuid,size=500m
       - /dev/shm:rw,nosuid,nodev,exec,size=4g
@@ -53,14 +54,20 @@ services:
       - BROWSER_POOL_URL=http://browser-pool:8000
       - PYTHONUNBUFFERED=1
       - PYTEST_ARGS=${PYTEST_ARGS:-}
+      - PYTEST_ARGS_B64=${PYTEST_ARGS_B64:-}
       - VISION_API_BASE_URL=${VISION_API_BASE_URL:-}
       - VISION_API_KEY=${VISION_API_KEY:-}
       - VISION_MODEL=${VISION_MODEL:-}
+      - VISION_STREAM_DEFAULT=${VISION_STREAM_DEFAULT:-}
       - TEST_PROXY=${TEST_PROXY:-}
     volumes:
       - ./tests:/app/tests:ro
       - ./examples:/app/examples:ro
+      - ./docs:/app/docs:ro
       - ./generated-clients:/app/generated-clients:ro
+      - ./compose.yml:/app/compose.yml:ro
+      - ./compose.local.yml:/app/compose.local.yml:ro
+      - ./compose.test.yml:/app/compose.test.yml:ro
       - ./src:/app/src:ro
       - ./pytest.ini:/app/pytest.ini:ro
       - ./docker/test-entrypoint.sh:/test-entrypoint.sh:ro

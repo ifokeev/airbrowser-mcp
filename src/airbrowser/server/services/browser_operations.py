@@ -307,6 +307,7 @@ class BrowserOperations:
         fx: float | None = None,
         fy: float | None = None,
         model: str | None = None,
+        stream: bool | None = None,
         hit_test: str = "off",
         auto_snap: str = "off",
         snap_radius: float = 96,
@@ -321,6 +322,7 @@ class BrowserOperations:
                 If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).
             fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
             model: Optional vision model override for this request.
+            stream: Optional vision streaming override for this request.
             hit_test: Detect-time validation mode: off, warn, or strict.
                 Recommended for agents: `strict`.
             auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.
@@ -334,15 +336,16 @@ class BrowserOperations:
             fx,
             fy,
             model,
+            stream,
             hit_test,
             auto_snap,
             snap_radius,
             include_debug,
         )
 
-    def what_is_visible(self, browser_id: str, model: str | None = None) -> dict[str, Any]:
+    def what_is_visible(self, browser_id: str, model: str | None = None, stream: bool | None = None) -> dict[str, Any]:
         """AI page analysis - what's visible."""
-        return self._vision.what_is_visible(browser_id, model)
+        return self._vision.what_is_visible(browser_id, model, stream)
 
     # ==================== Page ====================
 

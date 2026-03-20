@@ -21,6 +21,7 @@ class VisionOperations:
         fx: float | None = None,
         fy: float | None = None,
         model: str | None = None,
+        stream: bool | None = None,
         hit_test: str = "off",
         auto_snap: str = "off",
         snap_radius: float = 96,
@@ -36,6 +37,7 @@ class VisionOperations:
                 If None, auto-bias is applied for wide elements (0.25 for aspect ratio > 10).
             fy: Fractional y offset for click point (0.0=top, 0.5=center, 1.0=bottom).
             model: Optional vision model override for this request.
+            stream: Optional vision streaming override for this request.
             hit_test: Detect-time validation mode: off, warn, or strict.
             auto_snap: Auto-snap mode: off, nearest_clickable, or nearest_interactive.
             snap_radius: Maximum snap radius in CSS pixels.
@@ -52,6 +54,8 @@ class VisionOperations:
             options["fy"] = fy
         if model is not None:
             options["model"] = model
+        if stream is not None:
+            options["stream"] = stream
         options["hit_test"] = hit_test
         options["auto_snap"] = auto_snap
         options["snap_radius"] = snap_radius
@@ -100,7 +104,7 @@ class VisionOperations:
             return {"success": False, "message": result.message, "data": detect_data}
         return _error(result.message)
 
-    def what_is_visible(self, browser_id: str, model: str | None = None) -> dict[str, Any]:
+    def what_is_visible(self, browser_id: str, model: str | None = None, stream: bool | None = None) -> dict[str, Any]:
         """
         Comprehensive page state analysis - what's visible on the current page.
 
@@ -116,12 +120,17 @@ class VisionOperations:
         Args:
             browser_id: Browser instance identifier
             model: Optional vision model override for this request.
+            stream: Optional vision streaming override for this request.
 
         Returns:
             Dictionary with comprehensive page state analysis
         """
         try:
-            options = {"model": model} if model is not None else {}
+            options = {}
+            if model is not None:
+                options["model"] = model
+            if stream is not None:
+                options["stream"] = stream
             action = BrowserAction(action="what_is_visible", options=options)
             result = self.browser_pool.execute_action(browser_id, action)
 

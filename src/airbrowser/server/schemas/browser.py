@@ -167,6 +167,7 @@ def register_browser_schemas(api):
             "fx": fields.Float(description="Relative X (0..1) within the detected element"),
             "fy": fields.Float(description="Relative Y (0..1) within the detected element"),
             "model": fields.String(description="Optional vision model override for this request"),
+            "stream": fields.Boolean(description="Optional vision streaming override for this request"),
             "hit_test": fields.String(
                 description="Detect-time validation mode",
                 enum=["off", "warn", "strict"],
@@ -186,6 +187,7 @@ def register_browser_schemas(api):
         "WhatIsVisibleRequest",
         {
             "model": fields.String(description="Optional vision model override for this request"),
+            "stream": fields.Boolean(description="Optional vision streaming override for this request"),
         },
     )
 

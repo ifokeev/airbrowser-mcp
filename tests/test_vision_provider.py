@@ -16,7 +16,13 @@ from airbrowser.server.schemas.browser import register_browser_schemas
 from airbrowser.server.schemas.responses import register_response_schemas
 from airbrowser.server.services.operations.page import PageOperations
 from airbrowser.server.services.operations.pool import PoolOperations
-from airbrowser.server.vision.config import load_vision_settings, vision_is_enabled
+from airbrowser.server.services.operations.vision import VisionOperations
+from airbrowser.server.vision.config import (
+    VisionSettings,
+    load_vision_settings,
+    resolve_vision_stream,
+    vision_is_enabled,
+)
 from airbrowser.server.vision.openai_compatible import OpenAICompatibleVisionClient
 
 
@@ -167,6 +173,36 @@ def browser_pool_adapter(monkeypatch):
     return adapter, CapturingIPCClient.instances[-1]
 
 
+def _set_vision_env(monkeypatch, *, stream_default: str | None = None):
+    monkeypatch.setenv("VISION_API_BASE_URL", "https://cliproxy.ldc-fe.org/v1")
+    monkeypatch.setenv("VISION_API_KEY", "test-key")
+    monkeypatch.setenv("VISION_MODEL", "default/model")
+    if stream_default is None:
+        monkeypatch.delenv("VISION_STREAM_DEFAULT", raising=False)
+    else:
+        monkeypatch.setenv("VISION_STREAM_DEFAULT", stream_default)
+
+
+def _make_detect_resolution():
+    return type(
+        "Resolution",
+        (),
+        {
+            "success": True,
+            "outcome_status": "raw_vision_point",
+            "reason": "raw_vision_point",
+            "reason_detail": None,
+            "recommended_next_action": "proceed",
+            "resolved_screen_point": vision_commands.Point(17.0, 25.0),
+            "snap_candidate": None,
+            "hit_test_result": None,
+            "original_viewport_point": None,
+            "resolved_viewport_point": None,
+            "original_screen_point": None,
+        },
+    )()
+
+
 def test_load_vision_settings_reads_generic_env(monkeypatch):
     monkeypatch.setenv("VISION_API_BASE_URL", "https://cliproxy.ldc-fe.org/v1")
     monkeypatch.setenv("VISION_API_KEY", "test-key")
@@ -179,6 +215,89 @@ def test_load_vision_settings_reads_generic_env(monkeypatch):
     assert settings.api_key == "test-key"
     assert settings.model == "rightcode/gpt-5.4"
     assert vision_is_enabled() is True
+
+
+def test_load_vision_settings_reads_stream_default_true(monkeypatch):
+    monkeypatch.setenv("VISION_API_BASE_URL", "https://cliproxy.ldc-fe.org/v1")
+    monkeypatch.setenv("VISION_API_KEY", "test-key")
+    monkeypatch.setenv("VISION_MODEL", "rightcode/gpt-5.4")
+    monkeypatch.setenv("VISION_STREAM_DEFAULT", "true")
+
+    settings = load_vision_settings()
+
+    assert settings is not None
+    assert settings.stream_default is True
+
+
+def test_load_vision_settings_reads_stream_default_false(monkeypatch):
+    monkeypatch.setenv("VISION_API_BASE_URL", "https://cliproxy.ldc-fe.org/v1")
+    monkeypatch.setenv("VISION_API_KEY", "test-key")
+    monkeypatch.setenv("VISION_MODEL", "rightcode/gpt-5.4")
+    monkeypatch.setenv("VISION_STREAM_DEFAULT", "off")
+
+    settings = load_vision_settings()
+
+    assert settings is not None
+    assert settings.stream_default is False
+
+
+def test_load_vision_settings_uses_false_when_stream_default_is_unset(monkeypatch):
+    monkeypatch.setenv("VISION_API_BASE_URL", "https://cliproxy.ldc-fe.org/v1")
+    monkeypatch.setenv("VISION_API_KEY", "test-key")
+    monkeypatch.setenv("VISION_MODEL", "rightcode/gpt-5.4")
+    monkeypatch.delenv("VISION_STREAM_DEFAULT", raising=False)
+
+    settings = load_vision_settings()
+
+    assert settings is not None
+    assert settings.stream_default is False
+
+
+def test_load_vision_settings_invalid_stream_default_logs_warning(monkeypatch, caplog):
+    monkeypatch.setenv("VISION_API_BASE_URL", "https://cliproxy.ldc-fe.org/v1")
+    monkeypatch.setenv("VISION_API_KEY", "test-key")
+    monkeypatch.setenv("VISION_MODEL", "rightcode/gpt-5.4")
+    monkeypatch.setenv("VISION_STREAM_DEFAULT", "sometimes")
+    caplog.set_level("WARNING")
+
+    settings = load_vision_settings()
+
+    assert settings is not None
+    assert settings.stream_default is False
+    assert "VISION_STREAM_DEFAULT" in caplog.text
+
+
+def test_resolve_vision_stream_prefers_request_value():
+    settings = VisionSettings(
+        base_url="https://cliproxy.ldc-fe.org/v1",
+        api_key="test-key",
+        model="rightcode/gpt-5.4",
+        stream_default=False,
+    )
+
+    assert resolve_vision_stream(True, settings) is True
+
+
+def test_resolve_vision_stream_allows_request_false_to_override_true_default():
+    settings = VisionSettings(
+        base_url="https://cliproxy.ldc-fe.org/v1",
+        api_key="test-key",
+        model="rightcode/gpt-5.4",
+        stream_default=True,
+    )
+
+    assert resolve_vision_stream(False, settings) is False
+
+
+def test_resolve_vision_stream_uses_settings_default_when_request_omitted():
+    settings = VisionSettings(
+        base_url="https://cliproxy.ldc-fe.org/v1",
+        api_key="test-key",
+        model="rightcode/gpt-5.4",
+        stream_default=True,
+    )
+
+    assert resolve_vision_stream(None, settings) is True
 
 
 @pytest.mark.parametrize("missing_env", ["VISION_API_BASE_URL", "VISION_API_KEY", "VISION_MODEL"])
@@ -286,6 +405,212 @@ def test_openai_compatible_client_returns_error_for_malformed_response(monkeypat
     assert "malformed" in result["error"].lower()
 
 
+def _make_stream_chunk(
+    *, content=None, include_choices=True, include_delta=True, missing_choices=False, missing_delta=False
+):
+    if missing_choices:
+        return type("Chunk", (), {})()
+
+    if not include_choices:
+        return type("Chunk", (), {"choices": []})()
+
+    if missing_delta:
+        choice = type("Choice", (), {})()
+    else:
+        delta = None if not include_delta else type("Delta", (), {"content": content})()
+        choice = type("Choice", (), {"delta": delta})()
+
+    return type("Chunk", (), {"choices": [choice]})()
+
+
+def test_openai_compatible_client_uses_non_streaming_chat_completion(monkeypatch, tmp_path):
+    captured = {}
+    image_path = tmp_path / "shot.png"
+    image_path.write_bytes(b"fake-image")
+
+    class FakeOpenAI:
+        def __init__(self, *, base_url, api_key):
+            self.chat = type(
+                "Chat",
+                (),
+                {
+                    "completions": type(
+                        "Completions",
+                        (),
+                        {
+                            "create": staticmethod(
+                                lambda **kwargs: (
+                                    captured.update(kwargs)
+                                    or type(
+                                        "Response",
+                                        (),
+                                        {
+                                            "choices": [
+                                                type(
+                                                    "Choice",
+                                                    (),
+                                                    {"message": type("Message", (), {"content": "visible analysis"})()},
+                                                )()
+                                            ]
+                                        },
+                                    )()
+                                )
+                            )
+                        },
+                    )()
+                },
+            )()
+
+    monkeypatch.setattr("airbrowser.server.vision.openai_compatible.OpenAI", FakeOpenAI)
+
+    client = OpenAICompatibleVisionClient(
+        base_url="https://cliproxy.ldc-fe.org/v1",
+        api_key="test-key",
+        model="rightcode/gpt-5.4",
+    )
+
+    result = client.explain_screenshot(str(image_path), "describe it", stream=False)
+
+    assert result == {"success": True, "explanation": "visible analysis", "model": "rightcode/gpt-5.4"}
+    assert captured.get("stream") is False
+
+
+def test_openai_compatible_client_assembles_streamed_text(monkeypatch, tmp_path):
+    captured = {}
+    image_path = tmp_path / "shot.png"
+    image_path.write_bytes(b"fake-image")
+
+    class FakeOpenAI:
+        def __init__(self, *, base_url, api_key):
+            self.chat = type(
+                "Chat",
+                (),
+                {
+                    "completions": type(
+                        "Completions",
+                        (),
+                        {
+                            "create": staticmethod(
+                                lambda **kwargs: (
+                                    captured.update(kwargs)
+                                    or iter(
+                                        [
+                                            _make_stream_chunk(content="visible"),
+                                            _make_stream_chunk(content=None),
+                                            _make_stream_chunk(content=" analysis"),
+                                            _make_stream_chunk(include_delta=False),
+                                            _make_stream_chunk(missing_delta=True),
+                                            _make_stream_chunk(include_choices=False),
+                                            _make_stream_chunk(missing_choices=True),
+                                            _make_stream_chunk(content=""),
+                                        ]
+                                    )
+                                )
+                            )
+                        },
+                    )()
+                },
+            )()
+
+    monkeypatch.setattr("airbrowser.server.vision.openai_compatible.OpenAI", FakeOpenAI)
+
+    client = OpenAICompatibleVisionClient(
+        base_url="https://cliproxy.ldc-fe.org/v1",
+        api_key="test-key",
+        model="rightcode/gpt-5.4",
+    )
+
+    result = client.explain_screenshot(str(image_path), "describe it", stream=True)
+
+    assert result == {"success": True, "explanation": "visible analysis", "model": "rightcode/gpt-5.4"}
+    assert captured.get("stream") is True
+
+
+def test_openai_compatible_client_returns_error_for_empty_stream(monkeypatch, tmp_path):
+    captured = {}
+    image_path = tmp_path / "shot.png"
+    image_path.write_bytes(b"fake-image")
+
+    class FakeOpenAI:
+        def __init__(self, *, base_url, api_key):
+            self.chat = type(
+                "Chat",
+                (),
+                {
+                    "completions": type(
+                        "Completions",
+                        (),
+                        {
+                            "create": staticmethod(
+                                lambda **kwargs: (
+                                    captured.update(kwargs)
+                                    or iter(
+                                        [
+                                            _make_stream_chunk(content=None),
+                                            _make_stream_chunk(include_delta=False),
+                                            _make_stream_chunk(include_choices=False),
+                                            _make_stream_chunk(content=""),
+                                        ]
+                                    )
+                                )
+                            )
+                        },
+                    )()
+                },
+            )()
+
+    monkeypatch.setattr("airbrowser.server.vision.openai_compatible.OpenAI", FakeOpenAI)
+
+    client = OpenAICompatibleVisionClient(
+        base_url="https://cliproxy.ldc-fe.org/v1",
+        api_key="test-key",
+        model="rightcode/gpt-5.4",
+    )
+
+    result = client.explain_screenshot(str(image_path), "describe it", stream=True)
+
+    assert result["success"] is False
+    assert captured.get("stream") is True
+    assert any(term in result["error"].lower() for term in ("empty", "no text"))
+
+
+def test_openai_compatible_client_returns_error_when_stream_iteration_fails(monkeypatch, tmp_path):
+    captured = {}
+    image_path = tmp_path / "shot.png"
+    image_path.write_bytes(b"fake-image")
+
+    def failing_stream():
+        yield _make_stream_chunk(content="visible")
+        raise RuntimeError("stream interrupted")
+
+    class FakeOpenAI:
+        def __init__(self, *, base_url, api_key):
+            self.chat = type(
+                "Chat",
+                (),
+                {
+                    "completions": type(
+                        "Completions",
+                        (),
+                        {"create": staticmethod(lambda **kwargs: captured.update(kwargs) or failing_stream())},
+                    )()
+                },
+            )()
+
+    monkeypatch.setattr("airbrowser.server.vision.openai_compatible.OpenAI", FakeOpenAI)
+
+    client = OpenAICompatibleVisionClient(
+        base_url="https://cliproxy.ldc-fe.org/v1",
+        api_key="test-key",
+        model="rightcode/gpt-5.4",
+    )
+
+    result = client.explain_screenshot(str(image_path), "describe it", stream=True)
+
+    assert result == {"success": False, "error": "API request failed: stream interrupted"}
+    assert captured.get("stream") is True
+
+
 def test_request_model_override_allows_slash_names(monkeypatch):
     monkeypatch.setenv("VISION_API_BASE_URL", "https://cliproxy.ldc-fe.org/v1")
     monkeypatch.setenv("VISION_API_KEY", "test-key")
@@ -310,6 +635,22 @@ def test_browser_pool_detect_coordinates_forwards_model_to_ipc(browser_pool_adap
         "browser-123",
         "detect_coordinates",
         {"prompt": "the submit button", "fx": 0.25, "fy": 0.75, "model": "rightcode/gpt-5.4"},
+    )
+
+
+def test_browser_pool_detect_coordinates_forwards_stream_to_ipc(browser_pool_adapter):
+    adapter, ipc_client = browser_pool_adapter
+
+    result = adapter.execute_action(
+        "browser-123",
+        BrowserAction(action="detect_coordinates", options={"prompt": "the submit button", "stream": True}),
+    )
+
+    assert result.success is True
+    assert ipc_client.calls[-1] == (
+        "browser-123",
+        "detect_coordinates",
+        {"prompt": "the submit button", "stream": True},
     )
 
 
@@ -358,6 +699,40 @@ def test_browser_pool_what_is_visible_forwards_model_to_ipc(browser_pool_adapter
         "what_is_visible",
         {"model": "rightcode/gpt-5.4"},
     )
+
+
+def test_browser_pool_what_is_visible_forwards_stream_to_ipc(browser_pool_adapter):
+    adapter, ipc_client = browser_pool_adapter
+
+    result = adapter.execute_action(
+        "browser-123",
+        BrowserAction(action="what_is_visible", options={"stream": False}),
+    )
+
+    assert result.success is True
+    assert ipc_client.calls[-1] == (
+        "browser-123",
+        "what_is_visible",
+        {"stream": False},
+    )
+
+
+def test_vision_operations_detect_coordinates_sets_stream_in_action_options():
+    browser_pool = StaticBrowserPool(ActionResult(success=True, message="ok", data={"coordinates": {}}))
+
+    VisionOperations(browser_pool).detect_coordinates("browser-123", prompt="the submit button", stream=True)
+
+    _, action = browser_pool.actions[-1]
+    assert action.options["stream"] is True
+
+
+def test_vision_operations_what_is_visible_sets_stream_in_action_options():
+    browser_pool = StaticBrowserPool(ActionResult(success=True, message="ok", data={}))
+
+    VisionOperations(browser_pool).what_is_visible("browser-123", stream=False)
+
+    _, action = browser_pool.actions[-1]
+    assert action.options["stream"] is False
 
 
 def test_browser_pool_screenshot_uses_command_response_url(browser_pool_adapter):
@@ -411,6 +786,20 @@ def test_detect_coordinates_route_accepts_and_threads_model_override(browser_rou
     assert response.json["data"]["bounding_box"] == {"x": 10, "y": 20, "width": 30, "height": 40}
     assert browser_pool.actions[-1][0] == "browser-123"
     assert browser_pool.actions[-1][1].options["model"] == "rightcode/gpt-5.4"
+
+
+def test_detect_coordinates_route_accepts_and_threads_stream_override(browser_route_client):
+    client, browser_pool = browser_route_client
+
+    response = client.post(
+        "/api/v1/browser/browser-123/detect_coordinates",
+        json={"prompt": "the submit button", "stream": True},
+    )
+
+    assert response.status_code == 200
+    assert response.json["success"] is True
+    assert browser_pool.actions[-1][0] == "browser-123"
+    assert browser_pool.actions[-1][1].options["stream"] is True
 
 
 def test_detect_coordinates_route_threads_smart_targeting_options_and_returns_additive_fields(browser_route_client):
@@ -566,6 +955,24 @@ def test_detect_coordinates_openapi_uses_hand_authored_request_schema(browser_ro
     assert request_definition["auto_snap"]["enum"] == ["off", "nearest_clickable", "nearest_interactive"]
 
 
+def test_detect_coordinates_request_schema_includes_boolean_stream(browser_route_client):
+    client, _ = browser_route_client
+
+    response = client.get("/api/v1/swagger.json")
+
+    assert response.status_code == 200
+    request_definition = response.json["definitions"]["DetectCoordinatesRequest"]["properties"]
+    assert request_definition["stream"]["type"] == "boolean"
+
+
+def test_generated_python_detect_coordinates_request_includes_stream_field():
+    from airbrowser_client.models.detect_coordinates_request import DetectCoordinatesRequest
+
+    payload = DetectCoordinatesRequest(prompt="the submit button", stream=True)
+
+    assert payload.to_dict()["stream"] is True
+
+
 def test_what_is_visible_route_rejects_missing_request_body(browser_route_client):
     client, browser_pool = browser_route_client
 
@@ -603,6 +1010,20 @@ def test_what_is_visible_route_accepts_body_model_override(browser_route_client)
     assert browser_pool.actions[-1][1].options["model"] == "rightcode/gpt-5.4"
 
 
+def test_what_is_visible_route_accepts_body_stream_override(browser_route_client):
+    client, browser_pool = browser_route_client
+
+    response = client.post(
+        "/api/v1/browser/browser-123/what_is_visible",
+        json={"stream": False},
+    )
+
+    assert response.status_code == 200
+    assert response.json["success"] is True
+    assert browser_pool.actions[-1][0] == "browser-123"
+    assert browser_pool.actions[-1][1].options["stream"] is False
+
+
 def test_what_is_visible_openapi_requires_request_body(browser_route_client):
     client, _ = browser_route_client
 
@@ -620,6 +1041,39 @@ def test_what_is_visible_openapi_requires_request_body(browser_route_client):
             "schema": {"$ref": "#/definitions/WhatIsVisibleRequest"},
         }
     ]
+
+
+def test_what_is_visible_request_schema_includes_boolean_stream(browser_route_client):
+    client, _ = browser_route_client
+
+    response = client.get("/api/v1/swagger.json")
+
+    assert response.status_code == 200
+    request_definition = response.json["definitions"]["WhatIsVisibleRequest"]["properties"]
+    assert request_definition["stream"]["type"] == "boolean"
+
+
+def test_generated_python_what_is_visible_request_includes_stream_field():
+    from airbrowser_client.models.what_is_visible_request import WhatIsVisibleRequest
+
+    payload = WhatIsVisibleRequest(stream=False)
+
+    assert payload.to_dict()["stream"] is False
+
+
+def test_generated_typescript_vision_request_interfaces_include_stream_field():
+    api_ts = Path("generated-clients/typescript/api.ts").read_text(encoding="utf-8")
+
+    detect_block = api_ts.split("export interface DetectCoordinatesRequest {", 1)[1].split(
+        "export const DetectCoordinatesRequestHitTestEnum", 1
+    )[0]
+    visible_block = api_ts.split("export interface WhatIsVisibleRequest {", 1)[1].split(
+        "/**\n * BrowserApi - axios parameter creator",
+        1,
+    )[0]
+
+    assert "'stream'?: boolean;" in detect_block
+    assert "'stream'?: boolean;" in visible_block
 
 
 def test_schema_models_exclude_legacy_screenshot_path():
@@ -700,6 +1154,245 @@ def test_handle_detect_coordinates_returns_generic_error_when_unconfigured(monke
     assert result["screenshot_url"] == "http://shot"
 
 
+def test_handle_what_is_visible_request_stream_true_overrides_env_false(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(
+        vision_commands,
+        "take_screenshot",
+        lambda driver, browser_id: {"path": "/tmp/fake.png", "url": "http://shot"},
+    )
+
+    class FakeClient:
+        def __init__(self, *, base_url, api_key, model):
+            self.model = model
+
+        def explain_screenshot(self, image_path, prompt, stream=False):
+            captured["stream"] = stream
+            return {"success": True, "explanation": "visible analysis", "model": self.model}
+
+    monkeypatch.setattr(vision_commands, "OpenAICompatibleVisionClient", FakeClient, raising=False)
+    _set_vision_env(monkeypatch, stream_default="false")
+
+    result = vision_commands.handle_what_is_visible(
+        driver=object(),
+        command={"stream": True},
+        browser_id="test-browser",
+    )
+
+    assert result["status"] == "success"
+    assert captured["stream"] is True
+
+
+def test_handle_what_is_visible_request_stream_false_overrides_env_true(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(
+        vision_commands,
+        "take_screenshot",
+        lambda driver, browser_id: {"path": "/tmp/fake.png", "url": "http://shot"},
+    )
+
+    class FakeClient:
+        def __init__(self, *, base_url, api_key, model):
+            self.model = model
+
+        def explain_screenshot(self, image_path, prompt, stream=False):
+            captured["stream"] = stream
+            return {"success": True, "explanation": "visible analysis", "model": self.model}
+
+    monkeypatch.setattr(vision_commands, "OpenAICompatibleVisionClient", FakeClient, raising=False)
+    _set_vision_env(monkeypatch, stream_default="true")
+
+    result = vision_commands.handle_what_is_visible(
+        driver=object(),
+        command={"stream": False},
+        browser_id="test-browser",
+    )
+
+    assert result["status"] == "success"
+    assert captured["stream"] is False
+
+
+def test_handle_what_is_visible_omitted_stream_uses_env_default(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(
+        vision_commands,
+        "take_screenshot",
+        lambda driver, browser_id: {"path": "/tmp/fake.png", "url": "http://shot"},
+    )
+
+    class FakeClient:
+        def __init__(self, *, base_url, api_key, model):
+            self.model = model
+
+        def explain_screenshot(self, image_path, prompt, stream=False):
+            captured["stream"] = stream
+            return {"success": True, "explanation": "visible analysis", "model": self.model}
+
+    monkeypatch.setattr(vision_commands, "OpenAICompatibleVisionClient", FakeClient, raising=False)
+    _set_vision_env(monkeypatch, stream_default="true")
+
+    result = vision_commands.handle_what_is_visible(driver=object(), command={}, browser_id="test-browser")
+
+    assert result["status"] == "success"
+    assert captured["stream"] is True
+
+
+def test_detect_coordinates_omitted_stream_uses_env_default(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(
+        vision_commands,
+        "take_screenshot",
+        lambda driver, browser_id: {"path": "/tmp/fake.png", "url": "http://shot"},
+    )
+
+    def fake_detect_element_coordinates(image_path, prompt, model, stream):
+        captured["stream"] = stream
+        return {
+            "success": True,
+            "x": 10,
+            "y": 20,
+            "width": 30,
+            "height": 10,
+            "confidence": 0.9,
+            "model": model,
+            "image_size": {"width": 100, "height": 50},
+        }
+
+    monkeypatch.setattr(vision_commands, "detect_element_coordinates", fake_detect_element_coordinates)
+    monkeypatch.setattr(
+        vision_commands,
+        "_transform_to_screen_coords",
+        lambda driver, coords, fx, fy: {**coords, "click_point": {"x": 17, "y": 25}},
+    )
+    monkeypatch.setattr(vision_commands, "resolve_detect_target", lambda **kwargs: _make_detect_resolution())
+    _set_vision_env(monkeypatch, stream_default="true")
+
+    result = vision_commands.handle_detect_coordinates(
+        driver=object(),
+        command={"prompt": "the submit button"},
+        browser_id="test-browser",
+    )
+
+    assert result["status"] == "success"
+    assert captured["stream"] is True
+
+
+def test_detect_coordinates_request_stream_true_overrides_env_false(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(
+        vision_commands,
+        "take_screenshot",
+        lambda driver, browser_id: {"path": "/tmp/fake.png", "url": "http://shot"},
+    )
+
+    def fake_detect_element_coordinates(image_path, prompt, model, stream):
+        captured["stream"] = stream
+        return {
+            "success": True,
+            "x": 10,
+            "y": 20,
+            "width": 30,
+            "height": 10,
+            "confidence": 0.9,
+            "model": model,
+            "image_size": {"width": 100, "height": 50},
+        }
+
+    monkeypatch.setattr(vision_commands, "detect_element_coordinates", fake_detect_element_coordinates)
+    monkeypatch.setattr(
+        vision_commands,
+        "_transform_to_screen_coords",
+        lambda driver, coords, fx, fy: {**coords, "click_point": {"x": 17, "y": 25}},
+    )
+    monkeypatch.setattr(vision_commands, "resolve_detect_target", lambda **kwargs: _make_detect_resolution())
+    _set_vision_env(monkeypatch, stream_default="false")
+
+    result = vision_commands.handle_detect_coordinates(
+        driver=object(),
+        command={"prompt": "the submit button", "stream": True},
+        browser_id="test-browser",
+    )
+
+    assert result["status"] == "success"
+    assert captured["stream"] is True
+
+
+def test_detect_coordinates_request_stream_false_overrides_env_true(monkeypatch):
+    captured = {}
+    monkeypatch.setattr(
+        vision_commands,
+        "take_screenshot",
+        lambda driver, browser_id: {"path": "/tmp/fake.png", "url": "http://shot"},
+    )
+
+    def fake_detect_element_coordinates(image_path, prompt, model, stream):
+        captured["stream"] = stream
+        return {
+            "success": True,
+            "x": 10,
+            "y": 20,
+            "width": 30,
+            "height": 10,
+            "confidence": 0.9,
+            "model": model,
+            "image_size": {"width": 100, "height": 50},
+        }
+
+    monkeypatch.setattr(vision_commands, "detect_element_coordinates", fake_detect_element_coordinates)
+    monkeypatch.setattr(
+        vision_commands,
+        "_transform_to_screen_coords",
+        lambda driver, coords, fx, fy: {**coords, "click_point": {"x": 17, "y": 25}},
+    )
+    monkeypatch.setattr(vision_commands, "resolve_detect_target", lambda **kwargs: _make_detect_resolution())
+    _set_vision_env(monkeypatch, stream_default="true")
+
+    result = vision_commands.handle_detect_coordinates(
+        driver=object(),
+        command={"prompt": "the submit button", "stream": False},
+        browser_id="test-browser",
+    )
+
+    assert result["status"] == "success"
+    assert captured["stream"] is False
+
+
+def test_vision_coordinate_detector_forwards_stream_to_client(monkeypatch, tmp_path):
+    captured = {}
+    image_path = tmp_path / "shot.png"
+    image_path.write_bytes(b"fake-image")
+
+    class FakeClient:
+        def __init__(self, *, base_url, api_key, model):
+            self.model = model
+
+        def explain_screenshot(self, image_path, prompt, stream=False):
+            captured["stream"] = stream
+            return {
+                "success": True,
+                "explanation": '{"found": true, "x": 10, "y": 20, "width": 30, "height": 40, "confidence": 0.9}',
+                "model": self.model,
+            }
+
+    monkeypatch.setattr("airbrowser.server.vision.coordinates.OpenAICompatibleVisionClient", FakeClient)
+    monkeypatch.setattr(
+        "airbrowser.server.vision.coordinates.load_vision_settings",
+        lambda: VisionSettings(
+            base_url="https://cliproxy.ldc-fe.org/v1",
+            api_key="test-key",
+            model="default/model",
+            stream_default=False,
+        ),
+    )
+
+    from airbrowser.server.vision.coordinates import VisionCoordinateDetector
+
+    result = VisionCoordinateDetector("rightcode/gpt-5.4").detect(str(image_path), "submit button", stream=True)
+
+    assert result["success"] is True
+    assert captured["stream"] is True
+
+
 def test_handle_detect_coordinates_passes_request_model_override(monkeypatch):
     monkeypatch.setattr(
         vision_commands,
@@ -709,7 +1402,7 @@ def test_handle_detect_coordinates_passes_request_model_override(monkeypatch):
     monkeypatch.setattr(
         vision_commands,
         "detect_element_coordinates",
-        lambda image_path, prompt, model: {
+        lambda image_path, prompt, model, stream=False: {
             "success": True,
             "x": 10,
             "y": 20,
@@ -752,7 +1445,7 @@ def test_handle_what_is_visible_uses_generic_client_on_success(monkeypatch):
         def __init__(self, *, base_url, api_key, model):
             self.model = model
 
-        def explain_screenshot(self, image_path, prompt):
+        def explain_screenshot(self, image_path, prompt, stream=False):
             return {"success": True, "explanation": "visible analysis", "model": self.model}
 
     monkeypatch.setattr(vision_commands, "OpenAICompatibleVisionClient", FakeClient, raising=False)
@@ -783,7 +1476,7 @@ def test_handle_what_is_visible_preserves_screenshot_on_provider_failure(monkeyp
         def __init__(self, *, base_url, api_key, model):
             self.model = model
 
-        def explain_screenshot(self, image_path, prompt):
+        def explain_screenshot(self, image_path, prompt, stream=False):
             return {"success": False, "error": "provider failed"}
 
     monkeypatch.setattr(vision_commands, "OpenAICompatibleVisionClient", FakeClient, raising=False)
@@ -807,7 +1500,7 @@ def test_handle_detect_coordinates_auto_biases_wide_elements(monkeypatch):
     monkeypatch.setattr(
         vision_commands,
         "detect_element_coordinates",
-        lambda image_path, prompt, model: {
+        lambda image_path, prompt, model, stream=False: {
             "success": True,
             "x": 400,
             "y": 300,

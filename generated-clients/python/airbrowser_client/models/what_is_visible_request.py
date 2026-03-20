@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictStr
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -28,7 +28,8 @@ class WhatIsVisibleRequest(BaseModel):
     WhatIsVisibleRequest
     """ # noqa: E501
     model: Optional[StrictStr] = Field(default=None, description="model")
-    __properties: ClassVar[List[str]] = ["model"]
+    stream: Optional[StrictBool] = Field(default=None, description="stream")
+    __properties: ClassVar[List[str]] = ["model", "stream"]
 
     model_config = ConfigDict(
         validate_by_name=True,
@@ -81,6 +82,7 @@ class WhatIsVisibleRequest(BaseModel):
             return cls.model_validate(obj)
 
         _obj = cls.model_validate({
-            "model": obj.get("model")
+            "model": obj.get("model"),
+            "stream": obj.get("stream")
         })
         return _obj

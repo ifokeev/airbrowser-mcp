@@ -6,6 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **model** | **string** | model | [optional] [default to undefined]
+**stream** | **boolean** | stream | [optional] [default to undefined]
 
 ## Example
 
@@ -14,6 +15,7 @@ import { WhatIsVisibleRequest } from 'airbrowser-client';
 
 const instance: WhatIsVisibleRequest = {
     model,
+    stream,
 };
 ```
 

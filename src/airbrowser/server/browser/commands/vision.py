@@ -7,7 +7,7 @@ from typing import Any
 
 from airbrowser.server.browser.smart_targeting import Point, Rect, resolve_detect_target
 from airbrowser.server.utils.screenshots import take_screenshot
-from airbrowser.server.vision.config import load_vision_settings
+from airbrowser.server.vision.config import load_vision_settings, resolve_vision_stream
 from airbrowser.server.vision.coordinates import detect_element_coordinates
 from airbrowser.server.vision.openai_compatible import OpenAICompatibleVisionClient
 
@@ -232,11 +232,13 @@ def handle_detect_coordinates(driver, command: dict, browser_id: str = "unknown"
 
     try:
         screenshot = take_screenshot(driver, browser_id)
-        if load_vision_settings() is None:
+        settings = load_vision_settings()
+        if settings is None:
             return {"status": "error", "message": "Vision client not configured", "screenshot_url": screenshot["url"]}
 
         model = resolve_vision_model(command)
-        coords = detect_element_coordinates(screenshot["path"], prompt, model)
+        stream = resolve_vision_stream(command.get("stream"), settings)
+        coords = detect_element_coordinates(screenshot["path"], prompt, model, stream=stream)
 
         if coords.get("success"):
             # Auto left-bias for very wide elements (like search boxes with icons)
@@ -298,6 +300,7 @@ def handle_what_is_visible(driver, command: dict, browser_id: str = "unknown") -
             return {"status": "error", "message": "Vision client not configured", "screenshot_url": screenshot["url"]}
 
         model = resolve_vision_model(command)
+        stream = resolve_vision_stream(command.get("stream"), settings)
         client = OpenAICompatibleVisionClient(base_url=settings.base_url, api_key=settings.api_key, model=model)
 
         prompt = """Analyze this webpage. Report:
@@ -310,7 +313,7 @@ def handle_what_is_visible(driver, command: dict, browser_id: str = "unknown") -
 
 Be specific about field names and states."""
 
-        result = client.explain_screenshot(screenshot["path"], prompt)
+        result = client.explain_screenshot(screenshot["path"], prompt, stream=stream)
 
         if result.get("success"):
             return {

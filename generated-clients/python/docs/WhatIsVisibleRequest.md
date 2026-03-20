@@ -6,6 +6,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **model** | **str** | model | [optional]
+**stream** | **bool** | stream | [optional]
 
 ## Example
 

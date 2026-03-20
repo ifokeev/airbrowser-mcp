@@ -36,10 +36,19 @@ echo ""
 # Update conftest to use the Docker service URL
 export API_BASE_URL="${BROWSER_POOL_URL}/api/v1"
 
-# Run pytest - uses settings from pytest.ini
-cd /app/tests
+# Run pytest from the writable app root so plugins can create temp artifacts.
+cd /app
 
-PYTEST_EXTRA_ARGS="${PYTEST_ARGS:-}"
+PYTEST_EXTRA_ARGS=()
+if [ -n "${PYTEST_ARGS_B64:-}" ]; then
+    while IFS= read -r -d '' arg; do
+        PYTEST_EXTRA_ARGS+=("$arg")
+    done < <(printf '%s' "$PYTEST_ARGS_B64" | base64 -d)
+elif [ -n "${PYTEST_ARGS:-}" ]; then
+    # Legacy fallback for manual docker-compose invocations that still pass a space-split string.
+    # shellcheck disable=SC2206
+    PYTEST_EXTRA_ARGS=($PYTEST_ARGS)
+fi
 
 echo "Running tests with 4 parallel workers..."
 
@@ -51,7 +60,7 @@ set +e
 
 # Run parallel tests first (excluding isolated tests that use close_all/kill_all)
 echo "=== Phase 1: Parallel tests ==="
-pytest -m "$BASE_MARKERS and not isolated" $PYTEST_EXTRA_ARGS
+pytest -m "$BASE_MARKERS and not isolated" "${PYTEST_EXTRA_ARGS[@]}"
 PARALLEL_EXIT=$?
 if [ $PARALLEL_EXIT -eq 5 ]; then
     echo "No parallel tests selected."
@@ -61,7 +70,7 @@ fi
 # Run isolated tests sequentially (they use close_all/kill_all)
 echo ""
 echo "=== Phase 2: Isolated tests (sequential) ==="
-pytest -m "$BASE_MARKERS and isolated" -n 1 $PYTEST_EXTRA_ARGS
+pytest -m "$BASE_MARKERS and isolated" -n 1 "${PYTEST_EXTRA_ARGS[@]}"
 ISOLATED_EXIT=$?
 if [ $ISOLATED_EXIT -eq 5 ]; then
     echo "No isolated tests selected."
