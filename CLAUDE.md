@@ -90,6 +90,7 @@ The `generated-clients/` directory contains auto-generated client libraries from
 - The API uses `/api/v1` prefix for all endpoints
 - Swagger documentation is available at `http://localhost:8000/docs/`
 - OpenAPI spec is available at `http://localhost:8000/api/v1/swagger.json`
+- **Before calling REST API endpoints directly, always check `/api/v1/swagger.json` first** to verify the correct endpoint paths and HTTP methods
 
 ### Testing
 - Run tests: `./scripts/run_tests.sh` (skips slow/external tests by default)
@@ -210,12 +211,6 @@ await browserApi.navigateBrowser(browserId, navigateRequest);
 - All request bodies use the `payload` parameter name
 - **IMPORTANT**: The client configuration must use `host="http://localhost:8000/api/v1"` (including /api/v1)
 - When setting configuration.host, it replaces the entire base path, not just the domain
-
-### CDP Mode Limitations
-- **After activating CDP mode, `execute_script` stops working** - this is a known SeleniumBase limitation
-- ChatGPT and similar protected sites require CDP mode but limit JavaScript execution
-- Use typing, clicking, and screenshots instead of script execution after CDP activation
-- See `docs/CDP_MODE_NOTES.md` for detailed information
 
 ### Proxy Authentication
 **Proxy auth uses a local pproxy forwarder (NOT Chrome extensions or CDP).**
