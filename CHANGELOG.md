@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.13.1](https://github.com/ifokeev/airbrowser-mcp/compare/v1.13.0...v1.13.1) (2026-03-21)
+
+
+### Bug Fixes
+
+* **gui:** add Unicode support to gui_type_xy fallback ([2318c4a](https://github.com/ifokeev/airbrowser-mcp/commit/2318c4af49b78380ea8cbac2e4b5364c52138015))
+
+
+### Dependencies
+
+* upgrade seleniumbase to &gt;=4.47.4 ([634d6f8](https://github.com/ifokeev/airbrowser-mcp/commit/634d6f80fb977f81074b9accd752b1c4aaaba07d))
+
 ## [1.13.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.12.1...v1.13.0) (2026-01-04)
 
 
