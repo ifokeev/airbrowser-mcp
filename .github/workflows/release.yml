@@ -260,8 +260,11 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v4
+
       - name: Install dependencies
-        run: pip install build twine
+        run: uv pip install --system build twine
 
       - name: Start server for OpenAPI spec
         run: |
@@ -303,6 +306,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
