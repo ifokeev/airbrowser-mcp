@@ -158,7 +158,7 @@ BASE_PATH=/airbrowser docker compose up
 - **Description:** Main entry point port (nginx proxy).
 
 ### `MCP_PORT`
-- **Default:** 3001
+- **Default:** 3099
 - **Description:** MCP server port (proxied via nginx at `/mcp`).
 
 ### `VNC_PORT`

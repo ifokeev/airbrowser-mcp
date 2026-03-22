@@ -179,7 +179,7 @@ click = await client.call_tool("gui_click_xy", {
 ```
 ┌─────────────────────────────────────────┐
 │           nginx (:18080)                │
-│  /mcp → MCP Server (:3001)              │
+│  /mcp → MCP Server (:3099)              │
 │  /api/v1 → Flask API (:8000)            │
 └─────────────────────────────────────────┘
                     │

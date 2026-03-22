@@ -155,7 +155,7 @@ class MCPIntegration:
         """Get the MCP server instance."""
         return self.mcp
 
-    def run_mcp_server(self, host: str = "0.0.0.0", port: int = 3001, path: str = "/mcp", quiet: bool = False):
+    def run_mcp_server(self, host: str = "0.0.0.0", port: int = 3099, path: str = "/mcp", quiet: bool = False):
         """Run the MCP server independently."""
         try:
             if not quiet:

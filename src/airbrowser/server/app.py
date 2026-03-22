@@ -208,7 +208,7 @@ def run_mcp_server_thread(mcp_integration):
     if mcp_integration:
         import threading
 
-        mcp_port = int(os.environ.get("MCP_PORT", 3001))
+        mcp_port = int(os.environ.get("MCP_PORT", 3099))
         mcp_thread = threading.Thread(
             target=mcp_integration.run_mcp_server,
             kwargs={"host": "0.0.0.0", "port": mcp_port, "path": "/mcp", "quiet": True},
