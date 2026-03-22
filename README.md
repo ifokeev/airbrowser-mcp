@@ -179,6 +179,10 @@ pip install airbrowser-client
 npm install airbrowser-client
 ```
 
+## Community
+
+Join our [Discord server](https://discord.gg/dP9PbTPHcN) for support, feature requests, and discussion.
+
 ## Docs
 
 - [docs/](docs/) - Full documentation
