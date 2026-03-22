@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.14.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.13.1...v1.14.0) (2026-03-22)
+
+
+### Features
+
+* **click:** add smart target validation and feedback ([0d9499e](https://github.com/ifokeev/airbrowser-mcp/commit/0d9499e99ed8453dae569ee40b986bed943531c8))
+* **vision:** add stream control for vision requests ([8cf7084](https://github.com/ifokeev/airbrowser-mcp/commit/8cf7084f47e1fb423c73ca4dd02ca09b8e4be784))
+
+
+### Bug Fixes
+
+* **gui:** stabilize flaky unicode and keyboard GUI tests ([32163f4](https://github.com/ifokeev/airbrowser-mcp/commit/32163f47cd40a915b08ba6340d1bfa9f12abae18))
+* **mcp:** change default MCP port from 3001 to 3099 ([5a63af1](https://github.com/ifokeev/airbrowser-mcp/commit/5a63af1df2f0fe787d93b0f28923e14305af66b5))
+* **runtime:** add cjk fonts and centralize screenshot lifecycle ([a71e34d](https://github.com/ifokeev/airbrowser-mcp/commit/a71e34d72041ae7d71f9587ab5510454b9d52487))
+
 ## [1.13.1](https://github.com/ifokeev/airbrowser-mcp/compare/v1.13.0...v1.13.1) (2026-03-21)
 
 
