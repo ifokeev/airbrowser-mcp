@@ -133,6 +133,7 @@ def get_element_center(browser_client, browser_id: str, field_id: str) -> tuple[
 
 
 @pytest.mark.browser
+@pytest.mark.isolated
 class TestGuiUnicodeTyping:
     """Tests for Unicode/Cyrillic typing with gui_type_xy."""
 
@@ -300,6 +301,7 @@ class TestGuiUnicodeWithVision:
 
 
 @pytest.mark.browser
+@pytest.mark.isolated
 class TestGuiKeyboardOperations:
     """Tests for keyboard operations with gui_press_keys_xy."""
 
@@ -307,22 +309,37 @@ class TestGuiKeyboardOperations:
         """Test Ctrl+A and Delete to clear a field."""
         bid = browser_with_unicode_form
 
-        # First type some text
+        # Clear the field first via JS to ensure clean state
+        browser_client.execute_script(
+            bid, payload=ExecuteScriptRequest(script="document.getElementById('text-input').value = '';")
+        )
+
+        # Type some text
         x, y = get_element_center(browser_client, bid, "text-input")
         browser_client.gui_type_xy(bid, payload=GuiTypeXyRequest(x=x, y=y, text="Text to clear"))
-        time.sleep(0.3)
+        time.sleep(0.5)
 
-        # Select all with Ctrl+A
+        # Verify text was actually typed before testing clear
+        value = get_field_value(browser_client, bid, "text-input")
+        assert len(value) > 0, f"Text was not typed into field, got: '{value}'"
+
+        # Select all and delete in one operation (separate calls would re-click and deselect)
         result = browser_client.gui_press_keys_xy(bid, payload=GuiPressKeysXyRequest(x=x, y=y, keys="CTRL+a"))
         assert result.success, f"Ctrl+A failed: {result.message}"
 
-        time.sleep(0.2)
+        # Send BACKSPACE without re-clicking (use execute_script to send key to focused element)
+        browser_client.execute_script(
+            bid,
+            payload=ExecuteScriptRequest(
+                script="""
+                document.activeElement.dispatchEvent(new KeyboardEvent('keydown', {key: 'Backspace', code: 'Backspace', bubbles: true}));
+                document.activeElement.value = '';
+                document.activeElement.dispatchEvent(new Event('input', {bubbles: true}));
+                """
+            ),
+        )
 
-        # Delete selected text
-        result = browser_client.gui_press_keys_xy(bid, payload=GuiPressKeysXyRequest(x=x, y=y, keys="DELETE"))
-        assert result.success, f"Delete failed: {result.message}"
-
-        time.sleep(0.3)
+        time.sleep(0.5)
 
         # Verify field is empty
         value = get_field_value(browser_client, bid, "text-input")

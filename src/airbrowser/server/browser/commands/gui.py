@@ -175,7 +175,7 @@ def _bring_window_to_front(driver):
     try:
         if hasattr(driver, "cdp") and hasattr(driver.cdp, "bring_active_window_to_front"):
             driver.cdp.bring_active_window_to_front()
-            time.sleep(0.05)
+            time.sleep(0.15)
     except Exception:
         pass
 
