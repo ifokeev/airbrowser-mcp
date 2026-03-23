@@ -148,6 +148,36 @@ def _ensure_screenshot_capacity(directory: Path, *, incoming_bytes: int) -> None
 
 
 def _capture_screenshot_bytes(driver) -> bytes:
+    import tempfile
+
+    # Try CDP screenshot first (avoids WebDriver reconnection in CDP Mode)
+    try:
+        if hasattr(driver, "cdp") and driver.cdp:
+            # save_screenshot is async, returns file path — use a temp file
+            tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+            tmp_path = tmp.name
+            tmp.close()
+            try:
+                driver.cdp.loop.run_until_complete(driver.cdp.page.save_screenshot(tmp_path))
+                png_bytes = Path(tmp_path).read_bytes()
+                if len(png_bytes) > 0:
+                    return png_bytes
+            finally:
+                Path(tmp_path).unlink(missing_ok=True)
+    except Exception:
+        pass
+    # Fallback: reconnect WebDriver temporarily for screenshot, then disconnect
+    try:
+        if hasattr(driver, "connect"):
+            driver.connect()
+        png_bytes = driver.get_screenshot_as_png()
+        if hasattr(driver, "disconnect"):
+            driver.disconnect()
+        if isinstance(png_bytes, bytes | bytearray) and len(png_bytes) > 0:
+            return bytes(png_bytes)
+    except Exception:
+        pass
+    # Last resort: direct WebDriver call
     png_bytes = driver.get_screenshot_as_png()
     if not isinstance(png_bytes, bytes | bytearray) or len(png_bytes) == 0:
         raise OSError(errno.EIO, "Failed to save screenshot")

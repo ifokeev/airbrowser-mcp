@@ -253,6 +253,14 @@ def create_browser(config: dict):
     except Exception as e:
         logger.warning(f"Could not set window size: {e}")
 
+    # Activate CDP Mode immediately so the browser is stealthy from the start
+    try:
+        if hasattr(driver, "uc_open_with_cdp_mode"):
+            driver.uc_open_with_cdp_mode("about:blank")
+            logger.info("CDP Mode activated at launch")
+    except Exception as e:
+        logger.warning(f"Could not activate CDP Mode at launch: {e}")
+
     return driver, local_proxy_proc
 
 
@@ -397,11 +405,19 @@ def main():
         driver, proxy_proc = create_browser(config)
 
         # Update status to ready
+        # Use CDP to get URL if available (WebDriver may be disconnected in CDP Mode)
+        try:
+            if hasattr(driver, "cdp") and driver.cdp:
+                current_url = driver.cdp.loop.run_until_complete(driver.cdp.page.evaluate("window.location.href"))
+            else:
+                current_url = driver.current_url
+        except Exception:
+            current_url = "about:blank"
         status_data.update(
             {
                 "status": "ready",
                 "session_id": getattr(driver, "session_id", "unknown"),
-                "current_url": driver.current_url,
+                "current_url": current_url,
                 "timestamp": time.time(),
             }
         )

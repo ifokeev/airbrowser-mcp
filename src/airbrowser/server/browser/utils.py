@@ -1,10 +1,35 @@
 """Utility functions for browser operations."""
 
 import logging
+from contextlib import contextmanager
 
 import psutil
 
 logger = logging.getLogger(__name__)
+
+
+@contextmanager
+def webdriver_connected(driver):
+    """Context manager that ensures WebDriver is connected for operations that need it.
+
+    In CDP Mode, WebDriver is disconnected for stealth. This temporarily reconnects
+    it, runs the operation, then disconnects again to maintain stealth.
+    If not in CDP Mode, this is a no-op.
+    """
+    was_disconnected = hasattr(driver, "cdp") and driver.cdp and hasattr(driver, "connect")
+    if was_disconnected:
+        try:
+            driver.connect()
+        except Exception:
+            pass
+    try:
+        yield driver
+    finally:
+        if was_disconnected and hasattr(driver, "disconnect"):
+            try:
+                driver.disconnect()
+            except Exception:
+                pass
 
 
 def get_webdriver(driver):

@@ -4,6 +4,8 @@ import logging
 
 from airbrowser.server.utils.screenshots import take_screenshot
 
+from ..utils import webdriver_connected
+
 logger = logging.getLogger(__name__)
 
 
@@ -20,11 +22,30 @@ def handle_screenshot(driver, command: dict, browser_id: str = "unknown") -> dic
 
 def handle_get_content(driver, command: dict) -> dict:
     """Get page HTML content."""
+    # Prefer CDP to avoid WebDriver reconnection (which triggers bot detection)
+    content = None
+    url = None
+    title = None
+    try:
+        if hasattr(driver, "cdp") and driver.cdp:
+            content = driver.cdp.loop.run_until_complete(driver.cdp.page.evaluate("document.documentElement.outerHTML"))
+            url = driver.cdp.loop.run_until_complete(driver.cdp.page.evaluate("window.location.href"))
+            title = driver.cdp.loop.run_until_complete(driver.cdp.page.evaluate("document.title"))
+    except Exception:
+        pass
+    if not content or not url or not title:
+        with webdriver_connected(driver):
+            if not content:
+                content = driver.page_source
+            if not url:
+                url = driver.current_url
+            if not title:
+                title = driver.title if hasattr(driver, "title") else ""
     return {
         "status": "success",
-        "content": driver.page_source,
-        "url": driver.current_url,
-        "title": driver.title if hasattr(driver, "title") else "",
+        "content": content,
+        "url": url,
+        "title": title,
     }
 
 
@@ -34,7 +55,16 @@ def handle_execute_script(driver, command: dict) -> dict:
     if not script:
         return {"status": "error", "message": "Script is required"}
 
-    result = driver.execute_script(script)
+    # Prefer CDP evaluate to avoid WebDriver reconnection
+    try:
+        if hasattr(driver, "cdp") and driver.cdp:
+            result = driver.cdp.loop.run_until_complete(driver.cdp.page.evaluate(script))
+            return {"status": "success", "result": result}
+    except Exception:
+        pass
+    # Fallback: reconnect WebDriver temporarily
+    with webdriver_connected(driver):
+        result = driver.execute_script(script)
     return {"status": "success", "result": result}
 
 

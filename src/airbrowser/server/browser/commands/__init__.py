@@ -3,6 +3,7 @@
 import json
 import logging
 
+from ..utils import webdriver_connected
 from . import cookies, debug, dialogs, elements, emulation, gui, navigation, page, performance, tabs, vision
 
 logger = logging.getLogger(__name__)
@@ -102,10 +103,35 @@ COMMANDS_NEEDING_BROWSER_ID = {
     "stop_trace",
 }
 
+# Commands that handle CDP/WebDriver switching internally and should NOT
+# be auto-wrapped with webdriver_connected (they use CDP natively or have
+# their own reconnect logic).
+_CDP_NATIVE_COMMANDS = {
+    "navigate",
+    "url",
+    "get_url",
+    "go_back",
+    "go_forward",
+    "refresh",
+    "screenshot",
+    "get_content",
+    "execute_script",
+    "gui_click",
+    "gui_click_xy",
+    "gui_type_xy",
+    "gui_hover_xy",
+    "gui_press_keys_xy",
+    "detect_coordinates",
+    "what_is_visible",
+}
+
 
 def handle_command(driver, command, browser_id: str = "unknown") -> dict:
     """
     Dispatch a command to the appropriate handler.
+
+    In CDP Mode, WebDriver is disconnected for stealth. Commands that need
+    WebDriver are automatically wrapped with connect/disconnect.
 
     Args:
         driver: SeleniumBase driver instance
@@ -137,10 +163,17 @@ def handle_command(driver, command, browser_id: str = "unknown") -> dict:
         return {"status": "error", "message": f"Unknown command type: {cmd_type}"}
 
     try:
-        # Some commands need browser_id (for screenshot filenames, etc.)
-        if cmd_type in COMMANDS_NEEDING_BROWSER_ID:
-            return handler(driver, command, browser_id=browser_id)
+        # Auto-wrap non-CDP-native commands with WebDriver reconnect
+        use_wd_wrapper = cmd_type not in _CDP_NATIVE_COMMANDS
+
+        if use_wd_wrapper:
+            with webdriver_connected(driver):
+                if cmd_type in COMMANDS_NEEDING_BROWSER_ID:
+                    return handler(driver, command, browser_id=browser_id)
+                return handler(driver, command)
         else:
+            if cmd_type in COMMANDS_NEEDING_BROWSER_ID:
+                return handler(driver, command, browser_id=browser_id)
             return handler(driver, command)
 
     except Exception as e:
