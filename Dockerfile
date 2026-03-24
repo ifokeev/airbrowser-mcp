@@ -31,7 +31,7 @@ FROM python:3.11-slim-bullseye
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONIOENCODING=UTF-8
-ENV DISPLAY=:99
+ENV DISPLAY=:49
 ENV CHROME_BIN=/usr/bin/google-chrome
 ENV CHROMEDRIVER_PATH=/usr/local/bin/chromedriver
 ENV HOME=/home/browseruser
@@ -45,15 +45,19 @@ RUN for i in 1 2 3; do apt-get update && break || sleep 5; done \
     && for i in 1 2 3; do apt-get install -y --no-install-recommends \
     # Minimal system tools
     wget curl ca-certificates gnupg xvfb supervisor procps nginx openssl \
-    # Fonts (minimal set)
+    # Fonts (comprehensive set to match real browser fingerprint)
     fonts-liberation fonts-dejavu-core fonts-noto-cjk fontconfig \
+    fonts-noto-color-emoji fonts-freefont-ttf fonts-open-sans fonts-roboto \
     # X11/VNC (minimal)
     fluxbox x11vnc xterm dbus-x11 \
-    # Chrome dependencies
+    # Chrome dependencies (matching SeleniumBase official Dockerfile)
     libasound2 libatk-bridge2.0-0 libatk1.0-0 libatspi2.0-0 \
     libcups2 libdbus-1-3 libdrm2 libgbm1 libgtk-3-0 \
     libnspr4 libnss3 libwayland-client0 libxcomposite1 \
     libxdamage1 libxfixes3 libxkbcommon0 libxrandr2 xdg-utils \
+    libvulkan1 libu2f-udev libx11-xcb1 libpango-1.0-0 libcairo2 \
+    # GPU rendering support (EGL/GL for NVIDIA passthrough)
+    libegl1 libgles2 libgl1 \
     # PyAutoGUI dependencies
     python3-tk scrot xdotool xsel xclip \
     libxtst6 libxss1 libpangocairo-1.0-0 libgdk-pixbuf2.0-0 \

@@ -18,8 +18,9 @@ sys.path.insert(0, "/app/src")
 from airbrowser.server.services.state_manager import StateManager
 from airbrowser.server.utils.screenshots import prune_screenshots
 
-# Set display before importing SeleniumBase
-os.environ["DISPLAY"] = ":99"
+# Ensure DISPLAY is set (inherited from supervisord/entrypoint)
+if not os.environ.get("DISPLAY"):
+    os.environ["DISPLAY"] = ":49"
 
 
 def _env_truthy(name: str, default: bool = True) -> bool:
@@ -88,7 +89,7 @@ class BrowserInstance:
                 cmd,
                 stdout=subprocess.DEVNULL,
                 stderr=None,  # Inherit stderr so logs go to docker compose logs
-                env={**os.environ, "DISPLAY": ":99", "HOME": "/home/browseruser", "PYTHONPATH": "/app/src"},
+                env={**os.environ, "HOME": "/home/browseruser", "PYTHONPATH": "/app/src"},
             )
 
             self.launcher_pid = process.pid
@@ -97,7 +98,7 @@ class BrowserInstance:
 
             # Wait for browser to be ready (with timeout)
             start_time = time.time()
-            timeout = 30
+            timeout = 60
 
             while time.time() - start_time < timeout:
                 # Check if process died

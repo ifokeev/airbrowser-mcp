@@ -58,8 +58,9 @@ logger.addHandler(console_handler)
 
 logger.info(f"Browser launcher starting for browser_id: {browser_id}")
 
-# Set environment
-os.environ["DISPLAY"] = ":99"
+# Set environment — DISPLAY inherited from supervisord/entrypoint
+if not os.environ.get("DISPLAY"):
+    os.environ["DISPLAY"] = ":49"
 os.environ["HOME"] = "/home/browseruser"
 
 # Import utilities (using absolute imports)
@@ -159,10 +160,12 @@ def start_local_proxy_forwarder(
     return local_port, proc
 
 
-def create_browser(config: dict):
-    """Create and configure a SeleniumBase UC browser instance."""
-    from seleniumbase import Driver
+def prepare_browser_opts(config: dict) -> tuple[dict, str | None, "subprocess.Popen | None"]:
+    """Prepare SB options and start proxy forwarder if needed.
 
+    Returns:
+        Tuple of (sb_opts, effective_proxy, local_proxy_proc)
+    """
     proxy = config.get("proxy")
     user_agent = config.get("user_agent")
     profile_name = config.get("profile_name")
@@ -195,14 +198,14 @@ def create_browser(config: dict):
             effective_proxy = proxy
             logger.info(f"Using proxy without auth: {proxy}")
 
-    # UC (undetected chrome) + CDP mode are always enabled
+    # SB options — UC Mode + test mode for maximum stealth
+    # headed=True required so browser window is visible via VNC
+    # Vulkan uses real GPU for WebGL rendering (requires GPU passthrough)
     opts = {
-        "browser": "chrome",
         "uc": True,
-        "log_cdp": False,
-        "uc_cdp": True,
-        # Allow CDP WebSocket connections from any origin (required for CDP proxy)
-        "chromium_arg": "--remote-allow-origins=*",
+        "test": True,
+        "headed": True,
+        "chromium_arg": "--use-gl=angle,--use-angle=vulkan",
     }
 
     if effective_proxy:
@@ -217,28 +220,21 @@ def create_browser(config: dict):
         logger.info(f"Using profile '{profile_name}' at {user_data_dir}")
 
     if user_agent:
-        opts["user_agent"] = user_agent
+        opts["agent"] = user_agent
     if config.get("disable_images"):
         opts["block_images"] = True
-    if config.get("disable_gpu"):
-        opts["disable_gpu"] = True
 
-    logger.info(f"Creating browser with options: {opts}")
+    logger.info(f"Creating browser with SB options: {opts}")
+    return opts, effective_proxy, local_proxy_proc
 
+
+def configure_window(sb, config: dict):
+    """Set window position and size on the SB instance."""
     try:
-        driver = Driver(**opts)
-    except Exception as e:
-        logger.error(f"Failed to create Driver: {e}")
-        raise
-
-    logger.info(f"Browser created successfully, session_id: {getattr(driver, 'session_id', 'unknown')}")
-
-    # Set window position and size
-    try:
+        driver = sb.driver
         driver.set_window_position(0, 0)
         window_size = config.get("window_size")
         if window_size:
-            # Use specified size
             if isinstance(window_size, list | tuple) and len(window_size) >= 2:
                 width, height = int(window_size[0]), int(window_size[1])
             elif isinstance(window_size, str) and "," in window_size:
@@ -248,20 +244,9 @@ def create_browser(config: dict):
             if width and height:
                 driver.set_window_size(width, height)
         else:
-            # No size specified - maximize
             driver.maximize_window()
     except Exception as e:
         logger.warning(f"Could not set window size: {e}")
-
-    # Activate CDP Mode immediately so the browser is stealthy from the start
-    try:
-        if hasattr(driver, "uc_open_with_cdp_mode"):
-            driver.uc_open_with_cdp_mode("about:blank")
-            logger.info("CDP Mode activated at launch")
-    except Exception as e:
-        logger.warning(f"Could not activate CDP Mode at launch: {e}")
-
-    return driver, local_proxy_proc
 
 
 def run_command_loop(driver, browser_id: str, status_file: Path, cmd_dir: Path, resp_dir: Path):
@@ -377,7 +362,8 @@ def cleanup(driver, status_file: Path, cmd_dir: Path, resp_dir: Path, proxy_proc
 
 def main():
     """Main entry point for browser launcher."""
-    driver = None
+    from seleniumbase import SB
+
     proxy_proc = None
     status_file = None
     cmd_dir = None
@@ -401,31 +387,42 @@ def main():
         with open(status_file, "w") as f:
             json.dump(status_data, f)
 
-        # Create browser (and optional proxy forwarder)
-        driver, proxy_proc = create_browser(config)
+        # Prepare browser options and start proxy forwarder if needed
+        sb_opts, effective_proxy, proxy_proc = prepare_browser_opts(config)
 
-        # Update status to ready
-        # Use CDP to get URL if available (WebDriver may be disconnected in CDP Mode)
-        try:
-            if hasattr(driver, "cdp") and driver.cdp:
-                current_url = driver.cdp.loop.run_until_complete(driver.cdp.page.evaluate("window.location.href"))
-            else:
+        # Use SB context manager for maximum stealth (test=True mode)
+        with SB(**sb_opts) as sb:
+            driver = sb.driver
+            logger.info(f"Browser created successfully, session_id: {getattr(driver, 'session_id', 'unknown')}")
+
+            # Configure window size
+            configure_window(sb, config)
+
+            # Initialize UC reconnect state so the browser is stealthy from the start
+            try:
+                driver.uc_open_with_reconnect("about:blank", reconnect_time=1)
+                logger.info("UC reconnect mode initialized")
+            except Exception as e:
+                logger.warning(f"Could not initialize UC reconnect: {e}")
+
+            # Update status to ready
+            try:
                 current_url = driver.current_url
-        except Exception:
-            current_url = "about:blank"
-        status_data.update(
-            {
-                "status": "ready",
-                "session_id": getattr(driver, "session_id", "unknown"),
-                "current_url": current_url,
-                "timestamp": time.time(),
-            }
-        )
-        with open(status_file, "w") as f:
-            json.dump(status_data, f)
+            except Exception:
+                current_url = "about:blank"
+            status_data.update(
+                {
+                    "status": "ready",
+                    "session_id": getattr(driver, "session_id", "unknown"),
+                    "current_url": current_url,
+                    "timestamp": time.time(),
+                }
+            )
+            with open(status_file, "w") as f:
+                json.dump(status_data, f)
 
-        # Run command loop
-        run_command_loop(driver, browser_id, status_file, cmd_dir, resp_dir)
+            # Run command loop inside SB context (keeps browser alive)
+            run_command_loop(driver, browser_id, status_file, cmd_dir, resp_dir)
 
     except Exception as e:
         logger.critical(f"Fatal error in browser {browser_id}: {e}", exc_info=True)
@@ -445,7 +442,7 @@ def main():
 
     finally:
         if status_file and cmd_dir and resp_dir:
-            cleanup(driver, status_file, cmd_dir, resp_dir, proxy_proc)
+            cleanup(None, status_file, cmd_dir, resp_dir, proxy_proc)
 
 
 if __name__ == "__main__":

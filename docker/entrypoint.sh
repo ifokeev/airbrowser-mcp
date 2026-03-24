@@ -5,7 +5,10 @@
 set -e
 
 # Set default environment variables
-export DISPLAY=${DISPLAY:-:99}
+export DISPLAY=${DISPLAY:-:49}
+# Set timezone (UTC is a bot signal; default to a common timezone)
+export TZ=${TZ:-America/New_York}
+ln -sf /usr/share/zoneinfo/$TZ /etc/localtime 2>/dev/null || true
 export BROWSER_POOL_HOST=${BROWSER_POOL_HOST:-0.0.0.0}
 export BROWSER_POOL_PORT=${BROWSER_POOL_PORT:-8000}
 export MAX_BROWSERS=${MAX_BROWSERS:-10}
@@ -23,6 +26,7 @@ export DISABLE_NGINX=${DISABLE_NGINX:-false}
 mkdir -p /app/browser-profiles 2>/dev/null || true
 mkdir -p /app/screenshots 2>/dev/null || true
 mkdir -p /app/downloads 2>/dev/null || true
+mkdir -p /app/downloaded_files 2>/dev/null || true
 mkdir -p /app/certs 2>/dev/null || true
 mkdir -p /app/state 2>/dev/null || true
 mkdir -p /tmp/.X11-unix 2>/dev/null || true
@@ -34,7 +38,7 @@ chmod 1777 /tmp/.X11-unix 2>/dev/null || true
 chmod 777 /tmp 2>/dev/null || true
 
 # Ensure browseruser owns the app directories
-chown -R browseruser:browseruser /app/browser-profiles /app/screenshots /app/downloads /app/certs /app/state 2>/dev/null || true
+chown -R browseruser:browseruser /app/browser-profiles /app/screenshots /app/downloads /app/downloaded_files /app/certs /app/state 2>/dev/null || true
 chown -R browseruser:browseruser /home/browseruser 2>/dev/null || true
 
 # Create mimeapps.list file if it doesn't exist
@@ -103,27 +107,21 @@ echo "==========================================="
 echo "🖥️  Starting Display and VNC Services"
 echo "==========================================="
 
-# Clean up any existing X server more thoroughly
+# Clean up any existing X server
 echo "Cleaning up existing display..."
-pkill -f "Xvfb" || true
-pkill -f "fluxbox" || true  
-pkill -f "x11vnc" || true
-pkill -f "websockify" || true
+pkill -9 -f "Xvfb" 2>/dev/null || true
+pkill -9 -f "fluxbox" 2>/dev/null || true
+pkill -9 -f "x11vnc" 2>/dev/null || true
+pkill -9 -f "websockify" 2>/dev/null || true
+sleep 1
 
-# Wait for processes to terminate
-sleep 2
-
-# Force remove lock files and sockets (ignore permission errors)
-rm -f /tmp/.X*-lock 2>/dev/null || true
-rm -f /tmp/.X11-unix/X* 2>/dev/null || true
-rm -f /tmp/.X99-lock 2>/dev/null || true
-
-# Ensure X11 directory exists and has correct permissions
-mkdir -p /tmp/.X11-unix 2>/dev/null || true
-chmod 1777 /tmp/.X11-unix 2>/dev/null || true
+# Force remove lock files and sockets for our display
+DISPLAY_NUM="${DISPLAY#:}"
+rm -f "/tmp/.X${DISPLAY_NUM}-lock" "/tmp/.X11-unix/X${DISPLAY_NUM}" 2>/dev/null || true
+mkdir -p /tmp/.X11-unix
+chmod 1777 /tmp/.X11-unix
 
 # Start Xvfb with configurable screen resolution
-# Allow overriding via SCREEN_WIDTH/SCREEN_HEIGHT/SCREEN_DEPTH for convenience
 if [[ -n "$SCREEN_WIDTH" && -n "$SCREEN_HEIGHT" ]]; then
   export SCREEN_DEPTH=${SCREEN_DEPTH:-24}
   export SCREEN_RESOLUTION="${SCREEN_WIDTH}x${SCREEN_HEIGHT}x${SCREEN_DEPTH}"
@@ -131,20 +129,25 @@ fi
 
 export SCREEN_RESOLUTION=${SCREEN_RESOLUTION:-1600x900x24}
 export SCREEN_DPI=${SCREEN_DPI:-96}
-echo "🚀 Starting Xvfb on display $DISPLAY with resolution $SCREEN_RESOLUTION (DPI: $SCREEN_DPI)..."
-Xvfb $DISPLAY -screen 0 $SCREEN_RESOLUTION -dpi $SCREEN_DPI -ac +extension GLX +render -noreset -nolisten tcp &
-XVFB_PID=$!
 
-# Wait for Xvfb to initialize
-sleep 3
-
-# Verify Xvfb is running
-if ! pgrep -f "Xvfb" > /dev/null; then
-    echo "❌ ERROR: Xvfb failed to start!"
-    exit 1
-fi
-
-echo "✅ Xvfb started successfully (PID: $XVFB_PID)"
+# Try up to 3 times
+for attempt in 1 2 3; do
+    echo "🚀 Starting Xvfb on display $DISPLAY (attempt $attempt)..."
+    rm -f "/tmp/.X${DISPLAY_NUM}-lock" "/tmp/.X11-unix/X${DISPLAY_NUM}" 2>/dev/null || true
+    Xvfb $DISPLAY -screen 0 $SCREEN_RESOLUTION -dpi $SCREEN_DPI -ac +extension GLX +render -noreset -nolisten tcp &
+    XVFB_PID=$!
+    sleep 2
+    if kill -0 "$XVFB_PID" 2>/dev/null; then
+        echo "✅ Xvfb started successfully on $DISPLAY (PID: $XVFB_PID)"
+        break
+    fi
+    echo "⚠️ Attempt $attempt failed"
+    if [ "$attempt" -eq 3 ]; then
+        echo "❌ ERROR: Xvfb failed to start after 3 attempts!"
+        exit 1
+    fi
+    sleep 1
+done
 
 # Start window manager
 echo "🪟 Starting Fluxbox window manager..."
