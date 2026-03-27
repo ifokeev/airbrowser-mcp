@@ -1,6 +1,8 @@
-# Production / Remote Server deployment
-# Standalone browser pool with its own network
-# Use this when deploying on a remote server for headless browser automation
+# GPU-enabled deployment with NVIDIA passthrough
+# Enables hardware-accelerated WebGL rendering via Vulkan
+# Requirements: NVIDIA GPU + nvidia-container-toolkit
+#
+# Usage: docker compose -f compose.gpu.yml up
 
 services:
   browser-pool:
@@ -16,6 +18,8 @@ services:
       - "6080:6080"   # noVNC web interface (direct)
     environment:
       - PYTHONUNBUFFERED=1
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
       - MAX_BROWSERS=${MAX_BROWSERS:-10}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - API_BASE_URL=http://localhost:18080
@@ -24,7 +28,7 @@ services:
       - SCREENSHOTS_MAX_BYTES=${SCREENSHOTS_MAX_BYTES:-268435456}
       - SCREENSHOTS_MIN_FREE_BYTES=${SCREENSHOTS_MIN_FREE_BYTES:-67108864}
       - NGINX_HTTPS_PORT=18443
-      # AI vision (optional - set base URL, key, and model to enable; stream default is optional)
+      # AI vision (optional - set base URL, key, and model to enable)
       - VISION_API_BASE_URL=${VISION_API_BASE_URL:-}
       - VISION_API_KEY=${VISION_API_KEY:-}
       - VISION_MODEL=${VISION_MODEL:-}
@@ -43,6 +47,9 @@ services:
       - seccomp:unconfined
     cap_add:
       - SYS_ADMIN
+    runtime: nvidia
+    devices:
+      - /dev/dri:/dev/dri
     deploy:
       resources:
         limits:
@@ -51,19 +58,10 @@ services:
         reservations:
           memory: 2G
           cpus: '1.0'
-    # GPU passthrough (optional) - uncomment for hardware-accelerated WebGL
-    # Requires: NVIDIA GPU + nvidia-container-toolkit
-    # runtime: nvidia
-    # devices:
-    #   - /dev/dri:/dev/dri
-    # environment (add to existing):
-    #   - NVIDIA_VISIBLE_DEVICES=all
-    #   - NVIDIA_DRIVER_CAPABILITIES=all
-    # deploy.resources.reservations.devices:
-    #   - driver: nvidia
-    #     count: all
-    #     capabilities: [gpu, graphics, display, video, compute]
-    # Or use compose.gpu.yml which has GPU enabled by default
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu, graphics, display, video, compute]
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
