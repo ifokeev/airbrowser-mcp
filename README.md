@@ -20,6 +20,9 @@ Use the managed cloud version - no installation required:
 
 ```bash
 docker run -d -p 18080:18080 --name airbrowser ghcr.io/ifokeev/airbrowser-mcp:latest
+
+# With NVIDIA GPU (recommended for anti-detection)
+docker run -d -p 18080:18080 --gpus all --device /dev/dri:/dev/dri --name airbrowser ghcr.io/ifokeev/airbrowser-mcp:latest
 ```
 
 ### Portable Downloads
@@ -45,6 +48,9 @@ tar -xzf airbrowser-*.tar.gz && cd airbrowser-* && ./airbrowser
 git clone https://github.com/ifokeev/airbrowser-mcp.git
 cd airbrowser-mcp
 docker compose up --build
+
+# With NVIDIA GPU
+docker compose -f compose.gpu.yml up --build
 ```
 
 ---
@@ -68,6 +74,30 @@ Open **http://localhost:18080** - all services available:
 - Proxy per browser ([DataImpulse](https://dataimpulse.com/?aff=250254) recommended)
 - MCP for AI agents
 - AI vision tools (optional)
+
+## GPU Passthrough (Recommended)
+
+GPU passthrough enables hardware-accelerated WebGL rendering via Vulkan, making the browser fingerprint match a real desktop machine. Without it, Chrome falls back to software rendering (SwiftShader) which is easily detected by anti-bot systems.
+
+**Requirements:** NVIDIA GPU + [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
+
+```bash
+# Docker Compose (recommended)
+docker compose -f compose.gpu.yml up
+
+# Docker run
+docker run -d -p 18080:18080 \
+  --gpus all \
+  --device /dev/dri:/dev/dri \
+  -e NVIDIA_VISIBLE_DEVICES=all \
+  -e NVIDIA_DRIVER_CAPABILITIES=all \
+  ghcr.io/ifokeev/airbrowser-mcp:latest
+
+# Portable launcher
+./airbrowser --gpu
+```
+
+Without a GPU, Chrome uses `--use-gl=swiftshader` automatically. With GPU passthrough, it uses `--use-gl=angle --use-angle=vulkan` for real GPU rendering.
 
 ## AI Vision (Optional)
 

@@ -152,6 +152,29 @@ load_env() {
     fi
 }
 
+# GPU passthrough flags
+GPU_ENABLED="${GPU_ENABLED:-false}"
+
+build_gpu_args() {
+    if [[ "$GPU_ENABLED" != "true" ]]; then
+        echo ""
+        return
+    fi
+
+    local args=""
+    # Check for NVIDIA GPU
+    if command -v nvidia-smi &> /dev/null; then
+        log "NVIDIA GPU detected, enabling GPU passthrough"
+        args="--gpus all --device /dev/dri:/dev/dri -e NVIDIA_VISIBLE_DEVICES=all -e NVIDIA_DRIVER_CAPABILITIES=all"
+    elif [[ -d /dev/dri ]]; then
+        log "GPU device found at /dev/dri, enabling passthrough"
+        args="--device /dev/dri:/dev/dri"
+    else
+        warn "No GPU detected, running without GPU passthrough"
+    fi
+    echo "$args"
+}
+
 # Environment variables to pass through to container
 ENV_VARS=(
     "VISION_API_BASE_URL"
@@ -215,8 +238,9 @@ main() {
     # Load environment from .env file if exists
     load_env
 
-    # Build environment arguments
+    # Build environment and GPU arguments
     ENV_ARGS=$(build_env_args)
+    GPU_ARGS=$(build_gpu_args)
 
     # Run container with host network for full localhost access
     log "Starting server..."
@@ -239,6 +263,7 @@ main() {
             -v "$DATA_DIR/screenshots:/app/screenshots" \
             -v "$DATA_DIR/downloads:/app/downloads" \
             $ENV_ARGS \
+            $GPU_ARGS \
             airbrowser:latest
         log "Container started. Use '$0 --stop' to stop."
     elif [[ -t 0 ]]; then
@@ -252,6 +277,7 @@ main() {
             -v "$DATA_DIR/screenshots:/app/screenshots" \
             -v "$DATA_DIR/downloads:/app/downloads" \
             $ENV_ARGS \
+            $GPU_ARGS \
             airbrowser:latest
     else
         # No TTY - run in detached mode
@@ -263,6 +289,7 @@ main() {
             -v "$DATA_DIR/screenshots:/app/screenshots" \
             -v "$DATA_DIR/downloads:/app/downloads" \
             $ENV_ARGS \
+            $GPU_ARGS \
             airbrowser:latest
         log "Container started. Use '$0 --stop' to stop."
     fi
@@ -279,6 +306,7 @@ case "${1:-}" in
         echo "  --help, -h      Show this help"
         echo "  --version, -v   Show version"
         echo "  -d, --detach    Run in background (detached mode)"
+        echo "  --gpu           Enable NVIDIA GPU passthrough (hardware WebGL)"
         echo "  --stop          Stop running instance"
         echo "  --logs          Show container logs"
         echo ""
@@ -310,12 +338,19 @@ case "${1:-}" in
         echo "Requirements:"
         echo "  - uidmap package (for bundled podman)"
         echo "  - OR Docker/Podman installed on system"
+        echo ""
+        echo "GPU passthrough (--gpu flag):"
+        echo "  - NVIDIA GPU + nvidia-container-toolkit"
+        echo "  - Enables hardware WebGL via Vulkan (better anti-detection)"
         ;;
     --version|-v)
         echo "Airbrowser v0.1.1"
         ;;
     -d|--detach)
         DETACHED=true main
+        ;;
+    --gpu)
+        GPU_ENABLED=true main
         ;;
     --stop)
         RUNTIME=$(find_runtime)
