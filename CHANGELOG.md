@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.15.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.14.0...v1.15.0) (2026-03-27)
+
+
+### Features
+
+* **browser:** enable CDP Mode for stealth browsing ([1c8c125](https://github.com/ifokeev/airbrowser-mcp/commit/1c8c125779b9743cc4de493c9e8ce598bfd5fd61))
+* **browser:** switch to SB with GPU passthrough for stealth ([912b4bb](https://github.com/ifokeev/airbrowser-mcp/commit/912b4bbca358cb579dd81e63fd8a2e60a518e74c))
+* **compose:** add GPU-enabled compose file ([1c47b7b](https://github.com/ifokeev/airbrowser-mcp/commit/1c47b7ba5522f06fe8241d2a16bdd04d4f5eaa24))
+
+
+### Bug Fixes
+
+* **ci:** add uv to publish-pypi and publish-npm release jobs ([498cceb](https://github.com/ifokeev/airbrowser-mcp/commit/498ccebbb982804fd7e612ecdfcf72ff95a9315a))
+
 ## [1.14.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.13.1...v1.14.0) (2026-03-22)
 
 
