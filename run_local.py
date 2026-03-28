@@ -259,6 +259,10 @@ def main():
         "ENABLE_MCP": "false" if args.no_mcp else "true",
     }
 
+    # Tell dashboard where noVNC lives in local mode
+    if args.vnc:
+        env["VNC_BASE_URL"] = f"http://127.0.0.1:{args.novnc_port}"
+
     # Start Xvfb if needed (Linux without a display)
     xvfb_proc = start_xvfb()
     if xvfb_proc:

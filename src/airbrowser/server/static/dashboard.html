@@ -883,6 +883,10 @@
             return BASE_PATH + path;
         }
 
+        // VNC_BASE_URL: set by Flask when running in local mode (e.g. "http://localhost:6080")
+        // When empty, VNC is accessed via nginx proxy at /vnc/
+        const VNC_BASE_URL = window.VNC_BASE_URL || '';
+
         // Helper to build VNC URL with correct WebSocket path
         function getVncUrl() {
             const params = new URLSearchParams({
@@ -891,8 +895,13 @@
                 reconnect: 'true',
                 reconnect_delay: '2'
             });
-            // Set websocket path - remove leading slash for relative path resolution
-            // BASE_PATH like "/deployments/xxx" becomes "deployments/xxx/websockify"
+
+            if (VNC_BASE_URL) {
+                // Local mode: noVNC runs on its own port (e.g. http://localhost:6080)
+                return VNC_BASE_URL + '/vnc.html?' + params.toString();
+            }
+
+            // Docker/nginx mode: VNC proxied at /vnc/ path
             const wsPath = BASE_PATH ? BASE_PATH.slice(1) + '/websockify' : 'websockify';
             params.set('path', wsPath);
             return url('/vnc/vnc.html') + '?' + params.toString();
