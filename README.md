@@ -53,18 +53,27 @@ docker compose up --build
 docker compose -f compose.gpu.yml up --build
 ```
 
-### Local Mode (no Docker)
+### Local Mode (no Docker) — Linux only
 
-Run natively on Linux, macOS, or Windows — zero container fingerprint for maximum anti-detection stealth:
+Run natively without a container — zero container fingerprint for maximum anti-detection stealth. Tested on Ubuntu/Debian.
 
 ```bash
 git clone https://github.com/ifokeev/airbrowser-mcp.git
 cd airbrowser-mcp
-pip install -r requirements.txt
-python run_local.py
+uv run python run_local.py         # auto-installs deps + system packages
+uv run python run_local.py --vnc   # with VNC viewer at http://localhost:6080/vnc.html
 ```
 
 Requires Chrome installed on the host. See `python run_local.py --help` for options.
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| Dashboard | `http://localhost:8000/dashboard` | Browser pool management UI |
+| Swagger Docs | `http://localhost:8000/docs/` | Interactive API documentation |
+| REST API | `http://localhost:8000/api/v1/` | Browser automation endpoints |
+| MCP Server | `http://localhost:3099/mcp` | Model Context Protocol for AI agents |
+| VNC | `vnc://localhost:5900` | Remote desktop (with `--vnc` flag) |
+| noVNC | `http://localhost:6080/vnc.html` | Web-based VNC viewer (with `--vnc` flag) |
 
 ---
 
