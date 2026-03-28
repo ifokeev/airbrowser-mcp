@@ -53,6 +53,19 @@ docker compose up --build
 docker compose -f compose.gpu.yml up --build
 ```
 
+### Local Mode (no Docker)
+
+Run natively on Linux, macOS, or Windows — zero container fingerprint for maximum anti-detection stealth:
+
+```bash
+git clone https://github.com/ifokeev/airbrowser-mcp.git
+cd airbrowser-mcp
+pip install -r requirements.txt
+python run_local.py
+```
+
+Requires Chrome installed on the host. See `python run_local.py --help` for options.
+
 ---
 
 Open **http://localhost:18080** - all services available:

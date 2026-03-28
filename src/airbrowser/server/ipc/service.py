@@ -12,15 +12,25 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-# Add src to path (needed for StateManager import)
-sys.path.insert(0, "/app/src")
+# Add src to path (needed when run as standalone script)
+_src = str(Path(__file__).resolve().parent.parent.parent.parent)
+if _src not in sys.path:
+    sys.path.insert(0, _src)
 
+from airbrowser.server.paths import (
+    get_pythonpath,
+    launcher_script,
+    python_executable,
+    queue_dir,
+    response_dir,
+    setup_display_env,
+    status_dir,
+)
 from airbrowser.server.services.state_manager import StateManager
 from airbrowser.server.utils.screenshots import prune_screenshots
 
-# Ensure DISPLAY is set (inherited from supervisord/entrypoint)
-if not os.environ.get("DISPLAY"):
-    os.environ["DISPLAY"] = ":49"
+# Platform-aware display setup (no-op on Mac/Windows)
+setup_display_env()
 
 
 def _env_truthy(name: str, default: bool = True) -> bool:
@@ -35,10 +45,10 @@ def _env_truthy(name: str, default: bool = True) -> bool:
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
-# Directories for IPC
-QUEUE_DIR = Path("/tmp/browser-queue")
-STATUS_DIR = Path("/tmp/browser-status")
-RESPONSE_DIR = Path("/tmp/browser-responses")
+# Directories for IPC (cross-platform)
+QUEUE_DIR = queue_dir()
+STATUS_DIR = status_dir()
+RESPONSE_DIR = response_dir()
 
 
 class BrowserInstance:
@@ -73,23 +83,30 @@ class BrowserInstance:
         try:
             import json
             import subprocess
-            from pathlib import Path
 
             # Create status file path
-            status_dir = Path("/tmp/browser-status")
-            status_dir.mkdir(exist_ok=True)
-            status_file = status_dir / f"{self.browser_id}.json"
+            _status_dir = STATUS_DIR
+            _status_dir.mkdir(exist_ok=True)
+            status_file = _status_dir / f"{self.browser_id}.json"
 
             # Launch browser in separate process with full command support
-            cmd = ["python3", "/app/src/airbrowser/server/browser/launcher.py", self.browser_id, json.dumps(config)]
+            cmd = [python_executable(), launcher_script(), self.browser_id, json.dumps(config)]
+
+            # Build env: inherit current env, set PYTHONPATH for imports
+            child_env = {**os.environ, "PYTHONPATH": get_pythonpath()}
+            # Only override HOME inside Docker (native runs use the real HOME)
+            from airbrowser.server.paths import in_docker
+
+            if in_docker():
+                child_env["HOME"] = "/home/browseruser"
 
             # Start process - inherit stderr so launcher logs appear in docker compose logs
             # We can still get error info from the status file if browser creation fails
             process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.DEVNULL,
-                stderr=None,  # Inherit stderr so logs go to docker compose logs
-                env={**os.environ, "HOME": "/home/browseruser", "PYTHONPATH": "/app/src"},
+                stderr=None,  # Inherit stderr so logs go to compose logs / terminal
+                env=child_env,
             )
 
             self.launcher_pid = process.pid
@@ -168,7 +185,6 @@ class BrowserInstance:
         """Execute a browser command via file-based IPC"""
         import os
         import uuid
-        from pathlib import Path
 
         # Use provided timeout or default from environment (default 20 seconds)
         if timeout is None:
@@ -181,7 +197,9 @@ class BrowserInstance:
         command["request_id"] = request_id
 
         # Write command file
-        cmd_dir = Path(f"/tmp/browser-commands/{self.browser_id}")
+        from airbrowser.server.paths import commands_dir
+
+        cmd_dir = commands_dir(self.browser_id)
         cmd_dir.mkdir(parents=True, exist_ok=True)
         cmd_file = cmd_dir / f"{request_id}.json"
         tmp_file = cmd_dir / f"{request_id}.json.tmp"
@@ -194,7 +212,9 @@ class BrowserInstance:
         os.replace(tmp_file, cmd_file)
 
         # Wait for response (with timeout)
-        resp_dir = Path(f"/tmp/browser-responses/{self.browser_id}")
+        from airbrowser.server.paths import responses_dir
+
+        resp_dir = responses_dir(self.browser_id)
         resp_dir.mkdir(parents=True, exist_ok=True)
         resp_file = resp_dir / f"{request_id}.json"
 
@@ -221,14 +241,15 @@ class BrowserInstance:
 
     def close(self):
         """Close the browser"""
-        from pathlib import Path
 
         # First send close command to browser to trigger graceful shutdown
         # Use a shorter timeout since browser will exit after processing
         self.execute_command({"type": "close"}, timeout=2)
 
         # Then remove status file to ensure cleanup
-        status_file = Path(f"/tmp/browser-status/{self.browser_id}.json")
+        from airbrowser.server.paths import status_file as _status_file
+
+        status_file = _status_file(self.browser_id)
         if status_file.exists():
             try:
                 status_file.unlink()

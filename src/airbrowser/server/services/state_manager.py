@@ -4,13 +4,14 @@ import json
 import logging
 import os
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any
 
 logger = logging.getLogger(__name__)
 
 # State file location (must be on a persistent volume)
-STATE_DIR = Path(os.environ.get("STATE_DIR", "/app/state"))
+from airbrowser.server.paths import state_dir_path
+
+STATE_DIR = state_dir_path()
 STATE_FILE = STATE_DIR / "browsers.json"
 STATE_VERSION = 1
 
