@@ -2,7 +2,6 @@
 """Adapter that talks to `browser_service` via file-based IPC."""
 
 import logging
-import os
 import shutil
 import time
 import uuid
@@ -12,7 +11,6 @@ try:
     import psutil
 except ImportError:  # pragma: no cover - optional dependency in some environments
     psutil = None
-from pathlib import Path
 from typing import Any
 
 from ..ipc.client import BrowserIPCClient
@@ -71,7 +69,9 @@ class BrowserPoolAdapter:
 
         # Profile tracking
         self.active_profiles: dict[str, str] = {}  # profile_name -> browser_id
-        self.profiles_dir = Path(os.environ.get("PROFILES_DIR", "/app/browser-profiles"))
+        from airbrowser.server.paths import profiles_dir
+
+        self.profiles_dir = profiles_dir()
         self.profiles_dir.mkdir(parents=True, exist_ok=True)
 
         # Set up logging

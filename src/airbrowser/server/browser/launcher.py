@@ -20,13 +20,17 @@ from datetime import datetime
 from pathlib import Path
 
 # Add src to path for absolute imports (needed when run as a script)
-sys.path.insert(0, "/app/src")
+_src = str(Path(__file__).resolve().parent.parent.parent.parent)
+if _src not in sys.path:
+    sys.path.insert(0, _src)
 
 # Suppress warnings
 warnings.filterwarnings("ignore")
 
-# Configure logging - use /tmp which is writable by all users
-log_dir = Path("/tmp/browser-launcher-logs")
+# Configure logging - cross-platform log directory
+from airbrowser.server.paths import log_dir as _get_log_dir
+
+log_dir = _get_log_dir()
 log_dir.mkdir(parents=True, exist_ok=True)
 
 # Get browser ID early for logging
@@ -58,10 +62,11 @@ logger.addHandler(console_handler)
 
 logger.info(f"Browser launcher starting for browser_id: {browser_id}")
 
-# Set environment — DISPLAY inherited from supervisord/entrypoint
-if not os.environ.get("DISPLAY"):
-    os.environ["DISPLAY"] = ":49"
-os.environ["HOME"] = "/home/browseruser"
+# Platform-aware environment setup
+from airbrowser.server.paths import setup_display_env, setup_home_env
+
+setup_display_env()
+setup_home_env()
 
 # Import utilities (using absolute imports)
 from airbrowser.server.browser.utils import kill_child_processes
@@ -213,7 +218,9 @@ def prepare_browser_opts(config: dict) -> tuple[dict, str | None, "subprocess.Po
 
     # Set user_data_dir for persistent profile
     if profile_name:
-        profiles_dir = os.environ.get("PROFILES_DIR", "/app/browser-profiles")
+        from airbrowser.server.paths import profiles_dir as _profiles_dir
+
+        profiles_dir = str(_profiles_dir())
         user_data_dir = f"{profiles_dir}/{profile_name}"
         Path(user_data_dir).mkdir(parents=True, exist_ok=True)
         opts["user_data_dir"] = user_data_dir
@@ -375,11 +382,15 @@ def main():
 
         logger.info(f"Starting browser {browser_id} with config: {config}")
 
-        # Set up IPC paths
-        status_file = Path(f"/tmp/browser-status/{browser_id}.json")
-        cmd_dir = Path(f"/tmp/browser-commands/{browser_id}")
+        # Set up IPC paths (cross-platform)
+        from airbrowser.server.paths import commands_dir, responses_dir
+        from airbrowser.server.paths import status_file as _status_file
+
+        status_file = _status_file(browser_id)
+        status_file.parent.mkdir(parents=True, exist_ok=True)
+        cmd_dir = commands_dir(browser_id)
         cmd_dir.mkdir(parents=True, exist_ok=True)
-        resp_dir = Path(f"/tmp/browser-responses/{browser_id}")
+        resp_dir = responses_dir(browser_id)
         resp_dir.mkdir(parents=True, exist_ok=True)
 
         # Write initial status
@@ -434,7 +445,7 @@ def main():
             "timestamp": time.time(),
         }
         try:
-            with open(f"/tmp/browser-status/{browser_id}.json", "w") as f:
+            with open(str(_status_file(browser_id)), "w") as f:
                 json.dump(error_data, f)
         except Exception:
             pass

@@ -6,14 +6,15 @@ import logging
 import os
 import time
 import uuid
-from pathlib import Path
 from typing import Any
+
+from airbrowser.server.paths import queue_dir, response_dir
 
 logger = logging.getLogger(__name__)
 
 # IPC directories
-QUEUE_DIR = Path("/tmp/browser-queue")
-RESPONSE_DIR = Path("/tmp/browser-responses")
+QUEUE_DIR = queue_dir()
+RESPONSE_DIR = response_dir()
 
 
 class BrowserIPCClient:

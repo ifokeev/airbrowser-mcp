@@ -1,8 +1,8 @@
 """Canonical screenshot lifecycle utilities."""
 
 import errno
-import fcntl
 import os
+import platform
 import shutil
 import threading
 import time
@@ -13,7 +13,9 @@ from uuid import uuid4
 
 from werkzeug.security import safe_join
 
-DEFAULT_SCREENSHOTS_DIR = Path("/app/screenshots")
+from airbrowser.server.paths import screenshots_dir as _screenshots_dir
+
+DEFAULT_SCREENSHOTS_DIR = _screenshots_dir()
 DEFAULT_SCREENSHOTS_TTL_SECONDS = 3600
 DEFAULT_SCREENSHOTS_MAX_BYTES = 256 * 1024 * 1024
 DEFAULT_SCREENSHOTS_MIN_FREE_BYTES = 64 * 1024 * 1024
@@ -83,17 +85,35 @@ def _get_screenshot_entries(directory: Path) -> list[tuple[Path, float, int]]:
     return entries
 
 
+def _flock(lock_file, exclusive: bool):
+    """Cross-platform file locking."""
+    if platform.system() == "Windows":
+        import msvcrt
+
+        if exclusive:
+            msvcrt.locking(lock_file.fileno(), msvcrt.LK_LOCK, 1)
+        else:
+            msvcrt.locking(lock_file.fileno(), msvcrt.LK_UNLCK, 1)
+    else:
+        import fcntl
+
+        if exclusive:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        else:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
+
 @contextmanager
 def _locked_screenshot_store(directory: Path):
     directory.mkdir(parents=True, exist_ok=True)
     lock_path = directory / SCREENSHOT_LOCK_FILENAME
 
     with _SCREENSHOT_STORE_MUTEX, lock_path.open("a+b") as lock_file:
-        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        _flock(lock_file, exclusive=True)
         try:
             yield
         finally:
-            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+            _flock(lock_file, exclusive=False)
 
 
 def _prune_screenshot_store(

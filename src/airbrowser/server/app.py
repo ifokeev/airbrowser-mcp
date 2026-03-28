@@ -103,8 +103,12 @@ def create_app():
         static_dir = os.path.join(os.path.dirname(__file__), "static")
         with open(os.path.join(static_dir, "dashboard.html")) as f:
             html = f.read()
-        # Inject BASE_PATH script before closing </head> tag
-        inject_script = f'<script>window.BASE_PATH = "{base_path}";</script>\n</head>'
+        # Inject BASE_PATH and VNC_BASE_URL before closing </head> tag
+        # VNC_BASE_URL: in local mode points to noVNC port directly, in Docker it's proxied via nginx
+        vnc_base_url = os.environ.get("VNC_BASE_URL", "")
+        inject_script = (
+            f'<script>window.BASE_PATH = "{base_path}"; window.VNC_BASE_URL = "{vnc_base_url}";</script>\n</head>'
+        )
         html = html.replace("</head>", inject_script)
         return html
 
