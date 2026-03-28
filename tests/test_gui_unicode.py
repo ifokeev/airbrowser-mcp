@@ -106,6 +106,34 @@ def get_field_value(browser_client, browser_id: str, field_id: str) -> str:
     return ""
 
 
+def get_chrome_offset(browser_client, browser_id: str) -> float:
+    """Dynamically calculate Chrome UI offset (title bar + toolbar height)."""
+    script = """
+        return {
+            outerHeight: window.outerHeight,
+            innerHeight: window.innerHeight,
+            screenY: window.screenY || window.screenTop || 0
+        };
+    """
+    result = browser_client.execute_script(browser_id, payload=ExecuteScriptRequest(script=script))
+    if result.success and result.data:
+        info = result.data.get("result", {})
+        if isinstance(info, dict) and "value" in info:
+            info = info["value"]
+        if isinstance(info, dict):
+            outer = info.get("outerHeight", 0)
+            inner = info.get("innerHeight", 0)
+            screen_y = info.get("screenY", 0)
+            if outer and inner:
+                return float(screen_y + (outer - inner))
+    # Fallback if detection fails
+    return 139.0
+
+
+# Cache offset per browser to avoid repeated JS calls
+_chrome_offset_cache: dict[str, float] = {}
+
+
 def get_element_center(browser_client, browser_id: str, field_id: str) -> tuple[float, float]:
     """Get the center coordinates of an element."""
     script = f"""
@@ -126,8 +154,10 @@ def get_element_center(browser_client, browser_id: str, field_id: str) -> tuple[
             if "value" in coords:
                 coords = coords["value"]
             if coords.get("found"):
-                # Add Chrome UI offset (approximately 139 pixels for title bar + toolbar)
-                chrome_offset_y = 139
+                # Calculate Chrome UI offset dynamically
+                if browser_id not in _chrome_offset_cache:
+                    _chrome_offset_cache[browser_id] = get_chrome_offset(browser_client, browser_id)
+                chrome_offset_y = _chrome_offset_cache[browser_id]
                 return float(coords["x"]), float(coords["y"]) + chrome_offset_y
     return 0.0, 0.0
 
@@ -140,6 +170,11 @@ class TestGuiUnicodeTyping:
     def test_ascii_typing(self, browser_client, browser_with_unicode_form):
         """Test basic ASCII text typing."""
         bid = browser_with_unicode_form
+
+        # Clear field first
+        browser_client.execute_script(
+            bid, payload=ExecuteScriptRequest(script="document.getElementById('text-input').value = '';")
+        )
 
         # Get coordinates of text input
         x, y = get_element_center(browser_client, bid, "text-input")
@@ -159,6 +194,11 @@ class TestGuiUnicodeTyping:
     def test_cyrillic_typing(self, browser_client, browser_with_unicode_form):
         """Test Cyrillic (Russian) text typing."""
         bid = browser_with_unicode_form
+
+        # Clear field first
+        browser_client.execute_script(
+            bid, payload=ExecuteScriptRequest(script="document.getElementById('cyrillic-input').value = '';")
+        )
 
         # Get coordinates of cyrillic input
         x, y = get_element_center(browser_client, bid, "cyrillic-input")
@@ -180,6 +220,11 @@ class TestGuiUnicodeTyping:
         """Test Chinese character typing."""
         bid = browser_with_unicode_form
 
+        # Clear field first
+        browser_client.execute_script(
+            bid, payload=ExecuteScriptRequest(script="document.getElementById('chinese-input').value = '';")
+        )
+
         # Get coordinates of chinese input
         x, y = get_element_center(browser_client, bid, "chinese-input")
         assert x > 0 and y > 0, "Could not find chinese-input element"
@@ -199,6 +244,11 @@ class TestGuiUnicodeTyping:
         """Test mixed ASCII and Unicode typing."""
         bid = browser_with_unicode_form
 
+        # Clear field first
+        browser_client.execute_script(
+            bid, payload=ExecuteScriptRequest(script="document.getElementById('search-input').value = '';")
+        )
+
         # Get coordinates of text input (reuse for mixed test)
         x, y = get_element_center(browser_client, bid, "search-input")
         assert x > 0 and y > 0, "Could not find search-input element"
@@ -217,6 +267,11 @@ class TestGuiUnicodeTyping:
     def test_textarea_multiline(self, browser_client, browser_with_unicode_form):
         """Test multi-line text typing in textarea."""
         bid = browser_with_unicode_form
+
+        # Clear field first
+        browser_client.execute_script(
+            bid, payload=ExecuteScriptRequest(script="document.getElementById('textarea-input').value = '';")
+        )
 
         # Scroll textarea into view and wait
         scroll_script = """
