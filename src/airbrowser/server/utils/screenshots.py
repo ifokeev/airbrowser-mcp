@@ -1,12 +1,15 @@
 """Canonical screenshot lifecycle utilities."""
 
 import errno
+import logging
 import platform
 import shutil
+import tempfile
 import threading
 import time
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Any
 from urllib.parse import SplitResult, urlsplit, urlunsplit
 from uuid import uuid4
 
@@ -14,6 +17,8 @@ from werkzeug.security import safe_join
 
 from airbrowser.server.paths import screenshots_dir as _screenshots_dir
 from airbrowser.server.settings import settings
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_SCREENSHOTS_DIR = _screenshots_dir()
 SCREENSHOT_LOCK_FILENAME = ".airbrowser-screenshots.lock"
@@ -158,41 +163,47 @@ def _ensure_screenshot_capacity(directory: Path, *, incoming_bytes: int) -> None
         raise OSError(errno.ENOSPC, "No space left on device")
 
 
-def _capture_screenshot_bytes(driver) -> bytes:
-    import tempfile
+def _capture_via_cdp(driver: Any) -> bytes:
+    """Capture a screenshot using the CDP Page.save_screenshot call.
 
-    # Try CDP screenshot first (avoids WebDriver reconnection in CDP Mode)
+    Raises on any failure — callers decide whether to fall back.
+    """
+    tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+    tmp_path = tmp.name
+    tmp.close()
     try:
-        if hasattr(driver, "cdp") and driver.cdp:
-            # save_screenshot is async, returns file path — use a temp file
-            tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
-            tmp_path = tmp.name
-            tmp.close()
-            try:
-                driver.cdp.loop.run_until_complete(driver.cdp.page.save_screenshot(tmp_path))
-                png_bytes = Path(tmp_path).read_bytes()
-                if len(png_bytes) > 0:
-                    return png_bytes
-            finally:
-                Path(tmp_path).unlink(missing_ok=True)
-    except Exception:
-        pass
-    # Fallback: reconnect WebDriver temporarily for screenshot, then disconnect
-    try:
-        if hasattr(driver, "connect"):
-            driver.connect()
-        png_bytes = driver.get_screenshot_as_png()
-        if hasattr(driver, "disconnect"):
-            driver.disconnect()
-        if isinstance(png_bytes, bytes | bytearray) and len(png_bytes) > 0:
-            return bytes(png_bytes)
-    except Exception:
-        pass
-    # Last resort: direct WebDriver call
+        driver.cdp.loop.run_until_complete(driver.cdp.page.save_screenshot(tmp_path))
+        png_bytes = Path(tmp_path).read_bytes()
+        if not png_bytes:
+            raise OSError(errno.EIO, "CDP screenshot returned empty bytes")
+        return png_bytes
+    finally:
+        Path(tmp_path).unlink(missing_ok=True)
+
+
+def _capture_via_webdriver(driver: Any) -> bytes:
+    """Capture a screenshot using the WebDriver get_screenshot_as_png call."""
     png_bytes = driver.get_screenshot_as_png()
-    if not isinstance(png_bytes, bytes | bytearray) or len(png_bytes) == 0:
-        raise OSError(errno.EIO, "Failed to save screenshot")
+    if not isinstance(png_bytes, bytes | bytearray) or not png_bytes:
+        raise OSError(errno.EIO, "WebDriver screenshot returned empty bytes")
     return bytes(png_bytes)
+
+
+def _capture_screenshot_bytes(driver: Any) -> bytes:
+    """Capture screenshot bytes — CDP path when available, WebDriver otherwise.
+
+    In SeleniumBase CDP Mode the WebDriver session is disconnected for stealth,
+    so we must go through ``driver.cdp``. Outside CDP Mode (or if the CDP call
+    fails, e.g. driver.cdp is stale) we fall back to WebDriver and log the
+    reason so the failure is visible instead of silently papered over.
+    """
+    if hasattr(driver, "cdp") and driver.cdp:
+        try:
+            return _capture_via_cdp(driver)
+        except Exception as exc:
+            logger.warning("CDP screenshot failed, falling back to WebDriver: %s", exc)
+
+    return _capture_via_webdriver(driver)
 
 
 def take_screenshot(driver, browser_id: str) -> dict:
