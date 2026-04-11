@@ -11,6 +11,7 @@ import json
 import logging
 import os
 import re
+import socket
 import subprocess
 import sys
 import time
@@ -27,9 +28,25 @@ if _src not in sys.path:
 # Suppress warnings
 warnings.filterwarnings("ignore")
 
-# Configure logging - cross-platform log directory
-from airbrowser.server.paths import log_dir as _get_log_dir
+# airbrowser imports (must come after sys.path setup above)
+from airbrowser.server.browser.utils import kill_child_processes  # noqa: E402
+from airbrowser.server.paths import (  # noqa: E402
+    commands_dir,
+    responses_dir,
+    setup_display_env,
+    setup_home_env,
+)
+from airbrowser.server.paths import (
+    log_dir as _get_log_dir,
+)
+from airbrowser.server.paths import (
+    profiles_dir as _get_profiles_dir,
+)
+from airbrowser.server.paths import (
+    status_file as _status_file,
+)
 
+# Configure logging directory
 log_dir = _get_log_dir()
 log_dir.mkdir(parents=True, exist_ok=True)
 
@@ -62,14 +79,9 @@ logger.addHandler(console_handler)
 
 logger.info(f"Browser launcher starting for browser_id: {browser_id}")
 
-# Platform-aware environment setup
-from airbrowser.server.paths import setup_display_env, setup_home_env
-
+# Platform-aware environment setup (uses imports above)
 setup_display_env()
 setup_home_env()
-
-# Import utilities (using absolute imports)
-from airbrowser.server.browser.utils import kill_child_processes
 
 
 def parse_proxy_credentials(proxy_url: str) -> tuple[str | None, str | None, str]:
@@ -119,8 +131,6 @@ def start_local_proxy_forwarder(
     Returns:
         Tuple of (local_port, process)
     """
-    import socket
-
     # Find a free port for local proxy
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(("127.0.0.1", 0))
@@ -218,10 +228,7 @@ def prepare_browser_opts(config: dict) -> tuple[dict, str | None, "subprocess.Po
 
     # Set user_data_dir for persistent profile
     if profile_name:
-        from airbrowser.server.paths import profiles_dir as _profiles_dir
-
-        profiles_dir = str(_profiles_dir())
-        user_data_dir = f"{profiles_dir}/{profile_name}"
+        user_data_dir = f"{_get_profiles_dir()}/{profile_name}"
         Path(user_data_dir).mkdir(parents=True, exist_ok=True)
         opts["user_data_dir"] = user_data_dir
         logger.info(f"Using profile '{profile_name}' at {user_data_dir}")
@@ -382,10 +389,7 @@ def main():
 
         logger.info(f"Starting browser {browser_id} with config: {config}")
 
-        # Set up IPC paths (cross-platform)
-        from airbrowser.server.paths import commands_dir, responses_dir
-        from airbrowser.server.paths import status_file as _status_file
-
+        # Set up IPC paths (imports hoisted to top of module)
         status_file = _status_file(browser_id)
         status_file.parent.mkdir(parents=True, exist_ok=True)
         cmd_dir = commands_dir(browser_id)
