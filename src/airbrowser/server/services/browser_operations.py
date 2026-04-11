@@ -5,6 +5,7 @@ This is a slim coordinator that delegates to specialized operations modules.
 
 from typing import Any
 
+from ..models import BrowserAction
 from .browser_pool import BrowserPoolAdapter
 from .errors import InvalidOperationParameters
 from .operations import (
@@ -34,6 +35,8 @@ from .operations import (
     VisionOperations,
     WaitUntil,
 )
+from .operations.response import error as _error
+from .operations.response import success as _success
 
 
 class BrowserOperations:
@@ -391,10 +394,6 @@ class BrowserOperations:
         - Delete one: action="delete", name="session", domain=".example.com"
         - Clear all: action="clear"
         """
-        from ..models import BrowserAction
-        from .operations.response import error as _error
-        from .operations.response import success as _success
-
         try:
             if action == CookieAction.GET:
                 browser_action = BrowserAction(action="get_cookies")

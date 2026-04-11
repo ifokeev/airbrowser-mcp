@@ -5,6 +5,9 @@ import logging
 import threading
 import time
 
+import requests
+import websocket
+
 from ..utils import drain_driver_logs, get_webdriver
 
 # Use the browser_launcher logger to ensure logs appear in browser log files
@@ -75,10 +78,6 @@ def handle_clear_performance_logs(driver, command: dict) -> dict:
 
 def handle_get_cdp_endpoint(driver, command: dict) -> dict:
     """Get CDP WebSocket endpoint URL for direct Chrome DevTools Protocol access."""
-    import requests
-
-    from ..utils import get_webdriver
-
     try:
         wd = get_webdriver(driver)
         caps = wd.capabilities
@@ -136,8 +135,6 @@ def _get_cdp_ws_url(driver) -> str | None:
     Network.enable only works on page-level targets, not the browser target.
     We query /json to get the list of pages and return the first page's WebSocket URL.
     """
-    import requests
-
     try:
         wd = get_webdriver(driver)
         caps = wd.capabilities
@@ -178,8 +175,6 @@ def _get_cdp_ws_url(driver) -> str | None:
 def _cdp_network_listener(ws_url: str, stop_event: threading.Event):
     """Background thread that listens for CDP Network events."""
     global NETWORK_LOG_BUFFER
-
-    import websocket
 
     try:
         ws = websocket.create_connection(ws_url, timeout=5)

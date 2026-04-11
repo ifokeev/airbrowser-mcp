@@ -6,15 +6,13 @@ import shutil
 import time
 import uuid
 from datetime import datetime
-
-try:
-    import psutil
-except ImportError:  # pragma: no cover - optional dependency in some environments
-    psutil = None
 from typing import Any
 
+import psutil
+
 from ..ipc.client import BrowserIPCClient
-from ..models import ActionResult, BrowserAction, BrowserConfig, BrowserInfo
+from ..models import ActionResult, BrowserAction, BrowserConfig, BrowserInfo, BrowserStatus
+from ..paths import profiles_dir as _profiles_dir
 
 logger = logging.getLogger(__name__)
 
@@ -32,14 +30,9 @@ class BrowserInstance:
         self.current_url: str | None = None
 
     def to_info(self) -> BrowserInfo:
-        from datetime import datetime
-
-        from ..models import BrowserStatus
-
-        # Convert status string to BrowserStatus enum
         try:
             status_enum = BrowserStatus(self.status)
-        except:
+        except ValueError:
             status_enum = BrowserStatus.READY
 
         return BrowserInfo(
@@ -69,9 +62,7 @@ class BrowserPoolAdapter:
 
         # Profile tracking
         self.active_profiles: dict[str, str] = {}  # profile_name -> browser_id
-        from airbrowser.server.paths import profiles_dir
-
-        self.profiles_dir = profiles_dir()
+        self.profiles_dir = _profiles_dir()
         self.profiles_dir.mkdir(parents=True, exist_ok=True)
 
         # Set up logging
@@ -738,22 +729,15 @@ class BrowserPoolAdapter:
         """Get pool status"""
         service_status = self.client.get_status()
 
-        memory_mb = len(self.browser_instances) * 200  # Fallback estimate per browser
-        cpu_percent = 0.0
-
-        if psutil is not None:
+        proc = psutil.Process()
+        mem_bytes = proc.memory_info().rss
+        for child in proc.children(recursive=True):
             try:
-                proc = psutil.Process()
-                mem_bytes = proc.memory_info().rss
-                for child in proc.children(recursive=True):
-                    try:
-                        mem_bytes += child.memory_info().rss
-                    except psutil.Error:
-                        continue
-                memory_mb = mem_bytes / (1024 * 1024)
-                cpu_percent = psutil.cpu_percent(interval=0.1)
+                mem_bytes += child.memory_info().rss
             except psutil.Error:
-                pass
+                continue
+        memory_mb = mem_bytes / (1024 * 1024)
+        cpu_percent = psutil.cpu_percent(interval=0.1)
 
         return {
             "healthy": service_status.get("status") == "success",
