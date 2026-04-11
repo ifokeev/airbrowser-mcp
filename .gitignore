@@ -105,3 +105,4 @@ uv.lock
 
 # Local documents (not tracked)
 .local/
+.claude/
