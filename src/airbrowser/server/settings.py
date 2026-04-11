@@ -19,7 +19,7 @@ import platform
 from functools import lru_cache
 from pathlib import Path
 
-from pydantic import Field, field_validator
+from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 logger = logging.getLogger(__name__)
@@ -116,6 +116,20 @@ class Settings(BaseSettings):
     vision_api_key: str = Field(default="")
     vision_model: str = Field(default="")
     vision_stream_default: bool = Field(default=False)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _drop_empty_strings(cls, data: object) -> object:
+        """Treat empty-string env values as 'unset' so field defaults apply.
+
+        Docker compose often passes `FOO=""` for optional env vars. Pydantic
+        then tries to parse `""` against the declared type and fails for
+        bool/int/float fields. Stripping empty strings up front lets the
+        declared defaults take over.
+        """
+        if isinstance(data, dict):
+            return {k: v for k, v in data.items() if v != ""}
+        return data
 
     @field_validator("airbrowser_data_dir", mode="before")
     @classmethod
