@@ -128,7 +128,7 @@ class _ScriptDriverProxy:
             return _execute_script_via_cdp(self._driver, script, args, fallback_error=exc)
 
 
-def _clipboard_type(text: str):
+def _clipboard_type(text: str) -> None:
     """Type text using clipboard (paste) - supports Unicode/Cyrillic.
 
     PyAutoGUI's write() only supports ASCII characters. For Unicode text,

@@ -3,7 +3,7 @@
 import logging
 from typing import Any
 
-from ...models import BrowserConfig, get_window_size_from_env
+from ...models import BrowserConfig
 from ..browser_pool import BrowserPoolAdapter
 from .enums import BrowsersAction
 from .response import error as _error
@@ -18,48 +18,14 @@ class LifecycleOperations:
     def __init__(self, browser_pool: BrowserPoolAdapter):
         self.browser_pool = browser_pool
 
-    def create_browser(
-        self,
-        uc: bool = True,
-        proxy: str | None = None,
-        window_size: list[int] | None = None,
-        user_agent: str | None = None,
-        disable_gpu: bool = False,
-        disable_images: bool = False,
-        disable_javascript: bool = False,
-        extensions: list[str] | None = None,
-        custom_args: list[str] | None = None,
-        profile_name: str | None = None,
-    ) -> dict[str, Any]:
-        """Create a new browser instance with specified configuration."""
+    def create_browser(self, config: BrowserConfig) -> dict[str, Any]:
+        """Create a new browser instance from a validated config."""
         try:
-            if window_size is None:
-                window_size = get_window_size_from_env()
-            if extensions is None:
-                extensions = []
-            if custom_args is None:
-                custom_args = []
-
-            config = BrowserConfig(
-                uc=uc,
-                proxy=proxy,
-                user_agent=user_agent,
-                window_size=tuple(window_size),
-                disable_gpu=disable_gpu,
-                disable_images=disable_images,
-                disable_javascript=disable_javascript,
-                extensions=extensions,
-                custom_args=custom_args,
-                profile_name=profile_name,
-            )
-
             browser_id = self.browser_pool.create_browser(config)
-
             return _success(
                 data={"browser_id": browser_id, "config": config.to_dict()},
                 message="Browser created successfully",
             )
-
         except Exception as e:
             return _error(f"Failed to create browser: {str(e)}")
 
