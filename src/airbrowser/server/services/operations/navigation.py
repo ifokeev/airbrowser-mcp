@@ -1,9 +1,9 @@
 """Navigation operations."""
 
-import os
 from typing import Any
 
 from ...models import BrowserAction
+from ...settings import settings
 from ..browser_pool import BrowserPoolAdapter
 from .enums import HistoryAction
 from .response import error as _error
@@ -20,7 +20,7 @@ class NavigationOperations:
         """Navigate browser to a specific URL."""
         try:
             if timeout is None:
-                timeout = int(os.environ.get("NAVIGATE_TIMEOUT_DEFAULT", 60))
+                timeout = settings.navigate_timeout_default
 
             action = BrowserAction(action="navigate", url=url, timeout=timeout)
             result = self.browser_pool.execute_action(browser_id, action)

@@ -1,37 +1,27 @@
 """Data models for Airbrowser API."""
 
-import os
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any
 
+from airbrowser.server.settings import settings
 
-def _get_default_window_size():
-    """Get default window size, preferring SCREEN_WIDTH/HEIGHT if set."""
-    # Prefer explicit width/height if provided
-    try:
-        w_env = os.environ.get("SCREEN_WIDTH")
-        h_env = os.environ.get("SCREEN_HEIGHT")
-        if w_env and h_env:
-            width = int(w_env)
-            height = int(h_env)
-            adjusted_height = max(height - 100, 600)
-            return (width, adjusted_height)
-    except (ValueError, TypeError):
-        pass
 
-    # Fallback to SCREEN_RESOLUTION (WIDTHxHEIGHTxDEPTH)
-    resolution = os.environ.get("SCREEN_RESOLUTION", "1600x900x24")
-    try:
-        parts = resolution.split("x")
-        if len(parts) >= 2:
+def _get_default_window_size() -> tuple[int, int]:
+    """Get default window size from settings (SCREEN_WIDTH/HEIGHT or SCREEN_RESOLUTION)."""
+    if settings.screen_width and settings.screen_height:
+        return (settings.screen_width, max(settings.screen_height - 100, 600))
+
+    # Parse SCREEN_RESOLUTION (WIDTHxHEIGHTxDEPTH)
+    parts = settings.screen_resolution.split("x")
+    if len(parts) >= 2:
+        try:
             width = int(parts[0])
             height = int(parts[1])
-            adjusted_height = max(height - 100, 600)
-            return (width, adjusted_height)
-    except (ValueError, IndexError):
-        pass
+            return (width, max(height - 100, 600))
+        except ValueError:
+            pass
     return (1600, 800)
 
 

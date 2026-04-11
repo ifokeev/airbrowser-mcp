@@ -1,7 +1,6 @@
 """Canonical screenshot lifecycle utilities."""
 
 import errno
-import os
 import platform
 import shutil
 import threading
@@ -14,11 +13,9 @@ from uuid import uuid4
 from werkzeug.security import safe_join
 
 from airbrowser.server.paths import screenshots_dir as _screenshots_dir
+from airbrowser.server.settings import settings
 
 DEFAULT_SCREENSHOTS_DIR = _screenshots_dir()
-DEFAULT_SCREENSHOTS_TTL_SECONDS = 3600
-DEFAULT_SCREENSHOTS_MAX_BYTES = 256 * 1024 * 1024
-DEFAULT_SCREENSHOTS_MIN_FREE_BYTES = 64 * 1024 * 1024
 SCREENSHOT_LOCK_FILENAME = ".airbrowser-screenshots.lock"
 API_V1_PATH = "/api/v1"
 
@@ -27,7 +24,7 @@ _SCREENSHOT_STORE_MUTEX = threading.Lock()
 
 def get_screenshot_dir() -> Path:
     """Return the configured screenshot directory."""
-    return Path(os.getenv("SCREENSHOTS_DIR", str(DEFAULT_SCREENSHOTS_DIR)))
+    return settings.effective_screenshots_dir
 
 
 def _normalize_url_path(path: str) -> str:
@@ -47,10 +44,8 @@ def _strip_api_v1_suffix(path: str) -> str:
 
 
 def _get_public_base_url() -> str:
-    api_base_url = os.getenv("API_BASE_URL", "http://localhost:8000")
-    parsed = urlsplit(api_base_url)
-    public_path = os.getenv("BASE_PATH", "")
-    normalized_public_path = _normalize_url_path(public_path) or _strip_api_v1_suffix(parsed.path)
+    parsed = urlsplit(settings.api_base_url)
+    normalized_public_path = _normalize_url_path(settings.base_path) or _strip_api_v1_suffix(parsed.path)
     public_base = SplitResult(
         scheme=parsed.scheme,
         netloc=parsed.netloc,
@@ -65,10 +60,6 @@ def get_screenshot_url(filename: str) -> str:
     """Return the public URL for a screenshot filename."""
     base_url = _get_public_base_url().rstrip("/")
     return f"{base_url}/screenshots/{filename}"
-
-
-def _get_configured_int(name: str, default: int) -> int:
-    return int(os.getenv(name, str(default)))
 
 
 def _get_screenshot_entries(directory: Path) -> list[tuple[Path, float, int]]:
@@ -122,9 +113,9 @@ def _prune_screenshot_store(
     *,
     required_bytes: int = 0,
 ) -> None:
-    ttl_seconds = _get_configured_int("SCREENSHOTS_TTL_SECONDS", DEFAULT_SCREENSHOTS_TTL_SECONDS)
-    max_bytes = _get_configured_int("SCREENSHOTS_MAX_BYTES", DEFAULT_SCREENSHOTS_MAX_BYTES)
-    min_free_bytes = _get_configured_int("SCREENSHOTS_MIN_FREE_BYTES", DEFAULT_SCREENSHOTS_MIN_FREE_BYTES)
+    ttl_seconds = settings.screenshots_ttl_seconds
+    max_bytes = settings.screenshots_max_bytes
+    min_free_bytes = settings.screenshots_min_free_bytes
 
     entries = _get_screenshot_entries(directory)
     for path, modified_at, _size in entries:
@@ -151,8 +142,8 @@ def prune_screenshots(now: float | None = None) -> None:
 
 def _ensure_screenshot_capacity(directory: Path, *, incoming_bytes: int) -> None:
     # Caller must hold the store lock so cleanup and write stay atomic.
-    max_bytes = _get_configured_int("SCREENSHOTS_MAX_BYTES", DEFAULT_SCREENSHOTS_MAX_BYTES)
-    min_free_bytes = _get_configured_int("SCREENSHOTS_MIN_FREE_BYTES", DEFAULT_SCREENSHOTS_MIN_FREE_BYTES)
+    max_bytes = settings.screenshots_max_bytes
+    min_free_bytes = settings.screenshots_min_free_bytes
 
     if incoming_bytes > max_bytes:
         raise OSError(errno.ENOSPC, "No space left on device")

@@ -27,18 +27,11 @@ from airbrowser.server.paths import (
     status_dir,
 )
 from airbrowser.server.services.state_manager import StateManager
+from airbrowser.server.settings import settings
 from airbrowser.server.utils.screenshots import prune_screenshots
 
 # Platform-aware display setup (no-op on Mac/Windows)
 setup_display_env()
-
-
-def _env_truthy(name: str, default: bool = True) -> bool:
-    """Check if environment variable is truthy."""
-    raw = os.environ.get(name)
-    if raw is None:
-        return default
-    return raw.strip().lower() in {"1", "true", "yes", "y", "on"}
 
 
 # Set up logging
@@ -183,12 +176,8 @@ class BrowserInstance:
 
     def execute_command(self, command: dict[str, Any], timeout: int | None = None) -> dict[str, Any]:
         """Execute a browser command via file-based IPC"""
-        import os
-        import uuid
-
-        # Use provided timeout or default from environment (default 20 seconds)
         if timeout is None:
-            timeout = int(os.environ.get("COMMAND_TIMEOUT_DEFAULT", 20))
+            timeout = settings.command_timeout_default
 
         cmd_type = command.get("type")
 
@@ -291,10 +280,7 @@ class BrowserService:
         self.browsers: dict[str, BrowserInstance] = {}
         self.running = True
         # Default navigation timeout (can be overridden per-command)
-        try:
-            self.navigate_timeout_default = int(os.environ.get("NAVIGATE_TIMEOUT_DEFAULT", 60))
-        except Exception:
-            self.navigate_timeout_default = 60
+        self.navigate_timeout_default = settings.navigate_timeout_default
 
         # Ensure directories exist
         QUEUE_DIR.mkdir(parents=True, exist_ok=True)
@@ -306,7 +292,7 @@ class BrowserService:
         prune_screenshots()
 
         # Session restore on startup
-        self.session_restore_enabled = _env_truthy("ENABLE_SESSION_RESTORE", default=True)
+        self.session_restore_enabled = settings.enable_session_restore
         if self.session_restore_enabled:
             self._restore_state()
 
@@ -567,10 +553,7 @@ class BrowserService:
             return
 
         # Extract timeout defaults
-        try:
-            non_nav_default = int(os.environ.get("COMMAND_TIMEOUT_DEFAULT", 20))
-        except Exception:
-            non_nav_default = 20
+        non_nav_default = settings.command_timeout_default
         default_timeout = self.navigate_timeout_default if command.get("type") == "navigate" else non_nav_default
         timeout = command.pop("timeout", default_timeout)
 
@@ -953,9 +936,6 @@ class BrowserService:
 
 
 if __name__ == "__main__":
-    # Get max browsers from environment or use default
-    max_browsers = int(os.environ.get("MAX_BROWSERS", 10))
-
     # Create and run service
-    service = BrowserService(max_browsers)
+    service = BrowserService(settings.max_browsers)
     service.run()

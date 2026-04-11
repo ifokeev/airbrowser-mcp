@@ -100,6 +100,8 @@ class Settings(BaseSettings):
     host: str = Field(default="0.0.0.0")
     base_path: str = Field(default="")
     api_base_url: str = Field(default="http://localhost:8000")
+    debug: bool = Field(default=False)
+    werkzeug_run_main: bool = Field(default=False)
 
     # --- MCP ---
     enable_mcp: bool = Field(default=True)

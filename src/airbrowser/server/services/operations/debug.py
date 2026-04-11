@@ -3,6 +3,7 @@
 from typing import Any
 
 from ...models import BrowserAction
+from ...settings import settings
 from ..browser_pool import BrowserPoolAdapter
 from .enums import LogAction
 from .response import error as _error
@@ -158,7 +159,6 @@ class DebugOperations:
         Returns:
             dict with websocket_url, external_url, debugger_address, browser version info
         """
-        import os
 
         try:
             action = BrowserAction(action="get_cdp_endpoint")
@@ -171,12 +171,8 @@ class DebugOperations:
             cdp_data = result.data.get("data", {}) if isinstance(result.data, dict) else {}
 
             # Add external URL for proxied access via nginx
-            # API_BASE_URL defaults to http://localhost:18080 (nginx gateway)
-            api_base = os.environ.get("API_BASE_URL", "http://localhost:18080")
-            base_path = os.environ.get("BASE_PATH", "")
-            # Convert http:// to ws:// and https:// to wss://
-            ws_base = api_base.replace("http://", "ws://").replace("https://", "wss://")
-            cdp_data["external_url"] = f"{ws_base}{base_path}/browser/{browser_id}/cdp"
+            ws_base = settings.api_base_url.replace("http://", "ws://").replace("https://", "wss://")
+            cdp_data["external_url"] = f"{ws_base}{settings.base_path}/browser/{browser_id}/cdp"
 
             return _success(data=cdp_data, message="CDP endpoint retrieved successfully")
 

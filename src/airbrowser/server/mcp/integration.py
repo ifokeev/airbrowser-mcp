@@ -2,7 +2,6 @@
 
 import functools
 import inspect
-import os
 import sys
 import time
 import traceback
@@ -12,6 +11,7 @@ from typing import Any, get_type_hints
 from fastmcp import FastMCP  # type: ignore
 
 from ..services.browser_operations import BrowserOperations
+from ..settings import settings
 from ..vision.config import vision_is_enabled
 from .tool_descriptions import TOOL_DESCRIPTIONS
 
@@ -41,7 +41,7 @@ class MCPIntegration:
 
         # MCP_INCLUDE_ALL_TOOLS=true enables all tools for doc generation.
         # Otherwise, only register vision tools when AI vision is configured.
-        include_all_tools = os.environ.get("MCP_INCLUDE_ALL_TOOLS", "").lower() == "true"
+        include_all_tools = settings.mcp_include_all_tools
         vision_enabled = vision_is_enabled()
 
         for name in dir(self.browser_ops):
