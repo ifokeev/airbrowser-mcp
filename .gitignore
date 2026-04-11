@@ -105,4 +105,4 @@ uv.lock
 
 # Local documents (not tracked)
 .local/
-.claude/
+.claude/scheduled_tasks.lock
