@@ -106,3 +106,4 @@ uv.lock
 # Local documents (not tracked)
 .local/
 .claude/scheduled_tasks.lock
+downloaded_files/
