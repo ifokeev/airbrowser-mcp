@@ -3,8 +3,10 @@
 import logging
 import time
 
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
 
 logger = logging.getLogger(__name__)
 
@@ -234,8 +236,6 @@ def handle_get_text(driver, command: dict) -> dict:
     by = command.get("by", "css")
 
     try:
-        from selenium.common.exceptions import NoSuchElementException
-
         element = _find_element_by(driver, selector, by)
 
         if element:
@@ -262,8 +262,6 @@ def handle_find_element(driver, command: dict) -> dict:
         return {"status": "error", "message": "Selector is required"}
 
     try:
-        from selenium.common.exceptions import NoSuchElementException
-
         element = _find_element_by(driver, selector, by)
         return {"status": "success", "found": element is not None, "selector": selector, "by": by}
     except NoSuchElementException:
@@ -280,8 +278,6 @@ def handle_is_element_visible(driver, command: dict) -> dict:
         return {"status": "error", "message": "Selector is required"}
 
     try:
-        from selenium.common.exceptions import NoSuchElementException
-
         element = _find_element_by(driver, selector, by)
         visible = element is not None and element.is_displayed()
         return {"status": "success", "visible": visible, "selector": selector, "by": by}
@@ -471,8 +467,6 @@ def handle_select(driver, command: dict) -> dict:
         return {"status": "error", "message": "One of value, text, or index is required"}
 
     try:
-        from selenium.webdriver.support.ui import Select
-
         element = _find_element_by(driver, selector, by)
         if not element:
             return {"status": "error", "message": "Select element not found"}
@@ -502,8 +496,6 @@ def handle_get_select_options(driver, command: dict) -> dict:
         return {"status": "error", "message": "Selector is required"}
 
     try:
-        from selenium.webdriver.support.ui import Select
-
         element = _find_element_by(driver, selector, by)
         if not element:
             return {"status": "error", "message": "Select element not found"}

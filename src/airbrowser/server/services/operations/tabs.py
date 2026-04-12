@@ -43,7 +43,7 @@ class TabOperations:
     def new_tab(self, browser_id: str, url: str | None = None) -> dict[str, Any]:
         """Open a new tab, optionally navigating to a URL."""
         try:
-            action = BrowserAction(action="new_tab", options={"url": url} if url else None)
+            action = BrowserAction(action="new_tab", options={"url": url} if url else {})
             result = self.browser_pool.execute_action(browser_id, action)
 
             if not result.success:
@@ -71,7 +71,7 @@ class TabOperations:
             if handle:
                 options["handle"] = handle
 
-            action = BrowserAction(action="switch_tab", options=options if options else None)
+            action = BrowserAction(action="switch_tab", options=options)
             result = self.browser_pool.execute_action(browser_id, action)
 
             if not result.success:
@@ -99,7 +99,7 @@ class TabOperations:
             if handle:
                 options["handle"] = handle
 
-            action = BrowserAction(action="close_tab", options=options if options else None)
+            action = BrowserAction(action="close_tab", options=options)
             result = self.browser_pool.execute_action(browser_id, action)
 
             if not result.success:

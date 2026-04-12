@@ -1,24 +1,26 @@
 """Canonical screenshot lifecycle utilities."""
 
 import errno
-import os
+import logging
 import platform
 import shutil
+import tempfile
 import threading
 import time
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Any
 from urllib.parse import SplitResult, urlsplit, urlunsplit
 from uuid import uuid4
 
 from werkzeug.security import safe_join
 
 from airbrowser.server.paths import screenshots_dir as _screenshots_dir
+from airbrowser.server.settings import settings
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_SCREENSHOTS_DIR = _screenshots_dir()
-DEFAULT_SCREENSHOTS_TTL_SECONDS = 3600
-DEFAULT_SCREENSHOTS_MAX_BYTES = 256 * 1024 * 1024
-DEFAULT_SCREENSHOTS_MIN_FREE_BYTES = 64 * 1024 * 1024
 SCREENSHOT_LOCK_FILENAME = ".airbrowser-screenshots.lock"
 API_V1_PATH = "/api/v1"
 
@@ -27,7 +29,7 @@ _SCREENSHOT_STORE_MUTEX = threading.Lock()
 
 def get_screenshot_dir() -> Path:
     """Return the configured screenshot directory."""
-    return Path(os.getenv("SCREENSHOTS_DIR", str(DEFAULT_SCREENSHOTS_DIR)))
+    return settings.effective_screenshots_dir
 
 
 def _normalize_url_path(path: str) -> str:
@@ -47,10 +49,8 @@ def _strip_api_v1_suffix(path: str) -> str:
 
 
 def _get_public_base_url() -> str:
-    api_base_url = os.getenv("API_BASE_URL", "http://localhost:8000")
-    parsed = urlsplit(api_base_url)
-    public_path = os.getenv("BASE_PATH", "")
-    normalized_public_path = _normalize_url_path(public_path) or _strip_api_v1_suffix(parsed.path)
+    parsed = urlsplit(settings.api_base_url)
+    normalized_public_path = _normalize_url_path(settings.base_path) or _strip_api_v1_suffix(parsed.path)
     public_base = SplitResult(
         scheme=parsed.scheme,
         netloc=parsed.netloc,
@@ -65,10 +65,6 @@ def get_screenshot_url(filename: str) -> str:
     """Return the public URL for a screenshot filename."""
     base_url = _get_public_base_url().rstrip("/")
     return f"{base_url}/screenshots/{filename}"
-
-
-def _get_configured_int(name: str, default: int) -> int:
-    return int(os.getenv(name, str(default)))
 
 
 def _get_screenshot_entries(directory: Path) -> list[tuple[Path, float, int]]:
@@ -122,9 +118,9 @@ def _prune_screenshot_store(
     *,
     required_bytes: int = 0,
 ) -> None:
-    ttl_seconds = _get_configured_int("SCREENSHOTS_TTL_SECONDS", DEFAULT_SCREENSHOTS_TTL_SECONDS)
-    max_bytes = _get_configured_int("SCREENSHOTS_MAX_BYTES", DEFAULT_SCREENSHOTS_MAX_BYTES)
-    min_free_bytes = _get_configured_int("SCREENSHOTS_MIN_FREE_BYTES", DEFAULT_SCREENSHOTS_MIN_FREE_BYTES)
+    ttl_seconds = settings.screenshots_ttl_seconds
+    max_bytes = settings.screenshots_max_bytes
+    min_free_bytes = settings.screenshots_min_free_bytes
 
     entries = _get_screenshot_entries(directory)
     for path, modified_at, _size in entries:
@@ -151,8 +147,8 @@ def prune_screenshots(now: float | None = None) -> None:
 
 def _ensure_screenshot_capacity(directory: Path, *, incoming_bytes: int) -> None:
     # Caller must hold the store lock so cleanup and write stay atomic.
-    max_bytes = _get_configured_int("SCREENSHOTS_MAX_BYTES", DEFAULT_SCREENSHOTS_MAX_BYTES)
-    min_free_bytes = _get_configured_int("SCREENSHOTS_MIN_FREE_BYTES", DEFAULT_SCREENSHOTS_MIN_FREE_BYTES)
+    max_bytes = settings.screenshots_max_bytes
+    min_free_bytes = settings.screenshots_min_free_bytes
 
     if incoming_bytes > max_bytes:
         raise OSError(errno.ENOSPC, "No space left on device")
@@ -167,41 +163,47 @@ def _ensure_screenshot_capacity(directory: Path, *, incoming_bytes: int) -> None
         raise OSError(errno.ENOSPC, "No space left on device")
 
 
-def _capture_screenshot_bytes(driver) -> bytes:
-    import tempfile
+def _capture_via_cdp(driver: Any) -> bytes:
+    """Capture a screenshot using the CDP Page.save_screenshot call.
 
-    # Try CDP screenshot first (avoids WebDriver reconnection in CDP Mode)
+    Raises on any failure — callers decide whether to fall back.
+    """
+    tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
+    tmp_path = tmp.name
+    tmp.close()
     try:
-        if hasattr(driver, "cdp") and driver.cdp:
-            # save_screenshot is async, returns file path — use a temp file
-            tmp = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
-            tmp_path = tmp.name
-            tmp.close()
-            try:
-                driver.cdp.loop.run_until_complete(driver.cdp.page.save_screenshot(tmp_path))
-                png_bytes = Path(tmp_path).read_bytes()
-                if len(png_bytes) > 0:
-                    return png_bytes
-            finally:
-                Path(tmp_path).unlink(missing_ok=True)
-    except Exception:
-        pass
-    # Fallback: reconnect WebDriver temporarily for screenshot, then disconnect
-    try:
-        if hasattr(driver, "connect"):
-            driver.connect()
-        png_bytes = driver.get_screenshot_as_png()
-        if hasattr(driver, "disconnect"):
-            driver.disconnect()
-        if isinstance(png_bytes, bytes | bytearray) and len(png_bytes) > 0:
-            return bytes(png_bytes)
-    except Exception:
-        pass
-    # Last resort: direct WebDriver call
+        driver.cdp.loop.run_until_complete(driver.cdp.page.save_screenshot(tmp_path))
+        png_bytes = Path(tmp_path).read_bytes()
+        if not png_bytes:
+            raise OSError(errno.EIO, "CDP screenshot returned empty bytes")
+        return png_bytes
+    finally:
+        Path(tmp_path).unlink(missing_ok=True)
+
+
+def _capture_via_webdriver(driver: Any) -> bytes:
+    """Capture a screenshot using the WebDriver get_screenshot_as_png call."""
     png_bytes = driver.get_screenshot_as_png()
-    if not isinstance(png_bytes, bytes | bytearray) or len(png_bytes) == 0:
-        raise OSError(errno.EIO, "Failed to save screenshot")
+    if not isinstance(png_bytes, bytes | bytearray) or not png_bytes:
+        raise OSError(errno.EIO, "WebDriver screenshot returned empty bytes")
     return bytes(png_bytes)
+
+
+def _capture_screenshot_bytes(driver: Any) -> bytes:
+    """Capture screenshot bytes — CDP path when available, WebDriver otherwise.
+
+    In SeleniumBase CDP Mode the WebDriver session is disconnected for stealth,
+    so we must go through ``driver.cdp``. Outside CDP Mode (or if the CDP call
+    fails, e.g. driver.cdp is stale) we fall back to WebDriver and log the
+    reason so the failure is visible instead of silently papered over.
+    """
+    if hasattr(driver, "cdp") and driver.cdp:
+        try:
+            return _capture_via_cdp(driver)
+        except Exception as exc:
+            logger.warning("CDP screenshot failed, falling back to WebDriver: %s", exc)
+
+    return _capture_via_webdriver(driver)
 
 
 def take_screenshot(driver, browser_id: str) -> dict:

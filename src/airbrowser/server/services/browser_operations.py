@@ -5,6 +5,7 @@ This is a slim coordinator that delegates to specialized operations modules.
 
 from typing import Any
 
+from ..models import BrowserAction, BrowserConfig, get_window_size_from_env
 from .browser_pool import BrowserPoolAdapter
 from .errors import InvalidOperationParameters
 from .operations import (
@@ -34,6 +35,8 @@ from .operations import (
     VisionOperations,
     WaitUntil,
 )
+from .operations.response import error as _error
+from .operations.response import success as _success
 
 
 class BrowserOperations:
@@ -70,18 +73,19 @@ class BrowserOperations:
         profile_name: str | None = None,
     ) -> dict[str, Any]:
         """Create browser instance with optional persistent profile."""
-        return self._lifecycle.create_browser(
+        config = BrowserConfig(
             uc=uc,
             proxy=proxy,
-            window_size=window_size,
+            window_size=tuple(window_size) if window_size else get_window_size_from_env(),
             user_agent=user_agent,
             disable_gpu=disable_gpu,
             disable_images=disable_images,
             disable_javascript=disable_javascript,
-            extensions=extensions,
-            custom_args=custom_args,
+            extensions=extensions or [],
+            custom_args=custom_args or [],
             profile_name=profile_name,
         )
+        return self._lifecycle.create_browser(config)
 
     def close_browser(self, browser_id: str) -> dict[str, Any]:
         """Close browser instance."""
@@ -391,10 +395,6 @@ class BrowserOperations:
         - Delete one: action="delete", name="session", domain=".example.com"
         - Clear all: action="clear"
         """
-        from ..models import BrowserAction
-        from .operations.response import error as _error
-        from .operations.response import success as _success
-
         try:
             if action == CookieAction.GET:
                 browser_action = BrowserAction(action="get_cookies")

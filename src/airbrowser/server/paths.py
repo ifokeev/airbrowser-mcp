@@ -1,73 +1,37 @@
 """Cross-platform path resolution for airbrowser.
 
-Centralizes all directory paths so the codebase works on Linux, macOS, and Windows
-without hardcoded /tmp or /app paths.
+All base directories come from `settings`; this module provides IPC
+subdirectory helpers and platform-specific environment setup.
 """
+
+from __future__ import annotations
 
 import os
 import platform
 import sys
-import tempfile
 from pathlib import Path
 
-# Detect if running inside Docker
-_IN_DOCKER = os.path.exists("/.dockerenv") or os.path.exists("/run/.containerenv")
+from airbrowser.server.settings import settings
+
+# --- Base directories (delegated to settings) ---
 
 
-def _get_data_dir() -> Path:
-    """Application data directory (profiles, screenshots, state, downloads)."""
-    env = os.environ.get("AIRBROWSER_DATA_DIR")
-    if env:
-        return Path(env)
-
-    if _IN_DOCKER:
-        return Path("/app")
-
-    # Native: use project root or ~/.airbrowser
-    # Check if we're in a dev checkout (pyproject.toml exists)
-    src_dir = Path(__file__).resolve().parent  # server/
-    project_root = src_dir.parent.parent.parent  # go up to repo root
-    if (project_root / "pyproject.toml").exists():
-        return project_root / ".data"
-
-    # Installed: use ~/.airbrowser
-    return Path.home() / ".airbrowser"
+def data_dir() -> Path:
+    return settings.data_dir
 
 
-def _get_ipc_dir() -> Path:
-    """IPC base directory for file-based inter-process communication."""
-    env = os.environ.get("AIRBROWSER_IPC_DIR")
-    if env:
-        return Path(env)
-
-    if _IN_DOCKER:
-        return Path("/tmp")
-
-    # Native: use a subdirectory of the system temp dir
-    return Path(tempfile.gettempdir()) / "airbrowser"
+def ipc_dir() -> Path:
+    return settings.ipc_dir
 
 
-def _get_src_dir() -> Path:
+def src_dir() -> Path:
     """Return the src/ directory containing the airbrowser package."""
     return Path(__file__).resolve().parent.parent.parent
 
 
-# --- Public path accessors ---
+# --- IPC subdirectories ---
 
 
-def data_dir() -> Path:
-    return _get_data_dir()
-
-
-def ipc_dir() -> Path:
-    return _get_ipc_dir()
-
-
-def src_dir() -> Path:
-    return _get_src_dir()
-
-
-# IPC subdirectories
 def queue_dir() -> Path:
     return ipc_dir() / "browser-queue"
 
@@ -96,28 +60,32 @@ def log_dir() -> Path:
     return ipc_dir() / "browser-launcher-logs"
 
 
-# Data subdirectories (with env var overrides for Docker compat)
+# --- Data subdirectories (delegate to settings properties) ---
+
+
 def profiles_dir() -> Path:
-    return Path(os.environ.get("PROFILES_DIR", str(data_dir() / "browser-profiles")))
+    return settings.effective_profiles_dir
 
 
 def screenshots_dir() -> Path:
-    return Path(os.environ.get("SCREENSHOTS_DIR", str(data_dir() / "screenshots")))
+    return settings.effective_screenshots_dir
 
 
 def downloads_dir() -> Path:
-    return Path(os.environ.get("DOWNLOADS_DIR", str(data_dir() / "downloads")))
+    return settings.effective_downloads_dir
 
 
 def state_dir_path() -> Path:
-    return Path(os.environ.get("STATE_DIR", str(data_dir() / "state")))
+    return settings.effective_state_dir
 
 
 def certs_dir() -> Path:
     return data_dir() / "certs"
 
 
-# Platform helpers
+# --- Platform helpers ---
+
+
 def python_executable() -> str:
     """Return the current Python interpreter path."""
     return sys.executable
@@ -128,15 +96,15 @@ def launcher_script() -> str:
     return str(src_dir() / "airbrowser" / "server" / "browser" / "launcher.py")
 
 
-def setup_display_env():
+def setup_display_env() -> None:
     """Set DISPLAY env var if needed (Linux only, no-op on Mac/Windows)."""
     if platform.system() == "Linux" and not os.environ.get("DISPLAY"):
-        os.environ["DISPLAY"] = ":49"
+        os.environ["DISPLAY"] = settings.display
 
 
-def setup_home_env():
+def setup_home_env() -> None:
     """Set HOME if inside Docker, otherwise leave the real HOME alone."""
-    if _IN_DOCKER:
+    if settings.in_docker:
         os.environ["HOME"] = "/home/browseruser"
 
 
@@ -146,4 +114,4 @@ def get_pythonpath() -> str:
 
 
 def in_docker() -> bool:
-    return _IN_DOCKER
+    return settings.in_docker

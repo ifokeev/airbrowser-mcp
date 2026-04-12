@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import subprocess
 import time
 from dataclasses import asdict, dataclass
 from typing import Any
@@ -127,15 +128,13 @@ class _ScriptDriverProxy:
             return _execute_script_via_cdp(self._driver, script, args, fallback_error=exc)
 
 
-def _clipboard_type(text: str):
+def _clipboard_type(text: str) -> None:
     """Type text using clipboard (paste) - supports Unicode/Cyrillic.
 
     PyAutoGUI's write() only supports ASCII characters. For Unicode text,
     we copy to clipboard using xclip and paste with Ctrl+V.
     """
-    import subprocess
-
-    import pyautogui
+    import pyautogui  # lazy: requires DISPLAY
 
     # Copy to clipboard using xclip (available in Docker container)
     proc = subprocess.Popen(
@@ -611,7 +610,7 @@ def handle_gui_hover_xy(driver, command: dict) -> dict:
         if hasattr(driver, "cdp") and hasattr(driver.cdp, "gui_hover_x_y"):
             driver.cdp.gui_hover_x_y(float(x), float(y), timeframe=float(timeframe))
         else:
-            import pyautogui
+            import pyautogui  # lazy: requires DISPLAY
 
             pyautogui.moveTo(float(x), float(y), float(timeframe))
 

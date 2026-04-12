@@ -9,6 +9,7 @@ import uuid
 from typing import Any
 
 from airbrowser.server.paths import queue_dir, response_dir
+from airbrowser.server.settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -48,11 +49,7 @@ class BrowserIPCClient:
         response_file = RESPONSE_DIR / f"{request_id}.json"
         start_time = time.time()
         # Add small slack to avoid race with downstream processing
-        try:
-            slack = int(os.environ.get("IPC_TIMEOUT_SLACK", 5))
-        except Exception:
-            slack = 5
-        actual_timeout = (timeout if timeout is not None else self.timeout) + slack
+        actual_timeout = (timeout if timeout is not None else self.timeout) + settings.ipc_timeout_slack
 
         while time.time() - start_time < actual_timeout:
             if response_file.exists():
@@ -114,12 +111,11 @@ class BrowserIPCClient:
         # Use appropriate default timeout based on command type
         if timeout is None:
             if command_type == "navigate":
-                timeout = int(os.environ.get("NAVIGATE_TIMEOUT_DEFAULT", 60))
+                timeout = settings.navigate_timeout_default
             elif command_type in ("what_is_visible", "detect_coordinates"):
-                # Vision commands need longer timeout for API calls
-                timeout = int(os.environ.get("VISION_TIMEOUT_DEFAULT", 60))
+                timeout = settings.vision_timeout_default
             else:
-                timeout = int(os.environ.get("COMMAND_TIMEOUT_DEFAULT", 20))
+                timeout = settings.command_timeout_default
 
         # Include the timeout in the command payload so the service uses it
         # (Service extracts and applies this per-command timeout.)
