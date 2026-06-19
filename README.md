@@ -3,18 +3,12 @@
 [![CI](https://github.com/ifokeev/airbrowser-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/ifokeev/airbrowser-mcp/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/airbrowser-client?label=PyPI&logo=python&logoColor=white)](https://pypi.org/project/airbrowser-client/)
 [![npm](https://img.shields.io/npm/v/airbrowser-client?label=npm&logo=npm)](https://www.npmjs.com/package/airbrowser-client)
-[![License](https://img.shields.io/badge/License-Fair%20Source-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-Join%20us-5865F2?logo=discord&logoColor=white)](https://discord.gg/dP9PbTPHcN)
 
 **Open-source browser automation API with anti-detection** — Undetectable Chrome for AI agents, web scraping, and automation. REST API + MCP server + VNC debugging. Selenium/Playwright alternative that bypasses Cloudflare.
 
 ## Quick Start
-
-### Cloud Hosted (no setup)
-
-Use the managed cloud version - no installation required:
-
-**[https://airbrowser.dev](https://airbrowser.dev)**
 
 ### Docker (one-liner)
 
@@ -242,4 +236,4 @@ Join our [Discord server](https://discord.gg/dP9PbTPHcN) for support, feature re
 
 ## License
 
-[Fair Source](LICENSE) - Free for up to 10 users. Cannot be offered as a hosted service. Commercial license required for larger deployments.
+[MIT](LICENSE)
