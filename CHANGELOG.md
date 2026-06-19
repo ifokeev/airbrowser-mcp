@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.16.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.15.0...v1.16.0) (2026-06-19)
+
+
+### Features
+
+* **local:** add native local mode for anti-detection ([#35](https://github.com/ifokeev/airbrowser-mcp/issues/35)) ([df5c075](https://github.com/ifokeev/airbrowser-mcp/commit/df5c07587ec2752d6888b5a86c02d30caf0214e4))
+
+
+### Bug Fixes
+
+* **deps:** declare runtime dependencies in pyproject.toml ([af10ce5](https://github.com/ifokeev/airbrowser-mcp/commit/af10ce5fd70c54a85b9fa2b8ac4e9deeeb0861ec))
+* **tests:** dynamically calculate Chrome UI offset for gui_type_xy ([e90560e](https://github.com/ifokeev/airbrowser-mcp/commit/e90560e134b7184db7a3e9e32629e5f18aefcaf9))
+
 ## [1.15.0](https://github.com/ifokeev/airbrowser-mcp/compare/v1.14.0...v1.15.0) (2026-03-27)
 
 
